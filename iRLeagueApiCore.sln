@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iRLeagueApiCore.Communication", "iRLeagueApiCore.Communication\iRLeagueApiCore.Communication.csproj", "{645AEDC9-9AEE-46F8-9626-6CE7E0B7E4F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iRLeagueApiCore.Communication", "iRLeagueApiCore.Communication\iRLeagueApiCore.Communication.csproj", "{645AEDC9-9AEE-46F8-9626-6CE7E0B7E4F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iRLeagueApiCore.Server", "iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj", "{0DC9F780-3F23-4D33-9E9C-FDF9CA9C7758}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{645AEDC9-9AEE-46F8-9626-6CE7E0B7E4F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{645AEDC9-9AEE-46F8-9626-6CE7E0B7E4F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{645AEDC9-9AEE-46F8-9626-6CE7E0B7E4F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DC9F780-3F23-4D33-9E9C-FDF9CA9C7758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DC9F780-3F23-4D33-9E9C-FDF9CA9C7758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DC9F780-3F23-4D33-9E9C-FDF9CA9C7758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DC9F780-3F23-4D33-9E9C-FDF9CA9C7758}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
