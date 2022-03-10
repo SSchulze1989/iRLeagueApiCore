@@ -16,5 +16,20 @@ namespace iRLeagueApiCore.Communication.Models
         public DateTime? SeasonEnd { get; set; }
         [DataMember]
         public IEnumerable<long> ScheduleIds { get; set; }
+
+        #region version
+        [DataMember]
+        public DateTime? CreatedOn { get; set; } = null;
+        [DataMember]
+        public DateTime? LastModifiedOn { get; set; } = null;
+        [DataMember]
+        public string CreatedByUserId { get; set; }
+        [DataMember]
+        public string LastModifiedByUserId { get; set; }
+        [DataMember]
+        public string CreatedByUserName { get; set; }
+        [DataMember]
+        public string LastModifiedByUserName { get; set; }
+        #endregion
     }
 }
