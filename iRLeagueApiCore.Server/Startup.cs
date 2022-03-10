@@ -115,6 +115,8 @@ namespace iRLeagueApiCore.Server
              });
 
             services.AddScoped<IDbContextFactory<LeagueDbContext>, LeagueDbContextFactory>();
+            services.AddScoped(x => 
+                x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
