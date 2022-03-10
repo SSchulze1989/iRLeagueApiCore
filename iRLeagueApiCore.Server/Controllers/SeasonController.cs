@@ -17,23 +17,94 @@ namespace iRLeagueApiCore.Server.Controllers
     public class SeasonController : Controller
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetSeasonModel>>> Get([FromQuery] long[] ids, [FromServices] IDbContextFactory<LeagueDbContext> dbContextFactory)
+        public async Task<ActionResult<IEnumerable<GetSeasonModel>>> Get([FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {
-            using (var dbContext = dbContextFactory.CreateDbContext())
+            IQueryable<SeasonEntity> dbSeasons = dbContext.Seasons;
+
+            if (ids != null && ids.Count() > 0)
             {
-                IQueryable<SeasonEntity> dbSeasons = dbContext.Seasons;
+                dbSeasons = dbSeasons.Where(x => ids.Contains(x.SeasonId));
+            }
 
-                if (ids != null && ids.Count() > 0)
+            if (dbSeasons.Count() == 0)
+            {
+                return NotFound();
+            }
+
+            var getSeason = await dbContext.Seasons
+            .Select(x => new GetSeasonModel()
+            {
+                SeasonId = x.SeasonId,
+                SeasonStart = x.SeasonStart,
+                SeasonEnd = x.SeasonEnd,
+                ScheduleIds = x.Schedules.Select(y => y.ScheduleId),
+                SeasonName = x.SeasonName,
+                MainScoringId = x.MainScoringScoringId,
+                Finished = x.Finished,
+                HideComments = x.HideCommentsBeforeVoted,
+                LeagueId = x.LeagueId,
+                CreatedOn = x.CreatedOn,
+                CreatedByUserId = x.CreatedByUserId,
+                CreatedByUserName = x.CreatedByUserName,
+                LastModifiedOn = x.LastModifiedOn,
+                LastModifiedByUserId = x.LastModifiedByUserId,
+                LastModifiedByUserName = x.LastModifiedByUserName
+            })
+            .ToListAsync();
+
+            return Ok(getSeason);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<GetSeasonModel>> Put([FromBody] PutSeasonModel putSeason, [FromServices] LeagueDbContext dbContext)
+        {
+            var dbSeason = await dbContext.Seasons
+                .Include(x => x.League)
+                .SingleOrDefaultAsync(x => x.SeasonId == putSeason.SeasonId);
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            if (dbSeason == null)
+            {
+                dbSeason = new SeasonEntity()
                 {
-                    dbSeasons = dbSeasons.Where(x => ids.Contains(x.SeasonId));
+                    CreatedOn = DateTime.Now,
+                    CreatedByUserId = currentUserID,
+                    CreatedByUserName = User.Identity.Name
+                };
+                dbContext.Seasons.Add(dbSeason);
+            }
+
+            if (dbSeason.LeagueId != putSeason.LeagueId)
+            {
+                var league = await dbContext.Leagues
+                    .Include(x => x.Seasons)
+                    .SingleOrDefaultAsync(x => x.LeagueId == putSeason.LeagueId);
+
+                if (league == null)
+                {
+                    return BadRequest($"No league with id {putSeason.LeagueId} found");
                 }
 
-                if (dbSeasons.Count() == 0)
+                if (dbSeason.League != null)
                 {
-                    return NotFound();
+                    dbSeason.League.Seasons.Remove(dbSeason);
                 }
 
-                var getSeason = await dbContext.Seasons
+                if (league.Seasons.Any(x => x.SeasonId == dbSeason.SeasonId) == false)
+                {
+                    league.Seasons.Add(dbSeason);
+                }
+            }
+
+            dbSeason.SeasonName = putSeason.SeasonName;
+            dbSeason.MainScoring = await dbContext.FindAsync<ScoringEntity>(putSeason.MainScoringId);
+            dbSeason.Finished = putSeason.Finished;
+            dbSeason.HideCommentsBeforeVoted = putSeason.HideComments;
+
+            await dbContext.SaveChangesAsync();
+
+            var getSeason = dbContext.Seasons
                 .Select(x => new GetSeasonModel()
                 {
                     SeasonId = x.SeasonId,
@@ -52,87 +123,10 @@ namespace iRLeagueApiCore.Server.Controllers
                     LastModifiedByUserId = x.LastModifiedByUserId,
                     LastModifiedByUserName = x.LastModifiedByUserName
                 })
-                .ToListAsync();
+                .Where(x => x.SeasonId == dbSeason.SeasonId)
+                .FirstOrDefault();
 
-                return Ok(getSeason);
-            }
-        }
-
-        [HttpPut]
-        public async Task<ActionResult<GetSeasonModel>> Put([FromBody] PutSeasonModel putSeason, [FromServices] IDbContextFactory<LeagueDbContext> dbContextFactory)
-        {
-            using (var dbContext = dbContextFactory.CreateDbContext())
-            {
-                var dbSeason = await dbContext.Seasons
-                    .Include(x => x.League)
-                    .SingleOrDefaultAsync(x => x.SeasonId == putSeason.SeasonId);
-                ClaimsPrincipal currentUser = this.User;
-                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-                if (dbSeason == null)
-                {
-                    dbSeason = new SeasonEntity()
-                    {
-                        CreatedOn = DateTime.Now,
-                        CreatedByUserId = currentUserID,
-                        CreatedByUserName = User.Identity.Name
-                    };
-                    dbContext.Seasons.Add(dbSeason);
-                }
-
-                if (dbSeason.LeagueId != putSeason.LeagueId)
-                {
-                    var league = await dbContext.Leagues
-                        .Include(x => x.Seasons)
-                        .SingleOrDefaultAsync(x => x.LeagueId == putSeason.LeagueId);
-
-                    if (league == null)
-                    {
-                        return BadRequest($"No league with id {putSeason.LeagueId} found");
-                    }
-
-                    if (dbSeason.League != null)
-                    {
-                        dbSeason.League.Seasons.Remove(dbSeason);
-                    }
-
-                    if (league.Seasons.Any(x => x.SeasonId == dbSeason.SeasonId) == false)
-                    {
-                        league.Seasons.Add(dbSeason);
-                    }
-                }
-
-                dbSeason.SeasonName = putSeason.SeasonName;
-                dbSeason.MainScoring = await dbContext.FindAsync<ScoringEntity>(putSeason.MainScoringId);
-                dbSeason.Finished = putSeason.Finished;
-                dbSeason.HideCommentsBeforeVoted = putSeason.HideComments;
-
-                await dbContext.SaveChangesAsync();
-
-                var getSeason = dbContext.Seasons
-                    .Select(x => new GetSeasonModel()
-                    {
-                        SeasonId = x.SeasonId,
-                        SeasonStart = x.SeasonStart,
-                        SeasonEnd = x.SeasonEnd,
-                        ScheduleIds = x.Schedules.Select(y => y.ScheduleId),
-                        SeasonName = x.SeasonName,
-                        MainScoringId = x.MainScoringScoringId,
-                        Finished = x.Finished,
-                        HideComments = x.HideCommentsBeforeVoted,
-                        LeagueId = x.LeagueId,
-                        CreatedOn = x.CreatedOn,
-                        CreatedByUserId = x.CreatedByUserId,
-                        CreatedByUserName = x.CreatedByUserName,
-                        LastModifiedOn = x.LastModifiedOn,
-                        LastModifiedByUserId = x.LastModifiedByUserId,
-                        LastModifiedByUserName = x.LastModifiedByUserName
-                    })
-                    .Where(x => x.SeasonId == dbSeason.SeasonId)
-                    .FirstOrDefault();
-
-                return Ok(getSeason);
-            }
+            return Ok(getSeason);
         }
     }
 }
