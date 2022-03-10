@@ -32,9 +32,7 @@ jobs:
         # MYSQL_PASSWORD - specified superuser password which user is power for created database
         mysql password: ${{ env.DB_PASSWORD }}
     - name: Create Database
-      steps:
-      run: |
-        mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+      run: mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
     - name: Update Nuget Source
       run: dotnet nuget update source github --username SSchulze1989 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
     - name: Restore dependencies
