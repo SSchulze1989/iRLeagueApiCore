@@ -47,6 +47,13 @@ namespace iRLeagueApiCore.UnitTests.Server
         public LeagueDbContext CreateDbContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
+            var connectionString = Configuration["Db:ConnectionString"];
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = "server=localhost;user=testuser;database=TestDatabase;";
+            }
+
             optionsBuilder.UseMySQL(Configuration["Db:ConnectionString"]);
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
             return dbContext;
