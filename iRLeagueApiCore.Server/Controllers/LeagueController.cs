@@ -14,7 +14,7 @@ using System;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [Authorize]
     public class LeagueController : Controller
     {

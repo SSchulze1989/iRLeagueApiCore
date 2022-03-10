@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [Authorize]
     public class SeasonController : Controller
     {
@@ -33,7 +33,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     return NotFound();
                 }
 
-                var getSeason = dbContext.Seasons
+                var getSeason = await dbContext.Seasons
                 .Select(x => new GetSeasonModel()
                 {
                     SeasonId = x.SeasonId,
@@ -52,7 +52,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     LastModifiedByUserId = x.LastModifiedByUserId,
                     LastModifiedByUserName = x.LastModifiedByUserName
                 })
-                .ToList();
+                .ToListAsync();
 
                 return Ok(getSeason);
             }
@@ -75,7 +75,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     {
                         CreatedOn = DateTime.Now,
                         CreatedByUserId = currentUserID,
-                        CreatedByUserName = User.Identity.Name,
+                        CreatedByUserName = User.Identity.Name
                     };
                     dbContext.Seasons.Add(dbSeason);
                 }

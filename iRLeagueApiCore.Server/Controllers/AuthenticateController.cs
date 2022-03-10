@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Server.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AuthenticateController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -119,6 +120,36 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+        }
+    
+        [HttpPost]
+        [Route("add-role")]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> AddRole([FromBody] RoleModel role)
+        {
+            var roleName = role.RoleName;
+            if (await roleManager.RoleExistsAsync(roleName))
+            {
+                return BadRequest($"Role '{roleName}' already exists");
+            }
+            await roleManager.CreateAsync(new IdentityRole {Name = roleName});
+
+            return Ok(new Response { Status = "Success", Message = $"Role '{roleName}' created" });
+        }
+
+        [HttpDelete]
+        [Route("delete-role")]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> DeleteRole([FromBody] RoleModel role)
+        {
+            var roleName = role.RoleName;
+            if (await roleManager.RoleExistsAsync(roleName) == false)
+            {
+                return BadRequest($"Role \"{roleName}\" does not exists");
+            }
+            await roleManager.DeleteAsync(await roleManager.FindByNameAsync(roleName));
+
+            return Ok(new Response { Status = "Success", Message = $"Role '{roleName}' deleted" });
         }
     }
 }
