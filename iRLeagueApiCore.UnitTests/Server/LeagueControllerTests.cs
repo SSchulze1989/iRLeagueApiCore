@@ -54,7 +54,8 @@ namespace iRLeagueApiCore.UnitTests.Server
                 connectionString = "server=localhost;user='testuser';password='TestPass123!';database=TestDatabase;";
             }
 
-            optionsBuilder.UseMySQL(connectionString);
+            //optionsBuilder.UseMySQL(connectionString);
+            optionsBuilder.UseInMemoryDatabase("TestDatabase");
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
             return dbContext;
         }
