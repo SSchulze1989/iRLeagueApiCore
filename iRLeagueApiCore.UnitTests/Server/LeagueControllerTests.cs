@@ -51,7 +51,7 @@ namespace iRLeagueApiCore.UnitTests.Server
 
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = "server=localhost;user=testuser;password=TestPass123!;database=TestDatabase;";
+                connectionString = "server=localhost;user='testuser';password='TestPass123!';database=TestDatabase;";
             }
 
             optionsBuilder.UseMySQL(connectionString);

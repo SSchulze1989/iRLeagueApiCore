@@ -21,25 +21,13 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: mirromutth/mysql-action@de1fba8b3f90ce8db80f663a7043be3cf3231248
       uses: mirromutth/mysql-action@v1.1
-      with:
-        # The port of host
-        host port: 3306
-        # The port of container
-        container port: 3306
-        # --character-set-server - The character set of MySQL server
-        character set server: utf8mb4
-        # --collation-server - The character collation of MySQL server
-        collation server: utf8mb4_general_ci
-        # Version of MySQL to use
-        mysql version: latest
-        # MYSQL_ROOT_PASSWORD - root superuser password
-        mysql root password: '' 
+      with:        
         # MYSQL_DATABASE - name for the default database that is created
         mysql database: 'TestDatabase'
         # MYSQL_USER - create the specified user with superuser power for created database
-        mysql user: testuser
+        mysql user: 'testuser'
         # MYSQL_PASSWORD - specified superuser password which user is power for created database
-        mysql password: TestPass123!
+        mysql password: 'TestPass123!'
     - name: Update Nuget Source
       run: dotnet nuget update source github --username SSchulze1989 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
     - name: Restore dependencies
