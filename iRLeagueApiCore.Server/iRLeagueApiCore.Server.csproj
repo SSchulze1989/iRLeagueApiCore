@@ -5,6 +5,10 @@
     <UserSecretsId>f8b50589-89e6-49b7-9dca-793830174a9e</UserSecretsId>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+	</PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="iRLeagueDatabaseCore" Version="0.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.15" />

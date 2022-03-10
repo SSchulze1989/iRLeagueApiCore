@@ -37,6 +37,8 @@ namespace iRLeagueApiCore.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<IISServerOptions>(options =>
+                options.AutomaticAuthentication = false);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -76,8 +78,15 @@ namespace iRLeagueApiCore.Server
                 //c.IncludeXmlComments(xmlPath);
             });
 
+            // try get connection string
+            var userDbConnectionString = Configuration.GetConnectionString("UserDb:ConnectionString");
+            if (string.IsNullOrEmpty(userDbConnectionString))
+            {
+                userDbConnectionString = Configuration["UserDb:ConnectionString"];
+            }
+
             services.AddDbContext<ApplicationDbContext>(
-                options => options.UseMySQL(Configuration["UserDb:ConnectionString"]));
+                options => options.UseMySQL(userDbConnectionString));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -115,10 +124,18 @@ namespace iRLeagueApiCore.Server
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "iRLeagueApiCore.Server v1"));
+                app.UseSwaggerUI(c =>
+                {
+                    //c.SwaggerEndpoint("./v1/swagger.json", "TestDeploy v1");
+                    //c.RoutePrefix = string.Empty;
+                    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
+                    c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "iRLeagueApiCore.Server v1");
+                });
             }
 
             app.UseHttpsRedirection();
+
+            app.UseFileServer();
 
             app.UseRouting();
 

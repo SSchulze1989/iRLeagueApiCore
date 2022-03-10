@@ -15,8 +15,14 @@ namespace iRLeagueApiCore.Server.Models
 
         public LeagueDbContext CreateDbContext()
         {
+            var dbConnectionString = _configuration.GetConnectionString("Db:ConnectionString");
+            if (string.IsNullOrEmpty(dbConnectionString))
+            {
+                dbConnectionString = _configuration["Db:ConnectionString"];
+            }
+
             var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-            optionsBuilder.UseMySQL(_configuration["Db:ConnectionString"]);
+            optionsBuilder.UseMySQL(dbConnectionString);
 
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
             dbContext.Database.EnsureCreated();
