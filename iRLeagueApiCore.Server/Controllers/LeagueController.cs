@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Security.Principal;
 using System.Security.Claims;
 using System;
+using iRLeagueApiCore.Server.Authentication;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -89,6 +90,23 @@ namespace iRLeagueApiCore.Server.Controllers
             getLeague.LastModifiedByUserName = dbLeague.LastModifiedByUserName;
             getLeague.LastModifiedOn = dbLeague.LastModifiedOn;
             return Ok(getLeague);
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<ActionResult> Delete([FromQuery] long leagueId, [FromServices] LeagueDbContext dbContext)
+        {
+            var dbLeague = dbContext.Find<LeagueEntity>(leagueId);
+
+            if (dbLeague == null)
+            {
+                return BadRequest($"League id:{leagueId} does not exist");
+            }
+
+            dbContext.Remove(dbLeague);
+            dbContext.SaveChanges();
+
+            return Ok();
         }
     }
 }

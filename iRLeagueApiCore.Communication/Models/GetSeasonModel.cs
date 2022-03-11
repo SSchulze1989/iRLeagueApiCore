@@ -11,6 +11,8 @@ namespace iRLeagueApiCore.Communication.Models
     public class GetSeasonModel : PutSeasonModel
     {
         [DataMember]
+        public long LeagueId { get; set; }
+        [DataMember]
         public DateTime? SeasonStart { get; set; }
         [DataMember]
         public DateTime? SeasonEnd { get; set; }

@@ -13,8 +13,6 @@ namespace iRLeagueApiCore.Communication.Models
         [DataMember]
         public long SeasonId { get; set;}
         [DataMember]
-        public long LeagueId { get; set;}
-        [DataMember]
         public string SeasonName { get; set;}
         [DataMember]
         public long? MainScoringId { get; set; }
