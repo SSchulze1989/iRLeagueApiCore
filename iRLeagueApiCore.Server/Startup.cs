@@ -122,14 +122,7 @@ namespace iRLeagueApiCore.Server
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
-        {
-            var userDbConnectionString = Configuration.GetConnectionString("UserDb:ConnectionString");
-            if (string.IsNullOrEmpty(userDbConnectionString))
-            {
-                userDbConnectionString = Configuration["UserDb:ConnectionString"];
-            }
-            logger.LogInformation($"User db connection string '{userDbConnectionString}'");
-
+        { 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

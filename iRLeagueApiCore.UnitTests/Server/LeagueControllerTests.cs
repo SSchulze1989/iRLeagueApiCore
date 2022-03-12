@@ -47,7 +47,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         public LeagueDbContext CreateDbContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-            var connectionString = Configuration["Db:ConnectionString"];
+            var connectionString = Configuration["ConnectionStrings:ModelDb"];
 
             // use in memory database when no connection string present
             if (string.IsNullOrEmpty(connectionString))
