@@ -81,7 +81,7 @@ namespace iRLeagueApiCore.Server.Controllers
             dbLeague.LastModifiedByUserName = User.Identity.Name;
             dbLeague.Name = putLeague.Name;
             dbLeague.NameFull = putLeague.NameFull;
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             if (dbLeague == null)
             {
@@ -105,7 +105,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult> Delete([FromQuery] long leagueId, [FromServices] LeagueDbContext dbContext)
         {
-            var dbLeague = dbContext.Find<LeagueEntity>(leagueId);
+            var dbLeague = await dbContext.FindAsync<LeagueEntity>(leagueId);
 
             if (dbLeague == null)
             {
@@ -113,7 +113,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             dbContext.Remove(dbLeague);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Ok();
         }
