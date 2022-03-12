@@ -44,6 +44,11 @@ namespace iRLeagueApiCore.Server
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
+                var hostUrl = Configuration["ASPNETCORE_HOSTURL"];
+                if (hostUrl != null)
+                {
+                    c.AddServer(new OpenApiServer() { Url = hostUrl });
+                }
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "iRLeagueApiCore.Server", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
