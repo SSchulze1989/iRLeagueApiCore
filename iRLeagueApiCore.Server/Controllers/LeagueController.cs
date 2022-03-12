@@ -11,6 +11,7 @@ using System.Security.Principal;
 using System.Security.Claims;
 using System;
 using iRLeagueApiCore.Server.Authentication;
+using System.Text.RegularExpressions;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -57,10 +58,18 @@ namespace iRLeagueApiCore.Server.Controllers
         public async Task<ActionResult<GetLeagueModel>> Put([FromBody] PutLeagueModel putLeague, [FromServices] LeagueDbContext dbContext)
         {
             var dbLeague = await dbContext.FindAsync<LeagueEntity>(putLeague.LeagueId);
+
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             if (dbLeague == null)
             {
+                // validate leaguename
+                if (Regex.IsMatch(putLeague.Name, "^[a-zA-Z0-9_-]*$") == false)
+                {
+                    return BadRequest($"Invalid league name. League names may only contain the following characters: a-z A-Z 0-9 _ -");
+                }
+
                 dbLeague = new LeagueEntity();
                 dbContext.Leagues.Add(dbLeague);
                 dbLeague.CreatedOn = DateTime.Now;
