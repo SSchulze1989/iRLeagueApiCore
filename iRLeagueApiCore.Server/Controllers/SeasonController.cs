@@ -19,9 +19,9 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetSeasonModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {
-            var leagueId = dbContext.Leagues
+            var leagueId = (await dbContext.Leagues
                 .Select(x => new {x.LeagueId, x.Name})
-                .SingleOrDefault(x => x.Name == leagueName)
+                .SingleOrDefaultAsync(x => x.Name == leagueName))
                 ?.LeagueId ?? 0;
 
             IQueryable<SeasonEntity> dbSeasons = dbContext.Seasons
@@ -64,9 +64,9 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         public async Task<ActionResult<GetSeasonModel>> Put([FromRoute] string leagueName, [FromBody] PutSeasonModel putSeason, [FromServices] LeagueDbContext dbContext)
         {
-            var leagueId = dbContext.Leagues
+            var leagueId = (await dbContext.Leagues
                 .Select(x => new { x.LeagueId, x.Name })
-                .SingleOrDefault(x => x.Name == leagueName)
+                .SingleOrDefaultAsync(x => x.Name == leagueName))
                 ?.LeagueId ?? 0;
 
             var dbSeason = await dbContext.Seasons
@@ -101,7 +101,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             await dbContext.SaveChangesAsync();
 
-            var getSeason = dbContext.Seasons
+            var getSeason = await dbContext.Seasons
                 .Select(x => new GetSeasonModel()
                 {
                     SeasonId = x.SeasonId,
@@ -121,7 +121,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     LastModifiedByUserName = x.LastModifiedByUserName
                 })
                 .Where(x => x.SeasonId == dbSeason.SeasonId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             return Ok(getSeason);
         }
@@ -129,9 +129,9 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpDelete]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long seasonId, [FromServices] LeagueDbContext dbContext)
         {
-            var leagueId = dbContext.Leagues
+            var leagueId = (await dbContext.Leagues
                 .Select(x => new { x.LeagueId, x.Name })
-                .SingleOrDefault(x => x.Name == leagueName)
+                .SingleOrDefaultAsync(x => x.Name == leagueName))
                 ?.LeagueId ?? 0;
 
             var dbSeason = await dbContext.Seasons
@@ -147,7 +147,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             dbContext.Seasons.Remove(dbSeason);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Ok();
         }

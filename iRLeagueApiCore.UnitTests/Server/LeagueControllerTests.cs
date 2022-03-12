@@ -143,7 +143,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 var putLeague = new PutLeagueModel()
                 {
                     LeagueId = 1,
-                    Name = "NewLeagueName",
+                    Name = "New-League_Name123",
                     NameFull = "League name after test"
                 };
 
@@ -180,7 +180,10 @@ namespace iRLeagueApiCore.UnitTests.Server
                     NameFull = "League for unit testing"
                 };
                 var result = (await controller.Put(putLeague, dbContext)).Result;
-                Assert.IsType<BadRequestResult>(result);
+
+                Assert.IsNotType<OkObjectResult>(result);
+                Assert.IsNotType<OkResult>(result);
+                Assert.Null(dbContext.Leagues.SingleOrDefault(x => x.Name == putLeague.Name));
             }
         }
     }

@@ -11,6 +11,7 @@ using System.Security.Principal;
 using System.Security.Claims;
 using System;
 using iRLeagueApiCore.Server.Authentication;
+using System.Text.RegularExpressions;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -57,10 +58,18 @@ namespace iRLeagueApiCore.Server.Controllers
         public async Task<ActionResult<GetLeagueModel>> Put([FromBody] PutLeagueModel putLeague, [FromServices] LeagueDbContext dbContext)
         {
             var dbLeague = await dbContext.FindAsync<LeagueEntity>(putLeague.LeagueId);
+
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             if (dbLeague == null)
             {
+                // validate leaguename
+                if (Regex.IsMatch(putLeague.Name, "^[a-zA-Z0-9_-]*$") == false)
+                {
+                    return BadRequest($"Invalid league name. League names may only contain the following characters: a-z A-Z 0-9 _ -");
+                }
+
                 dbLeague = new LeagueEntity();
                 dbContext.Leagues.Add(dbLeague);
                 dbLeague.CreatedOn = DateTime.Now;
@@ -72,7 +81,7 @@ namespace iRLeagueApiCore.Server.Controllers
             dbLeague.LastModifiedByUserName = User.Identity.Name;
             dbLeague.Name = putLeague.Name;
             dbLeague.NameFull = putLeague.NameFull;
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             if (dbLeague == null)
             {
@@ -96,7 +105,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult> Delete([FromQuery] long leagueId, [FromServices] LeagueDbContext dbContext)
         {
-            var dbLeague = dbContext.Find<LeagueEntity>(leagueId);
+            var dbLeague = await dbContext.FindAsync<LeagueEntity>(leagueId);
 
             if (dbLeague == null)
             {
@@ -104,7 +113,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             dbContext.Remove(dbLeague);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Ok();
         }
