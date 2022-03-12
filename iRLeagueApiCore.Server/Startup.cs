@@ -80,12 +80,7 @@ namespace iRLeagueApiCore.Server
             });
 
             // try get connection string
-            var userDbConnectionString = Configuration.GetConnectionString("UserDb:ConnectionString");
-            if (string.IsNullOrEmpty(userDbConnectionString))
-            {
-                userDbConnectionString = Configuration["UserDb:ConnectionString"];
-            }
-
+            var userDbConnectionString = Configuration.GetConnectionString("UserDb");
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySQL(userDbConnectionString));
 
@@ -141,7 +136,7 @@ namespace iRLeagueApiCore.Server
                 });
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseFileServer();
 
