@@ -29,7 +29,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             if (ids != null && ids.Count() > 0)
             {
-                dbSeasons = dbSeasons.Where(x => x.LeagueId == leagueId && ids.Contains(x.SeasonId));
+                dbSeasons = dbSeasons.Where(x => ids.Contains(x.SeasonId));
             }
 
             if (dbSeasons.Count() == 0)
@@ -38,25 +38,25 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             var getSeason = await dbSeasons
-            .Select(x => new GetSeasonModel()
-            {
-                SeasonId = x.SeasonId,
-                SeasonStart = x.SeasonStart,
-                SeasonEnd = x.SeasonEnd,
-                ScheduleIds = x.Schedules.Select(y => y.ScheduleId),
-                SeasonName = x.SeasonName,
-                MainScoringId = x.MainScoringScoringId,
-                Finished = x.Finished,
-                HideComments = x.HideCommentsBeforeVoted,
-                LeagueId = x.LeagueId,
-                CreatedOn = x.CreatedOn,
-                CreatedByUserId = x.CreatedByUserId,
-                CreatedByUserName = x.CreatedByUserName,
-                LastModifiedOn = x.LastModifiedOn,
-                LastModifiedByUserId = x.LastModifiedByUserId,
-                LastModifiedByUserName = x.LastModifiedByUserName
-            })
-            .ToListAsync();
+                .Select(x => new GetSeasonModel()
+                {
+                    SeasonId = x.SeasonId,
+                    SeasonStart = x.SeasonStart,
+                    SeasonEnd = x.SeasonEnd,
+                    ScheduleIds = x.Schedules.Select(y => y.ScheduleId),
+                    SeasonName = x.SeasonName,
+                    MainScoringId = x.MainScoringScoringId,
+                    Finished = x.Finished,
+                    HideComments = x.HideCommentsBeforeVoted,
+                    LeagueId = x.LeagueId,
+                    CreatedOn = x.CreatedOn,
+                    CreatedByUserId = x.CreatedByUserId,
+                    CreatedByUserName = x.CreatedByUserName,
+                    LastModifiedOn = x.LastModifiedOn,
+                    LastModifiedByUserId = x.LastModifiedByUserId,
+                    LastModifiedByUserName = x.LastModifiedByUserName
+                })
+                .ToListAsync();
 
             return Ok(getSeason);
         }
@@ -121,7 +121,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     LastModifiedByUserName = x.LastModifiedByUserName
                 })
                 .Where(x => x.SeasonId == dbSeason.SeasonId)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             return Ok(getSeason);
         }
