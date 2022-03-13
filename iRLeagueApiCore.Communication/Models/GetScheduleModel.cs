@@ -13,8 +13,6 @@ namespace iRLeagueApiCore.Communication.Models
         [DataMember]
         public long leagueId { get; set; }
         [DataMember]
-        public int SessionCount { get; set; }
-        [DataMember]
         public IEnumerable<long> SessionIds { get; set; }
 
         #region version

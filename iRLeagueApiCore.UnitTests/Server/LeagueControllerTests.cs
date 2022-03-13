@@ -1,17 +1,10 @@
-﻿using DbIntegrationTests;
-using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Controllers;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Xunit;
@@ -19,72 +12,6 @@ using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server
 {
-    public class DbTestFixture : IDisposable
-    {
-        private IConfiguration Configuration { get; set; }
-
-        private static readonly int Seed = 12345;
-
-        public DbTestFixture()
-        {
-            Configuration = ((IConfigurationBuilder)(new ConfigurationBuilder()))
-                .AddUserSecrets<DbTestFixture>()
-                .Build(); ;
-
-            var random = new Random(Seed);
-
-            // set up test database
-            using (var dbContext = CreateDbContext())
-            {
-                dbContext.Database.EnsureDeleted();
-                dbContext.Database.EnsureCreated();
-
-                PopulateTestDatabase.Populate(dbContext, random);
-                dbContext.SaveChanges();
-            }
-        }
-
-        public LeagueDbContext CreateDbContext()
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-            var connectionString = Configuration["ConnectionStrings:ModelDb"];
-
-            // use in memory database when no connection string present
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                optionsBuilder.UseInMemoryDatabase("TestDatabase");
-            }
-            else
-            {
-                optionsBuilder.UseMySQL(connectionString);
-            }
-
-            var dbContext = new LeagueDbContext(optionsBuilder.Options);
-            return dbContext;
-        }
-
-        public ClaimsPrincipal User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Name, "unitTestUser"),
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim("custom-claim", "example claim value"),
-            }, "mock"));
-
-        public T AddControllerContext<T>(T controller) where T : Controller
-        {
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = User }
-            };
-
-            return controller;
-        }
-
-        public void Dispose()
-        {
-        }
-    }
-
     public class LeagueControllerTests : IClassFixture<DbTestFixture>
     {
         DbTestFixture Fixture { get; }

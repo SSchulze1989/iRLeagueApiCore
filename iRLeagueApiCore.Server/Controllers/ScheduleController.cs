@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace iRLeagueApiCore.Server.Controllers
     public class ScheduleController : Controller
     {
         [HttpGet]
-        public async Task<ActionResult<GetScheduleModel>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {
             var leagueId = (await dbContext.Leagues
                .Select(x => new { x.LeagueId, x.Name })
@@ -42,7 +43,6 @@ namespace iRLeagueApiCore.Server.Controllers
                     ScheduleId = x.ScheduleId,
                     SeasonId = x.SeasonId,
                     Name = x.Name,
-                    SessionCount = x.Sessions.Count(),
                     SessionIds = x.Sessions.Select(x => x.SessionId),
                     CreatedOn = x.CreatedOn,
                     CreatedByUserId = x.CreatedByUserId,
@@ -111,8 +111,8 @@ namespace iRLeagueApiCore.Server.Controllers
                 {
                     ScheduleId = x.ScheduleId,
                     SeasonId = x.SeasonId,
+                    leagueId = x.LeagueId,
                     Name = x.Name,
-                    SessionCount = x.Sessions.Count(),
                     SessionIds = x.Sessions.Select(x => x.SessionId),
                     CreatedOn = x.CreatedOn,
                     CreatedByUserId = x.CreatedByUserId,
