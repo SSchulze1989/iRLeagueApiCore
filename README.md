@@ -1,3 +1,3 @@
 # iRLeagueApi
 Development server:
-https://irleaguemanager.ddns.net/irleagueapicore/swagger
+https://irleaguemanager.net/irleagueapi/swagger
