@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
 {
-    public interface IVersionModel
+    [DataContract]
+    public class GetScheduleModel : PutScheduleModel, IVersionModel
     {
         [DataMember]
-        public DateTime? CreatedOn { get; set; }
+        public long leagueId { get; set; }
         [DataMember]
-        public DateTime? LastModifiedOn { get; set; }
+        public IEnumerable<long> SessionIds { get; set; }
+
+        #region version
+        [DataMember]
+        public DateTime? CreatedOn { get; set; } = null;
+        [DataMember]
+        public DateTime? LastModifiedOn { get; set; } = null;
         [DataMember]
         public string CreatedByUserId { get; set; }
         [DataMember]
@@ -21,5 +28,6 @@ namespace iRLeagueApiCore.Communication.Models
         public string CreatedByUserName { get; set; }
         [DataMember]
         public string LastModifiedByUserName { get; set; }
+        #endregion
     }
 }

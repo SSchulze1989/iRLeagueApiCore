@@ -85,9 +85,9 @@ namespace iRLeagueApiCore.Server
             });
 
             // try get connection string
-            var userDbConnectionString = Configuration.GetConnectionString("UserDb");
-            services.AddDbContext<ApplicationDbContext>(
-                options => options.UseMySQL(userDbConnectionString));
+            services.AddDbContextFactory<ApplicationDbContext, ApplicationDbContextFactory>();
+            services.AddScoped(x => 
+                x.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Communication.Models
 {
     [DataContract]
-    public class GetLeagueModel : PutLeagueModel
+    public class GetLeagueModel : PutLeagueModel, IVersionModel
     {
         [DataMember]
         public IEnumerable<long> SeasonIds { get; set; }
