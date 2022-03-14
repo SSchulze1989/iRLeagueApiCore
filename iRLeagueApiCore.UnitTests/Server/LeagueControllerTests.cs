@@ -43,6 +43,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
+                const int testLeagueId = 3;
                 var controller = Fixture.AddControllerContext(new LeagueController());
 
                 var putLeague = new PutLeagueModel()
@@ -55,7 +56,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var resultValue = (GetLeagueModel)okResult.Value;
-                Assert.Equal(2, resultValue.LeagueId);
+                Assert.Equal(testLeagueId, resultValue.LeagueId);
             }
         }
 

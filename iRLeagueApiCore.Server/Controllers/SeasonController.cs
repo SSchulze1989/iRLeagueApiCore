@@ -127,7 +127,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long seasonId, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             var leagueId = (await dbContext.Leagues
                 .Select(x => new { x.LeagueId, x.Name })
@@ -135,11 +135,11 @@ namespace iRLeagueApiCore.Server.Controllers
                 ?.LeagueId ?? 0;
 
             var dbSeason = await dbContext.Seasons
-                .SingleOrDefaultAsync(x => x.SeasonId == seasonId);
+                .SingleOrDefaultAsync(x => x.SeasonId == id);
 
             if (dbSeason == null)
             {
-                return BadRequest($"Season id:{seasonId} does not exist");
+                return BadRequest($"Season id:{id} does not exist");
             }
             else if (dbSeason.LeagueId != leagueId)
             {

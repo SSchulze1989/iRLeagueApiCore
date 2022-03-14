@@ -1,4 +1,5 @@
 ﻿using DbIntegrationTests;
+using iRLeagueApiCore.Server.Authentication;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +16,13 @@ namespace iRLeagueApiCore.UnitTests.Server
 {
     public class DbTestFixture : IDisposable
     {
-        private IConfiguration Configuration { get; set; }
+        private static IConfiguration Configuration { get; set; }
 
-        private readonly int Seed = 12345;
-        public string ClientUserName => "TestClient";
-        public string ClientGuid => "6a6a6e09-f4b7-4ccb-a8ae-f2fc85d897dd";
+        private static readonly int Seed = 12345;
+        public static string ClientUserName => "TestClient";
+        public static string ClientGuid => "6a6a6e09-f4b7-4ccb-a8ae-f2fc85d897dd";
 
-        public DbTestFixture()
+        static DbTestFixture()
         {
             Configuration = ((IConfigurationBuilder)(new ConfigurationBuilder()))
                 .AddUserSecrets<DbTestFixture>()
@@ -30,7 +31,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             var random = new Random(Seed);
 
             // set up test database
-            using (var dbContext = CreateDbContext())
+            using (var dbContext = CreateStaticDbContext())
             {
                 dbContext.Database.EnsureDeleted();
                 dbContext.Database.EnsureCreated();
@@ -40,7 +41,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             }
         }
 
-        public LeagueDbContext CreateDbContext()
+        public static LeagueDbContext CreateStaticDbContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
             var connectionString = Configuration["ConnectionStrings:ModelDb"];
@@ -59,10 +60,16 @@ namespace iRLeagueApiCore.UnitTests.Server
             return dbContext;
         }
 
-        public ClaimsPrincipal User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        public LeagueDbContext CreateDbContext()
+        {
+            return CreateStaticDbContext();
+        }
+
+        public ClaimsPrincipal User => new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Name, "unitTestUser"),
                 new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(ClaimTypes.Role, UserRoles.User),
                 new Claim("custom-claim", "example claim value"),
             }, "mock"));
 
@@ -74,6 +81,19 @@ namespace iRLeagueApiCore.UnitTests.Server
         /// <returns>Controller with added context</returns>
         public T AddControllerContext<T>(T controller) where T : Controller
         {
+            var user = User;
+            var identity = (ClaimsIdentity)user.Identity;
+            identity.AddClaim(new Claim(ClaimTypes.Role, $"{"TestLeague".ToLower()}_{UserRoles.User}"));
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = user }
+            };
+
+            return controller;
+        }
+
+        public T AddControllerContextWithoutLeagueRole<T>(T controller) where T : Controller
+        {
             controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = User }
@@ -82,7 +102,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             return controller;
         }
 
-        public void Populate(LeagueDbContext context, Random random)
+        public static void Populate(LeagueDbContext context, Random random)
         {
             // Populate Tracks
             for (int i = 0; i < 2; i++)
@@ -109,7 +129,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             }
 
             // create models
-            var league = new LeagueEntity()
+            var league1 = new LeagueEntity()
             {
                 Name = "TestLeague",
                 NameFull = "League for unit testing"
@@ -123,7 +143,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 LastModifiedOn = DateTime.Now,
                 LastModifiedByUserName = ClientUserName,
                 LastModifiedByUserId = ClientGuid,
-                League = league
+                League = league1
             };
             var season2 = new SeasonEntity()
             {
@@ -134,7 +154,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 LastModifiedOn = DateTime.Now,
                 LastModifiedByUserName = ClientUserName,
                 LastModifiedByUserId = ClientGuid,
-                League = league
+                League = league1
             };
             var schedule1 = new ScheduleEntity()
             {
@@ -186,12 +206,33 @@ namespace iRLeagueApiCore.UnitTests.Server
                 };
                 schedule1.Sessions.Add(session);
             }
-            context.Leagues.Add(league);
-            league.Seasons.Add(season1);
-            league.Seasons.Add(season2);
+            context.Leagues.Add(league1);
+            league1.Seasons.Add(season1);
+            league1.Seasons.Add(season2);
             season1.Schedules.Add(schedule1);
             season2.Schedules.Add(schedule2);
             season2.Schedules.Add(schedule3);
+
+            // create league2
+            var league2 = new LeagueEntity()
+            {
+                Name = "TestLeague2",
+                NameFull = "Second League for unit testing"
+            };
+            var l2season2 = new SeasonEntity()
+            {
+                SeasonName = "L2 Season One",
+                CreatedOn = DateTime.Now,
+                CreatedByUserName = ClientUserName,
+                CreatedByUserId = ClientGuid,
+                LastModifiedOn = DateTime.Now,
+                LastModifiedByUserName = ClientUserName,
+                LastModifiedByUserId = ClientGuid,
+                League = league1
+            };
+
+            context.Leagues.Add(league2);
+            league2.Seasons.Add(l2season2);
 
             GenerateMembers(context, random);
 
@@ -201,7 +242,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 var leagueMember = new LeagueMemberEntity()
                 {
                     Member = member,
-                    League = league
+                    League = league1
                 };
                 context.Set<LeagueMemberEntity>().Add(leagueMember);
             }
