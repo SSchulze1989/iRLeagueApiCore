@@ -79,9 +79,10 @@ namespace iRLeagueApiCore.Server
                         new List<string>()
                     }
                 });
-                //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                //c.IncludeXmlComments(xmlPath);
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Server.xml");
+                c.IncludeXmlComments(xmlPath);
+                xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Communication.xml");
+                c.IncludeXmlComments(xmlPath);
             });
 
             // try get connection string
