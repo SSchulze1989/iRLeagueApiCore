@@ -1,9 +1,11 @@
 ﻿using iRLeagueApiCore.Communication.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
@@ -23,16 +25,18 @@ namespace iRLeagueApiCore.Communication.Models
         /// Id of the schedule this session belongs to
         /// </summary>
         [DataMember]
-        public long ScheduleId { get; set; }
+        public long? ScheduleId { get; set; }
         /// <summary>
         /// Short Title of the session
         /// </summary>
         [DataMember]
         public string SessionTitle { get; set; }
         /// <summary>
-        /// Session type specifier
+        /// Session type specifier - 0 = Undefined, 1 = Practice, 2 = Qualifying, 3 = Race, 4 = HeatEvent, 5 = Heat, 6 = Warmup
         /// </summary>
         [DataMember]
+        [EnumDataType(typeof(SessionTypeEnum))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public SessionTypeEnum SessionType { get; set; }
         /// <summary>
         /// Day and time of session start

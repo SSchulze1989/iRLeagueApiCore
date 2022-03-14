@@ -27,5 +27,11 @@ namespace iRLeagueApiCore.Server.Controllers
             var leagueAdminRole = $"{leagueName.ToLower()}_{UserRoles.Admin}";
             return user.IsInRole(leagueUserRole) || user.IsInRole(leagueAdminRole) || user.IsInRole(UserRoles.Admin);
         }
+
+        protected bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)
+        {
+            var leagueRole = $"{leagueName.ToLower()}_{roleName}";
+            return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);
+        }
     }
 }
