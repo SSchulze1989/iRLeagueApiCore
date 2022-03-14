@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iRLeagueApiCore.Communication.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -7,13 +8,22 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
 {
+    /// <summary>
+    /// Scheme for fetching a session entry
+    /// </summary>
     [DataContract]
-    public class GetScheduleModel : PutScheduleModel, IVersionModel
+    public class GetSessionModel : PutSessionModel, IVersionModel
     {
+        /// <summary>
+        /// Unique identifier
+        /// </summary>
+        [DataMember]
+        public new long SessionId { get; set; }
+        /// <summary>
+        /// Id of the league this session belongs to
+        /// </summary>
         [DataMember]
         public long LeagueId { get; set; }
-        [DataMember]
-        public IEnumerable<long> SessionIds { get; set; }
 
         #region version
         /// <summary>

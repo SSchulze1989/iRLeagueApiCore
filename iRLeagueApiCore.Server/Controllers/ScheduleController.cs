@@ -128,7 +128,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 {
                     ScheduleId = x.ScheduleId,
                     SeasonId = x.SeasonId,
-                    leagueId = x.LeagueId,
+                    LeagueId = x.LeagueId,
                     Name = x.Name,
                     SessionIds = x.Sessions.Select(x => x.SessionId),
                     CreatedOn = x.CreatedOn,

@@ -84,7 +84,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.NotNull(getSchedule);
                 Assert.Equal(testScheduleName, getSchedule.Name);
                 Assert.Equal(testSeasonId, getSchedule.SeasonId);
-                Assert.Equal(testLeagueId, getSchedule.leagueId);
+                Assert.Equal(testLeagueId, getSchedule.LeagueId);
             }
         }
 
@@ -154,7 +154,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.NotNull(getSchedule);
                 Assert.Equal(testScheduleName, getSchedule.Name);
                 Assert.Equal(testSeasonId, getSchedule.SeasonId);
-                Assert.Equal(testLeagueId, getSchedule.leagueId);
+                Assert.Equal(testLeagueId, getSchedule.LeagueId);
                 Assert.Equal(expectSchedulesCount, schedulesCount);
             }
         }
@@ -197,7 +197,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.NotNull(getSchedule);
                 Assert.Equal(testScheduleName, getSchedule.Name);
                 Assert.Equal(testSeasonId, getSchedule.SeasonId);
-                Assert.Equal(testLeagueId, getSchedule.leagueId);
+                Assert.Equal(testLeagueId, getSchedule.LeagueId);
                 Assert.Equal(expectSchedulesCount, schedulesCount);
             }
         }
