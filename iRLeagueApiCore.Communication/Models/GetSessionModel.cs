@@ -24,6 +24,16 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
         public long LeagueId { get; set; }
+        /// <summary>
+        /// Flag shows if result is available
+        /// </summary>
+        [DataMember]
+        public bool HasResult { get; set; }
+        /// <summary>
+        /// List of subsession ids if session is multisession event
+        /// </summary>
+        [DataMember]
+        public IEnumerable<long> SubSessionIds { get; set; }
 
         #region version
         /// <summary>

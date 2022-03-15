@@ -1,4 +1,3 @@
-using iRLeagueApiCore.Communication;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
@@ -44,7 +43,10 @@ namespace iRLeagueApiCore.Server
 
             services.AddMvc()
                 .AddJsonOptions(options =>
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -142,8 +144,8 @@ namespace iRLeagueApiCore.Server
                 {
                     //c.SwaggerEndpoint("./v1/swagger.json", "TestDeploy v1");
                     //c.RoutePrefix = string.Empty;
-                    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
-                    c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "iRLeagueApiCore.Server v1");
+                    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "./swagger/" : "";
+                    c.SwaggerEndpoint($"{swaggerJsonBasePath}v1/swagger.json", "iRLeagueApiCore.Server v1");
                 });
             }
 

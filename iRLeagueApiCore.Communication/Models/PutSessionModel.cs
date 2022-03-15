@@ -52,7 +52,7 @@ namespace iRLeagueApiCore.Communication.Models
         /// Total duration of the session including all Subsessions and events
         /// </summary>
         [DataMember]
-        public TimeSpan Duration { get; set; }
+        public double Duration { get; set; }
         //[DataMember]
         //public long RaceId { get; set; }
         /// <summary>
@@ -64,17 +64,17 @@ namespace iRLeagueApiCore.Communication.Models
         /// [optional] Total length of the attached practice session - can be omitted if no practice attached
         /// </summary>
         [DataMember(IsRequired = false)]
-        public TimeSpan? PracticeLength { get; set; }
+        public double? PracticeLength { get; set; }
         /// <summary>
         /// [optional] Total length of the attached qualy session - can be omitted if no qualy attached
         /// </summary>
         [DataMember(IsRequired = false)]
-        public TimeSpan? QualyLength { get; set; }
+        public double? QualyLength { get; set; }
         /// <summary>
         /// [optional] Total lenth of the attached race session - can be ommitted if not a race session type
         /// </summary>
         [DataMember]
-        public TimeSpan? RaceLength { get; set; }
+        public double? RaceLength { get; set; }
         // reserved for later
         //[DataMember]
         //public string IrSessionId { get; set; }

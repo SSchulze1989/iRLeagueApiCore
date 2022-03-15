@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -53,32 +54,8 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            var getSession = await dbSessions.Select(x => new GetSessionModel()
-                {
-                    SessionId = x.SessionId,
-                    ScheduleId = x.ScheduleId,
-                    LeagueId = x.LeagueId,
-                    PracticeAttached = x.PracticeAttached ?? false,
-                    QualyAttached = x.QualyAttached ?? false,
-                    PracticeLength = x.PracticeLength,
-                    QualyLength = x.QualyLength,
-                    Date = x.Date,
-                    Duration = x.Duration,
-                    Laps = x.Laps ?? 0,
-                    RaceLength = x.RaceLength,
-                    Name = x.Name,
-                    SessionTitle = x.SessionTitle,
-                    SessionType = (SessionTypeEnum)x.SessionType,
-                    ParentSessionId = x.ParentSessionId,
-                    SubSessionNr = x.SubSessionNr,
-                    TrackId = x.TrackId,
-                    CreatedOn = x.CreatedOn,
-                    CreatedByUserId = x.CreatedByUserId,
-                    CreatedByUserName = x.CreatedByUserName,
-                    LastModifiedOn = x.LastModifiedOn,
-                    LastModifiedByUserId = x.LastModifiedByUserId,
-                    LastModifiedByUserName = x.LastModifiedByUserName
-                })
+            var getSession = await dbSessions
+                .Select(GetSessionModelFromDbExpression())
                 .ToListAsync();
 
             return Ok(getSession);
@@ -138,7 +115,88 @@ namespace iRLeagueApiCore.Server.Controllers
                 schedule.Sessions.Add(dbSession);
             }
 
+            // update parent session if changed
+            if (dbSession.ParentSessionId != putSession.ParentSessionId)
+            {
+                if (putSession.ParentSessionId == null)
+                {
+                    await dbContext.Entry(dbSession)
+                        .Reference(x => x.ParentSession)
+                        .LoadAsync();
+                    dbSession.ParentSession.SubSessions.Remove(dbSession);
+                }
+                else
+                {
+                    var parentSession = await dbContext.Sessions
+                        .SingleOrDefaultAsync(x => x.SessionId == putSession.ParentSessionId);
 
+                    if (parentSession == null)
+                    {
+                        return BadRequest($"No session with id:{putSession.ParentSessionId} found");
+                    }
+                    if (parentSession == dbSession)
+                    {
+                        return BadRequest($"Parent session is same as entry id:{putSession.ParentSessionId}");
+                    }
+                    if (parentSession.LeagueId != leagueId)
+                    {
+                        return WrongLeague($"Session with id:{parentSession.SessionId} does not belong to the specified league");
+                    }
+
+                    parentSession.SubSessions.Add(dbSession);
+                }
+            }
+
+            dbSession.Date = putSession.Date;
+            dbSession.Duration = TimeSpan.FromSeconds(putSession.Duration);
+            dbSession.Laps = putSession.Laps;
+            dbSession.Name = putSession.Name;
+            dbSession.PracticeAttached = putSession.PracticeAttached;
+            dbSession.PracticeLength = putSession.PracticeLength != null ? TimeSpan.FromSeconds(putSession.PracticeLength.Value) : null;
+            dbSession.QualyAttached = putSession.QualyAttached;
+            dbSession.QualyLength = putSession.QualyLength != null ? TimeSpan.FromSeconds(putSession.QualyLength.Value) : null;
+            dbSession.RaceLength = putSession.RaceLength != null ? TimeSpan.FromSeconds(putSession.RaceLength.Value) : null;
+            dbSession.SessionTitle = putSession.SessionTitle;
+            dbSession.SessionType = (int)putSession.SessionType;
+            dbSession.SubSessionNr = putSession.SubSessionNr;
+
+            await dbContext.SaveChangesAsync();
+
+            var getSession = await dbContext.Sessions
+                .Select(GetSessionModelFromDbExpression())
+                .SingleAsync(x => x.SessionId == dbSession.SessionId);
+
+            return Ok(getSession);
         }
+
+        private Expression<Func<SessionEntity, GetSessionModel>> GetSessionModelFromDbExpression() =>
+            x => new GetSessionModel()
+            {
+                SessionId = x.SessionId,
+                ScheduleId = x.ScheduleId,
+                LeagueId = x.LeagueId,
+                PracticeAttached = x.PracticeAttached ?? false,
+                QualyAttached = x.QualyAttached ?? false,
+                PracticeLength = x.PracticeLength != null ? x.PracticeLength.Value.TotalSeconds : null,
+                QualyLength = x.QualyLength != null ? x.QualyLength.Value.TotalSeconds : null,
+                Date = x.Date,
+                Duration = x.Duration.TotalSeconds,
+                Laps = x.Laps ?? 0,
+                RaceLength = x.RaceLength != null ? x.RaceLength.Value.TotalSeconds : null,
+                Name = x.Name,
+                SessionTitle = x.SessionTitle,
+                //SessionType = (SessionTypeEnum)x.SessionType,
+                SubSessionIds = x.SubSessions.Select(x => x.SessionId),
+                ParentSessionId = x.ParentSessionId,
+                SubSessionNr = x.SubSessionNr,
+                TrackId = x.TrackId,
+                HasResult = x.ResultEntity != null,
+                CreatedOn = x.CreatedOn,
+                CreatedByUserId = x.CreatedByUserId,
+                CreatedByUserName = x.CreatedByUserName,
+                LastModifiedOn = x.LastModifiedOn,
+                LastModifiedByUserId = x.LastModifiedByUserId,
+                LastModifiedByUserName = x.LastModifiedByUserName
+            };
     }
 }
