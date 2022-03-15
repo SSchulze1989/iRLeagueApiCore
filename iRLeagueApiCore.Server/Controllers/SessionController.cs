@@ -1,7 +1,9 @@
 ﻿using iRLeagueApiCore.Communication.Enums;
 using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,29 +20,49 @@ namespace iRLeagueApiCore.Server.Controllers
     /// Endpoint for managing session entries
     /// </summary>
     [ApiController]
+    [Authorize]
+    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
     [Route("{leagueName}/[controller]")]
-    public class SessionController : LeagueApiController
-    {
-        private ILogger<SessionController> _logger;
-
+    public class SessionController : LeagueApiController<SessionController>
+    {        
         public SessionController(ILogger<SessionController> logger)
         {
             _logger = logger;
         }
+        private static Expression<Func<SessionEntity, GetSessionModel>> GetSessionModelFromDbExpression { get; } = x => new GetSessionModel()
+        {
+            SessionId = x.SessionId,
+            ScheduleId = x.ScheduleId,
+            LeagueId = x.LeagueId,
+            PracticeAttached = x.PracticeAttached ?? false,
+            QualyAttached = x.QualyAttached ?? false,
+            PracticeLength = x.PracticeLength != null ? x.PracticeLength.Value.TotalSeconds : null,
+            QualyLength = x.QualyLength != null ? x.QualyLength.Value.TotalSeconds : null,
+            Date = x.Date,
+            Duration = x.Duration.TotalSeconds,
+            Laps = x.Laps ?? 0,
+            RaceLength = x.RaceLength != null ? x.RaceLength.Value.TotalSeconds : null,
+            Name = x.Name,
+            SessionTitle = x.SessionTitle,
+            SessionType = x.SessionType,
+            SubSessionIds = x.SubSessions.Select(x => x.SessionId),
+            ParentSessionId = x.ParentSessionId,
+            SubSessionNr = x.SubSessionNr,
+            TrackId = x.TrackId,
+            HasResult = x.ResultEntity != null,
+            CreatedOn = x.CreatedOn,
+            CreatedByUserId = x.CreatedByUserId,
+            CreatedByUserName = x.CreatedByUserName,
+            LastModifiedOn = x.LastModifiedOn,
+            LastModifiedByUserId = x.LastModifiedByUserId,
+            LastModifiedByUserName = x.LastModifiedByUserName
+        };
+
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
-        {
-            if (HasLeagueRole(User, leagueName) == false)
-            {
-                return Forbid();
-            }
-
-            var leagueId = (await dbContext.Leagues
-               .Select(x => new { x.LeagueId, x.Name })
-               .SingleOrDefaultAsync(x => x.Name == leagueName))
-               ?.LeagueId ?? 0;
-
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [OpenApiParameterIgnore] long leagueId, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+        {            
             IQueryable<SessionEntity> dbSessions = dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId);
 
@@ -55,7 +77,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             var getSession = await dbSessions
-                .Select(GetSessionModelFromDbExpression())
+                .Select(GetSessionModelFromDbExpression)
                 .ToListAsync();
 
             return Ok(getSession);
@@ -64,15 +86,12 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [FromQuery] PutSessionModel putSession, [FromServices] LeagueDbContext dbContext)
         {
-            if (HasLeagueRole(User, leagueName, UserRoles.Admin) == false)
+            var leagueCheck = await CheckLeagueAsync(leagueName, dbContext);
+            if (leagueCheck.Result is not OkResult)
             {
-                return Forbid();
+                return leagueCheck.Result;
             }
-
-            var leagueId = (await dbContext.Leagues
-               .Select(x => new { x.LeagueId, x.Name })
-               .SingleOrDefaultAsync(x => x.Name == leagueName))
-               ?.LeagueId ?? 0;
+            var leagueId = leagueCheck.Value;
 
             var dbSession = await dbContext.Sessions
                 .SingleOrDefaultAsync(x => x.SessionId == putSession.SessionId);
@@ -157,46 +176,49 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSession.QualyLength = putSession.QualyLength != null ? TimeSpan.FromSeconds(putSession.QualyLength.Value) : null;
             dbSession.RaceLength = putSession.RaceLength != null ? TimeSpan.FromSeconds(putSession.RaceLength.Value) : null;
             dbSession.SessionTitle = putSession.SessionTitle;
-            dbSession.SessionType = (int)putSession.SessionType;
+            dbSession.SessionType = putSession.SessionType;
             dbSession.SubSessionNr = putSession.SubSessionNr;
+            dbSession.LastModifiedOn = DateTime.Now;
+            dbSession.LastModifiedByUserId = currentUserID;
+            dbSession.LastModifiedByUserName = User.Identity.Name;
 
             await dbContext.SaveChangesAsync();
 
             var getSession = await dbContext.Sessions
-                .Select(GetSessionModelFromDbExpression())
+                .Select(GetSessionModelFromDbExpression)
                 .SingleAsync(x => x.SessionId == dbSession.SessionId);
 
             return Ok(getSession);
         }
+    
+        [HttpDelete]
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
+        {
+            _logger.LogInformation("Request to delete Session {SessionId} from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
 
-        private Expression<Func<SessionEntity, GetSessionModel>> GetSessionModelFromDbExpression() =>
-            x => new GetSessionModel()
+            var leagueCheck = await CheckLeagueAsync(leagueName, dbContext);
+            if (leagueCheck.Result is not OkResult)
             {
-                SessionId = x.SessionId,
-                ScheduleId = x.ScheduleId,
-                LeagueId = x.LeagueId,
-                PracticeAttached = x.PracticeAttached ?? false,
-                QualyAttached = x.QualyAttached ?? false,
-                PracticeLength = x.PracticeLength != null ? x.PracticeLength.Value.TotalSeconds : null,
-                QualyLength = x.QualyLength != null ? x.QualyLength.Value.TotalSeconds : null,
-                Date = x.Date,
-                Duration = x.Duration.TotalSeconds,
-                Laps = x.Laps ?? 0,
-                RaceLength = x.RaceLength != null ? x.RaceLength.Value.TotalSeconds : null,
-                Name = x.Name,
-                SessionTitle = x.SessionTitle,
-                //SessionType = (SessionTypeEnum)x.SessionType,
-                SubSessionIds = x.SubSessions.Select(x => x.SessionId),
-                ParentSessionId = x.ParentSessionId,
-                SubSessionNr = x.SubSessionNr,
-                TrackId = x.TrackId,
-                HasResult = x.ResultEntity != null,
-                CreatedOn = x.CreatedOn,
-                CreatedByUserId = x.CreatedByUserId,
-                CreatedByUserName = x.CreatedByUserName,
-                LastModifiedOn = x.LastModifiedOn,
-                LastModifiedByUserId = x.LastModifiedByUserId,
-                LastModifiedByUserName = x.LastModifiedByUserName
-            };
+                return leagueCheck.Result;
+            }
+            var leagueId = leagueCheck.Value;
+
+            var dbSession = await dbContext.Sessions
+                .Include(x => x.Schedule)
+                .SingleOrDefaultAsync(x => x.SessionId == id && x.LeagueId == leagueId);
+
+            if (dbSession == null)
+            {
+                _logger.LogInformation("Session {SessionId} on {LeagueName} not found", id, leagueName);
+                return NotFound();
+            }
+
+            dbSession.Schedule.Sessions.Remove(dbSession);
+            await dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Session {SessionId} deleted from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
+
+            return Ok();
+        }
     }
 }

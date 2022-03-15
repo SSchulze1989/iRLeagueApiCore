@@ -1,4 +1,5 @@
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -57,6 +58,7 @@ namespace iRLeagueApiCore.Server
                     c.AddServer(new OpenApiServer() { Url = hostUrl });
                 }
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "iRLeagueApiCore.Server", Version = "v1" });
+                c.OperationFilter<OpenApiParameterIgnoreFilter>();
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
@@ -126,6 +128,8 @@ namespace iRLeagueApiCore.Server
             services.AddScoped<IDbContextFactory<LeagueDbContext>, LeagueDbContextFactory>();
             services.AddScoped(x => 
                 x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
+
+            services.AddScoped<LeagueAuthorizeAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

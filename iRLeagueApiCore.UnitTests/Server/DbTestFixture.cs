@@ -1,4 +1,5 @@
 ﻿using DbIntegrationTests;
+using iRLeagueApiCore.Communication.Enums;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Http;
@@ -203,6 +204,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                         .Skip(i)
                         .FirstOrDefault(),
                     SessionTitle = $"S1 Session {i}",
+                    SessionType = (SessionTypeEnum)i+1
                 };
                 schedule1.Sessions.Add(session);
             }
