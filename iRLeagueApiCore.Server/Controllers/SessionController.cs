@@ -111,20 +111,34 @@ namespace iRLeagueApiCore.Server.Controllers
             // update schedule if changed
             if (dbSession.ScheduleId != putSession.ScheduleId)
             {
-                var schedule = await dbContext.Schedules
+                if (putSession.ScheduleId == null)
+                {
+                    dbContext.Entry(dbSession)
+                        .Reference(x => x.Schedule)
+                        .Load();
+
+                    dbSession.Schedule = null;
+                    // dont delete session
+                    dbContext.Entry(dbSession)
+                        .State = EntityState.Modified;
+                }
+                else
+                {
+                    var schedule = await dbContext.Schedules
                     .Include(x => x.Sessions)
                     .SingleOrDefaultAsync(x => x.ScheduleId == putSession.ScheduleId);
 
-                if (schedule == null)
-                {
-                    return BadRequest($"No schedule with id:{putSession.ScheduleId} found");
-                }
-                if (leagueId != schedule.LeagueId)
-                {
-                    return WrongLeague($"Schedule with id:{putSession.ScheduleId} does not belong to the specified league");
-                }
+                    if (schedule == null)
+                    {
+                        return BadRequest($"No schedule with id:{putSession.ScheduleId} found");
+                    }
+                    if (leagueId != schedule.LeagueId)
+                    {
+                        return WrongLeague($"Schedule with id:{putSession.ScheduleId} does not belong to the specified league");
+                    }
 
-                schedule.Sessions.Add(dbSession);
+                    schedule.Sessions.Add(dbSession);
+                }
             }
 
             // update parent session if changed

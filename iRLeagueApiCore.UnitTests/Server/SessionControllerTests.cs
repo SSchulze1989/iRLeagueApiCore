@@ -21,7 +21,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         DbTestFixture Fixture { get; }
         ITestOutputHelper Output { get; }
 
-        ILogger<SessionController> TestLogger => new Mock<ILogger<SessionController>>().Object;
+        ILogger<SessionController> MockLogger => new Mock<ILogger<SessionController>>().Object;
 
         public SessionControllerTests(DbTestFixture fixture, ITestOutputHelper output)
         {
@@ -38,7 +38,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testSessionId = 1;
                 const string testSessionName = "S1 Session 1";
 
-                var controller = Fixture.AddControllerContext(new SessionController(TestLogger));
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
                 var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testSessionId }, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -61,7 +61,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 long[] testSessionIds = { 1, 2, 3 };
                 string[] testSessionNames = { "S1 Session 1", "S1 Session 2", "S1 Session 3" };
 
-                var controller = Fixture.AddControllerContext(new SessionController(TestLogger));
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
                 var result = (await controller.Get(testLeagueName, testLeagueId, testSessionIds, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -86,7 +86,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const int testLeagueId = 1;
                 long[] testSessionIds = { 8 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(TestLogger));
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
                 var result = (await controller.Get(testLeagueName, testLeagueId, testSessionIds, dbContext)).Result;
                 Assert.IsType<NotFoundResult>(result);
             }
@@ -110,7 +110,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = testDate
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(TestLogger));
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
                 var result = (await controller.Put(testLeagueName, testLeagueId, putSession, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -143,7 +143,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = testDate
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(TestLogger));
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
                 var result = (await controller.Put(testLeagueName, testLeagueId, putSession, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -162,6 +162,145 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.Contains(schedule.Sessions, x => x.SessionId == getSession.SessionId);
             }
         }
+        
+        [Fact]
+        public async void TestCreateSessionWithParent()
+        {
+            using (var tx = new TransactionScope())
+            using (var dbContext = Fixture.CreateDbContext())
+            {
+                const string testLeagueName = "TestLeague";
+                const int testLeagueId = 1;
+                const int testParentId = 1;
+                const string testSessionName = "Session With Schedule";
+                DateTime testDate = DateTime.Parse("2022/03/16T16:42", CultureInfo.InvariantCulture);
+
+                var putSession = new PutSessionModel()
+                {
+                    Name = testSessionName,
+                    ParentSessionId = testParentId,
+                    Date = testDate
+                };
+
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var result = (await controller.Put(testLeagueName, testLeagueId, putSession, dbContext)).Result;
+                Assert.IsType<OkObjectResult>(result);
+                var okResult = (OkObjectResult)result;
+                var getSession = (GetSessionModel)okResult.Value;
+
+                Assert.NotEqual(0, getSession.SessionId);
+                Assert.Equal(testLeagueId, getSession.LeagueId);
+                Assert.Equal(testSessionName, getSession.Name);
+                Assert.Equal(testParentId, getSession.ParentSessionId);
+                Assert.Equal(testDate, getSession.Date);
+
+                // check if session is in schedule sessions
+                var parentSession = dbContext.Sessions
+                    .Include(x => x.SubSessions)
+                    .Single(x => x.SessionId == testParentId);
+                Assert.Contains(parentSession.SubSessions, x => x.SessionId == getSession.SessionId);
+            }
+        }
+
+        [Fact]
+        public async void TestSessionMoveSchedule()
+        {
+            using (var tx = new TransactionScope())
+            using (var dbContext = Fixture.CreateDbContext())
+            {
+                var league = Fixture.Leagues.First();
+                var season = league.Seasons.ElementAt(1);
+                var fromSchedule = season.Schedules.ElementAt(0);
+                var toSchedule = season.Schedules.ElementAt(1);
+                var session = fromSchedule.Sessions.First();
+
+                var putSession = new PutSessionModel()
+                {
+                    SessionId = session.SessionId,
+                    ScheduleId = toSchedule.ScheduleId,
+                    Name = session.Name,
+                    Date = session.Date
+                };
+
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var result = (await controller.Put(league.Name, league.LeagueId, putSession, dbContext)).Result;
+                Assert.IsType<OkObjectResult>(result);
+                var okResult = (OkObjectResult)result;
+                var getSession = (GetSessionModel)okResult.Value;
+
+                Assert.Equal(session.SessionId, getSession.SessionId);
+                var checkFromSchedule = dbContext.Schedules.Single(x => x.ScheduleId == fromSchedule.ScheduleId);
+                var checkToSchedule = dbContext.Schedules.Single(x => x.ScheduleId == toSchedule.ScheduleId);
+                Assert.DoesNotContain(checkFromSchedule.Sessions, x => x.SessionId == session.SessionId);
+                Assert.Contains(checkToSchedule.Sessions, x => x.SessionId == session.SessionId);
+            }
+        }
+
+        [Fact]
+        public async void TestSessionMoveParent()
+        {
+            using (var tx = new TransactionScope())
+            using (var dbContext = Fixture.CreateDbContext())
+            {
+                var league = Fixture.Leagues.First();
+                var season = league.Seasons.First();
+                var schedule = season.Schedules.First();
+                var toParent = schedule.Sessions.ElementAt(1);
+                var session = schedule.Sessions.ElementAt(2);
+
+                var putSession = new PutSessionModel()
+                {
+                    SessionId = session.SessionId,
+                    ParentSessionId = toParent.SessionId,
+                    Name = session.Name,
+                    Date = session.Date
+                };
+
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var result = (await controller.Put(league.Name, league.LeagueId, putSession, dbContext)).Result;
+                Assert.IsType<OkObjectResult>(result);
+                var okResult = (OkObjectResult)result;
+                var getSession = (GetSessionModel)okResult.Value;
+
+                Assert.Equal(session.SessionId, getSession.SessionId);
+                var checkToParent = dbContext.Sessions
+                    .Include(x => x.SubSessions)
+                    .Single(x => x.SessionId == toParent.SessionId);
+                Assert.Contains(checkToParent.SubSessions, x => x.SessionId == session.SessionId);
+            }
+        }
+
+        [Fact]
+        public async void TestSessionMoveScheduleWrongLeague()
+        {
+            using (var tx = new TransactionScope())
+            using (var dbContext = Fixture.CreateDbContext())
+            {
+                var fromLeague = Fixture.Leagues.First();
+                var toLeague = Fixture.Leagues.ElementAt(1);
+                var season = fromLeague.Seasons.ElementAt(1);
+                var fromSchedule = season.Schedules.ElementAt(0);
+                var toSchedule = toLeague.Seasons.First().Schedules.First();
+                var session = fromSchedule.Sessions.First();
+
+                var putSession = new PutSessionModel()
+                {
+                    SessionId = session.SessionId,
+                    ScheduleId = toSchedule.ScheduleId,
+                    Name = session.Name,
+                    Date = session.Date
+                };
+
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var result = (await controller.Put(fromLeague.Name, fromLeague.LeagueId, putSession, dbContext)).Result;
+                Assert.IsNotType<OkObjectResult>(result);
+
+                var checkFromSchedule = dbContext.Schedules.Single(x => x.ScheduleId == fromSchedule.ScheduleId);
+                var checkToSchedule = dbContext.Schedules.Single(x => x.ScheduleId == toSchedule.ScheduleId);
+                Assert.Contains(checkFromSchedule.Sessions, x => x.SessionId == session.SessionId);
+                Assert.DoesNotContain(checkToSchedule.Sessions, x => x.SessionId == session.SessionId);
+            }
+        }
 
         [Fact]
         public async void TestDeleteSession()
@@ -173,7 +312,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const int testLeagueId = 1;
                 const int testSessionId = 1;
 
-                var controller = Fixture.AddControllerContext(new SessionController(TestLogger));
+                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
                 var result = (await controller.Delete(testLeagueName, testLeagueId, testSessionId, dbContext));
 
                 Assert.IsType<OkResult>(result);
