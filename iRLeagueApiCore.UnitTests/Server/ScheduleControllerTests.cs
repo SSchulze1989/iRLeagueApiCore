@@ -46,20 +46,6 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestGetScheduleForbidden()
-        {
-            using (var dbContext = Fixture.CreateDbContext())
-            {
-                const string testLeagueName = "TestLeague1";
-                const long testScheduleId = 1;
-
-                var controller = Fixture.AddControllerContextWithoutLeagueRole(new ScheduleController());
-                var result = (await controller.Get(testLeagueName, new long[] { testScheduleId }, dbContext)).Result;
-                Assert.IsType<ForbidResult>(result);
-            }
-        }
-
-        [Fact]
         public async void TestCreateSchedule()
         {
             using (var tx = new TransactionScope())

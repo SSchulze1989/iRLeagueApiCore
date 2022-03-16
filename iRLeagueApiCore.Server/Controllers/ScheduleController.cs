@@ -20,12 +20,15 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {
-            var leagueCheck = await CheckLeagueAsync(leagueName, dbContext);
-            if (leagueCheck.Result is not OkResult)
+            if (HasLeagueRole(User, leagueName) == false)
             {
-                return leagueCheck.Result;
+                return Forbid();
             }
-            var leagueId = leagueCheck.Value;
+
+            var leagueId = (await dbContext.Leagues
+                .Select(x => new { x.LeagueId, x.Name })
+                .SingleOrDefaultAsync(x => x.Name == leagueName))
+                ?.LeagueId ?? 0;
 
             IQueryable<ScheduleEntity> dbSchedules = dbContext.Schedules
                 .Where(x => x.LeagueId == leagueId);

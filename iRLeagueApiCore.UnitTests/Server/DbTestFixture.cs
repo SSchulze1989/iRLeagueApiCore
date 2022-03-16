@@ -192,7 +192,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             {
                 var session = new SessionEntity()
                 {
-                    Name = $"S1 Session {i}",
+                    Name = $"S1 Session {i+1}",
                     CreatedOn = DateTime.Now,
                     CreatedByUserName = ClientUserName,
                     CreatedByUserId = ClientGuid,

@@ -61,7 +61,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [OpenApiParameterIgnore] long leagueId, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {            
             IQueryable<SessionEntity> dbSessions = dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId);
@@ -84,15 +84,8 @@ namespace iRLeagueApiCore.Server.Controllers
         }
     
         [HttpPut]
-        public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [FromQuery] PutSessionModel putSession, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] PutSessionModel putSession, [FromServices] LeagueDbContext dbContext)
         {
-            var leagueCheck = await CheckLeagueAsync(leagueName, dbContext);
-            if (leagueCheck.Result is not OkResult)
-            {
-                return leagueCheck.Result;
-            }
-            var leagueId = leagueCheck.Value;
-
             var dbSession = await dbContext.Sessions
                 .SingleOrDefaultAsync(x => x.SessionId == putSession.SessionId);
 
@@ -192,16 +185,9 @@ namespace iRLeagueApiCore.Server.Controllers
         }
     
         [HttpDelete]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Request to delete Session {SessionId} from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
-
-            var leagueCheck = await CheckLeagueAsync(leagueName, dbContext);
-            if (leagueCheck.Result is not OkResult)
-            {
-                return leagueCheck.Result;
-            }
-            var leagueId = leagueCheck.Value;
 
             var dbSession = await dbContext.Sessions
                 .Include(x => x.Schedule)
