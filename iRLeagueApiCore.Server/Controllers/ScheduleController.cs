@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Route("{leagueName}/[controller]")]
     [Authorize]
-    public class ScheduleController : LeagueApiController
+    public class ScheduleController : LeagueApiController<ScheduleController>
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
@@ -26,9 +26,9 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             var leagueId = (await dbContext.Leagues
-               .Select(x => new { x.LeagueId, x.Name })
-               .SingleOrDefaultAsync(x => x.Name == leagueName))
-               ?.LeagueId ?? 0;
+                .Select(x => new { x.LeagueId, x.Name })
+                .SingleOrDefaultAsync(x => x.Name == leagueName))
+                ?.LeagueId ?? 0;
 
             IQueryable<ScheduleEntity> dbSchedules = dbContext.Schedules
                 .Where(x => x.LeagueId == leagueId);
@@ -128,7 +128,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 {
                     ScheduleId = x.ScheduleId,
                     SeasonId = x.SeasonId,
-                    leagueId = x.LeagueId,
+                    LeagueId = x.LeagueId,
                     Name = x.Name,
                     SessionIds = x.Sessions.Select(x => x.SessionId),
                     CreatedOn = x.CreatedOn,

@@ -1,4 +1,5 @@
 ﻿using DbIntegrationTests;
+using iRLeagueApiCore.Communication.Enums;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Http;
@@ -16,11 +17,34 @@ namespace iRLeagueApiCore.UnitTests.Server
 {
     public class DbTestFixture : IDisposable
     {
-        private static IConfiguration Configuration { get; set; }
+        private static IConfiguration Configuration { get; }
 
         private static readonly int Seed = 12345;
         public static string ClientUserName => "TestClient";
         public static string ClientGuid => "6a6a6e09-f4b7-4ccb-a8ae-f2fc85d897dd";
+
+
+        private static IEnumerable<LeagueEntity> _leagues;
+        /// <summary>
+        /// Static list of leagues on the pre-populated test database. Will not change during tests
+        /// </summary>
+        public IEnumerable<LeagueEntity> Leagues => _leagues;
+        /// <summary>
+        /// Static list of members on the pre-populated test database. Will not change during tests
+        /// </summary>
+        public IEnumerable<MemberEntity> Members { get; private set; }
+        /// <summary>
+        /// Static list of seasons on the pre-populated test database. Will not change during tests
+        /// </summary>
+        public IEnumerable<SeasonEntity> Seasons { get; private set; }
+        /// <summary>
+        /// Static list of schedules on the pre-populated test database. Will not change during tests
+        /// </summary>
+        public IEnumerable<ScheduleEntity> Schedules { get; private set; }
+        /// <summary>
+        /// Static list of sessions on the pre-populated test database. Will not change during tests
+        /// </summary>
+        public IEnumerable<SessionEntity> Sessions { get; private set; }
 
         static DbTestFixture()
         {
@@ -38,7 +62,12 @@ namespace iRLeagueApiCore.UnitTests.Server
 
                 Populate(dbContext, random);
                 dbContext.SaveChanges();
+                _leagues = dbContext.Leagues.ToList();
             }
+        }
+
+        public DbTestFixture()
+        {
         }
 
         public static LeagueDbContext CreateStaticDbContext()
@@ -47,14 +76,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             var connectionString = Configuration["ConnectionStrings:ModelDb"];
 
             // use in memory database when no connection string present
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                optionsBuilder.UseInMemoryDatabase("TestDatabase");
-            }
-            else
-            {
-                optionsBuilder.UseMySQL(connectionString);
-            }
+            optionsBuilder.UseMySQL(connectionString);
 
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
             return dbContext;
@@ -191,7 +213,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             {
                 var session = new SessionEntity()
                 {
-                    Name = $"S1 Session {i}",
+                    Name = $"S1 Session {i + 1}",
                     CreatedOn = DateTime.Now,
                     CreatedByUserName = ClientUserName,
                     CreatedByUserId = ClientGuid,
@@ -202,9 +224,30 @@ namespace iRLeagueApiCore.UnitTests.Server
                         .SelectMany(x => x.TrackConfigs)
                         .Skip(i)
                         .FirstOrDefault(),
-                    SessionTitle = $"S1 Session {i}",
+                    SessionTitle = $"S1 Session {i + 1}",
+                    SessionType = (SessionTypeEnum)i + 1
                 };
                 schedule1.Sessions.Add(session);
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                var session = new SessionEntity()
+                {
+                    Name = $"S2 Session {i + 1}",
+                    CreatedOn = DateTime.Now,
+                    CreatedByUserName = ClientUserName,
+                    CreatedByUserId = ClientGuid,
+                    LastModifiedOn = DateTime.Now,
+                    LastModifiedByUserName = ClientUserName,
+                    LastModifiedByUserId = ClientGuid,
+                    Track = context.TrackGroups
+                        .SelectMany(x => x.TrackConfigs)
+                        .Skip(i)
+                        .FirstOrDefault(),
+                    SessionTitle = $"S2 Session {i + 1}",
+                    SessionType = (SessionTypeEnum)i + 1
+                };
+                schedule2.Sessions.Add(session);
             }
             context.Leagues.Add(league1);
             league1.Seasons.Add(season1);
@@ -219,7 +262,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Name = "TestLeague2",
                 NameFull = "Second League for unit testing"
             };
-            var l2season2 = new SeasonEntity()
+            var l2season1 = new SeasonEntity()
             {
                 SeasonName = "L2 Season One",
                 CreatedOn = DateTime.Now,
@@ -230,9 +273,20 @@ namespace iRLeagueApiCore.UnitTests.Server
                 LastModifiedByUserId = ClientGuid,
                 League = league1
             };
+            var l2schedule1 = new ScheduleEntity()
+            {
+                Name = "L2S1 Schedule 1",
+                CreatedOn = DateTime.Now,
+                CreatedByUserName = ClientUserName,
+                CreatedByUserId = ClientGuid,
+                LastModifiedOn = DateTime.Now,
+                LastModifiedByUserName = ClientUserName,
+                LastModifiedByUserId = ClientGuid
+            };
 
             context.Leagues.Add(league2);
-            league2.Seasons.Add(l2season2);
+            league2.Seasons.Add(l2season1);
+            l2season1.Schedules.Add(l2schedule1);
 
             GenerateMembers(context, random);
 

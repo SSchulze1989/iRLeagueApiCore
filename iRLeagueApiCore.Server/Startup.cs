@@ -1,5 +1,5 @@
-using iRLeagueApiCore.Communication;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,12 +16,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server
@@ -31,6 +33,10 @@ namespace iRLeagueApiCore.Server
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
         }
 
         public IConfiguration Configuration { get; }
@@ -41,6 +47,13 @@ namespace iRLeagueApiCore.Server
             services.Configure<IISServerOptions>(options =>
                 options.AutomaticAuthentication = false);
 
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -50,6 +63,7 @@ namespace iRLeagueApiCore.Server
                     c.AddServer(new OpenApiServer() { Url = hostUrl });
                 }
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "iRLeagueApiCore.Server", Version = "v1" });
+                c.OperationFilter<OpenApiParameterIgnoreFilter>();
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
@@ -79,9 +93,10 @@ namespace iRLeagueApiCore.Server
                         new List<string>()
                     }
                 });
-                //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                //c.IncludeXmlComments(xmlPath);
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Server.xml");
+                c.IncludeXmlComments(xmlPath);
+                xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Communication.xml");
+                c.IncludeXmlComments(xmlPath);
             });
 
             // try get connection string
@@ -118,6 +133,8 @@ namespace iRLeagueApiCore.Server
             services.AddScoped<IDbContextFactory<LeagueDbContext>, LeagueDbContextFactory>();
             services.AddScoped(x => 
                 x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
+
+            services.AddScoped<LeagueAuthorizeAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -136,8 +153,8 @@ namespace iRLeagueApiCore.Server
                 {
                     //c.SwaggerEndpoint("./v1/swagger.json", "TestDeploy v1");
                     //c.RoutePrefix = string.Empty;
-                    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
-                    c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "iRLeagueApiCore.Server v1");
+                    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "./swagger/" : "";
+                    c.SwaggerEndpoint($"{swaggerJsonBasePath}v1/swagger.json", "iRLeagueApiCore.Server v1");
                 });
             }
 

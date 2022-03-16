@@ -98,6 +98,9 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSeason.MainScoring = await dbContext.FindAsync<ScoringEntity>(putSeason.MainScoringId);
             dbSeason.Finished = putSeason.Finished;
             dbSeason.HideCommentsBeforeVoted = putSeason.HideComments;
+            dbSeason.LastModifiedOn = DateTime.Now;
+            dbSeason.LastModifiedByUserId = currentUserID;
+            dbSeason.LastModifiedByUserName = User.Identity.Name;
 
             await dbContext.SaveChangesAsync();
 
