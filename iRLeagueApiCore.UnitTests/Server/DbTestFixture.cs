@@ -300,6 +300,43 @@ namespace iRLeagueApiCore.UnitTests.Server
                 };
                 context.Set<LeagueMemberEntity>().Add(leagueMember);
             }
+
+            var members = context.Members
+                .Local
+                .ToList();
+
+            // create result
+            var scoredResult = new ScoredResultEntity();
+            var scoring = new ScoringEntity()
+            {
+                Name = "Testscoring",
+                ShowResults = true
+            };
+            scoring.ScoredResults.Add(scoredResult);
+            var result = new ResultEntity();
+            result.ScoredResults.Add(scoredResult);
+            for (int i = 0; i < 10; i++)
+            {
+                var resultRow = new ResultRowEntity()
+                {
+                    StartPosition = i + 1,
+                    FinishPosition = i + 1,
+                    Member = members.ElementAt(i),
+                };
+                var scoredResultRow = new ScoredResultRowEntity()
+                {
+                    ResultRow = resultRow,
+                    FinalPosition = i + 1,
+                    RacePoints = 10 - i,
+                    TotalPoints = 10 - i
+                };
+                result.ResultRows.Add(resultRow);
+                scoredResult.ScoredResultRows.Add(scoredResultRow);
+            }
+            season1.Scorings.Add(scoring);
+            schedule1.Sessions
+                .First()
+                .Result = result;
         }
 
         private static void GenerateMembers(LeagueDbContext context, Random random)
@@ -308,7 +345,6 @@ namespace iRLeagueApiCore.UnitTests.Server
             var maxMemberCount = 100;
 
             var memberCount = random.Next(maxMemberCount - minMemberCount + 1) + minMemberCount;
-            var members = context.Set<MemberEntity>();
 
             for (int i = 0; i < memberCount; i++)
             {
@@ -318,7 +354,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Lastname = GetRandomName(random),
                     IRacingId = GetRandomIracingId(random)
                 };
-                members.Add(member);
+                context.Members.Add(member);
             }
         }
 

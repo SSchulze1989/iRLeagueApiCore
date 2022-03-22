@@ -10,32 +10,8 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    public abstract class LeagueApiController<T> : Controller
+    public abstract class LeagueApiController : Controller
     {
-        protected ILogger<T> _logger;
-
-        protected async Task<ActionResult<long>> CheckLeagueAsync(string leagueName, LeagueDbContext dbContext)
-        {
-            var leagueInfo = (await dbContext.Leagues
-               .Select(x => new { x.LeagueId, x.Name })
-               .SingleOrDefaultAsync(x => x.Name == leagueName));
-            var leagueId = leagueInfo?.LeagueId ?? 0;
-
-            if (leagueId == 0)
-            {
-                return NotFound("League not found");
-            }
-
-            if (HasLeagueRole(User, leagueName) == false)
-            {
-                _logger.LogInformation("Permission denied for {Username} to get entry of {GetType} on {LeagueName}",
-                    User.Identity.Name, typeof(T), leagueName);
-                return Forbid();
-            }
-
-            return Ok(leagueId);
-        }
-
         protected ActionResult WrongLeague()
         {
             return StatusCode((int)HttpStatusCode.Forbidden);
