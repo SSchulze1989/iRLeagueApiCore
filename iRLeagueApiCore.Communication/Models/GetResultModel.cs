@@ -21,20 +21,45 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         public long SeasonId { get; set; }
         /// <summary>
+        /// Name of the season the result belongs to
+        /// </summary>
+        [DataMember]
+        public string SeasonName { get; set; }
+        /// <summary>
+        /// Id of the schedule the result belongs to
+        /// </summary>
+        [DataMember]
+        public long ScheduleId { get; set; }
+        /// <summary>
+        /// Name of the schedule the result belongs to
+        /// </summary>
+        [DataMember]
+        public string ScheduleName { get; set; }
+        /// <summary>
         /// Id of the session the result belongs to
         /// </summary>
         [DataMember]
         public long SessionId { get; set; }
         /// <summary>
-        /// Session details containing extended information about the iracing subsession 
+        /// Name of the session the result belongs to
         /// </summary>
         [DataMember]
-        public SimSessionDetails SessionDetails { get; set; }
+        public string SessionName { get; set; }
+        /// <summary>
+        /// Id of the scoring for this result
+        /// </summary>
+        [DataMember]
+        public long ScoringId { get; set; }
+        /// <summary>
+        /// Name of the scoring for this result
+        /// </summary>
+        [DataMember]
+        public string ScoringName { get; set; }
         /// <summary>
         /// List of entries 
         /// </summary>
         [DataMember(IsRequired = true)]
-        public GetResultRow[] ResultRows { get; set; }
+        public IEnumerable<GetResultRow> ResultRows { get; set; }
 
     }
 }

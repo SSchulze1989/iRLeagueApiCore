@@ -305,38 +305,41 @@ namespace iRLeagueApiCore.UnitTests.Server
                 .Local
                 .ToList();
 
-            // create result
-            var scoredResult = new ScoredResultEntity();
+            // create results
             var scoring = new ScoringEntity()
             {
                 Name = "Testscoring",
                 ShowResults = true
             };
-            scoring.ScoredResults.Add(scoredResult);
-            var result = new ResultEntity();
-            result.ScoredResults.Add(scoredResult);
-            for (int i = 0; i < 10; i++)
-            {
-                var resultRow = new ResultRowEntity()
-                {
-                    StartPosition = i + 1,
-                    FinishPosition = i + 1,
-                    Member = members.ElementAt(i),
-                };
-                var scoredResultRow = new ScoredResultRowEntity()
-                {
-                    ResultRow = resultRow,
-                    FinalPosition = i + 1,
-                    RacePoints = 10 - i,
-                    TotalPoints = 10 - i
-                };
-                result.ResultRows.Add(resultRow);
-                scoredResult.ScoredResultRows.Add(scoredResultRow);
-            }
             season1.Scorings.Add(scoring);
-            schedule1.Sessions
-                .First()
-                .Result = result;
+
+            foreach (var session in league1.Seasons.SelectMany(x => x.Schedules).SelectMany(x => x.Sessions))
+            {
+                var scoredResult = new ScoredResultEntity();
+                scoring.ScoredResults.Add(scoredResult);
+                var result = new ResultEntity();
+                result.ScoredResults.Add(scoredResult);
+                for (int i = 0; i < 10; i++)
+                {
+                    var resultRow = new ResultRowEntity()
+                    {
+                        StartPosition = i + 1,
+                        FinishPosition = i + 1,
+                        Member = members.ElementAt(i),
+                    };
+                    var scoredResultRow = new ScoredResultRowEntity()
+                    {
+                        ResultRow = resultRow,
+                        FinalPosition = i + 1,
+                        RacePoints = 10 - i,
+                        TotalPoints = 10 - i
+                    };
+                    result.ResultRows.Add(resultRow);
+                    scoredResult.ScoredResultRows.Add(scoredResultRow);
+                }
+                scoring.Sessions.Add(session);
+                session.Result = result;
+            }
         }
 
         private static void GenerateMembers(LeagueDbContext context, Random random)

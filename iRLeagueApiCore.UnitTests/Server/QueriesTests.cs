@@ -25,6 +25,8 @@ namespace iRLeagueApiCore.UnitTests.Server
         {
             using (var context = Fixture.CreateDbContext())
             {
+                const long testSeasonId = 1;
+
                 // query results by season id
                 var query = context.ScoredResults
                     .Select(result => new GetResultModel()
@@ -32,10 +34,6 @@ namespace iRLeagueApiCore.UnitTests.Server
                         LeagueId = result.LeagueId,
                         SeasonId = result.Result.Session.Schedule.SeasonId,
                         SessionId = result.ResultId,
-                        SessionDetails = new SimSessionDetails()
-                        {
-                            TrackName = result.Result.IRSimSessionDetails.TrackName
-                        },
                         ResultRows = result.ScoredResultRows
                             .Select(row => new GetResultRow()
                             {
@@ -43,17 +41,17 @@ namespace iRLeagueApiCore.UnitTests.Server
                                 Lastname = row.ResultRow.Member.Lastname,
                                 TeamName = row.ResultRow.Team.Name
                             }).ToArray(),
-                    });
+                    })
+                    .Where(x => x.SeasonId == testSeasonId);
                 var sql = query.ToQueryString();
                 var results = await query.ToListAsync();
 
                 Assert.NotNull(results);
-                Assert.Single(results);
-                var result = results.First();
+                var result = results.FirstOrDefault();
+                Assert.NotNull(result);
                 Assert.Equal(1, result.LeagueId);
                 Assert.Equal(1, result.SeasonId);
                 Assert.Equal(1, result.SessionId);
-                Assert.NotNull(result.SessionDetails);
                 Assert.Equal(10, result.ResultRows.Count());
                 var row = result.ResultRows.First();
                 Assert.NotNull(row.Firstname);
