@@ -1,13 +1,13 @@
 name: .NET
 
 on:
-  pull_request:
-    branches: [ develop ]
+  push:
+    branches: [ main ]
 
 jobs:
-  build:
+  publish:
     env:
-      BUILD_CONFIG: Debug
+      BUILD_CONFIG: Release
       TEST_USER: root
       TEST_PASSWORD: TestPass123
       TEST_DATABASE: TestDatabase
@@ -37,3 +37,5 @@ jobs:
       run: dotnet build -c $BUILD_CONFIG --no-restore
     - name: Test
       run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
+    - name: Publish
+      run: dotnet nuget push **\*.nupkg --skip-duplicate
