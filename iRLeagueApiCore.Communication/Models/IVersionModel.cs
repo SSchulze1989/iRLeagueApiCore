@@ -7,19 +7,8 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
 {
-    [DataContract]
-    public class GetSeasonModel : PutSeasonModel, IVersionModel
+    public interface IVersionModel
     {
-        [DataMember]
-        public long LeagueId { get; set; }
-        [DataMember]
-        public DateTime? SeasonStart { get; set; }
-        [DataMember]
-        public DateTime? SeasonEnd { get; set; }
-        [DataMember]
-        public IEnumerable<long> ScheduleIds { get; set; }
-
-        #region version
         /// <summary>
         /// Date of creation
         /// </summary>
@@ -50,6 +39,5 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
         public string LastModifiedByUserName { get; set; }
-        #endregion
     }
 }

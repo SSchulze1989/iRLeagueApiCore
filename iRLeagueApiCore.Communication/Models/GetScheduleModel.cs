@@ -8,16 +8,12 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Communication.Models
 {
     [DataContract]
-    public class GetSeasonModel : PutSeasonModel, IVersionModel
+    public class GetScheduleModel : PutScheduleModel, IVersionModel
     {
         [DataMember]
         public long LeagueId { get; set; }
         [DataMember]
-        public DateTime? SeasonStart { get; set; }
-        [DataMember]
-        public DateTime? SeasonEnd { get; set; }
-        [DataMember]
-        public IEnumerable<long> ScheduleIds { get; set; }
+        public IEnumerable<long> SessionIds { get; set; }
 
         #region version
         /// <summary>

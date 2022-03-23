@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Communication.Models
 {
     [DataContract]
-    public class PutLeagueModel
+    public class PutScheduleModel
     {
         [DataMember]
-        public long LeagueId { get; set; }
+        public long ScheduleId { get; set; }
+        [DataMember]
+        public long SeasonId { get; set; }
         [DataMember]
         public string Name { get; set; }
-        [DataMember]
-        public string NameFull { get; set; }
     }
 }

@@ -8,12 +8,10 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Communication.Models
 {
     [DataContract]
-    public class PutSeasonModel : VersionModel
+    public class PutSeasonModel
     {
         [DataMember]
         public long SeasonId { get; set;}
-        [DataMember]
-        public long LeagueId { get; set;}
         [DataMember]
         public string SeasonName { get; set;}
         [DataMember]
