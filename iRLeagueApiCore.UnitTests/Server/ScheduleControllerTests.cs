@@ -32,7 +32,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testScheduleId = 1;
                 const string testScheduleName = "S1 Schedule";
 
-                var controller = Fixture.AddControllerContext(new ScheduleController());
+                var controller = Fixture.AddControllerContext(new SchedulesController());
                 var result = (await controller.Get(testLeagueName, new long[] { testScheduleId }, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -56,7 +56,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const string testScheduleName = "S1 Schedule 2";
                 const long testSeasonId = 1;
 
-                var controller = Fixture.AddControllerContext(new ScheduleController());
+                var controller = Fixture.AddControllerContext(new SchedulesController());
                 var putSchedule = new PutScheduleModel()
                 {
                     SeasonId = testSeasonId,
@@ -84,7 +84,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const string testScheduleName = "L2S1 Schedule 1";
                 const long testSeasonId = 1;
 
-                var controller = Fixture.AddControllerContext(new ScheduleController());
+                var controller = Fixture.AddControllerContext(new SchedulesController());
                 var putSchedule = new PutScheduleModel()
                 {
                     SeasonId = testSeasonId,
@@ -120,7 +120,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     .Select(x => x.Schedules.Count)
                     .First();
 
-                var controller = Fixture.AddControllerContext(new ScheduleController());
+                var controller = Fixture.AddControllerContext(new SchedulesController());
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
@@ -163,7 +163,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     .Select(x => x.Schedules.Count)
                     .First() + 1;
 
-                var controller = Fixture.AddControllerContext(new ScheduleController());
+                var controller = Fixture.AddControllerContext(new SchedulesController());
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
@@ -196,7 +196,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const string testLeagueName = "TestLeague1";
                 const long testScheduleId = 1;
 
-                var controller = Fixture.AddControllerContextWithoutLeagueRole(new ScheduleController());
+                var controller = Fixture.AddControllerContextWithoutLeagueRole(new SchedulesController());
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
@@ -218,7 +218,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const string testLeagueName = "TestLeague";
                 const long testScheduleId = 1;
 
-                var controller = Fixture.AddControllerContext(new ScheduleController());
+                var controller = Fixture.AddControllerContext(new SchedulesController());
                 var result = (await controller.Delete(testLeagueName, testScheduleId, dbContext));
 
                 Assert.IsType<OkResult>(result);

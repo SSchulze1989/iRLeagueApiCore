@@ -23,11 +23,11 @@ namespace iRLeagueApiCore.Server.Controllers
     [Authorize]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
     [Route("{leagueName}/[controller]")]
-    public class SessionController : LeagueApiController
+    public class SessionsController : LeagueApiController
     {
-        private readonly ILogger<SessionController> _logger;
+        private readonly ILogger<SessionsController> _logger;
 
-        public SessionController(ILogger<SessionController> logger)
+        public SessionsController(ILogger<SessionsController> logger)
         {
             _logger = logger;
         }

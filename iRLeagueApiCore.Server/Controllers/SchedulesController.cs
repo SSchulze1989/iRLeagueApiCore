@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Route("{leagueName}/[controller]")]
     [Authorize]
-    public class ScheduleController : LeagueApiController
+    public class SchedulesController : LeagueApiController
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)

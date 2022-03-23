@@ -15,11 +15,11 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Route("/{leagueName}/Result")]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
-    public class ResultController : LeagueApiController
+    public class ResultsController : LeagueApiController
     {
-        private readonly ILogger<ResultController> _logger;
+        private readonly ILogger<ResultsController> _logger;
 
-        public ResultController(ILogger<ResultController> logger)
+        public ResultsController(ILogger<ResultsController> logger)
         {
             _logger = logger;
         }
