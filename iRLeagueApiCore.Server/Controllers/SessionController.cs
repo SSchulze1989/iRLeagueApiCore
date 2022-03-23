@@ -39,12 +39,12 @@ namespace iRLeagueApiCore.Server.Controllers
             LeagueId = x.LeagueId,
             PracticeAttached = x.PracticeAttached ?? false,
             QualyAttached = x.QualyAttached ?? false,
-            PracticeLength = x.PracticeLength != null ? x.PracticeLength.Value.TotalSeconds : null,
-            QualyLength = x.QualyLength != null ? x.QualyLength.Value.TotalSeconds : null,
+            PracticeLength = x.PracticeLength,
+            QualyLength = x.QualyLength,
             Date = x.Date,
-            Duration = x.Duration.TotalSeconds,
+            Duration = x.Duration,
             Laps = x.Laps ?? 0,
-            RaceLength = x.RaceLength != null ? x.RaceLength.Value.TotalSeconds : null,
+            RaceLength = x.RaceLength,
             Name = x.Name,
             SessionTitle = x.SessionTitle,
             SessionType = x.SessionType,
@@ -177,14 +177,14 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             dbSession.Date = putSession.Date;
-            dbSession.Duration = TimeSpan.FromSeconds(putSession.Duration);
+            dbSession.Duration = putSession.Duration;
             dbSession.Laps = putSession.Laps;
             dbSession.Name = putSession.Name;
             dbSession.PracticeAttached = putSession.PracticeAttached;
-            dbSession.PracticeLength = putSession.PracticeLength != null ? TimeSpan.FromSeconds(putSession.PracticeLength.Value) : null;
+            dbSession.PracticeLength = putSession.PracticeLength.Value;
             dbSession.QualyAttached = putSession.QualyAttached;
-            dbSession.QualyLength = putSession.QualyLength != null ? TimeSpan.FromSeconds(putSession.QualyLength.Value) : null;
-            dbSession.RaceLength = putSession.RaceLength != null ? TimeSpan.FromSeconds(putSession.RaceLength.Value) : null;
+            dbSession.QualyLength = putSession.QualyLength.Value;
+            dbSession.RaceLength = putSession.RaceLength.Value;
             dbSession.SessionTitle = putSession.SessionTitle;
             dbSession.SessionType = putSession.SessionType;
             dbSession.SubSessionNr = putSession.SubSessionNr;

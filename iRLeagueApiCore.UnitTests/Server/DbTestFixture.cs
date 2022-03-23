@@ -326,6 +326,10 @@ namespace iRLeagueApiCore.UnitTests.Server
                         StartPosition = i + 1,
                         FinishPosition = i + 1,
                         Member = members.ElementAt(i),
+                        QualifyingTime = GetTimeSpan(random).Ticks,
+                        FastestLapTime = GetTimeSpan(random).Ticks,
+                        AvgLapTime = GetTimeSpan(random).Ticks,
+                        Interval = GetTimeSpan(random).Ticks
                     };
                     var scoredResultRow = new ScoredResultRowEntity()
                     {
@@ -342,6 +346,10 @@ namespace iRLeagueApiCore.UnitTests.Server
             }
         }
 
+        private static TimeSpan GetTimeSpan(Random random)
+        {
+            return new TimeSpan(0, 1, 2, 34, 567);
+        }
         private static void GenerateMembers(LeagueDbContext context, Random random)
         {
             var minMemberCount = 50;
