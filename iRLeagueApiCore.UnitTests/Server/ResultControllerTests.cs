@@ -16,7 +16,7 @@ namespace iRLeagueApiCore.UnitTests.Server
     {
         private DbTestFixture Fixture { get; }
 
-        ILogger<ResultController> MockLogger => new Mock<ILogger<ResultController>>().Object;
+        ILogger<ResultsController> MockLogger => new Mock<ILogger<ResultsController>>().Object;
 
         public ResultControllerTests(DbTestFixture fixture)
         {
@@ -32,7 +32,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testLeagueId = 1;
                 const long testResultId = 1;
 
-                var controller = Fixture.AddControllerContext(new ResultController(MockLogger));
+                var controller = Fixture.AddControllerContext(new ResultsController(MockLogger));
                 var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testResultId },
                     dbContext)).Result;
 

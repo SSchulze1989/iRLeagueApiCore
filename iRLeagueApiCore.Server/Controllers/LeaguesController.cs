@@ -18,7 +18,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class LeagueController : Controller
+    public class LeaguesController : Controller
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)

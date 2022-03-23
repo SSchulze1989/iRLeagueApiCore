@@ -15,11 +15,11 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Route("/{leagueName}/Result")]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
-    public class ResultController : LeagueApiController
+    public class ResultsController : LeagueApiController
     {
-        private readonly ILogger<ResultController> _logger;
+        private readonly ILogger<ResultsController> _logger;
 
-        public ResultController(ILogger<ResultController> logger)
+        public ResultsController(ILogger<ResultsController> logger)
         {
             _logger = logger;
         }
@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
             ScoringName = result.Scoring.Name,
             SessionId = result.ResultId,
             SessionName = result.Result.Session.Name,
-            ResultRows = result.ScoredResultRows.Select(row => new GetResultRow()
+            ResultRows = result.ScoredResultRows.Select(row => new GetResultRowModel()
             {
                 MemberId = row.ResultRow.MemberId,
                 Interval = new TimeSpan(row.ResultRow.Interval),
@@ -71,11 +71,13 @@ namespace iRLeagueApiCore.Server.Controllers
                 OldLicenseLevel = row.ResultRow.OldLicenseLevel,
                 OldSafetyRating = row.ResultRow.OldSafetyRating,
                 PositionChange = row.ResultRow.PositionChange,
-                QualifyingTime = row.ResultRow.QualifyingTime,
+                QualifyingTime = new TimeSpan(row.ResultRow.QualifyingTime),
                 SeasonStartIrating = row.ResultRow.SeasonStartIrating,
                 Status = row.ResultRow.Status,
                 TeamId = row.TeamId
             }),
+            CreatedOn = result.CreatedOn,
+            LastModifiedOn = result.LastModifiedOn
         };
 
         [HttpGet]

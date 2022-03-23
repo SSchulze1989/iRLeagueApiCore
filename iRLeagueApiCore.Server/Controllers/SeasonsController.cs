@@ -14,7 +14,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Authorize]
     [Route("{leagueName}/[controller]")]
-    public class SeasonController : Controller
+    public class SeasonsController : Controller
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetSeasonModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)

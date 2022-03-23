@@ -27,7 +27,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = new LeagueController();
+                var controller = new LeaguesController();
                 var result = (await controller.Get(new long[] { 1 }, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -44,7 +44,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var dbContext = Fixture.CreateDbContext())
             {
                 const int testLeagueId = 3;
-                var controller = Fixture.AddControllerContext(new LeagueController());
+                var controller = Fixture.AddControllerContext(new LeaguesController());
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -66,7 +66,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddControllerContext(new LeagueController());
+                var controller = Fixture.AddControllerContext(new LeaguesController());
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -99,7 +99,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddControllerContext(new LeagueController());
+                var controller = Fixture.AddControllerContext(new LeaguesController());
 
                 var putLeague = new PutLeagueModel()
                 {
