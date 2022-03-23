@@ -46,6 +46,17 @@ namespace iRLeagueApiCore.Server
         {
             services.Configure<IISServerOptions>(options =>
                 options.AutomaticAuthentication = false);
+	
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                         builder.WithOrigins("*ireleaguemanager.net*")
+                             .AllowAnyHeader()
+                             .AllowAnyMethod();
+                    });
+            });
 
             services.AddMvc()
                 .AddJsonOptions(options =>
@@ -57,10 +68,14 @@ namespace iRLeagueApiCore.Server
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                var hostUrl = Configuration["ASPNETCORE_HOSTURL"];
-                if (hostUrl != null)
+                var readHostUrls = Configuration["ASPNETCORE_HOSTURLS"];
+                if (readHostUrls != null)
                 {
-                    c.AddServer(new OpenApiServer() { Url = hostUrl });
+		            var hostUrls = readHostUrls.Split(';');
+                    foreach(var hostUrl in hostUrls)
+		            {
+		                c.AddServer(new OpenApiServer() { Url = hostUrl });
+		            }
                 }
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "iRLeagueApiCore.Server", Version = "v1" });
                 c.OperationFilter<OpenApiParameterIgnoreFilter>();
@@ -144,6 +159,8 @@ namespace iRLeagueApiCore.Server
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            app.UseCors();
 
             if (env.IsDevelopment())
             {
