@@ -181,10 +181,10 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSession.Laps = putSession.Laps;
             dbSession.Name = putSession.Name;
             dbSession.PracticeAttached = putSession.PracticeAttached;
-            dbSession.PracticeLength = putSession.PracticeLength.Value;
+            dbSession.PracticeLength = putSession.PracticeLength;
             dbSession.QualyAttached = putSession.QualyAttached;
-            dbSession.QualyLength = putSession.QualyLength.Value;
-            dbSession.RaceLength = putSession.RaceLength.Value;
+            dbSession.QualyLength = putSession.QualyLength;
+            dbSession.RaceLength = putSession.RaceLength;
             dbSession.SessionTitle = putSession.SessionTitle;
             dbSession.SessionType = putSession.SessionType;
             dbSession.SubSessionNr = putSession.SubSessionNr;
