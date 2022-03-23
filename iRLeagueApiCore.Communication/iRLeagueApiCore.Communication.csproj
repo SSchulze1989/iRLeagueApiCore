@@ -24,7 +24,7 @@
 		<OutputType>Library</OutputType>
 		<TargetFramework>net5.0</TargetFramework>
 		<PackageId>iRLeagueApiCore.Communication</PackageId>
-		<Version>0.0.1</Version>
+		<Version>0.0.2</Version>
 		<Authors>Simon Schulze</Authors>
 		<Company>Simon Schulze</Company>
 		<PackageDescription>This package contains shared objects for all members of the iRLeagueDatabase-iRLeagueApi stack</PackageDescription>

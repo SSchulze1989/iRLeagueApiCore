@@ -23,12 +23,15 @@ namespace iRLeagueApiCore.Server.Controllers
     [Authorize]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
     [Route("{leagueName}/[controller]")]
-    public class SessionController : LeagueApiController<SessionController>
-    {        
+    public class SessionController : LeagueApiController
+    {
+        private readonly ILogger<SessionController> _logger;
+
         public SessionController(ILogger<SessionController> logger)
         {
             _logger = logger;
         }
+
         private static Expression<Func<SessionEntity, GetSessionModel>> GetSessionModelFromDbExpression { get; } = x => new GetSessionModel()
         {
             SessionId = x.SessionId,
@@ -49,7 +52,7 @@ namespace iRLeagueApiCore.Server.Controllers
             ParentSessionId = x.ParentSessionId,
             SubSessionNr = x.SubSessionNr,
             TrackId = x.TrackId,
-            HasResult = x.ResultEntity != null,
+            HasResult = x.Result != null,
             CreatedOn = x.CreatedOn,
             CreatedByUserId = x.CreatedByUserId,
             CreatedByUserName = x.CreatedByUserName,
