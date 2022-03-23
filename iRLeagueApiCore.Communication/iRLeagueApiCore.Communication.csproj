@@ -29,6 +29,7 @@
 		<Company>Simon Schulze</Company>
 		<PackageDescription>This package contains shared objects for all members of the iRLeagueDatabase-iRLeagueApi stack</PackageDescription>
 		<RepositoryUrl>https://github.com/SSchulze1989/iRLeagueApiCore</RepositoryUrl>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 </Project>

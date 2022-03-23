@@ -1,13 +1,13 @@
 name: .NET
 
 on:
-  pull_request:
-    branches: [ develop ]
+  push:
+    branches: [ main ]
 
 jobs:
   build:
     env:
-      BUILD_CONFIG: Debug
+      BUILD_CONFIG: Release
       TEST_USER: root
       TEST_PASSWORD: TestPass123
       TEST_DATABASE: TestDatabase
