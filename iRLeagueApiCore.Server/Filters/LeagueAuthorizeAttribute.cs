@@ -28,31 +28,13 @@ namespace iRLeagueApiCore.Server.Filters
                 _logger.LogError("Failed to authorize league: could not find {leagueName} in route values");
                 throw new InvalidOperationException("Missing {leagueName} in action route");
             }
-            if (context.ActionArguments.TryGetValue("dbContext", out var dbContextObject) == false)
-            {
-                _logger.LogError("Failed to authorize league: could not find 'dbContext' in action arguments");
-                throw new InvalidOperationException("Missing 'dbContext' in action arguments");
-            }
             var leagueName = (string)leagueNameObject;
-            var dbContext = (LeagueDbContext)dbContextObject;
 
             // get user from httpcontext
             var user = context.HttpContext.User;
             var userName = user.Identity.IsAuthenticated ? user.Identity.Name : "Anonymous";
 
             _logger.LogInformation("Authorizing request for {UserName} on {leagueName}", userName, leagueName);
-
-            var league = await dbContext.Leagues
-                .Select(x => new { x.LeagueId, x.Name })
-                .SingleOrDefaultAsync(x => x.Name == leagueName);
-            var leagueId = league?.LeagueId ?? 0;
-
-            if (leagueId == 0)
-            {
-                _logger.LogInformation("League {LeagueName} not found in database", leagueName);
-                context.Result = new NotFoundResult();
-                return;
-            }
 
             if (user == null || user.Identity.IsAuthenticated == false)
             {
@@ -61,23 +43,44 @@ namespace iRLeagueApiCore.Server.Filters
                 return;
             }
 
-            if (HasLeagueRole(user, leagueName) == false)
+            // check if specific league role required
+            var requireLeagueRoleAttribute = (RequireLeagueRolesAttribute)context.ActionDescriptor.EndpointMetadata
+                .SingleOrDefault(x => x.GetType() == typeof(RequireLeagueRolesAttribute));
+
+            if (requireLeagueRoleAttribute?.Roles.Count() > 0)
             {
-                _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in league role", user.Identity.Name, leagueName);
+                var hasRole = requireLeagueRoleAttribute.Roles
+                    .Any(x => HasLeagueRole(user, leagueName, x));
+
+                if (hasRole == false)
+                {
+                    _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any required role {Roles}", 
+                        user.Identity.Name, leagueName, requireLeagueRoleAttribute.Roles);
+                    context.Result = new ForbidResult();
+                    return;
+                }
+            }
+            else if (HasAnyLeagueRole(user, leagueName) == false)
+            {
+                _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any league role", user.Identity.Name, leagueName);
                 context.Result = new ForbidResult();
                 return;
             }
 
-            context.ActionArguments.Add("leagueId", leagueId);
-
             await base.OnActionExecutionAsync(context, next);
         }
 
-        private bool HasLeagueRole(IPrincipal user, string leagueName)
+        private bool HasAnyLeagueRole(IPrincipal user, string leagueName)
         {
-            var leagueUserRole = $"{leagueName.ToLower()}_{UserRoles.User}";
-            var leagueAdminRole = $"{leagueName.ToLower()}_{UserRoles.Admin}";
-            return user.IsInRole(leagueUserRole) || user.IsInRole(leagueAdminRole) || user.IsInRole(UserRoles.Admin);
+            foreach(var role in LeagueRoles.RolesAvailable)
+            {
+                var leagueRole = $"{leagueName.ToLower()}_{role}";
+                if (user.IsInRole(leagueRole))
+                {
+                    return true;
+                }
+            }
+            return user.IsInRole(UserRoles.Admin);
         }
 
         private bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)

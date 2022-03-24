@@ -64,6 +64,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [InsertLeagueId]
         public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {            
             IQueryable<SessionEntity> dbSessions = dbContext.Sessions
@@ -87,6 +88,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
     
         [HttpPut]
+        [InsertLeagueId]
         public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] PutSessionModel putSession, [FromServices] LeagueDbContext dbContext)
         {
             var dbSession = await dbContext.Sessions
@@ -202,6 +204,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
     
         [HttpDelete]
+        [InsertLeagueId]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Request to delete Session {SessionId} from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
