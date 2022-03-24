@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Server.Authentication;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,16 +13,39 @@ namespace iRLeagueApiCore.Server.Controllers
 {
     public abstract class LeagueApiController : Controller
     {
+        /// <summary>
+        /// Returns a generic "something went wrong" error message in case the error
+        /// should not be forwarded to the user
+        /// </summary>
+        /// <returns></returns>
+        protected ActionResult SomethingWentWrong()
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response()
+            {
+                Status = "Error",
+                Message = "Something went wrong. Please try again to see if the error persists"
+            });
+        }
+
+        protected ActionResult OkMessage(string message)
+        {
+            return new OkObjectResult(new Response()
+            {
+                Status = "Success",
+                Message = message
+            });
+        }
+
         protected ActionResult WrongLeague()
         {
-            return StatusCode((int)HttpStatusCode.Forbidden);
+            return StatusCode(StatusCodes.Status403Forbidden);
         }
 
         protected ObjectResult WrongLeague(string message)
         {
-            return StatusCode((int)HttpStatusCode.Forbidden, new
+            return StatusCode(StatusCodes.Status403Forbidden, new Response()
             {
-                Error = "Wrong league",
+                Status = "Wrong league",
                 Message = message
             });
         }
