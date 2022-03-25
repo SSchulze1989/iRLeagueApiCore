@@ -50,7 +50,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            var getSchedule = await dbSchedules
+            var getSchedules = await dbSchedules
                 .Select(x => new GetScheduleModel()
                 {
                     ScheduleId = x.ScheduleId,
@@ -66,9 +66,9 @@ namespace iRLeagueApiCore.Server.Controllers
                 })
                 .ToListAsync();
 
-            _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedule.Count(), 
+            _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedules.Count(), 
                 leagueName, ids);
-            return Ok(getSchedule);
+            return Ok(getSchedules);
         }
 
         [HttpPut]
@@ -100,7 +100,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             else if (dbSchedule.LeagueId != leagueId)
             {
-                _logger.LogInformation("Schedule {ScheduleId} belongs to another league");
+                _logger.LogInformation("Schedule {ScheduleId} belongs to another league", putSchedule.ScheduleId);
                 return BadRequestMessage("Schedule not found", $"No schedule with id {putSchedule.ScheduleId} could be found");
             }
 
@@ -119,7 +119,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 }
                 if (leagueId != season.LeagueId)
                 {
-                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} not does not belong to league {LeagueName}", 
+                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} does not belong to league {LeagueName}", 
                         putSchedule.ScheduleId, putSchedule.SeasonId, leagueName);
                     return WrongLeague($"Season with id:{putSchedule.SeasonId} does not belong to the specified league");
                 }

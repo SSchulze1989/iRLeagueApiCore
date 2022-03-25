@@ -33,7 +33,7 @@ namespace iRLeagueApiCore.Server.Controllers
             _logger = logger;
         }
 
-        private static Expression<Func<SessionEntity, GetSessionModel>> GetSessionModelFromDbExpression { get; } = x => new GetSessionModel()
+        private static Expression<Func<SessionEntity, GetSessionModel>> MapToSessionModelExpr { get; } = x => new GetSessionModel()
         {
             SessionId = x.SessionId,
             ScheduleId = x.ScheduleId,
@@ -66,7 +66,10 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         [InsertLeagueId]
         public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
-        {            
+        {
+            _logger.LogInformation("Get sessions from {LeagueName} for ids {SessionIds} by {UserName}", leagueName, ids,
+                User.Identity.Name);
+
             IQueryable<SessionEntity> dbSessions = dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId);
 
@@ -77,14 +80,17 @@ namespace iRLeagueApiCore.Server.Controllers
 
             if (dbSessions.Count() == 0)
             {
+                _logger.LogInformation("No sessions found in {LeagueName} for ids {SessionIds}", leagueName, ids);
                 return NotFound();
             }
 
-            var getSession = await dbSessions
-                .Select(GetSessionModelFromDbExpression)
+            var getSessions = await dbSessions
+                .Select(MapToSessionModelExpr)
                 .ToListAsync();
 
-            return Ok(getSession);
+            _logger.LogInformation("Return {Count} session entries from {LeagueName} for ids {SessionIds}", getSessions.Count(),
+                leagueName, ids);
+            return Ok(getSessions);
         }
     
         [HttpPut]
@@ -92,6 +98,9 @@ namespace iRLeagueApiCore.Server.Controllers
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] PutSessionModel putSession, [FromServices] LeagueDbContext dbContext)
         {
+            _logger.LogInformation("Put session data on {LeagueName} with id {SessionId} by {UserName}", leagueName,
+                putSession.SessionId, User.Identity.Name);
+
             var dbSession = await dbContext.Sessions
                 .SingleOrDefaultAsync(x => x.SessionId == putSession.SessionId);
 
@@ -100,6 +109,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             if (dbSession == null)
             {
+                _logger.LogInformation("Create session {SessionName}", putSession.Name);
                 dbSession = new SessionEntity()
                 {
                     LeagueId = leagueId,
@@ -111,12 +121,14 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             else if (dbSession.LeagueId != leagueId)
             {
-                return WrongLeague();
+                _logger.LogInformation("Session {SessionId} belongs to another league", putSession.SessionId);
+                return BadRequestMessage("Session not found", $"No session with id {putSession.ScheduleId} could be found");
             }
 
             // update schedule if changed
             if (dbSession.ScheduleId != putSession.ScheduleId)
             {
+                _logger.LogInformation("Move session {SessionId} to schedule {ScheduleId}", putSession.SessionId, putSession.ScheduleId);
                 if (putSession.ScheduleId == null)
                 {
                     dbContext.Entry(dbSession)
@@ -136,10 +148,13 @@ namespace iRLeagueApiCore.Server.Controllers
 
                     if (schedule == null)
                     {
+                        _logger.LogInformation("Failed to move session {SessionId}: schedule {ScheduleId} not found", putSession.SessionId, putSession.ScheduleId);
                         return BadRequest($"No schedule with id:{putSession.ScheduleId} found");
                     }
                     if (leagueId != schedule.LeagueId)
                     {
+                        _logger.LogInformation("Failed to move session {SessionId}: schedule {ScheduleId} does not belong to league {LeagueName}",
+                            putSession.SessionId, putSession.ScheduleId, leagueName);
                         return WrongLeague($"Schedule with id:{putSession.ScheduleId} does not belong to the specified league");
                     }
 
@@ -150,6 +165,7 @@ namespace iRLeagueApiCore.Server.Controllers
             // update parent session if changed
             if (dbSession.ParentSessionId != putSession.ParentSessionId)
             {
+                _logger.LogInformation("Move session {SessionId} to parent session {ParentSessionId}", putSession.SessionId, putSession.ParentSessionId);
                 if (putSession.ParentSessionId == null)
                 {
                     await dbContext.Entry(dbSession)
@@ -164,14 +180,18 @@ namespace iRLeagueApiCore.Server.Controllers
 
                     if (parentSession == null)
                     {
+                        _logger.LogInformation("Failed to move session {SessionId}: parent session {ParentSessionId} not found", putSession.SessionId, putSession.ParentSessionId);
                         return BadRequest($"No session with id:{putSession.ParentSessionId} found");
                     }
                     if (parentSession == dbSession)
                     {
+                        _logger.LogInformation("Failed to move session {SessionId}: parent session is same as child session", putSession.SessionId, putSession.ParentSessionId);
                         return BadRequest($"Parent session is same as entry id:{putSession.ParentSessionId}");
                     }
                     if (parentSession.LeagueId != leagueId)
                     {
+                        _logger.LogInformation("Failed to move session {SessionId}: parent session {ParentSessionId} does not belong to league {LeagueName}",
+                            putSession.SessionId, putSession.ParentSessionId, leagueName);
                         return WrongLeague($"Session with id:{parentSession.SessionId} does not belong to the specified league");
                     }
 
@@ -196,11 +216,15 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSession.LastModifiedByUserName = User.Identity.Name;
 
             await dbContext.SaveChangesAsync();
+            _logger.LogInformation("Written session data on {LeagueName} for session {SessionId} by {UserName}", leagueName,
+                dbSession.SessionId, User.Identity.Name);
 
             var getSession = await dbContext.Sessions
-                .Select(GetSessionModelFromDbExpression)
+                .Select(MapToSessionModelExpr)
                 .SingleAsync(x => x.SessionId == dbSession.SessionId);
 
+            _logger.LogInformation("Return session entry from {LeagueName} for session id {SessionId}", leagueName,
+                getSession.SessionId);
             return Ok(getSession);
         }
     
