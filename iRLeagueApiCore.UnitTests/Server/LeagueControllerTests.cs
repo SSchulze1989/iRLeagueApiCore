@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Controllers;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -113,6 +114,29 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.IsNotType<OkObjectResult>(result);
                 Assert.IsNotType<OkResult>(result);
                 Assert.Null(dbContext.Leagues.SingleOrDefault(x => x.Name == putLeague.Name));
+            }
+        }
+
+        [Fact]
+        public async Task CreateLeagueNameExists()
+        {
+            const string testLeagueName = "tEstlEague"; // Test with an existing name but change upper case letters
+
+            using (var tx = new TransactionScope())
+            using (var dbContext = Fixture.CreateDbContext())
+            {
+                var controller = Fixture.AddAdminControllerContext(new LeaguesController());
+
+                var putLeague = new PutLeagueModel()
+                {
+                    Name = testLeagueName,
+                    NameFull = "League with existing name should fail"
+                };
+                var result = (await controller.Put(putLeague, dbContext));
+
+                var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
+                var response = Assert.IsType<ResultResponse>(badRequest.Value);
+                Assert.Equal("League exists", response.Result);
             }
         }
     }

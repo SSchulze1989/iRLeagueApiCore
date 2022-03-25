@@ -17,7 +17,7 @@ namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class LeaguesController : Controller
+    public class LeaguesController : LeagueApiController
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
@@ -67,7 +67,14 @@ namespace iRLeagueApiCore.Server.Controllers
                 // validate leaguename
                 if (Regex.IsMatch(putLeague.Name, "^[a-zA-Z0-9_-]*$") == false)
                 {
-                    return BadRequest($"Invalid league name. League names may only contain the following characters: a-z A-Z 0-9 _ -");
+                    return BadRequestMessage("Invalid name", "League names may only contain the following characters: a-z A-Z 0-9 _ -");
+                }
+
+                // check if league with same name exists
+                if (await dbContext.Leagues
+                    .AnyAsync(x => x.Name == putLeague.Name))
+                {
+                    return BadRequestMessage("League exists", "A league with the same name exists already and cannot be created");
                 }
 
                 dbLeague = new LeagueEntity();
@@ -85,7 +92,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             if (dbLeague == null)
             {
-                return BadRequest();
+                return SomethingWentWrong();
             }
 
             var getLeague = new GetLeagueModel();
