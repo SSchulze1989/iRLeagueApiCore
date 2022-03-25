@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         /// Load all required data for the result through a single query
         /// </summary>
         [Fact]
-        public async void TestGetResultQuery()
+        public async void GetResultQuery()
         {
             using (var context = Fixture.CreateDbContext())
             {
@@ -35,7 +36,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                         SeasonId = result.Result.Session.Schedule.SeasonId,
                         SessionId = result.ResultId,
                         ResultRows = result.ScoredResultRows
-                            .Select(row => new GetResultRow()
+                            .Select(row => new GetResultRowModel()
                             {
                                 Firstname = row.ResultRow.Member.Firstname,
                                 Lastname = row.ResultRow.Member.Lastname,

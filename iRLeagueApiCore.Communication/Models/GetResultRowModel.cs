@@ -1,14 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using iRLeagueApiCore.Communication.Converters;
 
 namespace iRLeagueApiCore.Communication.Models
 {
     /// <summary>
-    /// Single row entry in a session result
+    /// Get a scored result row from the database
     /// </summary>
-    [DataContract]
-    public class PutResultRowModel
+    public class GetResultRowModel
     {
+        /// <summary>
+        /// First name of the driver
+        /// </summary>
+        public string Firstname { get; set; }
+        /// <summary>
+        /// Last name of the driver
+        /// </summary>
+        public string Lastname { get; set; }
+        /// <summary>
+        /// Team name of the drivers team (or team result)
+        /// </summary>
+        public string TeamName { get; set; }
         /// <summary>
         /// Posiion at start of race session (equal to qually result when using attached qualifying)
         /// </summary>
@@ -73,7 +90,7 @@ namespace iRLeagueApiCore.Communication.Models
         /// Time set in qualifying (only available with attached qualy)
         /// </summary>
         [DataMember]
-        public long QualifyingTime { get; set; }
+        public TimeSpan QualifyingTime { get; set; }
         /// <summary>
         /// Interval to the leading driver 
         /// </summary>
@@ -105,10 +122,9 @@ namespace iRLeagueApiCore.Communication.Models
         [DataMember]
         public int NewIrating { get; set; }
         /// <summary>
-        /// [optional] Irating at the start of the season
-        /// When 0 or omitted the value is calculated based on the data in the database
+        /// Irating at the start of the season
         /// </summary>
-        [DataMember(IsRequired = false)]
+        [DataMember]
         public int SeasonStartIrating { get; set; }
         /// <summary>
         /// License class of the driver
@@ -126,26 +142,6 @@ namespace iRLeagueApiCore.Communication.Models
         [DataMember]
         public double NewSafetyRating { get; set; }
         /// <summary>
-        /// Driver corners per incident before the event
-        /// </summary>
-        [DataMember]
-        public int OldCpi { get; set; }
-        /// <summary>
-        /// Driver corners per incident after completing the event
-        /// </summary>
-        [DataMember]
-        public int NewCpi { get; set; }
-        /// <summary>
-        /// Driver club id
-        /// </summary>
-        [DataMember]
-        public int ClubId { get; set; }
-        /// <summary>
-        /// Driver club name
-        /// </summary>
-        [DataMember]
-        public string ClubName { get; set; }
-        /// <summary>
         /// Driver/Team car id
         /// </summary>
         [DataMember]
@@ -156,11 +152,6 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
         public double? CompletedPct { get; set; }
-        /// <summary>
-        /// Time at which the qualifying time was set (only with attached qualy)
-        /// </summary>
-        [DataMember]
-        public DateTime? QualifyingTimeAt { get; set; }
         /// <summary>
         /// Iracing division of the driver
         /// </summary>
@@ -182,26 +173,35 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
         public long? TeamId { get; set; }
-
-        #region reserved_for_later
-        ///// <summary>
-        ///// Number of pitstops in the race
-        ///// </summary>
-        //[DataMember]
-        //public int NumPitStops { get; set; }
-        ///// <summary>
-        ///// ???
-        ///// </summary>
-        //[DataMember]
-        //public string PittedLaps { get; set; }
-        //[DataMember]
-        //public int NumOfftrackLaps { get; set; }
-        //[DataMember]
-        //public string OfftrackLaps { get; set; }
-        //[DataMember]
-        //public int NumContactLaps { get; set; }
-        //[DataMember]
-        //public string ContactLaps { get; set; }
-        #endregion
+        /// <summary>
+        /// Points gained from result in the race
+        /// </summary>
+        [DataMember]
+        public double RacePoints { get; set; }
+        /// <summary>
+        /// Points gained from bonus condition (will be added to race points)
+        /// </summary>
+        [DataMember]
+        public double BonusPoints { get; set; }
+        /// <summary>
+        /// Points deducted as penalty (Value is positive but points will be deducted from race points)
+        /// </summary>
+        [DataMember]
+        public double PenaltyPoints { get; set; }
+        /// <summary>
+        /// Total scored points -> sum of: (RacePoints + BonusPoints - PenaltyPoints)
+        /// </summary>
+        [DataMember]
+        public double TotalPoints { get; set; }
+        /// <summary>
+        /// Final position after all scoring rules and penalties are applied
+        /// </summary>
+        [DataMember]
+        public int FinalPosition { get; set; }
+        /// <summary>
+        /// Position change StartPosition -> FinalPosition
+        /// </summary>
+        [DataMember]
+        public double FinalPositionChange { get; set; }
     }
 }

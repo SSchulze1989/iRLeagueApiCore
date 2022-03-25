@@ -1,3 +1,4 @@
+using iRLeagueApiCore.Communication.Converters;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
@@ -25,6 +27,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace iRLeagueApiCore.Server
 {
@@ -65,7 +68,10 @@ namespace iRLeagueApiCore.Server
                     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 });
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(option =>
+            {
+                option.JsonSerializerOptions.Converters.Add(new JsonTimeSpanConverter());
+            });
             services.AddSwaggerGen(c =>
             {
                 var readHostUrls = Configuration["ASPNETCORE_HOSTURLS"];
@@ -81,9 +87,9 @@ namespace iRLeagueApiCore.Server
                 c.OperationFilter<OpenApiParameterIgnoreFilter>();
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n" +
+                      "Enter 'Bearer' [space] and then your token in the text input below." +
+                      "\r\n\r\nExample: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -112,6 +118,21 @@ namespace iRLeagueApiCore.Server
                 c.IncludeXmlComments(xmlPath);
                 xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Communication.xml");
                 c.IncludeXmlComments(xmlPath);
+                c.MapType<TimeSpan>(() => new OpenApiSchema()
+                {
+                    Type = "string",
+                    Format = "duration",
+                    Pattern = "hh:mm:ss.fffff",
+                    Example = new OpenApiString(new TimeSpan(0, 1, 2, 34, 567).ToString(@"hh\:mm\:ss\.fffff"))
+                });
+                c.MapType<TimeSpan?>(() => new OpenApiSchema()
+                {
+                    Type = "string",
+                    Format = "duration",
+                    Nullable = true,
+                    Pattern = "hh:mm:ss.fffff",
+                    Example = new OpenApiString(new TimeSpan(0, 1, 2, 34, 567).ToString(@"hh\:mm\:ss\.fffff"))
+                });
             });
 
             // try get connection string

@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Controllers;
+using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         DbTestFixture Fixture { get; }
         ITestOutputHelper Output { get; }
 
-        ILogger<SessionController> MockLogger => new Mock<ILogger<SessionController>>().Object;
+        ILogger<SessionsController> MockLogger => new Mock<ILogger<SessionsController>>().Object;
 
         public SessionControllerTests(DbTestFixture fixture, ITestOutputHelper output)
         {
@@ -29,7 +30,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestGetSession()
+        public async void GetSession()
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
@@ -38,7 +39,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testSessionId = 1;
                 const string testSessionName = "S1 Session 1";
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testSessionId }, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -52,7 +53,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestGetMultipleSessions()
+        public async void GetMultipleSessions()
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
@@ -61,7 +62,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 long[] testSessionIds = { 1, 2, 3 };
                 string[] testSessionNames = { "S1 Session 1", "S1 Session 2", "S1 Session 3" };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Get(testLeagueName, testLeagueId, testSessionIds, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -78,7 +79,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestGetSessionNotFound()
+        public async void GetSessionNotFound()
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
@@ -86,14 +87,14 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const int testLeagueId = 1;
                 long[] testSessionIds = { 8 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Get(testLeagueName, testLeagueId, testSessionIds, dbContext)).Result;
                 Assert.IsType<NotFoundResult>(result);
             }
         }
 
         [Fact]
-        public async void TestCreateSessionWithoutSchedule()
+        public async void CreateSessionWithoutSchedule()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -110,7 +111,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = testDate
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Put(testLeagueName, testLeagueId, putSession, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -125,7 +126,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestCreateSessionWithSchedule()
+        public async void CreateSessionWithSchedule()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -143,7 +144,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = testDate
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Put(testLeagueName, testLeagueId, putSession, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -164,7 +165,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
         
         [Fact]
-        public async void TestCreateSessionWithParent()
+        public async void CreateSessionWithParent()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -182,7 +183,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = testDate
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Put(testLeagueName, testLeagueId, putSession, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -203,7 +204,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestSessionMoveSchedule()
+        public async void SessionMoveSchedule()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -222,7 +223,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = session.Date
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Put(league.Name, league.LeagueId, putSession, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -237,7 +238,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestSessionMoveParent()
+        public async void SessionMoveParent()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -256,7 +257,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = session.Date
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Put(league.Name, league.LeagueId, putSession, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -271,7 +272,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestSessionMoveScheduleWrongLeague()
+        public async void SessionMoveScheduleWrongLeague()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -291,7 +292,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Date = session.Date
                 };
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Put(fromLeague.Name, fromLeague.LeagueId, putSession, dbContext)).Result;
                 Assert.IsNotType<OkObjectResult>(result);
 
@@ -303,7 +304,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestDeleteSession()
+        public async void DeleteSession()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -312,7 +313,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const int testLeagueId = 1;
                 const int testSessionId = 1;
 
-                var controller = Fixture.AddControllerContext(new SessionController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new SessionsController(MockLogger));
                 var result = (await controller.Delete(testLeagueName, testLeagueId, testSessionId, dbContext));
 
                 Assert.IsType<OkResult>(result);

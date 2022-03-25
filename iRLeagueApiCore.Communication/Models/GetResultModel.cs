@@ -59,7 +59,19 @@ namespace iRLeagueApiCore.Communication.Models
         /// List of entries 
         /// </summary>
         [DataMember(IsRequired = true)]
-        public IEnumerable<GetResultRow> ResultRows { get; set; }
+        public IEnumerable<GetResultRowModel> ResultRows { get; set; }
 
+        #region version
+        /// <summary>
+        /// Date of creation
+        /// </summary>
+        [DataMember]
+        public DateTime? CreatedOn { get; set; }
+        /// <summary>
+        /// Date of last modification
+        /// </summary>
+        [DataMember]
+        public DateTime? LastModifiedOn { get; set; }
+        #endregion
     }
 }

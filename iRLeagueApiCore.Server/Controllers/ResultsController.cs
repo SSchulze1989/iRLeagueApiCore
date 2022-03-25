@@ -15,11 +15,11 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Route("/{leagueName}/Result")]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
-    public class ResultController : LeagueApiController
+    public class ResultsController : LeagueApiController
     {
-        private readonly ILogger<ResultController> _logger;
+        private readonly ILogger<ResultsController> _logger;
 
-        public ResultController(ILogger<ResultController> logger)
+        public ResultsController(ILogger<ResultsController> logger)
         {
             _logger = logger;
         }
@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
             ScoringName = result.Scoring.Name,
             SessionId = result.ResultId,
             SessionName = result.Result.Session.Name,
-            ResultRows = result.ScoredResultRows.Select(row => new GetResultRow()
+            ResultRows = result.ScoredResultRows.Select(row => new GetResultRowModel()
             {
                 MemberId = row.ResultRow.MemberId,
                 Interval = new TimeSpan(row.ResultRow.Interval),
@@ -71,15 +71,18 @@ namespace iRLeagueApiCore.Server.Controllers
                 OldLicenseLevel = row.ResultRow.OldLicenseLevel,
                 OldSafetyRating = row.ResultRow.OldSafetyRating,
                 PositionChange = row.ResultRow.PositionChange,
-                QualifyingTime = row.ResultRow.QualifyingTime,
+                QualifyingTime = new TimeSpan(row.ResultRow.QualifyingTime),
                 SeasonStartIrating = row.ResultRow.SeasonStartIrating,
                 Status = row.ResultRow.Status,
                 TeamId = row.TeamId
             }),
+            CreatedOn = result.CreatedOn,
+            LastModifiedOn = result.LastModifiedOn
         };
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
+        [InsertLeagueId]
+        public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Get results from {LeagueName} for ids {ResultIds} by {Username}", leagueName, ids,
@@ -105,13 +108,14 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for ids {ResultIds}", getResult.Count(), leagueName, ids);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for ids {ResultIds}", getResult.Count(), leagueName, ids);
 
             return Ok(getResult);
         }
 
         [HttpGet("FromSeason")]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
+        [InsertLeagueId]
+        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Get results from {LeagueName} for season id {SeasonId} by {Username}", leagueName, id,
@@ -133,13 +137,14 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for season id {SeasonId}", getResult.Count(), leagueName, id);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for season id {SeasonId}", getResult.Count(), leagueName, id);
 
             return Ok(getResult);
         }
 
         [HttpGet("FromSession")]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [ParameterIgnore] long leagueId, 
+        [InsertLeagueId]
+        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Get results from {LeagueName} for session id {SessionId} by {Username}", leagueName, id,
@@ -161,7 +166,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for session id {SessionId}", getResult.Count(), leagueName, id);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for session id {SessionId}", getResult.Count(), leagueName, id);
 
             return Ok(getResult);
         }
