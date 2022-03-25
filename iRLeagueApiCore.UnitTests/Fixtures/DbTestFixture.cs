@@ -13,7 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace iRLeagueApiCore.UnitTests.Server
+namespace iRLeagueApiCore.UnitTests.Fixtures
 {
     public class DbTestFixture : IDisposable
     {
@@ -101,11 +101,37 @@ namespace iRLeagueApiCore.UnitTests.Server
         /// <typeparam name="T">type of ApiController</typeparam>
         /// <param name="controller">Controller to add context</param>
         /// <returns>Controller with added context</returns>
-        public T AddControllerContext<T>(T controller) where T : Controller
+        public T AddMemberControllerContext<T>(T controller) where T : Controller
         {
             var user = User;
             var identity = (ClaimsIdentity)user.Identity;
-            identity.AddClaim(new Claim(ClaimTypes.Role, $"{"TestLeague".ToLower()}_{UserRoles.User}"));
+            identity.AddClaim(new Claim(ClaimTypes.Role, $"{"TestLeague".ToLower()}:{LeagueRoles.Member}"));
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = user }
+            };
+
+            return controller;
+        }
+
+        public T AddLeagueAdminControllerContext<T>(T controller, string leagueName) where T : Controller
+        {
+            var user = User;
+            var identity = (ClaimsIdentity)user.Identity;
+            identity.AddClaim(new Claim(ClaimTypes.Role, $"{leagueName.ToLower()}:{LeagueRoles.Admin}"));
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = user }
+            };
+
+            return controller;
+        }
+
+        public T AddAdminControllerContext<T>(T controller) where T : Controller
+        {
+            var user = User;
+            var identity = (ClaimsIdentity)user.Identity;
+            identity.AddClaim(new Claim(ClaimTypes.Role, UserRoles.Admin));
             controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = user }

@@ -1,4 +1,6 @@
 ﻿using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +14,8 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [Authorize]
+    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class SeasonsController : Controller
     {
@@ -62,6 +65,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpPut]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetSeasonModel>> Put([FromRoute] string leagueName, [FromBody] PutSeasonModel putSeason, [FromServices] LeagueDbContext dbContext)
         {
             var leagueId = (await dbContext.Leagues
@@ -95,7 +99,8 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             dbSeason.SeasonName = putSeason.SeasonName;
-            dbSeason.MainScoring = await dbContext.FindAsync<ScoringEntity>(putSeason.MainScoringId);
+            dbSeason.MainScoring = await dbContext.Scorings
+                .SingleOrDefaultAsync(x => x.ScoringId == putSeason.MainScoringId);
             dbSeason.Finished = putSeason.Finished;
             dbSeason.HideCommentsBeforeVoted = putSeason.HideComments;
             dbSeason.LastModifiedOn = DateTime.Now;
@@ -130,6 +135,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpDelete]
+        [RequireLeagueRole(LeagueRoles.Admin)]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             var leagueId = (await dbContext.Leagues
