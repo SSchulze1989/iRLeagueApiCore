@@ -65,6 +65,15 @@ namespace iRLeagueApiCore.Server.Controllers
             });
         }
 
+        protected ActionResult NotFoundMessage(string message)
+        {
+            return new NotFoundObjectResult(new Response()
+            {
+                Status = "Not found",
+                Message = message
+            });
+        }
+
         protected ActionResult WrongLeague()
         {
             return BadRequest();

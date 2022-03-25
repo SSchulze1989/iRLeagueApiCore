@@ -108,7 +108,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for ids {ResultIds}", getResult.Count(), leagueName, ids);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for ids {ResultIds}", getResult.Count(), leagueName, ids);
 
             return Ok(getResult);
         }
@@ -137,7 +137,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for season id {SeasonId}", getResult.Count(), leagueName, id);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for season id {SeasonId}", getResult.Count(), leagueName, id);
 
             return Ok(getResult);
         }
@@ -166,7 +166,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for session id {SessionId}", getResult.Count(), leagueName, id);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for session id {SessionId}", getResult.Count(), leagueName, id);
 
             return Ok(getResult);
         }

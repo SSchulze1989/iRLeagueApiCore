@@ -4,6 +4,8 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +20,12 @@ namespace iRLeagueApiCore.UnitTests.Server
     {
         DbTestFixture Fixture { get; }
         ITestOutputHelper Output { get; }
+        ILogger<LeaguesController> MockLogger { get; }
 
         public LeagueControllerTests(DbTestFixture fixture, ITestOutputHelper output)
         {
             Fixture = fixture;
+            MockLogger = new Mock<ILogger<LeaguesController>>().Object;
         }
 
         [Fact]
@@ -29,7 +33,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = new LeaguesController();
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
                 var result = (await controller.Get(new long[] { 1 }, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -46,7 +50,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var dbContext = Fixture.CreateDbContext())
             {
                 const int testLeagueId = 3;
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController());
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -68,7 +72,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController());
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -101,7 +105,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController());
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -125,7 +129,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddAdminControllerContext(new LeaguesController());
+                var controller = Fixture.AddAdminControllerContext(new LeaguesController(MockLogger));
 
                 var putLeague = new PutLeagueModel()
                 {

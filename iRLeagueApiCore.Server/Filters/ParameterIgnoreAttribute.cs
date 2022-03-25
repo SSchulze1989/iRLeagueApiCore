@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace iRLeagueApiCore.Server.Filters
 {
     /// <summary>
     /// Ignore parameter when generating Swagger open API documentation
     /// </summary>
+    [AttributeUsage(AttributeTargets.Parameter)]
     public class ParameterIgnoreAttribute : System.Attribute
     {
     }
