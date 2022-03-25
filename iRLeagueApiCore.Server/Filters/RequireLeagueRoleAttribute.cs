@@ -9,10 +9,13 @@ namespace iRLeagueApiCore.Server.Filters
     /// Sets requirement for having at least one of the listed league roles to access the resource
     /// Only works in combination with <see cref="LeagueAuthorizeAttribute"/>
     /// </summary>
-    public class RequireLeagueRolesAttribute : Attribute
+    public class RequireLeagueRoleAttribute : Attribute
     {
         public string[] Roles { get; }
-        public RequireLeagueRolesAttribute(params string[] roles)
+        /// <summary>
+        /// </summary>
+        /// <param name="roles">List of roles. Requires user to be in at leas one of the provided roles</param>
+        public RequireLeagueRoleAttribute(params string[] roles)
         {
             Roles = roles;
         }

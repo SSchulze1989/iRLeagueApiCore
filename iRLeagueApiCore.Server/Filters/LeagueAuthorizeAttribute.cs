@@ -44,8 +44,8 @@ namespace iRLeagueApiCore.Server.Filters
             }
 
             // check if specific league role required
-            var requireLeagueRoleAttribute = (RequireLeagueRolesAttribute)context.ActionDescriptor.EndpointMetadata
-                .SingleOrDefault(x => x.GetType() == typeof(RequireLeagueRolesAttribute));
+            var requireLeagueRoleAttribute = (RequireLeagueRoleAttribute)context.ActionDescriptor.EndpointMetadata
+                .SingleOrDefault(x => x.GetType() == typeof(RequireLeagueRoleAttribute));
 
             if (requireLeagueRoleAttribute?.Roles.Count() > 0)
             {
@@ -72,9 +72,9 @@ namespace iRLeagueApiCore.Server.Filters
 
         private bool HasAnyLeagueRole(IPrincipal user, string leagueName)
         {
-            foreach(var role in LeagueRoles.RolesAvailable)
+            foreach(var roleName in LeagueRoles.RolesAvailable)
             {
-                var leagueRole = $"{leagueName.ToLower()}_{role}";
+                var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
                 if (user.IsInRole(leagueRole))
                 {
                     return true;
@@ -85,7 +85,7 @@ namespace iRLeagueApiCore.Server.Filters
 
         private bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)
         {
-            var leagueRole = $"{leagueName.ToLower()}_{roleName}";
+            var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
             return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);
         }
     }

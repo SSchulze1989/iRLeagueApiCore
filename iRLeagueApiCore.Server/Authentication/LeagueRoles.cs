@@ -31,5 +31,14 @@ namespace iRLeagueApiCore.Server.Authentication
         /// Array of all available league roles
         /// </summary>
         public static readonly string[] RolesAvailable = new string[] { Admin, Organizer, Member, Steward };
+
+        /// <summary>
+        /// Get the full league role name for a provided league name and role name
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLeagueRoleName(string leagueName, string roleName)
+        {
+            return $"{leagueName.ToLower()}:{roleName}";
+        }
     }
 }

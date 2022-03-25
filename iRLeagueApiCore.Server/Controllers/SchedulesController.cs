@@ -20,7 +20,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {
-            if (HasLeagueRole(User, leagueName) == false)
+            if (HasAnyLeagueRole(User, leagueName) == false)
             {
                 return Forbid();
             }
@@ -65,7 +65,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromBody] PutScheduleModel putSchedule, [FromServices] LeagueDbContext dbContext)
         {
-            if (HasLeagueRole(User, leagueName) == false)
+            if (HasAnyLeagueRole(User, leagueName) == false)
             {
                 return Forbid();
             }
@@ -147,7 +147,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpDelete]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
-            if (HasLeagueRole(User, leagueName) == false)
+            if (HasAnyLeagueRole(User, leagueName) == false)
             {
                 return Forbid();
             }

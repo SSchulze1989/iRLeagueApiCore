@@ -24,7 +24,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async Task TestGetLeague()
+        public async Task GetLeague()
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
@@ -39,7 +39,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async Task TestCreateLeague()
+        public async Task CreateLeague()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -62,7 +62,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async Task TestUpdateLeague()
+        public async Task UpdateLeague()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -95,7 +95,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async Task TestCreateInvalidName()
+        public async Task CreateInvalidName()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())

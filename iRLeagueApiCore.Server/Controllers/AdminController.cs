@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
-    [RequireLeagueRoles(LeagueRoles.Admin)]
+    [RequireLeagueRole(LeagueRoles.Admin)]
     [Route("{leagueName}/[controller]")]
     public class AdminController : LeagueApiController
     {
@@ -88,21 +88,21 @@ namespace iRLeagueApiCore.Server.Controllers
             if (roleUser == null)
             {
                 _logger.LogInformation("No user named {RoleUser} found in user database.");
-                return BadRequest(new Response() { Status = "User not found", Message = "The username from request body does not exist" });
+                return BadRequestMessage("User not found", "The username from request body does not exist");
             }
 
             // check if league role is valid
             if (LeagueRoles.RolesAvailable.Contains(userRole.RoleName) == false)
             {
                 _logger.LogInformation("Role {LeagueRole} is not a valid league role", userRole.RoleName);
-                return BadRequest(new Response() { Status = "Role invalid", Message = "The rolename from request body is not a valid league role.\n" +
-                    "Possible values are:\n" + string.Join("\n", LeagueRoles.RolesAvailable.Select(x => $"- {x}"))});
+                return BadRequestMessage("Invalid role", "The rolename from request body is not a valid league role.\n" +
+                    "Possible values are:\n" + string.Join("\n", LeagueRoles.RolesAvailable.Select(x => $"- {x}")));
             }
 
             // check if league role exists - if not create it
             // - maybe a bit dirty but this way there is no need to extra create each league role when the league is created first
             //   but only once they are needed
-            var leagueRoleName = GetLeagueRoleName(leagueName, userRole.RoleName);
+            var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, userRole.RoleName);
             if (await _roleManager.RoleExistsAsync(leagueRoleName) == false)
             {
                 _logger.LogInformation("League role {LeagueRole} does not exist for {LeagueName} and will be created");
@@ -130,9 +130,47 @@ namespace iRLeagueApiCore.Server.Controllers
             return OkMessage($"Role {userRole.RoleName} given to user {userRole.UserName}");
         }
 
-        private static string GetLeagueRoleName(string leagueName, string roleName)
+        [HttpPost("RevokeRole")]
+        public async Task<IActionResult> RevokeRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
         {
-            return $"{leagueName.ToLower()}:{roleName}";
+            _logger.LogInformation("Revoke league role {LeagueRole} from user {RoleUser} for {LeagueName} by {UserName}",
+                userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
+
+            // find user in database
+            var roleUser = await _userManager.FindByNameAsync(userRole.UserName);
+            if (roleUser == null)
+            {
+                _logger.LogInformation("No user named {RoleUser} found in user database.");
+                return BadRequestMessage("User not found", "The username from request body does not exist");
+            }
+
+            // check if league role is valid
+            if (LeagueRoles.RolesAvailable.Contains(userRole.RoleName) == false)
+            {
+                _logger.LogInformation("Role {LeagueRole} is not a valid league role", userRole.RoleName);
+                return BadRequestMessage("Invalid role", 
+                    "The rolename from request body is not a valid league role.\n" +
+                    "Possible values are:\n" + string.Join("\n", LeagueRoles.RolesAvailable.Select(x => $"- {x}")));
+            }
+
+            var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, userRole.RoleName);
+            // check if user has role
+            if (await _userManager.IsInRoleAsync(roleUser, leagueRoleName) == false)
+            {
+                _logger.LogInformation("User {RoleUser} is not in role {Role}", userRole.UserName, leagueRoleName);
+                return BadRequestMessage("Not in role", "The role could not be revoked because the user is not in the specified role");
+            }
+
+            var revokeResult = await _userManager.RemoveFromRoleAsync(roleUser, leagueRoleName);
+            if (revokeResult.Succeeded == false)
+            {
+                _logger.LogError("Failed to revoke role {Role} from user {RoleUser} due to errors: {Errors}", revokeResult.Errors);
+                return SomethingWentWrong();
+            }
+
+            _logger.LogInformation("Revoked league role {LeagueRole} from user {RoleUser} for {LeagueName}",
+                userRole.RoleName, userRole.UserName, leagueName);
+            return OkMessage($"Role {userRole.RoleName} revoked from user {userRole.UserName}");
         }
     }
 }
