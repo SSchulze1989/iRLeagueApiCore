@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Filters
 {
+    /// <summary>
+    /// Authorization filter to manage access to league resources bases on user roles specific to each league
+    /// <para>The pattern for league roles is {leagueName}:{roleName} so for example an admin for testleague must be in the role: testleague:Admin</para>
+    /// <para><b>The decorated class or method must have {leagueName} as a route parameter.</b></para> 
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
     public class LeagueAuthorizeAttribute : ActionFilterAttribute
     {
         private readonly ILogger<LeagueAuthorizeAttribute> _logger;
@@ -39,7 +45,7 @@ namespace iRLeagueApiCore.Server.Filters
             if (user == null || user.Identity.IsAuthenticated == false)
             {
                 _logger.LogInformation("Permission denied for Anonymous user on {LeagueName}. League is not public", leagueName);
-                context.Result = new ForbidResult();
+                context.Result = new UnauthorizedResult();
                 return;
             }
 

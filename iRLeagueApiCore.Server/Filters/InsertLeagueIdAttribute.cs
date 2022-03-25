@@ -25,6 +25,7 @@ namespace iRLeagueApiCore.Server.Filters
     /// }
     /// </code>
     /// </example>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class InsertLeagueIdAttribute : ActionFilterAttribute
     {
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
