@@ -110,7 +110,8 @@ namespace iRLeagueApiCore.Server.Controllers
 
                 if (roleResult.Succeeded == false)
                 {
-                    _logger.LogError("Failed to create role {Role} due to errors: {Errors}", leagueRoleName, roleResult.Errors);
+                    _logger.LogError("Failed to create role {Role} due to errors: {Errors}", leagueRoleName, 
+                        roleResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
                     return SomethingWentWrong();
                 }
 
@@ -121,7 +122,8 @@ namespace iRLeagueApiCore.Server.Controllers
             if (userRoleResult.Succeeded == false)
             {
                 _logger.LogError("Failed to add user {RoleUser} to role {Role} due to errors: {Errors}",
-                    userRole.UserName, leagueRoleName, userRoleResult.Errors);
+                    userRole.UserName, leagueRoleName, 
+                    userRoleResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
                 return SomethingWentWrong();
             }
 
@@ -164,7 +166,8 @@ namespace iRLeagueApiCore.Server.Controllers
             var revokeResult = await _userManager.RemoveFromRoleAsync(roleUser, leagueRoleName);
             if (revokeResult.Succeeded == false)
             {
-                _logger.LogError("Failed to revoke role {Role} from user {RoleUser} due to errors: {Errors}", revokeResult.Errors);
+                _logger.LogError("Failed to revoke role {Role} from user {RoleUser} due to errors: {Errors}", 
+                    revokeResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
                 return SomethingWentWrong();
             }
 
