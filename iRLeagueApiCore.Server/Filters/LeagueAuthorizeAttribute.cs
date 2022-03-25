@@ -45,7 +45,7 @@ namespace iRLeagueApiCore.Server.Filters
 
             // check if specific league role required
             var requireLeagueRoleAttribute = (RequireLeagueRoleAttribute)context.ActionDescriptor.EndpointMetadata
-                .SingleOrDefault(x => x.GetType() == typeof(RequireLeagueRoleAttribute));
+                .LastOrDefault(x => x.GetType() == typeof(RequireLeagueRoleAttribute));
 
             if (requireLeagueRoleAttribute?.Roles.Count() > 0)
             {

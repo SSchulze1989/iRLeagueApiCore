@@ -22,6 +22,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [Authorize]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class SessionsController : LeagueApiController
     {
@@ -63,7 +64,6 @@ namespace iRLeagueApiCore.Server.Controllers
 
 
         [HttpGet]
-        [AllowAnonymous]
         [InsertLeagueId]
         public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {            
@@ -89,6 +89,7 @@ namespace iRLeagueApiCore.Server.Controllers
     
         [HttpPut]
         [InsertLeagueId]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] PutSessionModel putSession, [FromServices] LeagueDbContext dbContext)
         {
             var dbSession = await dbContext.Sessions
@@ -205,12 +206,14 @@ namespace iRLeagueApiCore.Server.Controllers
     
         [HttpDelete]
         [InsertLeagueId]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Request to delete Session {SessionId} from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
 
             var dbSession = await dbContext.Sessions
                 .Include(x => x.Schedule)
+                    .ThenInclude(x => x.Sessions)
                 .SingleOrDefaultAsync(x => x.SessionId == id && x.LeagueId == leagueId);
 
             if (dbSession == null)
@@ -219,7 +222,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            dbSession.Schedule.Sessions.Remove(dbSession);
+            dbContext.Sessions.Remove(dbSession);
             await dbContext.SaveChangesAsync();
 
             _logger.LogInformation("Session {SessionId} deleted from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);

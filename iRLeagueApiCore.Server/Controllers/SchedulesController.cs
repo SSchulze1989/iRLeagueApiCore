@@ -1,4 +1,6 @@
 ﻿using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +15,9 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    [Authorize]
     public class SchedulesController : LeagueApiController
     {
         [HttpGet]
@@ -63,6 +66,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpPut]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromBody] PutScheduleModel putSchedule, [FromServices] LeagueDbContext dbContext)
         {
             if (HasAnyLeagueRole(User, leagueName) == false)
@@ -145,6 +149,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpDelete]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             if (HasAnyLeagueRole(User, leagueName) == false)

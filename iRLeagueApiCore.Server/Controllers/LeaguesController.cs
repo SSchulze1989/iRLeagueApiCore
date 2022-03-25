@@ -17,7 +17,6 @@ namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
     public class LeaguesController : Controller
     {
         [HttpGet]
@@ -55,6 +54,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult<GetLeagueModel>> Put([FromBody] PutLeagueModel putLeague, [FromServices] LeagueDbContext dbContext)
         {
             var dbLeague = await dbContext.FindAsync<LeagueEntity>(putLeague.LeagueId);
