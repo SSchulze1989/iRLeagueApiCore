@@ -100,14 +100,14 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             else if (dbSchedule.LeagueId != leagueId)
             {
-                _logger.LogInformation("Schedule with id {ScheduleId} belongs to another league");
+                _logger.LogInformation("Schedule {ScheduleId} belongs to another league");
                 return BadRequestMessage("Schedule not found", $"No schedule with id {putSchedule.ScheduleId} could be found");
             }
 
             // update season if id changed
             if (putSchedule.SeasonId != dbSchedule.SeasonId)
             {
-                _logger.LogInformation("Move schedule with id {ScheduleId} to season with id {SeasonId}", putSchedule.ScheduleId, putSchedule.SeasonId);
+                _logger.LogInformation("Move schedule {ScheduleId} to season {SeasonId}", putSchedule.ScheduleId, putSchedule.SeasonId);
                 var season = await dbContext.Seasons
                     .Include(x => x.Schedules)
                     .SingleOrDefaultAsync(x => x.SeasonId == putSchedule.SeasonId);
@@ -133,7 +133,7 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSchedule.LastModifiedByUserName = User.Identity.Name;
 
             await dbContext.SaveChangesAsync();
-            _logger.LogInformation("Written schedule data on {LeagueName} for schedule id {ScheduleId} by {UserName}", leagueName,
+            _logger.LogInformation("Written schedule data on {LeagueName} for schedule {ScheduleId} by {UserName}", leagueName,
                 dbSchedule.ScheduleId, User.Identity.Name);
 
             var getSchedule = await dbContext.Schedules
