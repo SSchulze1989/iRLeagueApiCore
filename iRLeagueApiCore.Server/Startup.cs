@@ -139,6 +139,9 @@ namespace iRLeagueApiCore.Server
             services.AddDbContextFactory<ApplicationDbContext, ApplicationDbContextFactory>();
             services.AddScoped(x => 
                 x.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+            services.AddDbContextFactory<LeagueDbContext, LeagueDbContextFactory>();
+            services.AddScoped(x =>
+                x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -166,11 +169,8 @@ namespace iRLeagueApiCore.Server
                  };
              });
 
-            services.AddScoped<IDbContextFactory<LeagueDbContext>, LeagueDbContextFactory>();
-            services.AddScoped(x => 
-                x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
-
             services.AddScoped<LeagueAuthorizeAttribute>();
+            services.AddScoped<InsertLeagueIdAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

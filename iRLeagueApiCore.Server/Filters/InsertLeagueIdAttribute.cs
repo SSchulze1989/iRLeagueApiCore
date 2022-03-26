@@ -12,7 +12,7 @@ namespace iRLeagueApiCore.Server.Filters
     /// <summary>
     /// Automatically insert the league id corresponding the league name in route parameters
     /// <para>
-    /// Requires <b>{leagueName}</b> in Route and "<c><see cref="long"/> leagueId</c>" and "<c><see cref="LeagueDbContext"/> dbContext</c>" as parameters
+    /// Requires <b>{leagueName}</b> in Route and "<c><see cref="long"/> leagueId</c>" as parameter
     /// </para>
     /// </summary>
     /// <example>
@@ -28,6 +28,12 @@ namespace iRLeagueApiCore.Server.Filters
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class InsertLeagueIdAttribute : ActionFilterAttribute
     {
+        private readonly LeagueDbContext _dbContext;
+        public InsertLeagueIdAttribute(LeagueDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             if (context.RouteData.Values.TryGetValue("leagueName", out var leagueNameObject) == false)
@@ -35,13 +41,8 @@ namespace iRLeagueApiCore.Server.Filters
                 throw new InvalidOperationException("Missing {leagueName} in action route");
             }
             var leagueName = (string)leagueNameObject;
-            if (context.ActionArguments.TryGetValue("dbContext", out var dbContextObject) == false)
-            { 
-                throw new InvalidOperationException("Missing 'dbContext' in action arguments");
-            }
-            var dbContext = (LeagueDbContext)dbContextObject;
 
-            var league = await dbContext.Leagues
+            var league = await _dbContext.Leagues
                 .Select(x => new { x.LeagueId, x.Name })
                 .SingleOrDefaultAsync(x => x.Name == leagueName);
             var leagueId = league?.LeagueId ?? 0;

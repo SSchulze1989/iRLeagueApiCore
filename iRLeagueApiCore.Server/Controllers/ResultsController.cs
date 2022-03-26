@@ -17,10 +17,12 @@ namespace iRLeagueApiCore.Server.Controllers
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
     public class ResultsController : LeagueApiController
     {
+        private readonly LeagueDbContext _dbContext;
         private readonly ILogger<ResultsController> _logger;
 
-        public ResultsController(ILogger<ResultsController> logger)
+        public ResultsController(ILogger<ResultsController> logger, LeagueDbContext dbContext)
         {
+            _dbContext = dbContext;
             _logger = logger;
         }
 
@@ -81,14 +83,14 @@ namespace iRLeagueApiCore.Server.Controllers
         };
 
         [HttpGet]
-        [InsertLeagueId]
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+            [FromQuery] long[] ids)
         {
             _logger.LogInformation("Get results from {LeagueName} for ids {ResultIds} by {Username}", leagueName, ids,
                 User.Identity.Name);
 
-            var dbResults = dbContext.ScoredResults
+            var dbResults = _dbContext.ScoredResults
                 .Where(x => x.Result.LeagueId == leagueId)
                 .Where(x => x.Scoring.ShowResults);
 
@@ -114,14 +116,14 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet("FromSeason")]
-        [InsertLeagueId]
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
+            [FromQuery] long id)
         {
             _logger.LogInformation("Get results from {LeagueName} for season id {SeasonId} by {Username}", leagueName, id,
                 User.Identity.Name);
 
-            var dbResults = dbContext.ScoredResults
+            var dbResults = _dbContext.ScoredResults
                 .Where(x => x.LeagueId == leagueId);
 
             dbResults = dbResults
@@ -143,14 +145,14 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet("FromSession")]
-        [InsertLeagueId]
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId, 
-            [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
+            [FromQuery] long id)
         {
             _logger.LogInformation("Get results from {LeagueName} for session id {SessionId} by {Username}", leagueName, id,
                 User.Identity.Name);
 
-            var dbResults = dbContext.ScoredResults
+            var dbResults = _dbContext.ScoredResults
                 .Where(x => x.LeagueId == leagueId);
 
             dbResults = dbResults

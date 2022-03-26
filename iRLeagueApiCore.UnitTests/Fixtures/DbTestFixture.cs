@@ -77,6 +77,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
 
             // use in memory database when no connection string present
             optionsBuilder.UseMySQL(connectionString);
+            //optionsBuilder.UseInMemoryDatabase("TestDatabase");
 
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
             return dbContext;

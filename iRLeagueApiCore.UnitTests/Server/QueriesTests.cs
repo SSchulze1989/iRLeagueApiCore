@@ -26,7 +26,9 @@ namespace iRLeagueApiCore.UnitTests.Server
         {
             using (var context = Fixture.CreateDbContext())
             {
-                const long testSeasonId = 1;
+                long testSeasonId = (await context.Seasons
+                    .FirstAsync())
+                    .SeasonId;
 
                 // query results by season id
                 var query = context.ScoredResults

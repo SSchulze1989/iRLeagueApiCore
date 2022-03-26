@@ -33,9 +33,8 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testLeagueId = 1;
                 const long testResultId = 1;
 
-                var controller = Fixture.AddMemberControllerContext(new ResultsController(MockLogger));
-                var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testResultId },
-                    dbContext)).Result;
+                var controller = Fixture.AddMemberControllerContext(new ResultsController(MockLogger, dbContext));
+                var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testResultId })).Result;
 
                 Assert.IsType<OkObjectResult>(result);
                 var resultValue = (IEnumerable<GetResultModel>)((OkObjectResult)result).Value;
