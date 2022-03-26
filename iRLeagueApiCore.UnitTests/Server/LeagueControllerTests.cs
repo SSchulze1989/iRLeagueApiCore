@@ -33,8 +33,8 @@ namespace iRLeagueApiCore.UnitTests.Server
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
-                var result = (await controller.Get(new long[] { 1 }, dbContext)).Result;
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
+                var result = (await controller.Get(new long[] { 1 })).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var resultValue = (IEnumerable<GetLeagueModel>)okResult.Value;
@@ -49,20 +49,21 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                const int testLeagueId = 3;
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
+                const string testLeagueName = "UnitTestLeague";
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {
                     LeagueId = 0,
-                    Name = "UnitTestLeague",
+                    Name = testLeagueName,
                     NameFull = "League for unit testing"
                 };
-                var result = (await controller.Put(putLeague, dbContext)).Result;
+                var result = (await controller.Put(putLeague)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var resultValue = (GetLeagueModel)okResult.Value;
-                Assert.Equal(testLeagueId, resultValue.LeagueId);
+                Assert.NotEqual(0, resultValue.LeagueId);
+                Assert.Equal(testLeagueName, resultValue.Name);
             }
         }
 
@@ -72,7 +73,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -86,7 +87,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.NotEqual(putLeague.Name, checkLeague.Name);
                 Assert.NotEqual(putLeague.NameFull, checkLeague.NameFull);
 
-                var result = (await controller.Put(putLeague, dbContext)).Result;
+                var result = (await controller.Put(putLeague)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var resultValue = (GetLeagueModel)okResult.Value;
@@ -105,7 +106,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger));
+                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -113,7 +114,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     Name = "Name with spaces",
                     NameFull = "League for unit testing"
                 };
-                var result = (await controller.Put(putLeague, dbContext)).Result;
+                var result = (await controller.Put(putLeague)).Result;
 
                 Assert.IsNotType<OkObjectResult>(result);
                 Assert.IsNotType<OkResult>(result);
@@ -129,14 +130,14 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddAdminControllerContext(new LeaguesController(MockLogger));
+                var controller = Fixture.AddAdminControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {
                     Name = testLeagueName,
                     NameFull = "League with existing name should fail"
                 };
-                var result = (await controller.Put(putLeague, dbContext));
+                var result = (await controller.Put(putLeague));
 
                 var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
                 var response = Assert.IsType<ResultResponse>(badRequest.Value);
