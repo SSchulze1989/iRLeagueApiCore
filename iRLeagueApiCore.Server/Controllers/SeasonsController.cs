@@ -1,8 +1,11 @@
 ﻿using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,17 +15,25 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [Authorize]
+    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class SeasonsController : Controller
+    public class SeasonsController : LeagueApiController
     {
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetSeasonModel>>> Get([FromRoute] string leagueName, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+        private readonly ILogger<SeasonsController> _logger;
+
+        public SeasonsController(ILogger<SeasonsController> logger)
         {
-            var leagueId = (await dbContext.Leagues
-                .Select(x => new {x.LeagueId, x.Name})
-                .SingleOrDefaultAsync(x => x.Name == leagueName))
-                ?.LeagueId ?? 0;
+            _logger = logger;
+        }
+
+        [HttpGet]
+        [InsertLeagueId]
+        public async Task<ActionResult<IEnumerable<GetSeasonModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+        {
+            _logger.LogInformation("Get seasons from {LeagueName} for ids {SeasonIds} by {UserName}", leagueName, ids,
+                User.Identity.Name);
 
             IQueryable<SeasonEntity> dbSeasons = dbContext.Seasons
                 .Where(x => x.LeagueId == leagueId);
@@ -34,10 +45,11 @@ namespace iRLeagueApiCore.Server.Controllers
 
             if (dbSeasons.Count() == 0)
             {
+                _logger.LogInformation("No season found in {LeagueName} for ids {SeasonIds}", leagueName, ids);
                 return NotFound();
             }
 
-            var getSeason = await dbSeasons
+            var getSeasons = await dbSeasons
                 .Select(x => new GetSeasonModel()
                 {
                     SeasonId = x.SeasonId,
@@ -58,24 +70,27 @@ namespace iRLeagueApiCore.Server.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(getSeason);
+            _logger.LogInformation("Return {Count} season entries from {LeagueName} for ids {SeasonIds}", getSeasons.Count(),
+                leagueName, ids);
+            return Ok(getSeasons);
         }
 
         [HttpPut]
-        public async Task<ActionResult<GetSeasonModel>> Put([FromRoute] string leagueName, [FromBody] PutSeasonModel putSeason, [FromServices] LeagueDbContext dbContext)
+        [InsertLeagueId]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        public async Task<ActionResult<GetSeasonModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromBody] PutSeasonModel putSeason, [FromServices] LeagueDbContext dbContext)
         {
-            var leagueId = (await dbContext.Leagues
-                .Select(x => new { x.LeagueId, x.Name })
-                .SingleOrDefaultAsync(x => x.Name == leagueName))
-                ?.LeagueId ?? 0;
+            _logger.LogInformation("Put season data on {LeagueName} with id {SeasonId} by {UserName}", leagueName,
+                putSeason.SeasonId, User.Identity.Name);
 
             var dbSeason = await dbContext.Seasons
                 .SingleOrDefaultAsync(x => x.SeasonId == putSeason.SeasonId);
-            ClaimsPrincipal currentUser = this.User;
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var currentUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             if (dbSeason == null)
             {
+                _logger.LogInformation("Create season {SeasonName}", putSeason.SeasonName);
                 dbSeason = new SeasonEntity()
                 {
                     CreatedOn = DateTime.Now,
@@ -91,11 +106,13 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             else if (dbSeason.LeagueId != leagueId)
             {
-                return Forbid();
+                _logger.LogInformation("Season with id {SeasonId} belongs to another league");
+                return BadRequestMessage("Season not found", $"No schedule with id {putSeason.SeasonId} could be found");
             }
 
             dbSeason.SeasonName = putSeason.SeasonName;
-            dbSeason.MainScoring = await dbContext.FindAsync<ScoringEntity>(putSeason.MainScoringId);
+            dbSeason.MainScoring = await dbContext.Scorings
+                .SingleOrDefaultAsync(x => x.ScoringId == putSeason.MainScoringId);
             dbSeason.Finished = putSeason.Finished;
             dbSeason.HideCommentsBeforeVoted = putSeason.HideComments;
             dbSeason.LastModifiedOn = DateTime.Now;
@@ -103,6 +120,8 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSeason.LastModifiedByUserName = User.Identity.Name;
 
             await dbContext.SaveChangesAsync();
+            _logger.LogInformation("Written season data on {LeagueName} for seaon {seasonId} by {UserName}", leagueName,
+                dbSeason.SeasonId, User.Identity.Name);
 
             var getSeason = await dbContext.Seasons
                 .Select(x => new GetSeasonModel()
@@ -126,32 +145,40 @@ namespace iRLeagueApiCore.Server.Controllers
                 .Where(x => x.SeasonId == dbSeason.SeasonId)
                 .SingleOrDefaultAsync();
 
+            _logger.LogInformation("Return season entry from {LeagueName} for season {SeasonId}", leagueName,
+                getSeason.SeasonId);
             return Ok(getSeason);
         }
 
         [HttpDelete]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
+        [InsertLeagueId]
+        [RequireLeagueRole(LeagueRoles.Admin)]
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
-            var leagueId = (await dbContext.Leagues
-                .Select(x => new { x.LeagueId, x.Name })
-                .SingleOrDefaultAsync(x => x.Name == leagueName))
-                ?.LeagueId ?? 0;
+            _logger.LogInformation("Deleting season {SeasonId} from {LeagueName} by {UserName}", id, leagueName,
+                User.Identity.Name);
 
             var dbSeason = await dbContext.Seasons
                 .SingleOrDefaultAsync(x => x.SeasonId == id);
 
             if (dbSeason == null)
             {
-                return BadRequest($"Season id:{id} does not exist");
+                _logger.LogInformation("Not deleted: Season {SeasonId} does not exist", id);
+                return NoContent();
             }
             else if (dbSeason.LeagueId != leagueId)
             {
+                _logger.LogInformation("Forbid to delete season {SeasonId} because it does not belong to {LeagueName}",
+                    id, leagueName);
                 return Forbid();
             }
 
             dbContext.Seasons.Remove(dbSeason);
             await dbContext.SaveChangesAsync();
 
+            _logger.LogInformation("Deleted season {SeasonId} from {LeagueName} by {UserName}", id, leagueName,
+                User.Identity.Name);
             return Ok();
         }
     }

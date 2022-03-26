@@ -81,7 +81,8 @@ namespace iRLeagueApiCore.Server.Controllers
         };
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
+        [InsertLeagueId]
+        public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Get results from {LeagueName} for ids {ResultIds} by {Username}", leagueName, ids,
@@ -107,13 +108,14 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for ids {ResultIds}", getResult.Count(), leagueName, ids);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for ids {ResultIds}", getResult.Count(), leagueName, ids);
 
             return Ok(getResult);
         }
 
         [HttpGet("FromSeason")]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
+        [InsertLeagueId]
+        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Get results from {LeagueName} for season id {SeasonId} by {Username}", leagueName, id,
@@ -135,13 +137,14 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for season id {SeasonId}", getResult.Count(), leagueName, id);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for season id {SeasonId}", getResult.Count(), leagueName, id);
 
             return Ok(getResult);
         }
 
         [HttpGet("FromSession")]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [ParameterIgnore] long leagueId, 
+        [InsertLeagueId]
+        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
         {
             _logger.LogInformation("Get results from {LeagueName} for session id {SessionId} by {Username}", leagueName, id,
@@ -163,7 +166,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Return {Count} result entries found in {LeagueName} for session id {SessionId}", getResult.Count(), leagueName, id);
+            _logger.LogInformation("Return {Count} result entries from {LeagueName} for session id {SessionId}", getResult.Count(), leagueName, id);
 
             return Ok(getResult);
         }

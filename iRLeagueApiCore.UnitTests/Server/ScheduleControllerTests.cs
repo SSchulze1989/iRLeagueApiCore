@@ -1,7 +1,10 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Controllers;
+using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,23 +20,26 @@ namespace iRLeagueApiCore.UnitTests.Server
     {
         DbTestFixture Fixture { get; }
         ITestOutputHelper Output { get; }
+        ILogger<SchedulesController> MockLogger { get; }
 
         public ScheduleControllerTests(DbTestFixture fixture, ITestOutputHelper output)
         {
             Fixture = fixture;
+            MockLogger = new Mock<ILogger<SchedulesController>>().Object;
         }
 
         [Fact]
-        public async void TestGetSchedule()
+        public async void GetSchedule()
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
                 const string testLeagueName = "TestLeague";
+                const long testLeagueId = 1;
                 const long testScheduleId = 1;
                 const string testScheduleName = "S1 Schedule";
 
-                var controller = Fixture.AddControllerContext(new SchedulesController());
-                var result = (await controller.Get(testLeagueName, new long[] { testScheduleId }, dbContext)).Result;
+                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger));
+                var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testScheduleId }, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var resultValue = (IEnumerable<GetScheduleModel>)okResult.Value;
@@ -46,7 +52,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestCreateSchedule()
+        public async void CreateSchedule()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -56,13 +62,13 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const string testScheduleName = "S1 Schedule 2";
                 const long testSeasonId = 1;
 
-                var controller = Fixture.AddControllerContext(new SchedulesController());
+                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger));
                 var putSchedule = new PutScheduleModel()
                 {
                     SeasonId = testSeasonId,
                     Name = testScheduleName
                 };
-                var result = (await controller.Put(testLeagueName, putSchedule, dbContext)).Result;
+                var result = (await controller.Put(testLeagueName, testLeagueId, putSchedule, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var getSchedule = (GetScheduleModel)okResult?.Value;
@@ -75,22 +81,23 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async Task TestCreateWrongLeague()
+        public async Task CreateWrongLeague()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
                 const string testLeagueName = "TestLeague2";
+                const long testLeagueId = 2;
                 const string testScheduleName = "L2S1 Schedule 1";
                 const long testSeasonId = 1;
 
-                var controller = Fixture.AddControllerContext(new SchedulesController());
+                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger));
                 var putSchedule = new PutScheduleModel()
                 {
                     SeasonId = testSeasonId,
                     Name = testScheduleName
                 };
-                var result = (await controller.Put(testLeagueName, putSchedule, dbContext)).Result;
+                var result = (await controller.Put(testLeagueName, testLeagueId, putSchedule, dbContext)).Result;
                 Assert.IsNotType<OkObjectResult>(result);
                 Assert.IsNotType<OkResult>(result);
 
@@ -103,7 +110,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestUpdateSchedule()
+        public async void UpdateSchedule()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -120,14 +127,14 @@ namespace iRLeagueApiCore.UnitTests.Server
                     .Select(x => x.Schedules.Count)
                     .First();
 
-                var controller = Fixture.AddControllerContext(new SchedulesController());
+                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger));
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
                     SeasonId = testSeasonId,
                     Name = testScheduleName
                 };
-                var result = (await controller.Put(testLeagueName, putSchedule, dbContext)).Result;
+                var result = (await controller.Put(testLeagueName, testLeagueId, putSchedule, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var getSchedule = (GetScheduleModel)okResult?.Value;
@@ -146,7 +153,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async void TestChangeSeason()
+        public async void ChangeSeason()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
@@ -163,14 +170,14 @@ namespace iRLeagueApiCore.UnitTests.Server
                     .Select(x => x.Schedules.Count)
                     .First() + 1;
 
-                var controller = Fixture.AddControllerContext(new SchedulesController());
+                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger));
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
                     SeasonId = testSeasonId,
                     Name = testScheduleName
                 };
-                var result = (await controller.Put(testLeagueName, putSchedule, dbContext)).Result;
+                var result = (await controller.Put(testLeagueName, testLeagueId, putSchedule, dbContext)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var getSchedule = (GetScheduleModel)okResult?.Value;
@@ -189,39 +196,41 @@ namespace iRLeagueApiCore.UnitTests.Server
         }
 
         [Fact]
-        public async Task TestUpdateScheduleForbidden()
+        public async Task UpdateScheduleForbidden()
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
                 const string testLeagueName = "TestLeague1";
+                const long testLeagueId = 1;
                 const long testScheduleId = 1;
 
-                var controller = Fixture.AddControllerContextWithoutLeagueRole(new SchedulesController());
+                var controller = Fixture.AddControllerContextWithoutLeagueRole(new SchedulesController(MockLogger));
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
                     Name = "Forbidden update"
                 };
 
-                var result = (await controller.Put(testLeagueName, putSchedule, dbContext)).Result;
-                Assert.IsType<ForbidResult>(result);
+                var result = (await controller.Put(testLeagueName, testLeagueId, putSchedule, dbContext)).Result;
+                Assert.IsType<BadRequestObjectResult>(result);
             }
         }
 
         [Fact]
-        public async Task TestDeleteSchedule()
+        public async Task DeleteSchedule()
         {
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
 
                 const string testLeagueName = "TestLeague";
+                const long testLeagueId = 1;
                 const long testScheduleId = 1;
 
-                var controller = Fixture.AddControllerContext(new SchedulesController());
-                var result = (await controller.Delete(testLeagueName, testScheduleId, dbContext));
+                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger));
+                var result = (await controller.Delete(testLeagueName, testLeagueId, testScheduleId, dbContext));
 
-                Assert.IsType<OkResult>(result);
+                Assert.IsType<NoContentResult>(result);
                 Assert.DoesNotContain(dbContext.Schedules, x => x.ScheduleId == testScheduleId);
             }
         }

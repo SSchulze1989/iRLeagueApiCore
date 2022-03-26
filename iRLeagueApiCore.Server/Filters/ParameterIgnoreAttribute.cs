@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace iRLeagueApiCore.Server.Filters
 {
     /// <summary>
     /// Ignore parameter when generating Swagger open API documentation
     /// </summary>
+    [AttributeUsage(AttributeTargets.Parameter)]
     public class ParameterIgnoreAttribute : System.Attribute
     {
     }
@@ -35,7 +37,7 @@ namespace iRLeagueApiCore.Server.Filters
         {
             if (parameterDescription.ModelMetadata is Microsoft.AspNetCore.Mvc.ModelBinding.Metadata.DefaultModelMetadata metadata)
             {
-                return metadata.Attributes.ParameterAttributes?.Any(attribute => attribute.GetType() == typeof(ParameterIgnoreAttribute)) ?? false;
+                return metadata.Attributes.ParameterAttributes?.Any(attribute => typeof(ParameterIgnoreAttribute).IsAssignableFrom(attribute.GetType())) ?? false;
             }
 
             return false;
