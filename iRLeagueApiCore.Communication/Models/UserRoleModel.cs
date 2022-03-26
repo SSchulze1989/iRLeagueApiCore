@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Communication.Models
+﻿namespace iRLeagueApiCore.Communication.Models
 {
     /// <summary>
     /// Schema to use for permission control over a single role for a user

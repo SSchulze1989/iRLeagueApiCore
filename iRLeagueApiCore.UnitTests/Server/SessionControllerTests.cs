@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 using Xunit;
 using Xunit.Abstractions;
@@ -70,7 +68,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 var sessions = resultValue;
 
                 Assert.NotNull(sessions);
-                for(int i = 0; i<3; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     Assert.Equal(testSessionIds[i], sessions.ElementAt(i).SessionId);
                     Assert.Equal(testSessionNames[i], sessions.ElementAt(i).Name);
@@ -163,7 +161,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 Assert.Contains(schedule.Sessions, x => x.SessionId == getSession.SessionId);
             }
         }
-        
+
         [Fact]
         public async void CreateSessionWithParent()
         {

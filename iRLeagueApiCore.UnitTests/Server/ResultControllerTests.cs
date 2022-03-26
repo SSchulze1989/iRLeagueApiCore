@@ -4,11 +4,8 @@ using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server
@@ -27,7 +24,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         [Fact]
         public async void GetDefaultResult()
         {
-            using(var dbContext = Fixture.CreateDbContext())
+            using (var dbContext = Fixture.CreateDbContext())
             {
                 const string testLeagueName = "TestLeague";
                 const long testLeagueId = 1;

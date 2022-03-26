@@ -2,14 +2,12 @@
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -68,7 +66,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 })
                 .ToListAsync();
 
-            _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedules.Count(), 
+            _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedules.Count(),
                 leagueName, ids);
             return Ok(getSchedules);
         }
@@ -121,7 +119,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 }
                 if (leagueId != season.LeagueId)
                 {
-                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} does not belong to league {LeagueName}", 
+                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} does not belong to league {LeagueName}",
                         putSchedule.ScheduleId, putSchedule.SeasonId, leagueName);
                     return WrongLeague($"Season with id:{putSchedule.SeasonId} does not belong to the specified league");
                 }
@@ -179,7 +177,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             if (dbSchedule.LeagueId != leagueId)
             {
-                _logger.LogInformation("Forbid to delete schedule {ScheduleId} because it does not belong to {LeagueName}", 
+                _logger.LogInformation("Forbid to delete schedule {ScheduleId} because it does not belong to {LeagueName}",
                     id, leagueName);
                 return Forbid();
             }

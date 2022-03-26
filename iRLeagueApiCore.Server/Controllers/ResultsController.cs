@@ -146,7 +146,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet("FromSession")]
         [ServiceFilter(typeof(InsertLeagueIdAttribute))]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long id)
         {
             _logger.LogInformation("Get results from {LeagueName} for session id {SessionId} by {Username}", leagueName, id,

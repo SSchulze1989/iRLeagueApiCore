@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace iRLeagueApiCore.Communication.Models
 {
@@ -11,9 +6,9 @@ namespace iRLeagueApiCore.Communication.Models
     public class PutSeasonModel
     {
         [DataMember]
-        public long SeasonId { get; set;}
+        public long SeasonId { get; set; }
         [DataMember]
-        public string SeasonName { get; set;}
+        public string SeasonName { get; set; }
         [DataMember]
         public long? MainScoringId { get; set; }
         [DataMember]

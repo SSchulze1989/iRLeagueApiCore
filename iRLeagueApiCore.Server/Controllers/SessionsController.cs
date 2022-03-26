@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Enums;
-using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
@@ -67,7 +66,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(InsertLeagueIdAttribute))]
-        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId, 
+        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
             [FromQuery] long[] ids)
         {
             _logger.LogInformation("Get sessions from {LeagueName} for ids {SessionIds} by {UserName}", leagueName, ids,
@@ -95,7 +94,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 leagueName, ids);
             return Ok(getSessions);
         }
-    
+
         [HttpPut]
         [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
@@ -231,7 +230,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 getSession.SessionId);
             return Ok(getSession);
         }
-    
+
         [HttpDelete]
         [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]

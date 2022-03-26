@@ -1,5 +1,4 @@
-﻿using DbIntegrationTests;
-using iRLeagueApiCore.Communication.Enums;
+﻿using iRLeagueApiCore.Communication.Enums;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Http;
@@ -10,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures
 {
