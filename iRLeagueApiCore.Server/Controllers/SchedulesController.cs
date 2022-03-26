@@ -2,14 +2,12 @@
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -22,21 +20,23 @@ namespace iRLeagueApiCore.Server.Controllers
     public class SchedulesController : LeagueApiController
     {
         private readonly ILogger<SchedulesController> _logger;
+        private readonly LeagueDbContext _dbContext;
 
-        public SchedulesController(ILogger<SchedulesController> logger)
+        public SchedulesController(ILogger<SchedulesController> logger, LeagueDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
-        [InsertLeagueId]
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+            [FromQuery] long[] ids)
         {
             _logger.LogInformation("Get schedules from {LeagueName} for ids {ScheduleIds} by {UserName}", leagueName, ids,
                 User.Identity.Name);
 
-            IQueryable<ScheduleEntity> dbSchedules = dbContext.Schedules
+            IQueryable<ScheduleEntity> dbSchedules = _dbContext.Schedules
                 .Where(x => x.LeagueId == leagueId);
 
             if (ids != null && ids.Count() > 0)
@@ -66,21 +66,21 @@ namespace iRLeagueApiCore.Server.Controllers
                 })
                 .ToListAsync();
 
-            _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedules.Count(), 
+            _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedules.Count(),
                 leagueName, ids);
             return Ok(getSchedules);
         }
 
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        [InsertLeagueId]
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromBody] PutScheduleModel putSchedule, [FromServices] LeagueDbContext dbContext)
+            [FromBody] PutScheduleModel putSchedule)
         {
             _logger.LogInformation("Put schedule data on {LeagueName} with id {ScheduleId} by {UserName}", leagueName,
                 putSchedule.ScheduleId, User.Identity.Name);
 
-            var dbSchedule = await dbContext.Schedules
+            var dbSchedule = await _dbContext.Schedules
                 .SingleOrDefaultAsync(x => x.ScheduleId == putSchedule.ScheduleId);
 
             ClaimsPrincipal currentUser = User;
@@ -96,7 +96,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     CreatedByUserId = currentUserID,
                     CreatedByUserName = User.Identity.Name
                 };
-                dbContext.Schedules.Add(dbSchedule);
+                _dbContext.Schedules.Add(dbSchedule);
             }
             else if (dbSchedule.LeagueId != leagueId)
             {
@@ -108,7 +108,7 @@ namespace iRLeagueApiCore.Server.Controllers
             if (putSchedule.SeasonId != dbSchedule.SeasonId)
             {
                 _logger.LogInformation("Move schedule {ScheduleId} to season {SeasonId}", putSchedule.ScheduleId, putSchedule.SeasonId);
-                var season = await dbContext.Seasons
+                var season = await _dbContext.Seasons
                     .Include(x => x.Schedules)
                     .SingleOrDefaultAsync(x => x.SeasonId == putSchedule.SeasonId);
 
@@ -119,7 +119,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 }
                 if (leagueId != season.LeagueId)
                 {
-                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} does not belong to league {LeagueName}", 
+                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} does not belong to league {LeagueName}",
                         putSchedule.ScheduleId, putSchedule.SeasonId, leagueName);
                     return WrongLeague($"Season with id:{putSchedule.SeasonId} does not belong to the specified league");
                 }
@@ -132,11 +132,11 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSchedule.LastModifiedByUserId = currentUserID;
             dbSchedule.LastModifiedByUserName = User.Identity.Name;
 
-            await dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             _logger.LogInformation("Written schedule data on {LeagueName} for schedule {ScheduleId} by {UserName}", leagueName,
                 dbSchedule.ScheduleId, User.Identity.Name);
 
-            var getSchedule = await dbContext.Schedules
+            var getSchedule = await _dbContext.Schedules
                 .Select(x => new GetScheduleModel()
                 {
                     ScheduleId = x.ScheduleId,
@@ -161,13 +161,13 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpDelete]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        [InsertLeagueId]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromQuery] long id)
         {
             _logger.LogInformation("Deleting schedule {ScheduleId} from {LeagueName} by {UserName}", id, leagueName,
                 User.Identity.Name);
 
-            var dbSchedule = await dbContext.Schedules
+            var dbSchedule = await _dbContext.Schedules
                 .SingleOrDefaultAsync(x => x.ScheduleId == id);
 
             if (dbSchedule == null)
@@ -177,13 +177,13 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             if (dbSchedule.LeagueId != leagueId)
             {
-                _logger.LogInformation("Forbid to delete schedule {ScheduleId} because it does not belong to {LeagueName}", 
+                _logger.LogInformation("Forbid to delete schedule {ScheduleId} because it does not belong to {LeagueName}",
                     id, leagueName);
                 return Forbid();
             }
 
-            dbContext.Schedules.Remove(dbSchedule);
-            await dbContext.SaveChangesAsync();
+            _dbContext.Schedules.Remove(dbSchedule);
+            await _dbContext.SaveChangesAsync();
 
             _logger.LogInformation("Deleted schedule {ScheduleId} from {LeagueName} by {UserName}", id, leagueName,
                 User.Identity.Name);

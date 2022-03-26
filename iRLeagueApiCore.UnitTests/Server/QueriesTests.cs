@@ -1,11 +1,7 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server
@@ -26,7 +22,9 @@ namespace iRLeagueApiCore.UnitTests.Server
         {
             using (var context = Fixture.CreateDbContext())
             {
-                const long testSeasonId = 1;
+                long testSeasonId = (await context.Seasons
+                    .FirstAsync())
+                    .SeasonId;
 
                 // query results by season id
                 var query = context.ScoredResults

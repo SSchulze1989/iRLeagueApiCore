@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Server.Authentication
+﻿namespace iRLeagueApiCore.Server.Authentication
 {
     public static class LeagueRoles
     {

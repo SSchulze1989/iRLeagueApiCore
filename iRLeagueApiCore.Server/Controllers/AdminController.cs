@@ -1,8 +1,6 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -110,7 +108,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
                 if (roleResult.Succeeded == false)
                 {
-                    _logger.LogError("Failed to create role {Role} due to errors: {Errors}", leagueRoleName, 
+                    _logger.LogError("Failed to create role {Role} due to errors: {Errors}", leagueRoleName,
                         roleResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
                     return SomethingWentWrong();
                 }
@@ -122,7 +120,7 @@ namespace iRLeagueApiCore.Server.Controllers
             if (userRoleResult.Succeeded == false)
             {
                 _logger.LogError("Failed to add user {RoleUser} to role {Role} due to errors: {Errors}",
-                    userRole.UserName, leagueRoleName, 
+                    userRole.UserName, leagueRoleName,
                     userRoleResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
                 return SomethingWentWrong();
             }
@@ -150,7 +148,7 @@ namespace iRLeagueApiCore.Server.Controllers
             if (LeagueRoles.RolesAvailable.Contains(userRole.RoleName) == false)
             {
                 _logger.LogInformation("Role {LeagueRole} is not a valid league role", userRole.RoleName);
-                return BadRequestMessage("Invalid role", 
+                return BadRequestMessage("Invalid role",
                     "The rolename from request body is not a valid league role.\n" +
                     "Possible values are:\n" + string.Join("\n", LeagueRoles.RolesAvailable.Select(x => $"- {x}")));
             }
@@ -166,7 +164,7 @@ namespace iRLeagueApiCore.Server.Controllers
             var revokeResult = await _userManager.RemoveFromRoleAsync(roleUser, leagueRoleName);
             if (revokeResult.Succeeded == false)
             {
-                _logger.LogError("Failed to revoke role {Role} from user {RoleUser} due to errors: {Errors}", 
+                _logger.LogError("Failed to revoke role {Role} from user {RoleUser} due to errors: {Errors}",
                     revokeResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
                 return SomethingWentWrong();
             }

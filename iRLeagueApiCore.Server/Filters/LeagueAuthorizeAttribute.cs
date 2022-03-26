@@ -1,8 +1,6 @@
 ﻿using iRLeagueApiCore.Server.Authentication;
-using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -60,7 +58,7 @@ namespace iRLeagueApiCore.Server.Filters
 
                 if (hasRole == false)
                 {
-                    _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any required role {Roles}", 
+                    _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any required role {Roles}",
                         user.Identity.Name, leagueName, requireLeagueRoleAttribute.Roles);
                     context.Result = new ForbidResult();
                     return;
@@ -78,7 +76,7 @@ namespace iRLeagueApiCore.Server.Filters
 
         private bool HasAnyLeagueRole(IPrincipal user, string leagueName)
         {
-            foreach(var roleName in LeagueRoles.RolesAvailable)
+            foreach (var roleName in LeagueRoles.RolesAvailable)
             {
                 var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
                 if (user.IsInRole(leagueRole))

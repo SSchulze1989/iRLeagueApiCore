@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,12 +20,8 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace iRLeagueApiCore.Server
 {
@@ -49,15 +43,15 @@ namespace iRLeagueApiCore.Server
         {
             services.Configure<IISServerOptions>(options =>
                 options.AutomaticAuthentication = false);
-	
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                         builder.WithOrigins("*ireleaguemanager.net*")
-                             .AllowAnyHeader()
-                             .AllowAnyMethod();
+                        builder.WithOrigins("*ireleaguemanager.net*")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
                     });
             });
 
@@ -77,11 +71,11 @@ namespace iRLeagueApiCore.Server
                 var readHostUrls = Configuration["ASPNETCORE_HOSTURLS"];
                 if (readHostUrls != null)
                 {
-		            var hostUrls = readHostUrls.Split(';');
-                    foreach(var hostUrl in hostUrls)
-		            {
-		                c.AddServer(new OpenApiServer() { Url = hostUrl });
-		            }
+                    var hostUrls = readHostUrls.Split(';');
+                    foreach (var hostUrl in hostUrls)
+                    {
+                        c.AddServer(new OpenApiServer() { Url = hostUrl });
+                    }
                 }
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "iRLeagueApiCore.Server", Version = "v1" });
                 c.OperationFilter<OpenApiParameterIgnoreFilter>();
@@ -137,8 +131,11 @@ namespace iRLeagueApiCore.Server
 
             // try get connection string
             services.AddDbContextFactory<ApplicationDbContext, ApplicationDbContextFactory>();
-            services.AddScoped(x => 
+            services.AddScoped(x =>
                 x.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+            services.AddDbContextFactory<LeagueDbContext, LeagueDbContextFactory>();
+            services.AddScoped(x =>
+                x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -166,16 +163,13 @@ namespace iRLeagueApiCore.Server
                  };
              });
 
-            services.AddScoped<IDbContextFactory<LeagueDbContext>, LeagueDbContextFactory>();
-            services.AddScoped(x => 
-                x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
-
             services.AddScoped<LeagueAuthorizeAttribute>();
+            services.AddScoped<InsertLeagueIdAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
-        { 
+        {
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

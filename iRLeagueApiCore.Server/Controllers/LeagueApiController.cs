@@ -1,14 +1,8 @@
 ﻿using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Linq;
-using System.Net;
 using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
