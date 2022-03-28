@@ -27,7 +27,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<GetAdminUserModel>> Handle(ListUsersRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetAdminUserModel>> Handle(ListUsersRequest request, CancellationToken cancellationToken = default)
         {
             await _validators.ValidateAllAndThrowAsync(request, cancellationToken);
             // Get users that have a league role
@@ -43,7 +43,10 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             {
                 var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, role);
                 var inRole = await _userManager.GetUsersInRoleAsync(leagueRoleName);
-                users.AddRange(inRole.Select(user => (user, role)));
+                if (inRole != null)
+                {
+                    users.AddRange(inRole.Select(user => (user, role)));
+                }
             }
             return users.GroupBy(x => x.user, x => x.role);
         }

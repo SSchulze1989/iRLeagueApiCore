@@ -41,7 +41,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             _roleManager = roleManager;
         }
 
-        public async Task<Unit> Handle(GiveRoleRequest request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(GiveRoleRequest request, CancellationToken cancellationToken = default)
         {
             await _validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var leagueName = request.LeagueName;

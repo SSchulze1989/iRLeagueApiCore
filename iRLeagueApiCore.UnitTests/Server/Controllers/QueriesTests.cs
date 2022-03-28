@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Xunit;
 
-namespace iRLeagueApiCore.UnitTests.Server
+namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
     public class QueriesTests : IClassFixture<DbTestFixture>
     {

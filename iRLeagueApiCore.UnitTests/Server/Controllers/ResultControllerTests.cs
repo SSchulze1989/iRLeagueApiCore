@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace iRLeagueApiCore.UnitTests.Server
+namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
     public class ResultControllerTests : IClassFixture<DbTestFixture>
     {
@@ -30,7 +30,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testLeagueId = 1;
                 const long testResultId = 1;
 
-                var controller = Fixture.AddMemberControllerContext(new ResultsController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new ResultsController(MockLogger, dbContext));
                 var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testResultId })).Result;
 
                 Assert.IsType<OkObjectResult>(result);

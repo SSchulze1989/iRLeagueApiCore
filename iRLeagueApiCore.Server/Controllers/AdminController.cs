@@ -61,11 +61,11 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <summary>
         /// Give a league role to a user
         /// </summary>
-        /// <param name="leagueName">[Required] Name of the league</param>
+        /// <param name="leagueName">Name of the league</param>
         /// <param name="userRole"><c>RoleName</c> of the role to give to the user named <c>UserName</c></param>
         /// <returns>Action result</returns>
         [HttpPost("GiveRole")]
-        public async Task<IActionResult> GiveRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
+        public async Task<ActionResult> GiveRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
         {
             try
             {
@@ -77,6 +77,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             catch (ValidationException ex)
             {
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}", ex.Errors.Select(x => x.ErrorMessage));
                 return ex.ToActionResult();
             }
         }
