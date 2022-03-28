@@ -1,6 +1,9 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
+using iRLeagueApiCore.Server.Handlers.Admin;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,15 +21,13 @@ namespace iRLeagueApiCore.Server.Controllers
     public class AdminController : LeagueApiController
     {
         private readonly ILogger<AdminController> _logger;
+        private readonly IMediator _mediator;
 
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AdminController(ILogger<AdminController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AdminController(ILogger<AdminController> logger, IMediator mediator)
         {
             _logger = logger;
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -37,36 +38,24 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet("ListUsers")]
         public async Task<ActionResult<IEnumerable<GetAdminUserModel>>> ListUsers([FromRoute] string leagueName)
         {
-            _logger.LogInformation("Get list of users for {LeagueName} by {UserName}", leagueName, User.Identity.Name);
-
-            // Get users that have a league role
-            var users = new List<ApplicationUser>();
-
-            foreach (var role in LeagueRoles.RolesAvailable)
+            try
             {
-                users.AddRange(await _userManager.GetUsersInRoleAsync(role));
-            }
-
-            if (users.Count() == 0)
-            {
-                _logger.LogInformation("No users found in {LeagueName}", leagueName);
-                return NotFound();
-            }
-
-            var getUsers = users
-                .Distinct()
-                .Select(async x => new GetAdminUserModel()
+                _logger.LogInformation("Get list of users for {LeagueName} by {UserName}", leagueName, User.Identity.Name);
+                var request = new ListUsersRequest(leagueName);
+                var getUsers = await _mediator.Send(request);
+                if (getUsers.Count() == 0)
                 {
-                    UserName = x.UserName,
-                    Firsname = x.FullName.Split(' ').First(),
-                    Lastname = x.FullName.Split(' ').Last(),
-                    Email = x.Email,
-                    Roles = await _userManager.GetRolesAsync(x)
-                });
-
-            _logger.LogInformation("Return {Count} user entries for {LeagueName}", getUsers.Count(), leagueName);
-
-            return Ok(getUsers);
+                    _logger.LogInformation("No users found in {LeagueName}", leagueName);
+                    return NotFound();
+                }
+                _logger.LogInformation("Return {Count} user entries for {LeagueName}", getUsers.Count(), leagueName);
+                return Ok(getUsers);
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}", ex.Errors.Select(x => x.ErrorMessage));
+                return ex.ToActionResult();
+            }
         }
 
         /// <summary>
@@ -78,100 +67,62 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost("GiveRole")]
         public async Task<IActionResult> GiveRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
         {
-            _logger.LogInformation("Give league role {LeagueRole} to user {RoleUser} for {LeagueName} by {UserName}",
-                userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
-
-            // find user in database
-            var roleUser = await _userManager.FindByNameAsync(userRole.UserName);
-            if (roleUser == null)
+            try
             {
-                _logger.LogInformation("No user named {RoleUser} found in user database.");
-                return BadRequestMessage("User not found", "The username from request body does not exist");
+                _logger.LogInformation("Give league role {LeagueRole} to user {RoleUser} for {LeagueName} by {UserName}",
+                    userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
+                var request = new GiveRoleRequest(leagueName, userRole);
+                await _mediator.Send(request);
+                return OkMessage($"Role {userRole.RoleName} given to user {userRole.UserName}");
             }
-
-            // check if league role is valid
-            if (LeagueRoles.RolesAvailable.Contains(userRole.RoleName) == false)
+            catch (ValidationException ex)
             {
-                _logger.LogInformation("Role {LeagueRole} is not a valid league role", userRole.RoleName);
-                return BadRequestMessage("Invalid role", "The rolename from request body is not a valid league role.\n" +
-                    "Possible values are:\n" + string.Join("\n", LeagueRoles.RolesAvailable.Select(x => $"- {x}")));
+                return ex.ToActionResult();
             }
-
-            // check if league role exists - if not create it
-            // - maybe a bit dirty but this way there is no need to extra create each league role when the league is created first
-            //   but only once they are needed
-            var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, userRole.RoleName);
-            if (await _roleManager.RoleExistsAsync(leagueRoleName) == false)
-            {
-                _logger.LogInformation("League role {LeagueRole} does not exist for {LeagueName} and will be created");
-                var roleResult = await _roleManager.CreateAsync(new IdentityRole(leagueRoleName));
-
-                if (roleResult.Succeeded == false)
-                {
-                    _logger.LogError("Failed to create role {Role} due to errors: {Errors}", leagueRoleName,
-                        roleResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
-                    return SomethingWentWrong();
-                }
-
-                _logger.LogInformation("League role {LeagueRole} created with full role name {Role}", userRole.RoleName, leagueRoleName);
-            }
-
-            var userRoleResult = await _userManager.AddToRoleAsync(roleUser, leagueRoleName);
-            if (userRoleResult.Succeeded == false)
-            {
-                _logger.LogError("Failed to add user {RoleUser} to role {Role} due to errors: {Errors}",
-                    userRole.UserName, leagueRoleName,
-                    userRoleResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
-                return SomethingWentWrong();
-            }
-
-            _logger.LogInformation("Added league role {LeagueRole} to user {RoleUser} for {LeagueName}",
-                userRole.RoleName, userRole.UserName, leagueName);
-            return OkMessage($"Role {userRole.RoleName} given to user {userRole.UserName}");
         }
 
-        [HttpPost("RevokeRole")]
-        public async Task<IActionResult> RevokeRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
-        {
-            _logger.LogInformation("Revoke league role {LeagueRole} from user {RoleUser} for {LeagueName} by {UserName}",
-                userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
+        //[HttpPost("RevokeRole")]
+        //public async Task<IActionResult> RevokeRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
+        //{
+        //    _logger.LogInformation("Revoke league role {LeagueRole} from user {RoleUser} for {LeagueName} by {UserName}",
+        //        userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
 
-            // find user in database
-            var roleUser = await _userManager.FindByNameAsync(userRole.UserName);
-            if (roleUser == null)
-            {
-                _logger.LogInformation("No user named {RoleUser} found in user database.");
-                return BadRequestMessage("User not found", "The username from request body does not exist");
-            }
+        //    // find user in database
+        //    var roleUser = await _userManager.FindByNameAsync(userRole.UserName);
+        //    if (roleUser == null)
+        //    {
+        //        _logger.LogInformation("No user named {RoleUser} found in user database.");
+        //        return BadRequestMessage("User not found", "The username from request body does not exist");
+        //    }
 
-            // check if league role is valid
-            if (LeagueRoles.RolesAvailable.Contains(userRole.RoleName) == false)
-            {
-                _logger.LogInformation("Role {LeagueRole} is not a valid league role", userRole.RoleName);
-                return BadRequestMessage("Invalid role",
-                    "The rolename from request body is not a valid league role.\n" +
-                    "Possible values are:\n" + string.Join("\n", LeagueRoles.RolesAvailable.Select(x => $"- {x}")));
-            }
+        //    // check if league role is valid
+        //    if (LeagueRoles.RolesAvailable.Contains(userRole.RoleName) == false)
+        //    {
+        //        _logger.LogInformation("Role {LeagueRole} is not a valid league role", userRole.RoleName);
+        //        return BadRequestMessage("Invalid role",
+        //            "The rolename from request body is not a valid league role.\n" +
+        //            "Possible values are:\n" + string.Join("\n", LeagueRoles.RolesAvailable.Select(x => $"- {x}")));
+        //    }
 
-            var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, userRole.RoleName);
-            // check if user has role
-            if (await _userManager.IsInRoleAsync(roleUser, leagueRoleName) == false)
-            {
-                _logger.LogInformation("User {RoleUser} is not in role {Role}", userRole.UserName, leagueRoleName);
-                return BadRequestMessage("Not in role", "The role could not be revoked because the user is not in the specified role");
-            }
+        //    var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, userRole.RoleName);
+        //    // check if user has role
+        //    if (await _userManager.IsInRoleAsync(roleUser, leagueRoleName) == false)
+        //    {
+        //        _logger.LogInformation("User {RoleUser} is not in role {Role}", userRole.UserName, leagueRoleName);
+        //        return BadRequestMessage("Not in role", "The role could not be revoked because the user is not in the specified role");
+        //    }
 
-            var revokeResult = await _userManager.RemoveFromRoleAsync(roleUser, leagueRoleName);
-            if (revokeResult.Succeeded == false)
-            {
-                _logger.LogError("Failed to revoke role {Role} from user {RoleUser} due to errors: {Errors}",
-                    revokeResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
-                return SomethingWentWrong();
-            }
+        //    var revokeResult = await _userManager.RemoveFromRoleAsync(roleUser, leagueRoleName);
+        //    if (revokeResult.Succeeded == false)
+        //    {
+        //        _logger.LogError("Failed to revoke role {Role} from user {RoleUser} due to errors: {Errors}",
+        //            revokeResult.Errors.Select(x => $"{x.Code}: {x.Description}"));
+        //        return SomethingWentWrong();
+        //    }
 
-            _logger.LogInformation("Revoked league role {LeagueRole} from user {RoleUser} for {LeagueName}",
-                userRole.RoleName, userRole.UserName, leagueName);
-            return OkMessage($"Role {userRole.RoleName} revoked from user {userRole.UserName}");
-        }
+        //    _logger.LogInformation("Revoked league role {LeagueRole} from user {RoleUser} for {LeagueName}",
+        //        userRole.RoleName, userRole.UserName, leagueName);
+        //    return OkMessage($"Role {userRole.RoleName} revoked from user {userRole.UserName}");
+        //}
     }
 }
