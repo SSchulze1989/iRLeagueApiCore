@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Communication.Enums;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 #if NETCOREAPP  
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -56,6 +57,7 @@ namespace iRLeagueApiCore.Communication.Models
         /// Id of the connected schedule when sessions are autofilled from schedule
         /// Not required when selecting sessions individually
         /// </summary>
+        [DataMember(IsRequired = false)]
         public long? ConnectedScheduleId { get; set; }
         /// <summary>
         /// Use teams information available from uploaded result set
