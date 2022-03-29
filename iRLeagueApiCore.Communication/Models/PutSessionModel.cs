@@ -1,7 +1,6 @@
-﻿using iRLeagueApiCore.Communication.Enums;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.Runtime.Serialization;
+using iRLeagueApiCore.Communication.Enums;
 #if NETCOREAPP
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -35,10 +34,10 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
 #if NETCOREAPP
-        [EnumDataType(typeof(SessionTypeEnum))]
+        [EnumDataType(typeof(SessionType))]
         [JsonConverter(typeof(JsonStringEnumConverter))]
 #endif
-        public SessionTypeEnum SessionType { get; set; }
+        public SessionType SessionType { get; set; }
         /// <summary>
         /// Day and time of session start
         /// </summary>

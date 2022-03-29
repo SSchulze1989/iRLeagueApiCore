@@ -186,7 +186,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                         .Skip(i)
                         .FirstOrDefault(),
                     SessionTitle = $"S1 Session {i + 1}",
-                    SessionType = (SessionTypeEnum)i + 1
+                    SessionType = (SessionType)i + 1
                 };
                 schedule1.Sessions.Add(session);
             }
@@ -206,7 +206,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                         .Skip(i)
                         .FirstOrDefault(),
                     SessionTitle = $"S2 Session {i + 1}",
-                    SessionType = (SessionTypeEnum)i + 1
+                    SessionType = (SessionType)i + 1
                 };
                 schedule2.Sessions.Add(session);
             }
