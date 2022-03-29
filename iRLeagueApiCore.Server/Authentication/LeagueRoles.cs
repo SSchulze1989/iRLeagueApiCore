@@ -25,7 +25,7 @@
         /// <summary>
         /// Array of all available league roles
         /// </summary>
-        public static readonly string[] RolesAvailable = new string[] { Admin, Organizer, Member, Steward };
+        public static string[] RolesAvailable { get; } = new string[] { Admin, Organizer, Member, Steward };
 
         /// <summary>
         /// Get the full league role name for a provided league name and role name

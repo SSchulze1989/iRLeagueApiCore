@@ -3,6 +3,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -84,6 +85,11 @@ namespace Microsoft.AspNetCore.Identity.Test
             lookupNormalizer.Setup(i => i.NormalizeName(It.IsAny<string>())).Returns(normalizerFunc);
             lookupNormalizer.Setup(i => i.NormalizeEmail(It.IsAny<string>())).Returns(normalizerFunc);
             return lookupNormalizer.Object;
+        }
+
+        public static Mock<IValidator<T>> MockValidator<T>()
+        {
+            return new Mock<IValidator<T>>();
         }
     }
 }
