@@ -1,25 +1,22 @@
 ﻿using iRLeagueApiCore.Communication.Enums;
 using System;
 using System.Collections.Generic;
+#if NETCOREAPP  
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+#endif
 
 namespace iRLeagueApiCore.Communication.Models
 {
-    public class PutScoringModel
+    public class PostScoringModel
     {
-        /// <summary>
-        /// Id of the scoring - use 0 or omit for creating new scoring
-        /// </summary>
-        public long ScoringId { get; set; }
         /// <summary>
         /// Kind of scoring
         /// </summary>
+#if NETCOREAPP
         [EnumDataType(typeof(ScoringKindEnum))]
         [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
         public ScoringKindEnum ScoringKind { get; set; }
         /// <summary>
         /// Name of the scoring - shown in results
@@ -86,10 +83,6 @@ namespace iRLeagueApiCore.Communication.Models
         /// Long text description
         /// </summary>
         public string Description { get; set; }
-        /// <summary>
-        /// Array of session ids to select individual sessions for this scoring - will be overwritten if ConnectedScheduleId is set
-        /// </summary>
-        public IEnumerable<long> SessionIds { get; set; }
 
         //reserved for later
         //public int ScoringSessionType { get; set; }
