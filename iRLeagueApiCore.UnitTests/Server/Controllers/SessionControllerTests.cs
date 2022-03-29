@@ -222,7 +222,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
                 };
 
                 var controller = AddContexts.AddMemberControllerContext(new SessionsController(MockLogger, dbContext));
-                var result = (await controller.Put(league.Name, league.LeagueId, putSession)).Result;
+                var result = (await controller.Put(league.Name, league.Id, putSession)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var getSession = (GetSessionModel)okResult.Value;
@@ -256,7 +256,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
                 };
 
                 var controller = AddContexts.AddMemberControllerContext(new SessionsController(MockLogger, dbContext));
-                var result = (await controller.Put(league.Name, league.LeagueId, putSession)).Result;
+                var result = (await controller.Put(league.Name, league.Id, putSession)).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
                 var getSession = (GetSessionModel)okResult.Value;
@@ -291,7 +291,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
                 };
 
                 var controller = AddContexts.AddMemberControllerContext(new SessionsController(MockLogger, dbContext));
-                var result = (await controller.Put(fromLeague.Name, fromLeague.LeagueId, putSession)).Result;
+                var result = (await controller.Put(fromLeague.Name, fromLeague.Id, putSession)).Result;
                 Assert.IsNotType<OkObjectResult>(result);
 
                 var checkFromSchedule = dbContext.Schedules.Single(x => x.ScheduleId == fromSchedule.ScheduleId);
