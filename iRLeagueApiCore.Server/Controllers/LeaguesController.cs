@@ -38,7 +38,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             if (ids != null && ids.Count() > 0)
             {
-                dbLeagues = dbLeagues.Where(x => ids.Contains(x.LeagueId));
+                dbLeagues = dbLeagues.Where(x => ids.Contains(x.Id));
             }
 
             if (dbLeagues.Count() == 0)
@@ -50,7 +50,7 @@ namespace iRLeagueApiCore.Server.Controllers
             getLeagues = await dbLeagues
                 .Select(x => new GetLeagueModel()
                 {
-                    LeagueId = x.LeagueId,
+                    LeagueId = x.Id,
                     Name = x.Name,
                     NameFull = x.NameFull,
                     SeasonIds = x.Seasons.Select(x => x.SeasonId),
@@ -120,7 +120,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             var getLeague = new GetLeagueModel();
-            getLeague.LeagueId = dbLeague.LeagueId;
+            getLeague.LeagueId = dbLeague.Id;
             getLeague.Name = dbLeague.Name;
             getLeague.NameFull = dbLeague.NameFull;
             getLeague.CreatedByUserId = dbLeague.CreatedByUserId;

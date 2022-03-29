@@ -49,7 +49,7 @@ namespace iRLeagueApiCore.Server.Controllers
             RaceLength = x.RaceLength,
             Name = x.Name,
             SessionTitle = x.SessionTitle,
-            SessionType = x.SessionType,
+            //SessionType = x.SessionType,
             SubSessionIds = x.SubSessions.Select(x => x.SessionId),
             ParentSessionId = x.ParentSessionId,
             SubSessionNr = x.SubSessionNr,
@@ -212,7 +212,7 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSession.QualyLength = putSession.QualyLength;
             dbSession.RaceLength = putSession.RaceLength;
             dbSession.SessionTitle = putSession.SessionTitle;
-            dbSession.SessionType = putSession.SessionType;
+            //dbSession.SessionType = putSession.SessionType;
             dbSession.SubSessionNr = putSession.SubSessionNr;
             dbSession.LastModifiedOn = DateTime.Now;
             dbSession.LastModifiedByUserId = currentUserID;
