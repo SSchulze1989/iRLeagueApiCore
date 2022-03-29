@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Server.Authentication
+﻿namespace iRLeagueApiCore.Server.Authentication
 {
     public static class LeagueRoles
     {
@@ -30,7 +25,7 @@ namespace iRLeagueApiCore.Server.Authentication
         /// <summary>
         /// Array of all available league roles
         /// </summary>
-        public static readonly string[] RolesAvailable = new string[] { Admin, Organizer, Member, Steward };
+        public static string[] RolesAvailable { get; } = new string[] { Admin, Organizer, Member, Steward };
 
         /// <summary>
         /// Get the full league role name for a provided league name and role name

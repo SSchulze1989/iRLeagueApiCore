@@ -1,18 +1,16 @@
-﻿using iRLeagueApiCore.Communication;
-using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Authentication;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Security.Principal;
 using System.Security.Claims;
-using System;
-using iRLeagueApiCore.Server.Authentication;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -21,19 +19,21 @@ namespace iRLeagueApiCore.Server.Controllers
     public class LeaguesController : LeagueApiController
     {
         private readonly ILogger<LeaguesController> _logger;
+        private readonly LeagueDbContext _dbContext;
 
-        public LeaguesController(ILogger<LeaguesController> logger)
+        public LeaguesController(ILogger<LeaguesController> logger, LeagueDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromQuery] long[] ids)
         {
             _logger.LogInformation("Getting league info for league ids {LeagueIds} by {UserName}", ids,
                 User.Identity.Name);
 
-            IQueryable<LeagueEntity> dbLeagues = dbContext.Leagues;
+            IQueryable<LeagueEntity> dbLeagues = _dbContext.Leagues;
             var getLeagues = new List<GetLeagueModel>();
 
             if (ids != null && ids.Count() > 0)
@@ -69,12 +69,12 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpPut]
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<ActionResult<GetLeagueModel>> Put([FromBody] PutLeagueModel putLeague, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult<GetLeagueModel>> Put([FromBody] PutLeagueModel putLeague)
         {
             _logger.LogInformation("Put league data with {LeagueId} by {UserName}", putLeague.LeagueId,
                 User.Identity.Name);
 
-            var dbLeague = await dbContext.FindAsync<LeagueEntity>(putLeague.LeagueId);
+            var dbLeague = await _dbContext.FindAsync<LeagueEntity>(putLeague.LeagueId);
 
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -91,15 +91,15 @@ namespace iRLeagueApiCore.Server.Controllers
                 }
 
                 // check if league with same name exists
-                if (await dbContext.Leagues
-                    .AnyAsync(x => x.Name == putLeague.Name))
+                if (await _dbContext.Leagues
+                    .AnyAsync(x => x.Name.ToLower() == putLeague.Name.ToLower()))
                 {
                     _logger.LogInformation("Failed to create league: league {LeagueName} already exists", putLeague.Name);
                     return BadRequestMessage("League exists", "A league with the same name exists already and cannot be created");
                 }
 
                 dbLeague = new LeagueEntity();
-                dbContext.Leagues.Add(dbLeague);
+                _dbContext.Leagues.Add(dbLeague);
                 dbLeague.CreatedOn = DateTime.Now;
                 dbLeague.CreatedByUserId = currentUserID;
                 dbLeague.CreatedByUserName = User.Identity.Name;
@@ -111,7 +111,7 @@ namespace iRLeagueApiCore.Server.Controllers
             dbLeague.LastModifiedByUserName = User.Identity.Name;
             dbLeague.Name = putLeague.Name;
             dbLeague.NameFull = putLeague.NameFull;
-            await dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
             if (dbLeague == null)
             {
@@ -136,11 +136,11 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpDelete]
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<ActionResult> Delete([FromQuery] long leagueId, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult> Delete([FromQuery] long leagueId)
         {
             _logger.LogInformation("Delete league with id {LeagueId} by {UserName}", leagueId,
                 User.Identity.Name);
-            var dbLeague = await dbContext.FindAsync<LeagueEntity>(leagueId);
+            var dbLeague = await _dbContext.FindAsync<LeagueEntity>(leagueId);
 
             if (dbLeague == null)
             {
@@ -148,8 +148,8 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            dbContext.Remove(dbLeague);
-            await dbContext.SaveChangesAsync();
+            _dbContext.Remove(dbLeague);
+            await _dbContext.SaveChangesAsync();
 
             _logger.LogInformation("Deleted league {LeagueName} with id {LeagueId} by {UserName}", dbLeague.Name, leagueId,
                 User.Identity.Name);

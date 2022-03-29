@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Enums;
-using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueDatabaseCore.Models;
@@ -27,10 +26,12 @@ namespace iRLeagueApiCore.Server.Controllers
     public class SessionsController : LeagueApiController
     {
         private readonly ILogger<SessionsController> _logger;
+        private readonly LeagueDbContext _dbContext;
 
-        public SessionsController(ILogger<SessionsController> logger)
+        public SessionsController(ILogger<SessionsController> logger, LeagueDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         private static Expression<Func<SessionEntity, GetSessionModel>> MapToSessionModelExpr { get; } = x => new GetSessionModel()
@@ -64,13 +65,14 @@ namespace iRLeagueApiCore.Server.Controllers
 
 
         [HttpGet]
-        [InsertLeagueId]
-        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long[] ids, [FromServices] LeagueDbContext dbContext)
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
+            [FromQuery] long[] ids)
         {
             _logger.LogInformation("Get sessions from {LeagueName} for ids {SessionIds} by {UserName}", leagueName, ids,
                 User.Identity.Name);
 
-            IQueryable<SessionEntity> dbSessions = dbContext.Sessions
+            IQueryable<SessionEntity> dbSessions = _dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId);
 
             if (ids != null && ids.Count() > 0)
@@ -92,16 +94,17 @@ namespace iRLeagueApiCore.Server.Controllers
                 leagueName, ids);
             return Ok(getSessions);
         }
-    
+
         [HttpPut]
-        [InsertLeagueId]
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] PutSessionModel putSession, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
+            [FromQuery] PutSessionModel putSession)
         {
             _logger.LogInformation("Put session data on {LeagueName} with id {SessionId} by {UserName}", leagueName,
                 putSession.SessionId, User.Identity.Name);
 
-            var dbSession = await dbContext.Sessions
+            var dbSession = await _dbContext.Sessions
                 .SingleOrDefaultAsync(x => x.SessionId == putSession.SessionId);
 
             ClaimsPrincipal currentUser = User;
@@ -117,7 +120,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     CreatedByUserId = currentUserID,
                     CreatedByUserName = User.Identity.Name
                 };
-                dbContext.Sessions.Add(dbSession);
+                _dbContext.Sessions.Add(dbSession);
             }
             else if (dbSession.LeagueId != leagueId)
             {
@@ -131,18 +134,18 @@ namespace iRLeagueApiCore.Server.Controllers
                 _logger.LogInformation("Move session {SessionId} to schedule {ScheduleId}", putSession.SessionId, putSession.ScheduleId);
                 if (putSession.ScheduleId == null)
                 {
-                    dbContext.Entry(dbSession)
+                    _dbContext.Entry(dbSession)
                         .Reference(x => x.Schedule)
                         .Load();
 
                     dbSession.Schedule = null;
                     // dont delete session
-                    dbContext.Entry(dbSession)
+                    _dbContext.Entry(dbSession)
                         .State = EntityState.Modified;
                 }
                 else
                 {
-                    var schedule = await dbContext.Schedules
+                    var schedule = await _dbContext.Schedules
                     .Include(x => x.Sessions)
                     .SingleOrDefaultAsync(x => x.ScheduleId == putSession.ScheduleId);
 
@@ -168,14 +171,14 @@ namespace iRLeagueApiCore.Server.Controllers
                 _logger.LogInformation("Move session {SessionId} to parent session {ParentSessionId}", putSession.SessionId, putSession.ParentSessionId);
                 if (putSession.ParentSessionId == null)
                 {
-                    await dbContext.Entry(dbSession)
+                    await _dbContext.Entry(dbSession)
                         .Reference(x => x.ParentSession)
                         .LoadAsync();
                     dbSession.ParentSession.SubSessions.Remove(dbSession);
                 }
                 else
                 {
-                    var parentSession = await dbContext.Sessions
+                    var parentSession = await _dbContext.Sessions
                         .SingleOrDefaultAsync(x => x.SessionId == putSession.ParentSessionId);
 
                     if (parentSession == null)
@@ -215,11 +218,11 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSession.LastModifiedByUserId = currentUserID;
             dbSession.LastModifiedByUserName = User.Identity.Name;
 
-            await dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             _logger.LogInformation("Written session data on {LeagueName} for session {SessionId} by {UserName}", leagueName,
                 dbSession.SessionId, User.Identity.Name);
 
-            var getSession = await dbContext.Sessions
+            var getSession = await _dbContext.Sessions
                 .Select(MapToSessionModelExpr)
                 .SingleAsync(x => x.SessionId == dbSession.SessionId);
 
@@ -227,15 +230,15 @@ namespace iRLeagueApiCore.Server.Controllers
                 getSession.SessionId);
             return Ok(getSession);
         }
-    
+
         [HttpDelete]
-        [InsertLeagueId]
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id, [FromServices] LeagueDbContext dbContext)
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id)
         {
             _logger.LogInformation("Request to delete Session {SessionId} from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
 
-            var dbSession = await dbContext.Sessions
+            var dbSession = await _dbContext.Sessions
                 .Include(x => x.Schedule)
                     .ThenInclude(x => x.Sessions)
                 .SingleOrDefaultAsync(x => x.SessionId == id && x.LeagueId == leagueId);
@@ -246,8 +249,8 @@ namespace iRLeagueApiCore.Server.Controllers
                 return NotFound();
             }
 
-            dbContext.Sessions.Remove(dbSession);
-            await dbContext.SaveChangesAsync();
+            _dbContext.Sessions.Remove(dbSession);
+            await _dbContext.SaveChangesAsync();
 
             _logger.LogInformation("Session {SessionId} deleted from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
 

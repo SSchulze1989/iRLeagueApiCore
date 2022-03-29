@@ -1,12 +1,11 @@
 ﻿using iRLeagueApiCore.Communication.Enums;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Text;
+#if NETCOREAPP
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+#endif
 
 namespace iRLeagueApiCore.Communication.Models
 {
@@ -35,8 +34,10 @@ namespace iRLeagueApiCore.Communication.Models
         /// Session type specifier - 0 = Undefined, 1 = Practice, 2 = Qualifying, 3 = Race, 4 = HeatEvent, 5 = Heat, 6 = Warmup
         /// </summary>
         [DataMember]
+#if NETCOREAPP
         [EnumDataType(typeof(SessionTypeEnum))]
         [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
         public SessionTypeEnum SessionType { get; set; }
         /// <summary>
         /// Day and time of session start
