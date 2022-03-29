@@ -38,8 +38,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             var testRoleManager = GetDefaultMockRoleManager().Object;
             var testValidator = GetDefaultValidator<Unit>().Object;
             Assert.NotNull(await testUserManager.FindByNameAsync(validUser.UserName));
-            Assert.True((await testUserManager.AddToRoleAsync(validUser, testRole)).Succeeded);
-            Assert.True(await testRoleManager.RoleExistsAsync(testRole));
+            Assert.True(await testRoleManager.RoleExistsAsync(testLeagueRoleName));
             Assert.True(testValidator.Validate(Unit.Value).IsValid);
         }
 
