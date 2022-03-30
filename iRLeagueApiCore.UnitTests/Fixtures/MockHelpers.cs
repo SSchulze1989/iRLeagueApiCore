@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -90,6 +91,21 @@ namespace Microsoft.AspNetCore.Identity.Test
         public static Mock<IValidator<T>> MockValidator<T>()
         {
             return new Mock<IValidator<T>>();
+        }
+
+        public static IValidator<T> TestValidator<T>()
+        {
+            var mockValidator = MockValidator<T>();
+            mockValidator.Setup(x => x.Validate(It.IsAny<T>()))
+                .Returns(new FluentValidation.Results.ValidationResult()).Verifiable();
+            mockValidator.Setup(x => x.ValidateAsync(It.IsAny<T>(), default))
+                .ReturnsAsync(new FluentValidation.Results.ValidationResult()).Verifiable();
+            return mockValidator.Object;
+        }
+
+        public static IEnumerable<IValidator<T>> TestValidators<T>()
+        {
+            return new IValidator<T>[] { TestValidator<T>() };
         }
     }
 }

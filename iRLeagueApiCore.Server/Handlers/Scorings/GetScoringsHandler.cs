@@ -1,4 +1,7 @@
-﻿using iRLeagueApiCore.Communication.Models;
+﻿using FluentValidation;
+using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Exceptions;
+using iRLeagueDatabaseCore.Models;
 using MediatR;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,13 +9,22 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public record GetScoringsRequest(long LeagueId, IEnumerable<long> Ids) : IRequest<IEnumerable<GetScoringModel>>;
+    public record GetScoringRequest(long LeagueId, long ScoringId) : IRequest<GetScoringModel>;
 
-    public class GetScoringsHandler : IRequestHandler<GetScoringsRequest, IEnumerable<GetScoringModel>>
+    public class GetScoringHandler : ScoringHandlerBase, IRequestHandler<GetScoringRequest, GetScoringModel>
     {
-        public async Task<IEnumerable<GetScoringModel>> Handle(GetScoringsRequest request, CancellationToken cancellationToken = default)
+        private readonly IEnumerable<IValidator<GetScoringRequest>> validators;
+
+        public GetScoringHandler(LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringRequest>> validators)
+            : base(dbContext)
         {
-            throw new System.NotImplementedException();
+            this.validators = validators;
+        }
+
+        public async Task<GetScoringModel> Handle(GetScoringRequest request, CancellationToken cancellationToken = default)
+        {
+            await validators.ValidateAllAndThrowAsync(request, cancellationToken);
+            return await MapToGetScoringModelAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();
         }
     }
 }
