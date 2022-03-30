@@ -1,6 +1,9 @@
-﻿using iRLeagueApiCore.Server.Handlers.Scorings;
+﻿using FluentValidation.TestHelper;
+using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.Server.Validation.Scorings;
 using iRLeagueApiCore.UnitTests.Fixtures;
+using iRLeagueDatabaseCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,11 +27,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
 
         private static PutScoringRequest DefaultRequest(long leagueId, long scoringId)
         {
-            return new PutScoringRequest(leagueId, scoringId)
+            var model = new PutScoringModel()
             {
                 BasePoints = new double[0],
                 BonusPoints = new string[0]
             };
+            return new PutScoringRequest(leagueId, scoringId, model);
+        }
+
+        private static PutScoringRequestValidator CreateValidator(LeagueDbContext dbContext)
+        {
+            return new PutScoringRequestValidator(dbContext, new PutScoringModelValidator(dbContext));
         }
 
         [Theory]
@@ -37,13 +46,16 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
         [InlineData(0, false)]
         public async Task ValidateLeagueId(long leagueId, bool expectValid)
         {
-            using (var dbContext = fixture.CreateDbContext())
-            {
-                var validator = new PutScoringValidator(dbContext);
-                var request = DefaultRequest(leagueId, testScoringId);
+            using var dbContext = fixture.CreateDbContext();
+            
+            var validator = CreateValidator(dbContext);
+            var request = DefaultRequest(leagueId, testScoringId);
 
-                var result = await validator.ValidateAsync(request);
-                Assert.Equal(expectValid, result.IsValid);
+            var result = await validator.TestValidateAsync(request);
+            Assert.Equal(expectValid, result.IsValid);
+            if (expectValid == false)
+            {
+                result.ShouldHaveValidationErrorFor(x => x.LeagueId);
             }
         }
 
@@ -53,22 +65,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
         [InlineData(null, false)]
         public async Task ValidateBasePoints(IEnumerable<double> points, bool expectValid)
         {
-            using (var dbContext = fixture.CreateDbContext())
-            {
-                var validator = new PutScoringValidator(dbContext);
-                var request = DefaultRequest(testLeagueId, testScoringId);
-                request.BasePoints = points;
+            using var dbContext = fixture.CreateDbContext();
+            
+            var validator = CreateValidator(dbContext);
+            var request = DefaultRequest(testLeagueId, testScoringId);
+            request.Model.BasePoints = points;
 
-                var result = await validator.ValidateAsync(request);
-                if (expectValid)
-                {
-                    Assert.True(result.IsValid);
-                }
-                else
-                {
-                    Assert.False(result.IsValid);
-                    Assert.Contains(result.Errors, x => x.PropertyName == nameof(PutScoringRequest.BasePoints));
-                }
+            var result = await validator.TestValidateAsync(request);
+            Assert.Equal(expectValid, result.IsValid);
+            if (expectValid == false)
+            {
+                result.ShouldHaveValidationErrorFor(x => x.Model.BasePoints);
             }
         }
 
@@ -81,22 +88,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
         [InlineData(null, false)]
         public async Task ValidateBonusPoints(IEnumerable<string> bonusPoints, bool expectValid)
         {
-            using (var dbContest = fixture.CreateDbContext())
-            {
-                var validator = new PutScoringValidator(dbContest);
-                var request = DefaultRequest(testLeagueId, testScoringId);
-                request.BonusPoints = bonusPoints;
+            using var dbContext = fixture.CreateDbContext();
+            
+            var validator = CreateValidator(dbContext);
+            var request = DefaultRequest(testLeagueId, testScoringId);
+            request.Model.BonusPoints = bonusPoints;
 
-                var result = await validator.ValidateAsync(request);
-                if (expectValid)
-                {
-                    Assert.True(result.IsValid);
-                }
-                else
-                {
-                    Assert.False(result.IsValid);
-                    Assert.Contains(result.Errors, x => x.PropertyName == nameof(PutScoringRequest.BonusPoints));
-                }
+            var result = await validator.TestValidateAsync(request);
+            Assert.Equal(expectValid, result.IsValid);
+            if (expectValid == false)
+            {
+                result.ShouldHaveValidationErrorFor(x => x.Model.BonusPoints);
             }
         }
 
@@ -108,23 +110,18 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
         [InlineData(42, true, false)]
         public async Task ValidateExtScoringSource(long? scoringId, bool useExtScoring, bool expectValid)
         {
-            using (var dbContext = fixture.CreateDbContext())
-            {
-                var validator = new PutScoringValidator(dbContext);
-                var request = DefaultRequest(testLeagueId, testScoringId);
-                request.ExtScoringSourceId = scoringId;
-                request.TakeResultsFromExtSource = useExtScoring;
+            using var dbContext = fixture.CreateDbContext();
+            
+            var validator = CreateValidator(dbContext);
+            var request = DefaultRequest(testLeagueId, testScoringId);
+            request.Model.ExtScoringSourceId = scoringId;
+            request.Model.TakeResultsFromExtSource = useExtScoring;
 
-                var result = await validator.ValidateAsync(request);
-                if (expectValid)
-                {
-                    Assert.True(result.IsValid);
-                }
-                else
-                {
-                    Assert.False(result.IsValid);
-                    Assert.Contains(result.Errors, x => x.PropertyName == nameof(PutScoringRequest.ExtScoringSourceId));
-                }
+            var result = await validator.TestValidateAsync(request);
+            Assert.Equal(expectValid, result.IsValid);
+            if (expectValid == false)
+            {
+                result.ShouldHaveValidationErrorFor(x => x.Model.ExtScoringSourceId);
             }
         }
     }

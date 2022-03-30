@@ -5,14 +5,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public class PutScoringRequest : PostScoringRequest, IRequest<GetScoringModel>
-    {
-        public long ScoringId { get; set; }
-        public PutScoringRequest(long leagueId, long scoringId) : base(leagueId)
-        {
-            ScoringId = scoringId;
-        }
-    }
+    public record PutScoringRequest(long LeagueId, long ScoringId, PutScoringModel Model) : IRequest<GetScoringModel>;
 
     public class PutScoringHandler : IRequestHandler<PutScoringRequest, GetScoringModel>
     {

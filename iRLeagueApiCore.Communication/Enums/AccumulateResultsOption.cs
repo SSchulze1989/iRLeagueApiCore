@@ -1,5 +1,8 @@
 ﻿namespace iRLeagueApiCore.Communication.Enums
 {
+    /// <summary>
+    /// Select the method to accumulate scorings
+    /// </summary>
     public enum AccumulateResultsOption
     {
         None = 0,
