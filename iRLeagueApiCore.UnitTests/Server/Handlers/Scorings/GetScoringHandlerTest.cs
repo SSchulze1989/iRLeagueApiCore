@@ -34,9 +34,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             return new GetScoringRequest(leagueId, scoringId);
         }
 
-        protected override void DefaultAssertions(GetScoringModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetScoringRequest request, GetScoringModel result, LeagueDbContext dbContext)
         {
-            base.DefaultAssertions(result, dbContext);
+            base.DefaultAssertions(request, result, dbContext);
             Assert.NotNull(result.BasePoints);
             Assert.NotNull(result.BonusPoints);
         }

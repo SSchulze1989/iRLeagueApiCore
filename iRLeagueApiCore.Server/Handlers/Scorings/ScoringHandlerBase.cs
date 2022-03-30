@@ -24,7 +24,9 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
 
         protected static IEnumerable<double> ConvertBasePoints(string points)
         {
-            return points?.Split(pointsDelimiter).Select(x => double.Parse(x)) ?? new double[0];
+            return points?.Split(pointsDelimiter)
+                .Where(x => string.IsNullOrEmpty(x) == false)
+                .Select(x => double.Parse(x)) ?? new double[0];
         }
 
         protected static string ConvertBonusPoints(IEnumerable<string> points)
@@ -34,7 +36,9 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
 
         protected static IEnumerable<string> ConvertBonusPoints(string points)
         {
-            return points?.Split(pointsDelimiter) ?? new string[0];
+            return points?
+                .Split(pointsDelimiter)
+                .Where(x => string.IsNullOrEmpty(x) == false) ?? new string[0];
         }
 
         protected async Task<ScheduleEntity> GetScheduleEntityAsync(long leagueId, long? scheduleId)

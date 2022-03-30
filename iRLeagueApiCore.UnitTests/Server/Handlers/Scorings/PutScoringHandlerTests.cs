@@ -42,10 +42,12 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             return DefaultRequest(testLeagueId, testScoringId);
         }
 
-        protected override void DefaultAssertions(GetScoringModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PutScoringRequest request, GetScoringModel result, LeagueDbContext dbContext)
         {
-            base.DefaultAssertions(result, dbContext);
+            base.DefaultAssertions(request, result, dbContext);
             Assert.Equal(NewScoringName, result.Name);
+            Assert.Empty(result.BasePoints);
+            Assert.Empty(result.BonusPoints);
         }
 
         [Fact]

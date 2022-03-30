@@ -42,11 +42,13 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             return new PostScoringHandler(logger, dbContext, new IValidator<PostScoringRequest>[] { validator });
         }
 
-        protected override void DefaultAssertions(GetScoringModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PostScoringRequest request, GetScoringModel result, LeagueDbContext dbContext)
         {
-            base.DefaultAssertions(result, dbContext);
+            base.DefaultAssertions(request, result, dbContext);
             Assert.NotEqual(0, result.Id);
             Assert.Contains(dbContext.Scorings, x => x.ScoringId == result.Id);
+            Assert.Empty(result.BasePoints);
+            Assert.Empty(result.BonusPoints);
         }
 
         [Fact]

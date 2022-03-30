@@ -44,7 +44,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
             return new ValidationResult(new ValidationFailure[] { new ValidationFailure("Property", "Error") });
         }
 
-        protected virtual void DefaultAssertions(TResult result, LeagueDbContext dbContext)
+        protected virtual void DefaultAssertions(TRequest request, TResult result, LeagueDbContext dbContext)
         {
             Assert.NotNull(result);
         }
@@ -63,7 +63,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
             var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
 
             var result = await handler.Handle(request, default);
-            DefaultAssertions(result, dbContext);
+            DefaultAssertions(request, result, dbContext);
             return result;
         }
 

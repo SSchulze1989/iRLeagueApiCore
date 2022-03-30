@@ -20,13 +20,13 @@ namespace iRLeagueApiCore.Server.Validation.Scorings
             this.dbContext = dbContext;
 
             RuleFor(x => x.BasePoints)
-                .NotNull()
-                .WithMessage("Cannot be null");
+                .NotNull();
             RuleFor(x => x.BonusPoints)
                 .Cascade(CascadeMode.Stop)
                 .NotNull()
                 .WithMessage("Cannot be null")
-                .Must(BonusPointsValid);
+                .Must(BonusPointsValid)
+                .WithMessage("Collection contains invalid values");
             RuleFor(x => x.ExtScoringSourceId)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty()
