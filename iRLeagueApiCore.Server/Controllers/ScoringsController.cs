@@ -3,7 +3,6 @@ using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Scorings;
-using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,13 +18,11 @@ namespace iRLeagueApiCore.Server.Controllers
     public class ScoringsController : LeagueApiController
     {
         private readonly ILogger<ScoringsController> _logger;
-        private readonly LeagueDbContext dbContext;
         private readonly IMediator mediator;
 
-        public ScoringsController(ILogger<ScoringsController> logger, LeagueDbContext dbContext, IMediator mediator)
+        public ScoringsController(ILogger<ScoringsController> logger, IMediator mediator)
         {
             _logger = logger;
-            this.dbContext = dbContext;
             this.mediator = mediator;
         }
 

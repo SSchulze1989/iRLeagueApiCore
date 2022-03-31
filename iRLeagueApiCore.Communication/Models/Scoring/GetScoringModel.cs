@@ -12,7 +12,18 @@ namespace iRLeagueApiCore.Communication.Models
         /// <summary>
         /// Id of the scoring
         /// </summary>
+        [DataMember]
         public long Id { get; set; }
+        /// <summary>
+        /// Id of the league the scoring belongs to
+        /// </summary>
+        [DataMember]
+        public long LeagueId { get; set; }
+        /// <summary>
+        /// Id of the season the scoring belongs to
+        /// </summary>
+        [DataMember]
+        public long SeasonId { get; set; }
         #region version
         /// <summary>
         /// Date of creation
