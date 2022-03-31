@@ -3,6 +3,7 @@ using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
@@ -41,21 +42,21 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .Where(x => string.IsNullOrEmpty(x) == false) ?? new string[0];
         }
 
-        protected async Task<ScheduleEntity> GetScheduleEntityAsync(long leagueId, long? scheduleId)
+        protected async Task<ScheduleEntity> GetScheduleEntityAsync(long leagueId, long? scheduleId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Schedules
                 .Where(x => x.LeagueId == leagueId)
                 .SingleOrDefaultAsync(x => x.ScheduleId == scheduleId);
         }
 
-        protected async Task<ScoringEntity> GetScoringEntityAsync(long leagueId, long? scoringId)
+        protected async Task<ScoringEntity> GetScoringEntityAsync(long leagueId, long? scoringId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Scorings
                 .Where(x => x.LeagueId == leagueId)
                 .SingleOrDefaultAsync(x => x.ScoringId == scoringId);
         }
 
-        protected async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long seasonId)
+        protected async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long seasonId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Seasons
                 .Include(x => x.Scorings)
@@ -63,7 +64,8 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .SingleOrDefaultAsync(x => x.SeasonId == seasonId);
         }
 
-        protected async Task<ScoringEntity> MapToScoringEntityAsync(long leagueId, PostScoringModel source, ScoringEntity target)
+        protected async Task<ScoringEntity> MapToScoringEntityAsync(long leagueId, PostScoringModel source, ScoringEntity target, 
+            CancellationToken cancellationToken = default)
         {
             target.AccumulateBy = source.AccumulateBy;
             target.AccumulateResultsOption = source.AccumulateResultsOption;
@@ -89,7 +91,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             return target;
         }
 
-        protected async Task<GetScoringModel> MapToGetScoringModelAsync(long leagueId, long scoringId)
+        protected async Task<GetScoringModel> MapToGetScoringModelAsync(long leagueId, long scoringId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Scorings
                 .Where(x => x.LeagueId == leagueId)
