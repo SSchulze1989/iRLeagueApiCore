@@ -77,7 +77,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
                 var putLeague = new PutLeagueModel()
                 {
                     LeagueId = 1,
-                    Name = "New-League_Name123",
                     NameFull = "League name after test"
                 };
 
@@ -94,7 +93,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
 
                 // check if first league was updated
                 checkLeague = dbContext.Find<LeagueEntity>(putLeague.LeagueId);
-                Assert.Equal(putLeague.Name, checkLeague.Name);
                 Assert.Equal(putLeague.NameFull, checkLeague.NameFull);
             }
         }

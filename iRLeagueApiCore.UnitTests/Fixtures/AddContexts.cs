@@ -13,12 +13,12 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
     public static class AddContexts
     {
         public static ClaimsPrincipal User => new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-    {
+            {
                 new Claim(ClaimTypes.Name, "unitTestUser"),
                 new Claim(ClaimTypes.NameIdentifier, "1"),
                 new Claim(ClaimTypes.Role, UserRoles.User),
                 new Claim("custom-claim", "example claim value"),
-    }, "mock"));
+            }, "mock"));
 
         /// <summary>
         /// Add the default HttpContext to the provided controller

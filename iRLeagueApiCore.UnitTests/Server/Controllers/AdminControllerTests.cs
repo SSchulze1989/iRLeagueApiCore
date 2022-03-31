@@ -39,6 +39,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             MockUser.UserName = TestUserName;
         }
 
+        private static ValidationException ValdiationFailed()
+        {
+            return new ValidationException("Test validation failed");
+        }
+
         [Fact]
         public async void ListUsersRequestValid()
         {
@@ -46,10 +51,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             {
                 new GetAdminUserModel() { UserName = TestUserName, Roles = new string[] { "Role1", "Role2" } }
             };
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(m => m.Send(It.IsAny<ListUsersRequest>(), default))
-                .ReturnsAsync(userList);
-            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mockMediator.Object));
+            var mediator = MockHelpers.TestMediator<ListUsersRequest, IEnumerable<GetAdminUserModel>>(result: userList);
+            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mediator));
             var result = await controller.ListUsers(TestLeagueName);
 
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -60,14 +63,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async void ListUsersValidationFailed()
         {
-            var mockMediator = new Mock<IMediator>();
-            var validationFailues = new List<ValidationFailure>()
-            {
-                new ValidationFailure("Error", "Message")
-            };
-            mockMediator.Setup(m => m.Send(It.IsAny<ListUsersRequest>(), default))
-                .ThrowsAsync(new ValidationException(validationFailues));
-            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mockMediator.Object));
+            var mediator = MockHelpers.TestMediator<ListUsersRequest, IEnumerable<GetAdminUserModel>>(throws: ValdiationFailed());
+            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mediator));
             var result = await controller.ListUsers(TestLeagueName);
 
             Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -77,29 +74,21 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async void GiveRoleRequestValid()
         {
             const string roleName = "TestRole";
-            bool gotCalled = false;
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(m => m.Send(It.IsAny<GiveRoleRequest>(), default))
-                .ReturnsAsync(() => { gotCalled = true; return Unit.Value; });
-            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mockMediator.Object));
+            var mediator = MockHelpers.TestMediator<GiveRoleRequest, Unit>();
+            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mediator));
             var result = await controller.GiveRole(TestLeagueName, new UserRoleModel { UserName = TestUserName, RoleName = roleName });
 
             Assert.IsType<OkObjectResult>(result);
-            Assert.True(gotCalled);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<GiveRoleRequest>(), default));
         }
 
         [Fact]
         public async void GiveRoleValidationFailed()
         {
             const string roleName = "TestRole";
-            var mockMediator = new Mock<IMediator>();
-            var validationFailues = new List<ValidationFailure>()
-            {
-                new ValidationFailure("Error", "Message")
-            };
-            mockMediator.Setup(m => m.Send(It.IsAny<GiveRoleRequest>(), default))
-                .ThrowsAsync(new ValidationException(validationFailues));
-            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mockMediator.Object));
+            var mediator = MockHelpers.TestMediator<GiveRoleRequest, Unit>(throws: ValdiationFailed());
+            var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mediator));
             var result = await controller.GiveRole(TestLeagueName, new UserRoleModel { UserName = TestUserName, RoleName = roleName });
 
             Assert.IsType<BadRequestObjectResult>(result);

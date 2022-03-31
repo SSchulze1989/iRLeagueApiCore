@@ -98,7 +98,10 @@ namespace iRLeagueApiCore.Server.Controllers
                     return BadRequestMessage("League exists", "A league with the same name exists already and cannot be created");
                 }
 
-                dbLeague = new LeagueEntity();
+                dbLeague = new LeagueEntity()
+                {
+                    Name = putLeague.Name,
+                };
                 _dbContext.Leagues.Add(dbLeague);
                 dbLeague.CreatedOn = DateTime.Now;
                 dbLeague.CreatedByUserId = currentUserID;
@@ -109,7 +112,6 @@ namespace iRLeagueApiCore.Server.Controllers
             dbLeague.LastModifiedOn = DateTime.Now;
             dbLeague.LastModifiedByUserId = currentUserID;
             dbLeague.LastModifiedByUserName = User.Identity.Name;
-            dbLeague.Name = putLeague.Name;
             dbLeague.NameFull = putLeague.NameFull;
             await _dbContext.SaveChangesAsync();
 
