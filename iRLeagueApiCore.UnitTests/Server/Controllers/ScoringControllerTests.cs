@@ -4,6 +4,7 @@ using iRLeagueApiCore.Server.Controllers;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.UnitTests.Fixtures;
+using MediatR;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -166,6 +167,39 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
 
             var result = await controller.Put(testLeagueName, testLeagueId, testScoringId, DefaultPutModel());
             Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task DeleteScoringValid()
+        {
+            var mediator = MockHelpers.TestMediator<DeleteScoringRequest, Unit>(x =>
+                x.LeagueId == testLeagueId && x.ScoringId == testScoringId);
+            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
+
+            var result = await controller.Delete(testLeagueName, testLeagueId, testScoringId);
+            Assert.IsType<NoContentResult>(result);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<DeleteScoringRequest>(), default));
+        }
+
+        [Fact]
+        public async Task DeleteScoringNotFound()
+        {
+            var mediator = MockHelpers.TestMediator<DeleteScoringRequest, Unit>(throws: NotFound());
+            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
+
+            var result = await controller.Delete(testLeagueName, testLeagueId, testScoringId);
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteScoringValidationFailed()
+        {
+            var mediator = MockHelpers.TestMediator<DeleteScoringRequest, Unit>(throws: ValidationFailed());
+            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
+
+            var result = await controller.Delete(testLeagueName, testLeagueId, testScoringId);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
     }
 }

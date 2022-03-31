@@ -121,6 +121,11 @@ namespace iRLeagueApiCore.Server.Controllers
                 await mediator.Send(request);
                 return NoContent();
             }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}", ex.Errors.Select(x => x.ErrorMessage));
+                return ex.ToActionResult();
+            }
             catch (ResourceNotFoundException)
             {
                 _logger.LogInformation("Scoring {ScoringId} not found inside {LeagueName}", id, leagueName);
