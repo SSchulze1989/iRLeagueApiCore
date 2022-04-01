@@ -6,6 +6,7 @@ using iRLeagueApiCore.Server.Handlers.Scorings;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +25,32 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger = logger;
             this.mediator = mediator;
+        }
+
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        [Route("")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GetScoringModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId)
+        {
+            try
+            {
+                _logger.LogInformation("Get scorings from {LeagueName} by {UserName}", leagueName,
+                    User.Identity.Name);
+                var request = new GetScoringsRequest(leagueId);
+                var getScorings = await mediator.Send(request);
+                _logger.LogInformation("Returning {Count} entries for scorings from {LeagueName}", getScorings.Count(), leagueName);
+                return Ok(getScorings);
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}", ex.Errors.Select(x => x.ErrorMessage));
+                return ex.ToActionResult();
+            }
+            catch (ResourceNotFoundException)
+            {
+                _logger.LogInformation("Scorings not found in {LeagueName}", leagueName);
+                return NotFound();
+            }
         }
 
         [ServiceFilter(typeof(InsertLeagueIdAttribute))]
@@ -129,6 +156,58 @@ namespace iRLeagueApiCore.Server.Controllers
             catch (ResourceNotFoundException)
             {
                 _logger.LogInformation("Scoring {ScoringId} not found inside {LeagueName}", id, leagueName);
+                return NotFound();
+            }
+        }
+
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        [Route("{id:long}/AddSession/{sessionId:long}")]
+        [HttpPost]
+        public async Task<ActionResult> AddSession([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, [FromRoute] long sessionId)
+        {
+            try
+            {
+                _logger.LogInformation("Add session {SessionId} to scoring {ScoringId} in {LeagueName} by {UserName}",
+                    sessionId, id, leagueName, User.Identity.Name);
+                var request = new ScoringAddSessionRequest(leagueId, id, sessionId);
+                await mediator.Send(request);
+                return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}", ex.Errors.Select(x => x.ErrorMessage));
+                return ex.ToActionResult();
+            }
+            catch (ResourceNotFoundException)
+            {
+                _logger.LogInformation("Session {SessionId} in scoring {ScoringId} not found inside {LeagueName}", id, leagueName);
+                return NotFound();
+            }
+        }
+
+        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        [Route("{id:long}/RemoveSession/{sessionId:long}")]
+        [HttpPost]
+        public async Task<ActionResult> RemoveSession([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, [FromRoute] long sessionId)
+        {
+            try
+            {
+                _logger.LogInformation("Remove session {SessionId} from scoring {ScoringId} in {LeagueName} by {UserName}",
+                    sessionId, id, leagueName, User.Identity.Name);
+                var request = new ScoringRemoveSessionRequest(leagueId, id, sessionId);
+                await mediator.Send(request);
+                return NoContent();
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}", ex.Errors.Select(x => x.ErrorMessage));
+                return ex.ToActionResult();
+            }
+            catch (ResourceNotFoundException)
+            {
+                _logger.LogInformation("Session {SessionId} in scoring {ScoringId} not found inside {LeagueName}", id, leagueName);
                 return NotFound();
             }
         }

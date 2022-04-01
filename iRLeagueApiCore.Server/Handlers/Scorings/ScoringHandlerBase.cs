@@ -1,8 +1,10 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -96,31 +98,34 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             return await dbContext.Scorings
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.ScoringId == scoringId)
-                .Select(source => new GetScoringModel()
-                {
-                    Id = source.ScoringId,
-                    AccumulateBy = source.AccumulateBy,
-                    AccumulateResultsOption = source.AccumulateResultsOption,
-                    AverageRaceNr = source.AverageRaceNr,
-                    BasePoints = ConvertBasePoints(source.BasePoints),
-                    BonusPoints = ConvertBonusPoints(source.BonusPoints),
-                    ConnectedScheduleId = source.ConnectedScheduleId,
-                    Description = source.Description,
-                    ExtScoringSourceId = source.ExtScoringSourceId,
-                    FinalSortOptions = source.FinalSortOptions,
-                    MaxResultsPerGroup = source.MaxResultsPerGroup,
-                    Name = source.Name,
-                    PointsSortOptions = source.PointsSortOptions,
-                    ScoringSessionType = source.ScoringSessionType,
-                    ScoringWeightValues = source.ScoringWeightValues,
-                    SessionSelectType = source.SessionSelectType,
-                    ShowResults = source.ShowResults,
-                    TakeGroupAverage = source.TakeGroupAverage,
-                    TakeResultsFromExtSource = source.TakeResultsFromExtSource,
-                    UpdateTeamOnRecalculation = source.UpdateTeamOnRecalculation,
-                    UseResultSetTeam = source.UseResultSetTeam,
-                })
+                .Select(MapToGetScoringModelExpression)
                 .SingleOrDefaultAsync(cancellationToken);
         }
+
+        protected Expression<Func<ScoringEntity, GetScoringModel>> MapToGetScoringModelExpression => source => new GetScoringModel()
+        {
+            Id = source.ScoringId,
+            AccumulateBy = source.AccumulateBy,
+            AccumulateResultsOption = source.AccumulateResultsOption,
+            AverageRaceNr = source.AverageRaceNr,
+            BasePoints = ConvertBasePoints(source.BasePoints),
+            BonusPoints = ConvertBonusPoints(source.BonusPoints),
+            ConnectedScheduleId = source.ConnectedScheduleId,
+            Description = source.Description,
+            ExtScoringSourceId = source.ExtScoringSourceId,
+            FinalSortOptions = source.FinalSortOptions,
+            MaxResultsPerGroup = source.MaxResultsPerGroup,
+            Name = source.Name,
+            PointsSortOptions = source.PointsSortOptions,
+            ScoringSessionType = source.ScoringSessionType,
+            ScoringWeightValues = source.ScoringWeightValues,
+            SessionSelectType = source.SessionSelectType,
+            SessionIds = source.Sessions.Select(x => x.SessionId),
+            ShowResults = source.ShowResults,
+            TakeGroupAverage = source.TakeGroupAverage,
+            TakeResultsFromExtSource = source.TakeResultsFromExtSource,
+            UpdateTeamOnRecalculation = source.UpdateTeamOnRecalculation,
+            UseResultSetTeam = source.UseResultSetTeam,
+        };
     }
 }
