@@ -14,6 +14,7 @@ namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
     [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [ServiceFilter(typeof(InsertLeagueIdAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class ScoringsController : LeagueApiController
@@ -27,7 +28,12 @@ namespace iRLeagueApiCore.Server.Controllers
             this.mediator = mediator;
         }
 
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        /// <summary>
+        /// Get all scorings from league
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <returns></returns>
         [Route("")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetScoringModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId)
@@ -53,7 +59,13 @@ namespace iRLeagueApiCore.Server.Controllers
             }
         }
 
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        /// <summary>
+        /// Get scoring from league by Id
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Route("{id:long}")]
         [HttpGet]
         public async Task<ActionResult<GetScoringModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
@@ -80,7 +92,14 @@ namespace iRLeagueApiCore.Server.Controllers
             }
         }
 
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        /// <summary>
+        /// Post a new scoring to an existing season
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="seasonId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [Route("/{leagueName}/Seasons/{seasonId:long}/Scorings")]
         [HttpPost]
         public async Task<ActionResult<GetScoringModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
@@ -107,7 +126,14 @@ namespace iRLeagueApiCore.Server.Controllers
             }
         }
 
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        /// <summary>
+        /// Update existing scoring with Id
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [Route("{id:long}")]
         [HttpPut]
         public async Task<ActionResult<GetScoringModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
@@ -134,7 +160,13 @@ namespace iRLeagueApiCore.Server.Controllers
             }
         }
 
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        /// <summary>
+        /// Delete existing scoring with id
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Route("{id:long}")]
         [HttpDelete]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, 
@@ -160,7 +192,14 @@ namespace iRLeagueApiCore.Server.Controllers
             }
         }
 
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        /// <summary>
+        /// Add an existing session to the scoring
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="id"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
         [Route("{id:long}/AddSession/{sessionId:long}")]
         [HttpPost]
         public async Task<ActionResult> AddSession([FromRoute] string leagueName, [FromFilter] long leagueId,
@@ -186,7 +225,14 @@ namespace iRLeagueApiCore.Server.Controllers
             }
         }
 
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+        /// <summary>
+        /// Remove an existing session from the scoring 
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="id"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
         [Route("{id:long}/RemoveSession/{sessionId:long}")]
         [HttpPost]
         public async Task<ActionResult> RemoveSession([FromRoute] string leagueName, [FromFilter] long leagueId,
@@ -208,6 +254,38 @@ namespace iRLeagueApiCore.Server.Controllers
             catch (ResourceNotFoundException)
             {
                 _logger.LogInformation("Session {SessionId} in scoring {ScoringId} not found inside {LeagueName}", id, leagueName);
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Get all scorings from a season
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="seasonId"></param>
+        /// <returns></returns>
+        [Route("/{leagueName}/Seasons/{seasonId}/Scorings")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GetScoringModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, 
+            [FromRoute] long seasonId)
+        {
+            try
+            {
+                _logger.LogInformation("Get scorings from season {SeasonId in {LeagueName} by {UserName}",
+                    seasonId, leagueName, User.Identity.Name);
+                var request = new GetScoringsFromSeasonRequest(leagueId, seasonId);
+                var getScorings = await mediator.Send(request);
+                return Ok(getScorings);
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}", ex.Errors.Select(x => x.ErrorMessage));
+                return ex.ToActionResult();
+            }
+            catch (ResourceNotFoundException)
+            {
+                _logger.LogInformation("Season {SeasonId} not found inside {LeagueName}", seasonId, leagueName);
                 return NotFound();
             }
         }
