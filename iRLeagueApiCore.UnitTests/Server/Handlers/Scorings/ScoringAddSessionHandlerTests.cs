@@ -13,6 +13,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
+    [Collection("HandlerTests")]
     public class ScoringAddSessionHandlerTests : HandlersTestsBase<ScoringAddSessionHandler, ScoringAddSessionRequest, Unit>
     {
         private new const long testScoringId = 1;

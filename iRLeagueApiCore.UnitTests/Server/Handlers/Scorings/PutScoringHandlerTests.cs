@@ -13,6 +13,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
+    [Collection("HandlerTests")]
     public class PutScoringHandlerTests : HandlersTestsBase<PutScoringHandler, PutScoringRequest, GetScoringModel>
     {
         private const string NewScoringName = "New scoring Name";
