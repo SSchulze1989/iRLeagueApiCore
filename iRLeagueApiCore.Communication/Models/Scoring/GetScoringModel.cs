@@ -24,6 +24,11 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
         public long SeasonId { get; set; }
+        /// <summary>
+        /// Ids of session connected to the scoring
+        /// </summary>
+        [DataMember]
+        public IEnumerable<long> SessionIds { get; set; }
         #region version
         /// <summary>
         /// Date of creation

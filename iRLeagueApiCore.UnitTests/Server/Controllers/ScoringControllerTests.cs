@@ -65,6 +65,41 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         }
 
         [Fact]
+        public async Task GetScoringsValid()
+        {
+            var expectedResult = new GetScoringModel[] { DefaultGetModel() };
+            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<GetScoringModel>>(x =>
+                x.LeagueId == testLeagueId, expectedResult);
+            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
+
+            var result = await controller.Get(testLeagueName, testLeagueId);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(expectedResult, okResult.Value);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<GetScoringsRequest>(), default));
+        }
+
+        [Fact]
+        public async Task GetScoringsNotFound()
+        {
+            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<GetScoringModel>>(throws: NotFound());
+            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
+
+            var result = await controller.Get(testLeagueName, testLeagueId);
+            Assert.IsType<NotFoundResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task GetScoringsValidationFailed()
+        {
+            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<GetScoringModel>>(throws: ValidationFailed());
+            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
+
+            var result = await controller.Get(testLeagueName, testLeagueId);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Fact]
         public async Task GetScoringValid()
         {
             var expectedResult = DefaultGetModel();

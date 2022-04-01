@@ -3,28 +3,38 @@ using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public record GetScoringRequest(long LeagueId, long ScoringId) : IRequest<GetScoringModel>;
+    public record GetScoringsRequest(long LeagueId) : IRequest<IEnumerable<GetScoringModel>>;
 
-    public class GetScoringHandler : ScoringHandlerBase, IRequestHandler<GetScoringRequest, GetScoringModel>
+    public class GetScoringsHandler : ScoringHandlerBase, IRequestHandler<GetScoringsRequest, IEnumerable<GetScoringModel>>
     {
-        private readonly IEnumerable<IValidator<GetScoringRequest>> validators;
+        private readonly IEnumerable<IValidator<GetScoringsRequest>> validators;
 
-        public GetScoringHandler(LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringRequest>> validators)
+        public GetScoringsHandler(LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringsRequest>> validators)
             : base(dbContext)
         {
             this.validators = validators;
         }
 
-        public async Task<GetScoringModel> Handle(GetScoringRequest request, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<GetScoringModel>> Handle(GetScoringsRequest request, CancellationToken cancellationToken = default)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            return await MapToGetScoringModelAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();
+            return await MapToGetScoringModelsAsync(request.LeagueId);
+        }
+
+        private async Task<IEnumerable<GetScoringModel>> MapToGetScoringModelsAsync(long leagueId, CancellationToken cancellationToken = default)
+        {
+            return await dbContext.Scorings
+                .Where(x => x.LeagueId == leagueId)
+                .Select(MapToGetScoringModelExpression)
+                .ToListAsync();
         }
     }
 }
