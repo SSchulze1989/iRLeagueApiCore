@@ -10,24 +10,24 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public record ScoringAddSessionRequest(long LeagueId, long ScoringId, long SessionId) : IRequest;
+    public record ScoringRemoveSessionRequest(long LeagueId, long ScoringId, long SessionId) : IRequest;
 
-    public class ScoringAddSessionHandler : ScoringHandlerBase, IRequestHandler<ScoringAddSessionRequest>
+    public class ScoringRemoveSessionHandler : ScoringHandlerBase, IRequestHandler<ScoringRemoveSessionRequest>
     {
-        private readonly IEnumerable<IValidator<ScoringAddSessionRequest>> validators;
+        private readonly IEnumerable<IValidator<ScoringRemoveSessionRequest>> validators;
 
-        public ScoringAddSessionHandler(LeagueDbContext dbContext, IEnumerable<IValidator<ScoringAddSessionRequest>> validators)
+        public ScoringRemoveSessionHandler(LeagueDbContext dbContext, IEnumerable<IValidator<ScoringRemoveSessionRequest>> validators) 
             : base(dbContext)
         {
             this.validators = validators;
         }
 
-        public async Task<Unit> Handle(ScoringAddSessionRequest request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ScoringRemoveSessionRequest request, CancellationToken cancellationToken = default)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var scoring = await GetScoringEntityAsync(request.LeagueId, request.ScoringId, cancellationToken) ?? throw new ResourceNotFoundException();
-            await AddSessionToScoringAsync(request.LeagueId, scoring, request.SessionId, cancellationToken);
-            await dbContext.SaveChangesAsync();
+            await RemoveSessionFromScoringAsync(request.LeagueId, scoring, request.SessionId);
+            await dbContext.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
 
@@ -39,14 +39,14 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .SingleOrDefaultAsync(x => x.ScoringId == scoringId, cancellationToken);
         }
 
-        private async Task AddSessionToScoringAsync(long leagueId, ScoringEntity scoring, long sessionId, CancellationToken cancellationToken)
+        private async Task RemoveSessionFromScoringAsync(long leagueId, ScoringEntity scoring, long sessionId)
         {
             var session = await dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId)
-                .SingleOrDefaultAsync(x => x.SessionId == sessionId, cancellationToken) ?? throw new ResourceNotFoundException();
-            if (scoring.Sessions.Contains(session) == false)
+                .SingleOrDefaultAsync(x => x.SessionId == sessionId) ?? throw new ResourceNotFoundException();
+            if (scoring.Sessions.Contains(session))
             {
-                scoring.Sessions.Add(session);
+                scoring.Sessions.Remove(session);
             }
         }
     }

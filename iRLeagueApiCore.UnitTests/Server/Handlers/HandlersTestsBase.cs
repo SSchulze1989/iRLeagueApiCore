@@ -44,6 +44,10 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
             return new ValidationResult(new ValidationFailure[] { new ValidationFailure("Property", "Error") });
         }
 
+        protected virtual void DefaultPreTestAssertions(TRequest request, LeagueDbContext dbContext)
+        {
+        }
+
         protected virtual void DefaultAssertions(TRequest request, TResult result, LeagueDbContext dbContext)
         {
             Assert.NotNull(result);
@@ -62,8 +66,10 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
             var request = DefaultRequest();
             var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
 
+            DefaultPreTestAssertions(request, dbContext);
             var result = await handler.Handle(request, default);
             DefaultAssertions(request, result, dbContext);
+
             return result;
         }
 
@@ -83,15 +89,18 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <param name="request">Request for a not existing resource</param>
         /// <param name="assertions">Assertions to be performed</param>
         /// <returns></returns>
-        public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TResult> assertions)
+        public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext> assertions, 
+            Action<TRequest, LeagueDbContext> preTestAssertions = default)
         {
             using var tx = new TransactionScope();
             using var dbContext = fixture.CreateDbContext();
 
             var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
 
+            preTestAssertions?.Invoke(request, dbContext);
             var result = await handler.Handle(request, default);
-            assertions?.Invoke(result);
+            assertions?.Invoke(request, result, dbContext);
+
             return result;
         }
 

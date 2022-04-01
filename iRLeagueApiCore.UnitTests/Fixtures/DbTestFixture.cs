@@ -274,7 +274,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             };
             season1.Scorings.Add(scoring);
 
-            foreach (var session in league1.Seasons.SelectMany(x => x.Schedules).SelectMany(x => x.Sessions))
+            foreach (var session in league1.Seasons.SelectMany(x => x.Schedules).SelectMany(x => x.Sessions)
+                .SkipLast(1))
             {
                 var scoredResult = new ScoredResultEntity();
                 scoring.ScoredResults.Add(scoredResult);
