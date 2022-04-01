@@ -38,7 +38,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             if (ids != null && ids.Count() > 0)
             {
-                dbLeagues = dbLeagues.Where(x => ids.Contains(x.LeagueId));
+                dbLeagues = dbLeagues.Where(x => ids.Contains(x.Id));
             }
 
             if (dbLeagues.Count() == 0)
@@ -50,7 +50,7 @@ namespace iRLeagueApiCore.Server.Controllers
             getLeagues = await dbLeagues
                 .Select(x => new GetLeagueModel()
                 {
-                    LeagueId = x.LeagueId,
+                    LeagueId = x.Id,
                     Name = x.Name,
                     NameFull = x.NameFull,
                     SeasonIds = x.Seasons.Select(x => x.SeasonId),
@@ -98,7 +98,10 @@ namespace iRLeagueApiCore.Server.Controllers
                     return BadRequestMessage("League exists", "A league with the same name exists already and cannot be created");
                 }
 
-                dbLeague = new LeagueEntity();
+                dbLeague = new LeagueEntity()
+                {
+                    Name = putLeague.Name,
+                };
                 _dbContext.Leagues.Add(dbLeague);
                 dbLeague.CreatedOn = DateTime.Now;
                 dbLeague.CreatedByUserId = currentUserID;
@@ -109,7 +112,6 @@ namespace iRLeagueApiCore.Server.Controllers
             dbLeague.LastModifiedOn = DateTime.Now;
             dbLeague.LastModifiedByUserId = currentUserID;
             dbLeague.LastModifiedByUserName = User.Identity.Name;
-            dbLeague.Name = putLeague.Name;
             dbLeague.NameFull = putLeague.NameFull;
             await _dbContext.SaveChangesAsync();
 
@@ -120,7 +122,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             var getLeague = new GetLeagueModel();
-            getLeague.LeagueId = dbLeague.LeagueId;
+            getLeague.LeagueId = dbLeague.Id;
             getLeague.Name = dbLeague.Name;
             getLeague.NameFull = dbLeague.NameFull;
             getLeague.CreatedByUserId = dbLeague.CreatedByUserId;

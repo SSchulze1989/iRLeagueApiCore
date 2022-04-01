@@ -13,7 +13,7 @@ using System.Transactions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace iRLeagueApiCore.UnitTests.Server
+namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
     public class LeagueControllerTests : IClassFixture<DbTestFixture>
     {
@@ -32,7 +32,7 @@ namespace iRLeagueApiCore.UnitTests.Server
         {
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
                 var result = (await controller.Get(new long[] { 1 })).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -49,7 +49,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var dbContext = Fixture.CreateDbContext())
             {
                 const string testLeagueName = "UnitTestLeague";
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -72,12 +72,11 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {
                     LeagueId = 1,
-                    Name = "New-League_Name123",
                     NameFull = "League name after test"
                 };
 
@@ -94,7 +93,6 @@ namespace iRLeagueApiCore.UnitTests.Server
 
                 // check if first league was updated
                 checkLeague = dbContext.Find<LeagueEntity>(putLeague.LeagueId);
-                Assert.Equal(putLeague.Name, checkLeague.Name);
                 Assert.Equal(putLeague.NameFull, checkLeague.NameFull);
             }
         }
@@ -105,7 +103,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {
@@ -129,7 +127,7 @@ namespace iRLeagueApiCore.UnitTests.Server
             using (var tx = new TransactionScope())
             using (var dbContext = Fixture.CreateDbContext())
             {
-                var controller = Fixture.AddAdminControllerContext(new LeaguesController(MockLogger, dbContext));
+                var controller = AddContexts.AddAdminControllerContext(new LeaguesController(MockLogger, dbContext));
 
                 var putLeague = new PutLeagueModel()
                 {

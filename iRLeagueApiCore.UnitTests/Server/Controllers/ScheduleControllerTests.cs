@@ -11,7 +11,7 @@ using System.Transactions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace iRLeagueApiCore.UnitTests.Server
+namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
     public class ScheduleControllerTests : IClassFixture<DbTestFixture>
     {
@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testScheduleId = 1;
                 const string testScheduleName = "S1 Schedule";
 
-                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
                 var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testScheduleId })).Result;
                 Assert.IsType<OkObjectResult>(result);
                 var okResult = (OkObjectResult)result;
@@ -59,7 +59,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const string testScheduleName = "S1 Schedule 2";
                 const long testSeasonId = 1;
 
-                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
                 var putSchedule = new PutScheduleModel()
                 {
                     SeasonId = testSeasonId,
@@ -88,7 +88,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const string testScheduleName = "L2S1 Schedule 1";
                 const long testSeasonId = 1;
 
-                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
                 var putSchedule = new PutScheduleModel()
                 {
                     SeasonId = testSeasonId,
@@ -124,7 +124,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     .Select(x => x.Schedules.Count)
                     .First();
 
-                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
@@ -167,7 +167,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                     .Select(x => x.Schedules.Count)
                     .First() + 1;
 
-                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
@@ -201,7 +201,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testLeagueId = 1;
                 const long testScheduleId = 1;
 
-                var controller = Fixture.AddControllerContextWithoutLeagueRole(new SchedulesController(MockLogger, dbContext));
+                var controller = AddContexts.AddControllerContextWithoutLeagueRole(new SchedulesController(MockLogger, dbContext));
                 var putSchedule = new PutScheduleModel()
                 {
                     ScheduleId = testScheduleId,
@@ -224,7 +224,7 @@ namespace iRLeagueApiCore.UnitTests.Server
                 const long testLeagueId = 1;
                 const long testScheduleId = 1;
 
-                var controller = Fixture.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
+                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
                 var result = (await controller.Delete(testLeagueName, testLeagueId, testScheduleId));
 
                 Assert.IsType<NoContentResult>(result);

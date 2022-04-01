@@ -42,9 +42,9 @@ namespace iRLeagueApiCore.Server.Filters
             var leagueName = (string)leagueNameObject;
 
             var league = await _dbContext.Leagues
-                .Select(x => new { x.LeagueId, x.Name })
+                .Select(x => new { x.Id, x.Name })
                 .SingleOrDefaultAsync(x => x.Name == leagueName);
-            var leagueId = league?.LeagueId ?? 0;
+            var leagueId = league?.Id ?? 0;
 
             if (leagueId == 0)
             {

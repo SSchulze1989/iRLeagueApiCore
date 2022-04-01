@@ -3,11 +3,15 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -84,6 +88,54 @@ namespace Microsoft.AspNetCore.Identity.Test
             lookupNormalizer.Setup(i => i.NormalizeName(It.IsAny<string>())).Returns(normalizerFunc);
             lookupNormalizer.Setup(i => i.NormalizeEmail(It.IsAny<string>())).Returns(normalizerFunc);
             return lookupNormalizer.Object;
+        }
+
+        public static Mock<IValidator<T>> MockValidator<T>()
+        {
+            return new Mock<IValidator<T>>();
+        }
+
+        public static IValidator<T> TestValidator<T>()
+        {
+            var mockValidator = MockValidator<T>();
+            mockValidator.Setup(x => x.Validate(It.IsAny<T>()))
+                .Returns(new FluentValidation.Results.ValidationResult()).Verifiable();
+            mockValidator.Setup(x => x.ValidateAsync(It.IsAny<T>(), default))
+                .ReturnsAsync(new FluentValidation.Results.ValidationResult()).Verifiable();
+            return mockValidator.Object;
+        }
+
+        public static IEnumerable<IValidator<T>> TestValidators<T>()
+        {
+            return new IValidator<T>[] { TestValidator<T>() };
+        }
+
+        /// <summary>
+        /// Get a test mediator that returns the given result for specified reuqest type 
+        /// </summary>
+        /// <typeparam name="TRequest">Request type</typeparam>
+        /// <typeparam name="TResult">Result type</typeparam>
+        /// <param name="match">Predicate to check if request contains correct information. <para/>Returns true by default</param>
+        /// <param name="result">Result that should be returned from <see cref="IMediator.Send(object, System.Threading.CancellationToken)"/></param>
+        /// <param name="throws">If set a call to <see cref="IMediator.Send(object, System.Threading.CancellationToken)"/> will throw the provided Exception instead</param>
+        /// <returns>Configured <see cref="IMediator"/></returns>
+        public static IMediator TestMediator<TRequest, TResult>(Expression<Func<TRequest, bool>> match = default, 
+            TResult result = default, Exception throws = default) 
+            where TRequest : IRequest<TResult>
+        {
+            match ??= x => true;
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.Is(match), default))
+                .ReturnsAsync(() =>
+                {
+                    if (throws != null)
+                    {
+                        throw throws;
+                    }
+                    return result;
+                })
+                .Verifiable();
+            return mockMediator.Object;
         }
     }
 }

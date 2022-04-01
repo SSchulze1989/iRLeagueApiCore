@@ -85,69 +85,6 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             return CreateStaticDbContext();
         }
 
-        public ClaimsPrincipal User => new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Name, "unitTestUser"),
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(ClaimTypes.Role, UserRoles.User),
-                new Claim("custom-claim", "example claim value"),
-            }, "mock"));
-
-        /// <summary>
-        /// Add the default HttpContext to the provided controller
-        /// </summary>
-        /// <typeparam name="T">type of ApiController</typeparam>
-        /// <param name="controller">Controller to add context</param>
-        /// <returns>Controller with added context</returns>
-        public T AddMemberControllerContext<T>(T controller) where T : Controller
-        {
-            var user = User;
-            var identity = (ClaimsIdentity)user.Identity;
-            identity.AddClaim(new Claim(ClaimTypes.Role, $"{"TestLeague".ToLower()}:{LeagueRoles.Member}"));
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = user }
-            };
-
-            return controller;
-        }
-
-        public T AddLeagueAdminControllerContext<T>(T controller, string leagueName) where T : Controller
-        {
-            var user = User;
-            var identity = (ClaimsIdentity)user.Identity;
-            identity.AddClaim(new Claim(ClaimTypes.Role, $"{leagueName.ToLower()}:{LeagueRoles.Admin}"));
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = user }
-            };
-
-            return controller;
-        }
-
-        public T AddAdminControllerContext<T>(T controller) where T : Controller
-        {
-            var user = User;
-            var identity = (ClaimsIdentity)user.Identity;
-            identity.AddClaim(new Claim(ClaimTypes.Role, UserRoles.Admin));
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = user }
-            };
-
-            return controller;
-        }
-
-        public T AddControllerContextWithoutLeagueRole<T>(T controller) where T : Controller
-        {
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = User }
-            };
-
-            return controller;
-        }
-
         public static void Populate(LeagueDbContext context, Random random)
         {
             // Populate Tracks
@@ -249,7 +186,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                         .Skip(i)
                         .FirstOrDefault(),
                     SessionTitle = $"S1 Session {i + 1}",
-                    SessionType = (SessionTypeEnum)i + 1
+                    //SessionType = (SessionType)i + 1
                 };
                 schedule1.Sessions.Add(session);
             }
@@ -269,7 +206,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                         .Skip(i)
                         .FirstOrDefault(),
                     SessionTitle = $"S2 Session {i + 1}",
-                    SessionType = (SessionTypeEnum)i + 1
+                    //SessionType = (SessionType)i + 1
                 };
                 schedule2.Sessions.Add(session);
             }
@@ -337,7 +274,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             };
             season1.Scorings.Add(scoring);
 
-            foreach (var session in league1.Seasons.SelectMany(x => x.Schedules).SelectMany(x => x.Sessions))
+            foreach (var session in league1.Seasons.SelectMany(x => x.Schedules).SelectMany(x => x.Sessions)
+                .SkipLast(1))
             {
                 var scoredResult = new ScoredResultEntity();
                 scoring.ScoredResults.Add(scoredResult);

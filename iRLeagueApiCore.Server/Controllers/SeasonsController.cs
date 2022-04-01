@@ -102,7 +102,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
                 var league = _dbContext.Leagues
                     .Include(x => x.Seasons)
-                    .Single(x => x.LeagueId == leagueId);
+                    .Single(x => x.Id == leagueId);
                 league.Seasons.Add(dbSeason);
             }
             else if (dbSeason.LeagueId != leagueId)
