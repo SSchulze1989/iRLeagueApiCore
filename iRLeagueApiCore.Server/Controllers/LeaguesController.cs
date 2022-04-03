@@ -1,6 +1,10 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
+using iRLeagueApiCore.Server.Handlers.Leagues;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,55 +20,54 @@ namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     public class LeaguesController : LeagueApiController
     {
         private readonly ILogger<LeaguesController> _logger;
-        private readonly LeagueDbContext _dbContext;
+        private readonly IMediator mediator;
 
-        public LeaguesController(ILogger<LeaguesController> logger, LeagueDbContext dbContext)
+        public LeaguesController(ILogger<LeaguesController> logger, IMediator mediator)
         {
             _logger = logger;
-            _dbContext = dbContext;
+            this.mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromQuery] long[] ids)
+        [Route("")]
+        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> GetAll()
         {
-            _logger.LogInformation("Getting league info for league ids {LeagueIds} by {UserName}", ids,
+            _logger.LogInformation("[{Method}] all leagues by {UserName}", "Get",
                 User.Identity.Name);
-
-            IQueryable<LeagueEntity> dbLeagues = _dbContext.Leagues;
-            var getLeagues = new List<GetLeagueModel>();
-
-            if (ids != null && ids.Count() > 0)
-            {
-                dbLeagues = dbLeagues.Where(x => ids.Contains(x.Id));
-            }
-
-            if (dbLeagues.Count() == 0)
-            {
-                _logger.LogInformation("No leagues found for ids {LeagueIds}", ids);
-                return NotFound();
-            }
-
-            getLeagues = await dbLeagues
-                .Select(x => new GetLeagueModel()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    NameFull = x.NameFull,
-                    SeasonIds = x.Seasons.Select(x => x.SeasonId),
-                    CreatedOn = x.CreatedOn,
-                    CreatedByUserId = x.CreatedByUserId,
-                    CreatedByUserName = x.CreatedByUserName,
-                    LastModifiedOn = x.LastModifiedOn,
-                    LastModifiedByUserId = x.LastModifiedByUserId,
-                    LastModifiedByUserName = x.LastModifiedByUserName
-                })
-                .ToListAsync();
-
-            _logger.LogInformation("Return {Count} league entries for ids {LeagueIds}", getLeagues.Count(), ids);
+            var request = new GetLeaguesRequest();
+            var getLeagues = await mediator.Send(request);
+            _logger.LogInformation("Return {Count} league entries", getLeagues.Count());
             return Ok(getLeagues);
+        }
+
+        [HttpGet]
+        [Route("{id:long}")]
+        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromRoute] long id)
+        {
+            _logger.LogInformation("[{Method}] all leagues by {UserName}", "Get",
+                User.Identity.Name);
+            var request = new GetLeagueRequest(id);
+            var getLeague = await mediator.Send(request);
+            _logger.LogInformation("Return league entry for id {LeagueId}", id);
+            return Ok(getLeague);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        [Route("")]
+        public async Task<ActionResult<GetLeagueModel>> Post([FromBody] PostLeagueModel postLeague)
+        {
+            _logger.LogInformation("[{Method}] league data by {UserName}",
+                "Post", User.Identity.Name);
+            var leagueUser = new LeagueUser(null, User);
+            var request = new PostLeagueRequest(leagueUser, postLeague);
+            var getLeague = await mediator.Send(request);
+            _logger.LogInformation("Return created entry for {LeagueName}", getLeague.Name);
+            return CreatedAtAction(nameof(Get), new { id = getLeague.Id }, getLeague);
         }
 
         [HttpPut]
@@ -72,55 +75,27 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("{id}")]
         public async Task<ActionResult<GetLeagueModel>> Put([FromRoute] long id, [FromBody] PutLeagueModel putLeague)
         {
-            _logger.LogInformation("Put league data with {LeagueId} by {UserName}", id,
-                User.Identity.Name);
-
-            var dbLeague = await _dbContext.FindAsync<LeagueEntity>(id);
-
-            ClaimsPrincipal currentUser = this.User;
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            dbLeague.LastModifiedOn = DateTime.Now;
-            dbLeague.LastModifiedByUserId = currentUserID;
-            dbLeague.LastModifiedByUserName = User.Identity.Name;
-            dbLeague.NameFull = putLeague.NameFull;
-            await _dbContext.SaveChangesAsync();
-
-            var getLeague = new GetLeagueModel();
-            getLeague.Id = dbLeague.Id;
-            getLeague.Name = dbLeague.Name;
-            getLeague.NameFull = dbLeague.NameFull;
-            getLeague.CreatedByUserId = dbLeague.CreatedByUserId;
-            getLeague.CreatedByUserName = dbLeague.CreatedByUserName;
-            getLeague.CreatedOn = dbLeague.CreatedOn;
-            getLeague.LastModifiedByUserId = dbLeague.LastModifiedByUserId;
-            getLeague.LastModifiedByUserName = dbLeague.LastModifiedByUserName;
-            getLeague.LastModifiedOn = dbLeague.LastModifiedOn;
-
+            _logger.LogInformation("[{Method}] league data with {LeagueId} by {UserName}", id,
+                "Put", User.Identity.Name);
+            var leagueUser = new LeagueUser(null, User);
+            var request = new PutLeagueRequest(id, leagueUser, putLeague);
+            var getLeague = await mediator.Send(request);
             _logger.LogInformation("Return updated entry for {LeagueName}", getLeague.Name);
             return Ok(getLeague);
         }
 
         [HttpDelete]
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<ActionResult> Delete([FromQuery] long leagueId)
+        [Route("{id}")]
+        public async Task<ActionResult> Delete([FromRoute] long id)
         {
-            _logger.LogInformation("Delete league with id {LeagueId} by {UserName}", leagueId,
+            _logger.LogInformation("[{Method}] league with id {LeagueId} by {UserName}", id,
+                "Delete", User.Identity.Name);
+            var request = new DeleteLeagueRequest(id);
+            await mediator.Send(request);
+            _logger.LogInformation("Deleted league {LeagueId} by {UserName}", id,
                 User.Identity.Name);
-            var dbLeague = await _dbContext.FindAsync<LeagueEntity>(leagueId);
-
-            if (dbLeague == null)
-            {
-                _logger.LogInformation("Could not delete league: No league with id {LeagueId} found in database", leagueId);
-                return NotFound();
-            }
-
-            _dbContext.Remove(dbLeague);
-            await _dbContext.SaveChangesAsync();
-
-            _logger.LogInformation("Deleted league {LeagueName} with id {LeagueId} by {UserName}", dbLeague.Name, leagueId,
-                User.Identity.Name);
-            return Ok();
+            return NoContent();
         }
     }
 }

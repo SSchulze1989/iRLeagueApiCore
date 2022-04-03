@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,23 +39,25 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues
         {
             return await dbContext.Leagues
                 .Where(x => x.Id == leagueId)
-                .Select(x => new GetLeagueModel()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    NameFull = x.NameFull,
-                    SeasonIds = x.Seasons
-                        .Select(season => season.SeasonId)
-                        .ToList(),
-                    CreatedByUserId = x.CreatedByUserId,
-                    CreatedByUserName = x.CreatedByUserName,
-                    CreatedOn = x.CreatedOn,
-                    LastModifiedByUserId = x.LastModifiedByUserId,
-                    LastModifiedByUserName = x.LastModifiedByUserName,
-                    LastModifiedOn = x.LastModifiedOn,
-                })
+                .Select(MapToGetLeagueModelExpression)
                 .SingleOrDefaultAsync(cancellationToken);
         }
+
+        protected Expression<Func<LeagueEntity, GetLeagueModel>> MapToGetLeagueModelExpression => x => new GetLeagueModel()
+        {
+            Id = x.Id,
+            Name = x.Name,
+            NameFull = x.NameFull,
+            SeasonIds = x.Seasons
+                .Select(season => season.SeasonId)
+                .ToList(),
+            CreatedByUserId = x.CreatedByUserId,
+            CreatedByUserName = x.CreatedByUserName,
+            CreatedOn = x.CreatedOn,
+            LastModifiedByUserId = x.LastModifiedByUserId,
+            LastModifiedByUserName = x.LastModifiedByUserName,
+            LastModifiedOn = x.LastModifiedOn,
+        };
 
         protected virtual async Task<LeagueEntity> GetLeagueEntityAsync(long leagueId)
         {
