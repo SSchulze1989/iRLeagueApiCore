@@ -15,16 +15,11 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public record PostScoringRequest(long LeagueId, long SeasonId, PostScoringModel Model) : IRequest<GetScoringModel>;
 
-    public class PostScoringHandler : ScoringHandlerBase, IRequestHandler<PostScoringRequest, GetScoringModel>
+    public class PostScoringHandler : ScoringHandlerBase<PostScoringHandler, PostScoringRequest>, IRequestHandler<PostScoringRequest, GetScoringModel>
     {
-        private readonly ILogger<PostScoringHandler> _logger;
-        private readonly IEnumerable<IValidator<PostScoringRequest>> validators;
-
-        public PostScoringHandler(ILogger<PostScoringHandler> logger, LeagueDbContext dbContext, 
-            IEnumerable<IValidator<PostScoringRequest>> validators) : base(dbContext)
+        public PostScoringHandler(ILogger<PostScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostScoringRequest>> validators) : 
+            base(logger, dbContext, validators)
         {
-            _logger = logger;
-            this.validators = validators;
         }
 
         public async Task<GetScoringModel> Handle(PostScoringRequest request, CancellationToken cancellationToken = default)

@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace iRLeagueApiCore.Communication.Models
 {
     /// <summary>
-    /// Schema for posting a new league
+    /// Schema for updating an existing league
     /// </summary>
     [DataContract]
-    public class PostLeagueModel
+    public class PostLeagueModel : PutLeagueModel
     {
         /// <summary>
         /// Short name of the league
@@ -20,10 +15,5 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
         public string Name { get; set; }
-        /// <summary>
-        /// Full name of the league can contain any UTF-8 characters
-        /// </summary>
-        [DataMember]
-        public string NameFull { get; set; }
     }
 }

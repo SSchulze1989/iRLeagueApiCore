@@ -9,11 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
 {
     public class PostLeagueHandlerTests : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, GetLeagueModel>
     {
+        private const string postLeagueName = "PostLeague";
+
         public PostLeagueHandlerTests(DbTestFixture fixture) : base(fixture)
         {
         }
@@ -27,7 +30,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
         {
             var model = new PostLeagueModel()
             {
-                Name = testLeagueName,
+                Name = postLeagueName,
                 NameFull = "Full test league name"
             };
             return CreateRequest(DefaultUser(), model);
@@ -38,5 +41,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
             return new PostLeagueRequest(user, model);
         }
 
+        [Fact]
+        public override async Task<GetLeagueModel> HandleDefaultAsync()
+        {
+            var result = await base.HandleDefaultAsync();
+            return result;
+        }
+
+        [Fact]
+        public override async Task HandleValidationFailedAsync()
+        {
+            await base.HandleValidationFailedAsync();
+        }
     }
 }

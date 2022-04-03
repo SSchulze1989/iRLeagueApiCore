@@ -25,7 +25,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 
         protected override ScoringRemoveSessionHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<ScoringRemoveSessionRequest> validator)
         {
-            return new ScoringRemoveSessionHandler(dbContext, new IValidator<ScoringRemoveSessionRequest>[] { validator });
+            return new ScoringRemoveSessionHandler(logger, dbContext, new IValidator<ScoringRemoveSessionRequest>[] { validator });
         }
 
         protected override void DefaultPreTestAssertions(ScoringRemoveSessionRequest request, LeagueDbContext dbContext)

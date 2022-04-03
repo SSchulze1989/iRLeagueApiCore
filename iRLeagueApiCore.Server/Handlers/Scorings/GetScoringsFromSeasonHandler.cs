@@ -4,6 +4,7 @@ using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,13 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public record GetScoringsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<GetScoringModel>>;
-    public class GetScoringsFromSeasonHandler : ScoringHandlerBase, IRequestHandler<GetScoringsFromSeasonRequest, IEnumerable<GetScoringModel>>
+    public class GetScoringsFromSeasonHandler : ScoringHandlerBase<GetScoringsFromSeasonHandler, GetScoringsFromSeasonRequest>, 
+        IRequestHandler<GetScoringsFromSeasonRequest, IEnumerable<GetScoringModel>>
     {
-        IEnumerable<IValidator<GetScoringsFromSeasonRequest>> validators;
-        public GetScoringsFromSeasonHandler(LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringsFromSeasonRequest>> validators) : base(dbContext)
+        public GetScoringsFromSeasonHandler(ILogger<GetScoringsFromSeasonHandler> logger, LeagueDbContext dbContext, 
+            IEnumerable<IValidator<GetScoringsFromSeasonRequest>> validators) : 
+            base(logger, dbContext, validators)
         {
-            this.validators = validators;
         }
 
         public async Task<IEnumerable<GetScoringModel>> Handle(GetScoringsFromSeasonRequest request,

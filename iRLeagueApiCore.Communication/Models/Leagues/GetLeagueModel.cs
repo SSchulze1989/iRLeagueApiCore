@@ -8,7 +8,7 @@ namespace iRLeagueApiCore.Communication.Models
     /// Schema for fetching an existing league
     /// </summary>
     [DataContract]
-    public class GetLeagueModel : PutLeagueModel, IVersionModel
+    public class GetLeagueModel : PostLeagueModel, IVersionModel
     {
         /// <summary>
         /// Unique league id

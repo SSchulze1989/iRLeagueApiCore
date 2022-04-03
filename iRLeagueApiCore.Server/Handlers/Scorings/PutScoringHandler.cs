@@ -12,16 +12,11 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public record PutScoringRequest(long LeagueId, long ScoringId, PutScoringModel Model) : IRequest<GetScoringModel>;
 
-    public class PutScoringHandler : ScoringHandlerBase, IRequestHandler<PutScoringRequest, GetScoringModel>
+    public class PutScoringHandler : ScoringHandlerBase<PutScoringHandler, PutScoringRequest>, IRequestHandler<PutScoringRequest, GetScoringModel>
     {
-        private readonly ILogger<PutScoringHandler> _logger;
-        private readonly IEnumerable<IValidator<PutScoringRequest>> validators;
-
-        public PutScoringHandler(ILogger<PutScoringHandler> logger, LeagueDbContext dbContext, 
-            IEnumerable<IValidator<PutScoringRequest>> validators) : base(dbContext)
+        public PutScoringHandler(ILogger<PutScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutScoringRequest>> validators) : 
+            base(logger, dbContext, validators)
         {
-            _logger = logger;
-            this.validators = validators;
         }
 
         public async Task<GetScoringModel> Handle(PutScoringRequest request, CancellationToken cancellationToken = default)

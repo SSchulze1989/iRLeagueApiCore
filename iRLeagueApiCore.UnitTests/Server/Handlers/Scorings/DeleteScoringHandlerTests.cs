@@ -21,7 +21,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 
         protected override DeleteScoringHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteScoringRequest> validator)
         {
-            return new DeleteScoringHandler(logger, new IValidator<DeleteScoringRequest>[] { validator }, dbContext);
+            return new DeleteScoringHandler(logger, dbContext, new IValidator<DeleteScoringRequest>[] { validator });
         }
 
         protected override DeleteScoringRequest DefaultRequest()

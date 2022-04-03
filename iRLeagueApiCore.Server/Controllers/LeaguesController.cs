@@ -80,47 +80,11 @@ namespace iRLeagueApiCore.Server.Controllers
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            if (dbLeague == null)
-            {
-                _logger.LogInformation("Creating league {LeagueName} by {UserName}", putLeague.Name,
-                    User.Identity.Name);
-                // validate leaguename
-                if (Regex.IsMatch(putLeague.Name, "^[a-zA-Z0-9_-]*$") == false)
-                {
-                    _logger.LogInformation("Failed to create league: league {LeagueName} is invalid", putLeague.Name);
-                    return BadRequestMessage("Invalid name", "League names may only contain the following characters: a-z A-Z 0-9 _ -");
-                }
-
-                // check if league with same name exists
-                if (await _dbContext.Leagues
-                    .AnyAsync(x => x.Name.ToLower() == putLeague.Name.ToLower()))
-                {
-                    _logger.LogInformation("Failed to create league: league {LeagueName} already exists", putLeague.Name);
-                    return BadRequestMessage("League exists", "A league with the same name exists already and cannot be created");
-                }
-
-                dbLeague = new LeagueEntity()
-                {
-                    Name = putLeague.Name,
-                };
-                _dbContext.Leagues.Add(dbLeague);
-                dbLeague.CreatedOn = DateTime.Now;
-                dbLeague.CreatedByUserId = currentUserID;
-                dbLeague.CreatedByUserName = User.Identity.Name;
-
-                _logger.LogInformation("League {leagueName} created successfully");
-            }
             dbLeague.LastModifiedOn = DateTime.Now;
             dbLeague.LastModifiedByUserId = currentUserID;
             dbLeague.LastModifiedByUserName = User.Identity.Name;
             dbLeague.NameFull = putLeague.NameFull;
             await _dbContext.SaveChangesAsync();
-
-            if (dbLeague == null)
-            {
-                _logger.LogError("Failed to put league data for {LeagueName} due to unknown error", putLeague.Name);
-                return SomethingWentWrong();
-            }
 
             var getLeague = new GetLeagueModel();
             getLeague.Id = dbLeague.Id;
@@ -133,7 +97,7 @@ namespace iRLeagueApiCore.Server.Controllers
             getLeague.LastModifiedByUserName = dbLeague.LastModifiedByUserName;
             getLeague.LastModifiedOn = dbLeague.LastModifiedOn;
 
-            _logger.LogInformation("Return updated entry for {LeagueName}", putLeague.Name);
+            _logger.LogInformation("Return updated entry for {LeagueName}", getLeague.Name);
             return Ok(getLeague);
         }
 
