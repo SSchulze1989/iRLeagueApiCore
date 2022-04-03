@@ -50,7 +50,7 @@ namespace iRLeagueApiCore.Server.Controllers
             getLeagues = await dbLeagues
                 .Select(x => new GetLeagueModel()
                 {
-                    LeagueId = x.Id,
+                    Id = x.Id,
                     Name = x.Name,
                     NameFull = x.NameFull,
                     SeasonIds = x.Seasons.Select(x => x.SeasonId),
@@ -69,12 +69,13 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpPut]
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<ActionResult<GetLeagueModel>> Put([FromBody] PutLeagueModel putLeague)
+        [Route("{id}")]
+        public async Task<ActionResult<GetLeagueModel>> Put([FromRoute] long id, [FromBody] PutLeagueModel putLeague)
         {
-            _logger.LogInformation("Put league data with {LeagueId} by {UserName}", putLeague.LeagueId,
+            _logger.LogInformation("Put league data with {LeagueId} by {UserName}", id,
                 User.Identity.Name);
 
-            var dbLeague = await _dbContext.FindAsync<LeagueEntity>(putLeague.LeagueId);
+            var dbLeague = await _dbContext.FindAsync<LeagueEntity>(id);
 
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -122,7 +123,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             var getLeague = new GetLeagueModel();
-            getLeague.LeagueId = dbLeague.Id;
+            getLeague.Id = dbLeague.Id;
             getLeague.Name = dbLeague.Name;
             getLeague.NameFull = dbLeague.NameFull;
             getLeague.CreatedByUserId = dbLeague.CreatedByUserId;

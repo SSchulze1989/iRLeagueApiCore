@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
 {
+    /// <summary>
+    /// Schema for fetching an existing scoring
+    /// </summary>
     public class GetScoringModel : PutScoringModel, IVersionModel
     {
         /// <summary>

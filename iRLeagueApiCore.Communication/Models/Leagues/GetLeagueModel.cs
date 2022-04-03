@@ -4,9 +4,20 @@ using System.Runtime.Serialization;
 
 namespace iRLeagueApiCore.Communication.Models
 {
+    /// <summary>
+    /// Schema for fetching an existing league
+    /// </summary>
     [DataContract]
     public class GetLeagueModel : PutLeagueModel, IVersionModel
     {
+        /// <summary>
+        /// Unique league id
+        /// </summary>
+        [DataMember]
+        public long Id { get; set; }
+        /// <summary>
+        /// Ids of seasons in this league
+        /// </summary>
         [DataMember]
         public IEnumerable<long> SeasonIds { get; set; }
 

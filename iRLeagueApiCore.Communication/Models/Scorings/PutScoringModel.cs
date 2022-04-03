@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
 {
+    /// <summary>
+    /// Schema for updating an existing scoring
+    /// </summary>
     public class PutScoringModel : PostScoringModel
     {
     }

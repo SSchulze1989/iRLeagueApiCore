@@ -23,6 +23,7 @@ namespace iRLeagueApiCore.Server.Handlers
             var results = new List<ValidationResult>();
             foreach(var validator in validators)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 results.Add(await validator.ValidateAsync(instance, cancellationToken));
             }
             if (results.Any(x => x.IsValid == false))
