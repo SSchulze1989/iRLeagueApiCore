@@ -36,7 +36,7 @@ namespace iRLeagueApiCore.Server.Handlers
                 .SingleOrDefaultAsync(x => x.ScoringId == scoringId, cancellationToken);
         }
 
-        protected virtual async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long seasonId, CancellationToken cancellationToken = default)
+        protected virtual async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long? seasonId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Seasons
                 .Where(x => x.LeagueId == leagueId)

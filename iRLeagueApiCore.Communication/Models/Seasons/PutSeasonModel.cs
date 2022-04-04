@@ -6,8 +6,6 @@ namespace iRLeagueApiCore.Communication.Models
     public class PutSeasonModel
     {
         [DataMember]
-        public long SeasonId { get; set; }
-        [DataMember]
         public string SeasonName { get; set; }
         [DataMember]
         public long? MainScoringId { get; set; }
