@@ -8,6 +8,8 @@ namespace iRLeagueApiCore.Communication.Models
     public class GetSeasonModel : PutSeasonModel, IVersionModel
     {
         [DataMember]
+        public long SeasonId { get; set; }
+        [DataMember]
         public long LeagueId { get; set; }
         [DataMember]
         public DateTime? SeasonStart { get; set; }

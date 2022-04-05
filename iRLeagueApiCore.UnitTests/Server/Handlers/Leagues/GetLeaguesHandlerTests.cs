@@ -12,6 +12,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
 {
+    [Collection("HandlerTests")]
     public class GetLeaguesHandlerTests : HandlersTestsBase<GetLeaguesHandler, GetLeaguesRequest, IEnumerable<GetLeagueModel>>
     {
         public GetLeaguesHandlerTests(DbTestFixture fixture) : base(fixture)

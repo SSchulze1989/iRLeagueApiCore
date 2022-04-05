@@ -13,6 +13,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
 {
+    [Collection("HandlerTests")]
     public class PostLeagueHandlerTests : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, GetLeagueModel>
     {
         private const string postLeagueName = "PostLeague";

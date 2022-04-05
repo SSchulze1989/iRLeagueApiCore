@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
+    [Collection("ControllerTests")]
     public class SessionControllerTests : IClassFixture<DbTestFixture>
     {
         DbTestFixture Fixture { get; }

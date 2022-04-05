@@ -13,6 +13,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
 {
+    [Collection("ValidatorTests")]
     public class PostScoringValidatorTests : IClassFixture<DbTestFixture>
     {
         private readonly DbTestFixture fixture;
@@ -37,12 +38,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
 
         private static PostScoringRequestValidator CreateValidator(LeagueDbContext dbContext)
         {
-            return new PostScoringRequestValidator(dbContext, new PostScoringModelValidator(dbContext));
+            return new PostScoringRequestValidator(new PostScoringModelValidator(dbContext));
         }
 
         [Theory]
         [InlineData(1, true)]
-        [InlineData(42, false)]
         [InlineData(0, false)]
         public async Task ValidateLeagueId(long leagueId, bool expectValid)
         {
@@ -62,7 +62,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Scorings
         [Theory]
         [InlineData(1, true)]
         [InlineData(0, false)]
-        [InlineData(42, false)]
         public async Task ValidateSeasonId(long seasonId, bool expectValid)
         {
             using var dbContext = fixture.CreateDbContext();

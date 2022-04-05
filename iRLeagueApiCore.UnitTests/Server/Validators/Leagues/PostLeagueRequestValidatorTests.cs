@@ -13,6 +13,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Leagues
 {
+    [Collection("ValidatorTests")]
     public class PostLeagueRequestValidatorTests : IClassFixture<DbTestFixture>
     {
         private readonly DbTestFixture fixture;

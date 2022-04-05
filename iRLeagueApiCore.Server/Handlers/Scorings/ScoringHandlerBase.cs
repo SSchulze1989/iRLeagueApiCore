@@ -44,7 +44,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .Where(x => string.IsNullOrEmpty(x) == false) ?? new string[0];
         }
 
-        protected override async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long seasonId, CancellationToken cancellationToken = default)
+        protected override async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long? seasonId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Seasons
                 .Include(x => x.Scorings)

@@ -13,11 +13,13 @@ namespace iRLeagueApiCore.Server.Models
 
         public LeagueUser(string leagueName, ClaimsPrincipal principal)
         {
-            Id = principal.FindFirst(ClaimTypes.NameIdentifier).Value;
-            Name = principal.Identity.Name;
+            Id = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Name = principal.Identity?.Name;
             Roles = principal.FindAll(ClaimTypes.Role)
                 .Select(x => x.Value)
                 .Where(role => LeagueRoles.IsLeagueRoleName(leagueName, role));
         }
+
+        public static LeagueUser Empty => new LeagueUser("", new ClaimsPrincipal());
     }
 }

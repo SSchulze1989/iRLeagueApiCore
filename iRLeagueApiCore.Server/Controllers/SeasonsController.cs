@@ -79,14 +79,15 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("{id}")]
         public async Task<ActionResult<GetSeasonModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromBody] PutSeasonModel putSeason)
+            [FromRoute] long id, [FromBody] PutSeasonModel putSeason)
         {
             _logger.LogInformation("Put season data on {LeagueName} with id {SeasonId} by {UserName}", leagueName,
-                putSeason.SeasonId, User.Identity.Name);
+                id, User.Identity.Name);
 
             var dbSeason = await _dbContext.Seasons
-                .SingleOrDefaultAsync(x => x.SeasonId == putSeason.SeasonId);
+                .SingleOrDefaultAsync(x => x.SeasonId == id);
             var currentUserID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             if (dbSeason == null)
@@ -108,7 +109,7 @@ namespace iRLeagueApiCore.Server.Controllers
             else if (dbSeason.LeagueId != leagueId)
             {
                 _logger.LogInformation("Season with id {SeasonId} belongs to another league");
-                return BadRequestMessage("Season not found", $"No schedule with id {putSeason.SeasonId} could be found");
+                return BadRequestMessage("Season not found", $"No season with id {id} could be found");
             }
 
             dbSeason.SeasonName = putSeason.SeasonName;
