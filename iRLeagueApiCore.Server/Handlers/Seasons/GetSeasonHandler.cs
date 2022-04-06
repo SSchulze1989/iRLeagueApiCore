@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -18,9 +19,12 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
         {
         }
 
-        public Task<GetSeasonModel> Handle(GetSeasonRequest request, CancellationToken cancellationToken)
+        public async Task<GetSeasonModel> Handle(GetSeasonRequest request, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            await validators.ValidateAllAndThrowAsync(request, cancellationToken);
+            var getSeason = await MapToGetSeasonModel(request.LeagueId, request.SeasonId, cancellationToken)
+                ?? throw new ResourceNotFoundException();
+            return getSeason;
         }
     }
 }

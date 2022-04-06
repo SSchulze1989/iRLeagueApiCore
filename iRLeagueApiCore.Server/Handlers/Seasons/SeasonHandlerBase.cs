@@ -45,6 +45,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
 
         protected Expression<Func<SeasonEntity, GetSeasonModel>> MapToGetSeasonModelExpression => x => new GetSeasonModel()
         {
+            SeasonId = x.SeasonId,
             Finished = x.Finished,
             HideComments = x.HideCommentsBeforeVoted,
             LeagueId = x.LeagueId,
