@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
@@ -67,7 +68,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
-            [FromQuery] long[] ids)
+            [FromQuery] long[] ids, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Get sessions from {LeagueName} for ids {SessionIds} by {UserName}", leagueName, ids,
                 User.Identity.Name);
@@ -88,7 +89,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             var getSessions = await dbSessions
                 .Select(MapToSessionModelExpr)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             _logger.LogInformation("Return {Count} session entries from {LeagueName} for ids {SessionIds}", getSessions.Count(),
                 leagueName, ids);
@@ -98,13 +99,13 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
-            [FromQuery] PutSessionModel putSession)
+            [FromQuery] PutSessionModel putSession, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Put session data on {LeagueName} with id {SessionId} by {UserName}", leagueName,
                 putSession.SessionId, User.Identity.Name);
 
             var dbSession = await _dbContext.Sessions
-                .SingleOrDefaultAsync(x => x.SessionId == putSession.SessionId);
+                .SingleOrDefaultAsync(x => x.SessionId == putSession.SessionId, cancellationToken);
 
             ClaimsPrincipal currentUser = User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -146,7 +147,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 {
                     var schedule = await _dbContext.Schedules
                     .Include(x => x.Sessions)
-                    .SingleOrDefaultAsync(x => x.ScheduleId == putSession.ScheduleId);
+                    .SingleOrDefaultAsync(x => x.ScheduleId == putSession.ScheduleId, cancellationToken);
 
                     if (schedule == null)
                     {
@@ -178,7 +179,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 else
                 {
                     var parentSession = await _dbContext.Sessions
-                        .SingleOrDefaultAsync(x => x.SessionId == putSession.ParentSessionId);
+                        .SingleOrDefaultAsync(x => x.SessionId == putSession.ParentSessionId, cancellationToken);
 
                     if (parentSession == null)
                     {
@@ -211,19 +212,19 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSession.QualyLength = putSession.QualyLength;
             dbSession.RaceLength = putSession.RaceLength;
             dbSession.SessionTitle = putSession.SessionTitle;
-            //dbSession.SessionType = putSession.SessionType;
+            dbSession.SessionType = putSession.SessionType;
             dbSession.SubSessionNr = putSession.SubSessionNr;
             dbSession.LastModifiedOn = DateTime.Now;
             dbSession.LastModifiedByUserId = currentUserID;
             dbSession.LastModifiedByUserName = User.Identity.Name;
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogInformation("Written session data on {LeagueName} for session {SessionId} by {UserName}", leagueName,
                 dbSession.SessionId, User.Identity.Name);
 
             var getSession = await _dbContext.Sessions
                 .Select(MapToSessionModelExpr)
-                .SingleAsync(x => x.SessionId == dbSession.SessionId);
+                .SingleAsync(x => x.SessionId == dbSession.SessionId, cancellationToken);
 
             _logger.LogInformation("Return session entry from {LeagueName} for session id {SessionId}", leagueName,
                 getSession.SessionId);
@@ -232,14 +233,15 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpDelete]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id)
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id, 
+            CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Request to delete Session {SessionId} from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
 
             var dbSession = await _dbContext.Sessions
                 .Include(x => x.Schedule)
                     .ThenInclude(x => x.Sessions)
-                .SingleOrDefaultAsync(x => x.SessionId == id && x.LeagueId == leagueId);
+                .SingleOrDefaultAsync(x => x.SessionId == id && x.LeagueId == leagueId, cancellationToken);
 
             if (dbSession == null)
             {
@@ -248,7 +250,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             _dbContext.Sessions.Remove(dbSession);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Session {SessionId} deleted from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
 

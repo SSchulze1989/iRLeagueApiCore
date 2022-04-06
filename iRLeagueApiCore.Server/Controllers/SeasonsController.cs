@@ -36,12 +36,13 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("{id:long}")]
-        public async Task<ActionResult<IEnumerable<GetSeasonModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId)
+        public async Task<ActionResult<IEnumerable<GetSeasonModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
+            CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all seasons from {LeagueName} by {UserName}", "Get", leagueName,
                 User.Identity.Name);
             var request = new GetSeasonsRequest(leagueId);
-            var getSeasons = await mediator.Send(request);
+            var getSeasons = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} season entries from {LeagueName}", getSeasons.Count(),
                 leagueName);
             return Ok(getSeasons);
@@ -49,12 +50,12 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<GetSeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, 
-            [FromRoute] long id)
+            [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Get",
                 id, leagueName, User.Identity.Name);
             var request = new GetSeasonRequest(leagueId, id);
-            var getSeason = await mediator.Send(request);
+            var getSeason = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
             return Ok(getSeason);
         }
@@ -78,13 +79,13 @@ namespace iRLeagueApiCore.Server.Controllers
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("{id:long}")]
         public async Task<ActionResult<GetSeasonModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromRoute] long id, [FromBody] PutSeasonModel putSeason)
+            [FromRoute] long id, [FromBody] PutSeasonModel putSeason, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Put",
                 leagueName, id, User.Identity.Name);
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutSeasonRequest(leagueId, leagueUser, id, putSeason);
-            var getSeason = await mediator.Send(request);
+            var getSeason = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", leagueName,
                 getSeason.SeasonId);
             return Ok(getSeason);
@@ -94,13 +95,13 @@ namespace iRLeagueApiCore.Server.Controllers
         [RequireLeagueRole(LeagueRoles.Admin)]
         [Route("{id:long}")]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromRoute] long id)
+            [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Delete",
                 id, leagueName,
                 User.Identity.Name);
             var request = new DeleteSeasonRequest(leagueId, id);
-            await mediator.Send(request);
+            await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted season {SeasonId} from {LeagueName}", id, leagueName,
                 User.Identity.Name);
             return NoContent();

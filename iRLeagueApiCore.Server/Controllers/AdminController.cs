@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -36,13 +37,13 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueName">[Required] Name of the league</param>
         /// <returns></returns>
         [HttpGet("ListUsers")]
-        public async Task<ActionResult<IEnumerable<GetAdminUserModel>>> ListUsers([FromRoute] string leagueName)
+        public async Task<ActionResult<IEnumerable<GetAdminUserModel>>> ListUsers([FromRoute] string leagueName, CancellationToken cancellationToken = default)
         {
             try
             {
                 _logger.LogInformation("Get list of users for {LeagueName} by {UserName}", leagueName, User.Identity.Name);
                 var request = new ListUsersRequest(leagueName);
-                var getUsers = await _mediator.Send(request);
+                var getUsers = await _mediator.Send(request, cancellationToken);
                 if (getUsers.Count() == 0)
                 {
                     _logger.LogInformation("No users found in {LeagueName}", leagueName);
@@ -65,14 +66,14 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="userRole"><c>RoleName</c> of the role to give to the user named <c>UserName</c></param>
         /// <returns>Action result</returns>
         [HttpPost("GiveRole")]
-        public async Task<ActionResult> GiveRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
+        public async Task<ActionResult> GiveRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole, CancellationToken cancellationToken = default)
         {
             try
             {
                 _logger.LogInformation("Give league role {LeagueRole} to user {RoleUser} for {LeagueName} by {UserName}",
                     userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
                 var request = new GiveRoleRequest(leagueName, userRole);
-                await _mediator.Send(request);
+                await _mediator.Send(request, cancellationToken);
                 return OkMessage($"Role {userRole.RoleName} given to user {userRole.UserName}");
             }
             catch (ValidationException ex)

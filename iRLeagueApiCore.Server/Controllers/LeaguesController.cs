@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
@@ -34,24 +35,24 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> GetAll(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all leagues by {UserName}", "Get",
                 User.Identity.Name);
             var request = new GetLeaguesRequest();
-            var getLeagues = await mediator.Send(request);
+            var getLeagues = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} league entries", getLeagues.Count());
             return Ok(getLeagues);
         }
 
         [HttpGet]
         [Route("{id:long}")]
-        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromRoute] long id)
+        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all leagues by {UserName}", "Get",
                 User.Identity.Name);
             var request = new GetLeagueRequest(id);
-            var getLeague = await mediator.Send(request);
+            var getLeague = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return league entry for id {LeagueId}", id);
             return Ok(getLeague);
         }
@@ -59,13 +60,13 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost]
         [Authorize(Roles = UserRoles.Admin)]
         [Route("")]
-        public async Task<ActionResult<GetLeagueModel>> Post([FromBody] PostLeagueModel postLeague)
+        public async Task<ActionResult<GetLeagueModel>> Post([FromBody] PostLeagueModel postLeague, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] league data by {UserName}",
                 "Post", User.Identity.Name);
             var leagueUser = new LeagueUser(null, User);
             var request = new PostLeagueRequest(leagueUser, postLeague);
-            var getLeague = await mediator.Send(request);
+            var getLeague = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return created entry for {LeagueName}", getLeague.Name);
             return CreatedAtAction(nameof(Get), new { id = getLeague.Id }, getLeague);
         }
@@ -73,13 +74,13 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         [Authorize(Roles = UserRoles.Admin)]
         [Route("{id}")]
-        public async Task<ActionResult<GetLeagueModel>> Put([FromRoute] long id, [FromBody] PutLeagueModel putLeague)
+        public async Task<ActionResult<GetLeagueModel>> Put([FromRoute] long id, [FromBody] PutLeagueModel putLeague, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] league data with {LeagueId} by {UserName}", id,
                 "Put", User.Identity.Name);
             var leagueUser = new LeagueUser(null, User);
             var request = new PutLeagueRequest(id, leagueUser, putLeague);
-            var getLeague = await mediator.Send(request);
+            var getLeague = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return updated entry for {LeagueName}", getLeague.Name);
             return Ok(getLeague);
         }
@@ -87,12 +88,12 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpDelete]
         [Authorize(Roles = UserRoles.Admin)]
         [Route("{id}")]
-        public async Task<ActionResult> Delete([FromRoute] long id)
+        public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] league with id {LeagueId} by {UserName}", id,
                 "Delete", User.Identity.Name);
             var request = new DeleteLeagueRequest(id);
-            await mediator.Send(request);
+            await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted league {LeagueId} by {UserName}", id,
                 User.Identity.Name);
             return NoContent();

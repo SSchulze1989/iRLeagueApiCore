@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
@@ -85,7 +86,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long[] ids)
+            [FromQuery] long[] ids, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Get results from {LeagueName} for ids {ResultIds} by {Username}", leagueName, ids,
                 User.Identity.Name);
@@ -102,7 +103,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             var getResult = await dbResults
                 .Select(GetResultModelFromDbExpression)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             if (getResult.Count() == 0)
             {
@@ -117,7 +118,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet("FromSeason")]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long id)
+            [FromQuery] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Get results from {LeagueName} for season id {SeasonId} by {Username}", leagueName, id,
                 User.Identity.Name);
@@ -130,7 +131,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             var getResult = await dbResults
                 .Select(GetResultModelFromDbExpression)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             if (getResult.Count() == 0)
             {
@@ -145,7 +146,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet("FromSession")]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long id)
+            [FromQuery] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Get results from {LeagueName} for session id {SessionId} by {Username}", leagueName, id,
                 User.Identity.Name);
@@ -158,7 +159,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
             var getResult = await dbResults
                 .Select(GetResultModelFromDbExpression)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             if (getResult.Count() == 0)
             {

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
@@ -31,7 +32,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long[] ids)
+            [FromQuery] long[] ids, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Get schedules from {LeagueName} for ids {ScheduleIds} by {UserName}", leagueName, ids,
                 User.Identity.Name);
@@ -64,7 +65,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     LastModifiedByUserId = x.LastModifiedByUserId,
                     LastModifiedByUserName = x.LastModifiedByUserName
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedules.Count(),
                 leagueName, ids);
@@ -74,13 +75,13 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromBody] PutScheduleModel putSchedule)
+            [FromBody] PutScheduleModel putSchedule, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Put schedule data on {LeagueName} with id {ScheduleId} by {UserName}", leagueName,
                 putSchedule.ScheduleId, User.Identity.Name);
 
             var dbSchedule = await _dbContext.Schedules
-                .SingleOrDefaultAsync(x => x.ScheduleId == putSchedule.ScheduleId);
+                .SingleOrDefaultAsync(x => x.ScheduleId == putSchedule.ScheduleId, cancellationToken);
 
             ClaimsPrincipal currentUser = User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -131,7 +132,7 @@ namespace iRLeagueApiCore.Server.Controllers
             dbSchedule.LastModifiedByUserId = currentUserID;
             dbSchedule.LastModifiedByUserName = User.Identity.Name;
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogInformation("Written schedule data on {LeagueName} for schedule {ScheduleId} by {UserName}", leagueName,
                 dbSchedule.ScheduleId, User.Identity.Name);
 
@@ -151,7 +152,7 @@ namespace iRLeagueApiCore.Server.Controllers
                     LastModifiedByUserName = x.LastModifiedByUserName
                 })
                 .Where(x => x.ScheduleId == dbSchedule.ScheduleId)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(cancellationToken);
 
             _logger.LogInformation("Return schedule entry from {LeagueName} for schedule id {ScheduleId}", leagueName,
                 getSchedule.ScheduleId);
@@ -160,13 +161,14 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpDelete]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromQuery] long id)
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromQuery] long id,
+            CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Deleting schedule {ScheduleId} from {LeagueName} by {UserName}", id, leagueName,
                 User.Identity.Name);
 
             var dbSchedule = await _dbContext.Schedules
-                .SingleOrDefaultAsync(x => x.ScheduleId == id);
+                .SingleOrDefaultAsync(x => x.ScheduleId == id, cancellationToken);
 
             if (dbSchedule == null)
             {
@@ -181,7 +183,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
 
             _dbContext.Schedules.Remove(dbSchedule);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Deleted schedule {ScheduleId} from {LeagueName} by {UserName}", id, leagueName,
                 User.Identity.Name);
