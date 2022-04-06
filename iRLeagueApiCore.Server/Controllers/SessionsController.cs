@@ -20,7 +20,8 @@ namespace iRLeagueApiCore.Server.Controllers
     /// </summary>
     [ApiController]
     [Authorize]
-    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(InsertLeagueIdAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class SessionsController : LeagueApiController
@@ -65,7 +66,6 @@ namespace iRLeagueApiCore.Server.Controllers
 
 
         [HttpGet]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
             [FromQuery] long[] ids)
         {
@@ -96,7 +96,6 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpPut]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
             [FromQuery] PutSessionModel putSession)
@@ -232,7 +231,6 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpDelete]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id)
         {

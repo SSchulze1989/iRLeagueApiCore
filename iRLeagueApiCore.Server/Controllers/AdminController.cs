@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [RequireLeagueRole(LeagueRoles.Admin)]
     [Route("{leagueName}/[controller]")]
     public class AdminController : LeagueApiController

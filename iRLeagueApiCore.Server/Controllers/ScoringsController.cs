@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
-    [ServiceFilter(typeof(InsertLeagueIdAttribute))]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(InsertLeagueIdAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class ScoringsController : LeagueApiController

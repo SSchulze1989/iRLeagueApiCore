@@ -14,7 +14,8 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(InsertLeagueIdAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class SchedulesController : LeagueApiController
@@ -29,7 +30,6 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long[] ids)
         {
@@ -73,7 +73,6 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromBody] PutScheduleModel putSchedule)
         {
@@ -161,7 +160,6 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpDelete]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromQuery] long id)
         {
             _logger.LogInformation("Deleting schedule {ScheduleId} from {LeagueName} by {UserName}", id, leagueName,

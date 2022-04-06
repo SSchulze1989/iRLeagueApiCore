@@ -14,7 +14,8 @@ namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
     [Route("/{leagueName}/Result")]
-    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(InsertLeagueIdAttribute))]
     public class ResultsController : LeagueApiController
     {
         private readonly LeagueDbContext _dbContext;
@@ -83,7 +84,6 @@ namespace iRLeagueApiCore.Server.Controllers
         };
 
         [HttpGet]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long[] ids)
         {
@@ -116,7 +116,6 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet("FromSeason")]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long id)
         {
@@ -145,7 +144,6 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet("FromSession")]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long id)
         {
