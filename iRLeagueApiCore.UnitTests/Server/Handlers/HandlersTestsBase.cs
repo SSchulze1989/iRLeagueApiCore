@@ -34,6 +34,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected const string testLeagueName = "TestLeague";
         protected const long testSeasonId = 1;
         protected const long testScoringId = 1;
+        protected const long testScheduleId = 1;
         protected const string testUserName = "TestUser";
         protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
         protected static IEnumerable<string> testLeagueRoles = new string[] { LeagueRoles.Member };

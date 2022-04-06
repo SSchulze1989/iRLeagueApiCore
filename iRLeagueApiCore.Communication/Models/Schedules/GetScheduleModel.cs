@@ -10,6 +10,10 @@ namespace iRLeagueApiCore.Communication.Models
         [DataMember]
         public long LeagueId { get; set; }
         [DataMember]
+        public long ScheduleId { get; set; }
+        [DataMember]
+        public long SeasonId { get; set; }
+        [DataMember]
         public IEnumerable<long> SessionIds { get; set; }
 
         #region version

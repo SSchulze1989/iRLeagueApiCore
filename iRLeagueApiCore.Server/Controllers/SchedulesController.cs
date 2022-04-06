@@ -74,58 +74,18 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
+        [Route("{id:long}")]
+        public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             [FromBody] PutScheduleModel putSchedule, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Put schedule data on {LeagueName} with id {ScheduleId} by {UserName}", leagueName,
-                putSchedule.ScheduleId, User.Identity.Name);
+                id, User.Identity.Name);
 
             var dbSchedule = await _dbContext.Schedules
-                .SingleOrDefaultAsync(x => x.ScheduleId == putSchedule.ScheduleId, cancellationToken);
+                .SingleOrDefaultAsync(x => x.ScheduleId == id, cancellationToken);
 
             ClaimsPrincipal currentUser = User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            if (dbSchedule == null)
-            {
-                _logger.LogInformation("Create schedule {ScheduleName}", putSchedule.Name);
-                dbSchedule = new ScheduleEntity()
-                {
-                    LeagueId = leagueId,
-                    CreatedOn = DateTime.Now,
-                    CreatedByUserId = currentUserID,
-                    CreatedByUserName = User.Identity.Name
-                };
-                _dbContext.Schedules.Add(dbSchedule);
-            }
-            else if (dbSchedule.LeagueId != leagueId)
-            {
-                _logger.LogInformation("Schedule {ScheduleId} belongs to another league", putSchedule.ScheduleId);
-                return BadRequestMessage("Schedule not found", $"No schedule with id {putSchedule.ScheduleId} could be found");
-            }
-
-            // update season if id changed
-            if (putSchedule.SeasonId != dbSchedule.SeasonId)
-            {
-                _logger.LogInformation("Move schedule {ScheduleId} to season {SeasonId}", putSchedule.ScheduleId, putSchedule.SeasonId);
-                var season = await _dbContext.Seasons
-                    .Include(x => x.Schedules)
-                    .SingleOrDefaultAsync(x => x.SeasonId == putSchedule.SeasonId);
-
-                if (season == null)
-                {
-                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} not found", putSchedule.ScheduleId, putSchedule.SeasonId);
-                    return BadRequest($"No season with id:{putSchedule.SeasonId} found");
-                }
-                if (leagueId != season.LeagueId)
-                {
-                    _logger.LogInformation("Failed to move schedule {ScheduleId}: season {SeasonId} does not belong to league {LeagueName}",
-                        putSchedule.ScheduleId, putSchedule.SeasonId, leagueName);
-                    return WrongLeague($"Season with id:{putSchedule.SeasonId} does not belong to the specified league");
-                }
-
-                season.Schedules.Add(dbSchedule);
-            }
 
             dbSchedule.Name = putSchedule.Name;
             dbSchedule.LastModifiedOn = DateTime.Now;

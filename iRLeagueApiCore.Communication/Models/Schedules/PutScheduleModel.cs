@@ -6,10 +6,6 @@ namespace iRLeagueApiCore.Communication.Models
     public class PutScheduleModel
     {
         [DataMember]
-        public long ScheduleId { get; set; }
-        [DataMember]
-        public long SeasonId { get; set; }
-        [DataMember]
         public string Name { get; set; }
     }
 }
