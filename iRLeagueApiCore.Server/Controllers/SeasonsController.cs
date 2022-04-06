@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
@@ -56,6 +57,21 @@ namespace iRLeagueApiCore.Server.Controllers
             var getSeason = await mediator.Send(request);
             _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
             return Ok(getSeason);
+        }
+
+        [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("")]
+        public async Task<ActionResult<GetSeasonModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromBody] PostSeasonModel postSeason, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] new season to {LeagueName} by {UserName}", "Post", leagueName, 
+                User.Identity.Name);
+            var leagueUser = new LeagueUser(leagueName, User);
+            var request = new PostSeasonRequest(leagueId, leagueUser, postSeason);
+            var getSeason = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return created entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
+            return CreatedAtAction(nameof(Get), new { leagueName, id = getSeason.SeasonId }, getSeason);
         }
 
         [HttpPut]
