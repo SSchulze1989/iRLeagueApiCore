@@ -35,6 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// List the users with at least one role in the current league
         /// </summary>
         /// <param name="leagueName">[Required] Name of the league</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet("ListUsers")]
         public async Task<ActionResult<IEnumerable<GetAdminUserModel>>> ListUsers([FromRoute] string leagueName, CancellationToken cancellationToken = default)
@@ -64,6 +65,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// </summary>
         /// <param name="leagueName">Name of the league</param>
         /// <param name="userRole"><c>RoleName</c> of the role to give to the user named <c>UserName</c></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Action result</returns>
         [HttpPost("GiveRole")]
         public async Task<ActionResult> GiveRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole, CancellationToken cancellationToken = default)

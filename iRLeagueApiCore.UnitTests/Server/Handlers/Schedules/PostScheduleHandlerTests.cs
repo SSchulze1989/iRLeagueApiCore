@@ -12,6 +12,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
+    [Collection("HandlerTests")]
     public class PostScheduleHandlerTests : HandlersTestsBase<PostScheduleHandler, PostScheduleRequest, GetScheduleModel>
     {
         private const string testScheduleName = "TestSchedule";

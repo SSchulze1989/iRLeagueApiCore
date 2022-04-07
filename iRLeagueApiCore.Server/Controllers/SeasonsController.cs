@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
-        [Route("{id:long}")]
+        [Route("")]
         public async Task<ActionResult<IEnumerable<GetSeasonModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
             CancellationToken cancellationToken = default)
         {
@@ -49,6 +49,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [Route("{id:long}")]
         public async Task<ActionResult<GetSeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {

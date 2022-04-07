@@ -1,99 +1,130 @@
-﻿using iRLeagueApiCore.Communication.Models;
+﻿using FluentValidation;
+using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Controllers;
+using iRLeagueApiCore.Server.Exceptions;
+using iRLeagueApiCore.Server.Handlers.Schedules;
 using iRLeagueApiCore.UnitTests.Fixtures;
+using MediatR;
+using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
     [Collection("ControllerTests")]
-    public class ScheduleControllerTests : IClassFixture<DbTestFixture>
+    public class ScheduleControllerTests
     {
-        DbTestFixture Fixture { get; }
-        ITestOutputHelper Output { get; }
-        ILogger<SchedulesController> MockLogger { get; }
+        private readonly ILogger<SchedulesController> logger;
 
-        public ScheduleControllerTests(DbTestFixture fixture, ITestOutputHelper output)
+        const string testLeagueName = "TestLeague";
+        const long testLeagueId = 1;
+        const long testSeasonÍd = 1;
+        const long testScheduleId = 1;
+        const string testScheduleName = "Schedule 1";
+
+        public ScheduleControllerTests()
         {
-            Fixture = fixture;
-            MockLogger = new Mock<ILogger<SchedulesController>>().Object;
+            logger = Mock.Of<ILogger<SchedulesController>>();
+        }
+
+        private static GetScheduleModel DefaultGetModel()
+        {
+            return new GetScheduleModel()
+            {
+                LeagueId = testLeagueId,
+                ScheduleId = testScheduleId,
+                Name = testScheduleName
+            };
+        }
+
+        private static PostScheduleModel DefaultPostModel()
+        {
+            return new PostScheduleModel();
+        }
+
+        private static PutScheduleModel DefaultPutModel()
+        {
+            return new PutScheduleModel();
         }
 
         [Fact]
-        public async void GetSchedule()
+        public async Task GetSchedulesValid()
         {
-            using (var dbContext = Fixture.CreateDbContext())
-            {
-                const string testLeagueName = "TestLeague";
-                const long testLeagueId = 1;
-                const long testScheduleId = 1;
-                const string testScheduleName = "S1 Schedule";
+            var expectedResult = new GetScheduleModel[] { DefaultGetModel() };
+            var mediator = MockHelpers.TestMediator<GetSchedulesRequest, IEnumerable<GetScheduleModel>>(x =>
+                x.LeagueId == testLeagueId, expectedResult);
+            var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
-                var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testScheduleId })).Result;
-                Assert.IsType<OkObjectResult>(result);
-                var okResult = (OkObjectResult)result;
-                var resultValue = (IEnumerable<GetScheduleModel>)okResult.Value;
-                var schedule = resultValue.FirstOrDefault();
-
-                Assert.NotNull(schedule);
-                Assert.Equal(testScheduleId, schedule.ScheduleId);
-                Assert.Equal(testScheduleName, schedule.Name);
-            }
+            var result = await controller.GetAll(testLeagueName, testLeagueId);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(expectedResult, okResult.Value);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<GetSchedulesRequest>(), default));
         }
 
         [Fact]
-        public async void CreateSchedule()
+        public async Task GetScheduleValid()
         {
-            using (var tx = new TransactionScope())
-            using (var dbContext = Fixture.CreateDbContext())
-            {
-                const string testLeagueName = "TestLeague";
-                const long testLeagueId = 1;
-                const string testScheduleName = "S1 Schedule 2";
-                const long testSeasonId = 1;
+            var expectedResult = DefaultGetModel();
+            var mediator = MockHelpers.TestMediator<GetScheduleRequest, GetScheduleModel>(x =>
+                x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId, expectedResult);
+            var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
-                var putSchedule = new PutScheduleModel()
-                {
-                    Name = testScheduleName
-                };
-                var result = (await controller.Put(testLeagueName, testLeagueId, testSeasonId, putSchedule)).Result;
-                Assert.IsType<OkObjectResult>(result);
-                var okResult = (OkObjectResult)result;
-                var getSchedule = (GetScheduleModel)okResult?.Value;
-
-                Assert.NotNull(getSchedule);
-                Assert.Equal(testScheduleName, getSchedule.Name);
-                Assert.Equal(testSeasonId, getSchedule.SeasonId);
-                Assert.Equal(testLeagueId, getSchedule.LeagueId);
-            }
+            var result = await controller.Get(testLeagueName, testLeagueId, testScheduleId);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(expectedResult, okResult.Value);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<GetScheduleRequest>(), default));
         }
 
         [Fact]
-        public async Task DeleteSchedule()
+        public async Task PostScheduleValid()
         {
-            using (var tx = new TransactionScope())
-            using (var dbContext = Fixture.CreateDbContext())
-            {
+            var expectedResult = DefaultGetModel();
+            var mediator = MockHelpers.TestMediator<PostScheduleRequest, GetScheduleModel>(x =>
+                x.LeagueId == testLeagueId, expectedResult);
+            var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-                const string testLeagueName = "TestLeague";
-                const long testLeagueId = 1;
-                const long testScheduleId = 1;
+            var result = await controller.Post(testLeagueName, testSeasonÍd, testLeagueId, DefaultPostModel());
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+            Assert.Equal(expectedResult, createdResult.Value);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<PostScheduleRequest>(), default));
+        }
 
-                var controller = AddContexts.AddMemberControllerContext(new SchedulesController(MockLogger, dbContext));
-                var result = (await controller.Delete(testLeagueName, testLeagueId, testScheduleId));
+        [Fact]
+        public async Task PutScheduleValid()
+        {
+            var expectedResult = DefaultGetModel();
+            var mediator = MockHelpers.TestMediator<PutScheduleRequest, GetScheduleModel>(x =>
+                x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId, expectedResult);
+            var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-                Assert.IsType<NoContentResult>(result);
-                Assert.DoesNotContain(dbContext.Schedules, x => x.ScheduleId == testScheduleId);
-            }
+            var result = await controller.Put(testLeagueName, testLeagueId, testScheduleId, DefaultPutModel());
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(expectedResult, okResult.Value);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<PutScheduleRequest>(), default));
+        }
+
+        [Fact]
+        public async Task DeleteScheduleValid()
+        {
+            var mediator = MockHelpers.TestMediator<DeleteScheduleRequest, Unit>(x =>
+                x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId);
+            var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
+
+            var result = await controller.Delete(testLeagueName, testLeagueId, testScheduleId);
+            Assert.IsType<NoContentResult>(result);
+            var mediatorMock = Mock.Get(mediator);
+            mediatorMock.Verify(x => x.Send(It.IsAny<DeleteScheduleRequest>(), default));
         }
     }
 }

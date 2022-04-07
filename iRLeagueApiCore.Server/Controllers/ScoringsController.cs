@@ -34,6 +34,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// </summary>
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("")]
         [HttpGet]
@@ -67,6 +68,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
         /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("{id:long}")]
         [HttpGet]
@@ -101,6 +103,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueId"></param>
         /// <param name="seasonId"></param>
         /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("/{leagueName}/Seasons/{seasonId:long}/Scorings")]
         [HttpPost]
@@ -135,6 +138,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueId"></param>
         /// <param name="id"></param>
         /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("{id:long}")]
         [HttpPut]
@@ -168,6 +172,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
         /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("{id:long}")]
         [HttpDelete]
@@ -201,6 +206,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueId"></param>
         /// <param name="id"></param>
         /// <param name="sessionId"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("{id:long}/AddSession/{sessionId:long}")]
         [HttpPost]
@@ -234,6 +240,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueId"></param>
         /// <param name="id"></param>
         /// <param name="sessionId"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("{id:long}/RemoveSession/{sessionId:long}")]
         [HttpPost]
@@ -266,6 +273,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
         /// <param name="seasonId"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("/{leagueName}/Seasons/{seasonId}/Scorings")]
         [HttpGet]

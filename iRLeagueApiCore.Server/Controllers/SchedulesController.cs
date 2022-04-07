@@ -1,7 +1,10 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
+using iRLeagueApiCore.Server.Handlers.Schedules;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,135 +20,90 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
+    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class SchedulesController : LeagueApiController
     {
         private readonly ILogger<SchedulesController> _logger;
-        private readonly LeagueDbContext _dbContext;
+        private readonly IMediator mediator;
 
-        public SchedulesController(ILogger<SchedulesController> logger, LeagueDbContext dbContext)
+        public SchedulesController(ILogger<SchedulesController> logger, IMediator mediator)
         {
             _logger = logger;
-            _dbContext = dbContext;
+            this.mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetScheduleModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long[] ids, CancellationToken cancellationToken = default)
+        [Route("")]
+        public async Task<ActionResult<IEnumerable<GetScheduleModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
+            CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Get schedules from {LeagueName} for ids {ScheduleIds} by {UserName}", leagueName, ids,
+            _logger.LogInformation("[{Method}] all schedules from {LeagueName} by {UserName}", "Get", leagueName,
                 User.Identity.Name);
-
-            IQueryable<ScheduleEntity> dbSchedules = _dbContext.Schedules
-                .Where(x => x.LeagueId == leagueId);
-
-            if (ids != null && ids.Count() > 0)
-            {
-                dbSchedules = dbSchedules.Where(x => ids.Contains(x.ScheduleId));
-            }
-
-            if (dbSchedules.Count() == 0)
-            {
-                _logger.LogInformation("No schedules found in {LeagueName} for ids {ScheduleIds}", leagueName, ids);
-                return NotFound();
-            }
-
-            var getSchedules = await dbSchedules
-                .Select(x => new GetScheduleModel()
-                {
-                    ScheduleId = x.ScheduleId,
-                    SeasonId = x.SeasonId,
-                    Name = x.Name,
-                    SessionIds = x.Sessions.Select(x => x.SessionId),
-                    CreatedOn = x.CreatedOn,
-                    CreatedByUserId = x.CreatedByUserId,
-                    CreatedByUserName = x.CreatedByUserName,
-                    LastModifiedOn = x.LastModifiedOn,
-                    LastModifiedByUserId = x.LastModifiedByUserId,
-                    LastModifiedByUserName = x.LastModifiedByUserName
-                })
-                .ToListAsync(cancellationToken);
-
-            _logger.LogInformation("Return {Count} schedule entries from {LeagueName} for ids {ScheduleIds}", getSchedules.Count(),
-                leagueName, ids);
+            var request = new GetSchedulesRequest(leagueId);
+            var getSchedules = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} schedule entries from {LeagueName}", getSchedules.Count(),
+                leagueName);
             return Ok(getSchedules);
+        }
+
+        [HttpGet]
+        [Route("{id:long}")]
+        public async Task<ActionResult<GetScheduleModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Get",
+                id, leagueName, User.Identity.Name);
+            var request = new GetScheduleRequest(leagueId, id);
+            var getSchedule = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return entry for schedule {ScheduleId} from {LeagueName}", getSchedule.ScheduleId, leagueName);
+            return Ok(getSchedule);
+        }
+
+        [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
+        public async Task<ActionResult<GetScheduleModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long seasonId, [FromBody] PostScheduleModel postSchedule, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] new schedule to {LeagueName} by {UserName}", "Post", leagueName,
+                User.Identity.Name);
+            var leagueUser = new LeagueUser(leagueName, User);
+            var request = new PostScheduleRequest(leagueId, seasonId, leagueUser, postSchedule);
+            var getSchedule = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return created entry for schedule {ScheduleId} from {LeagueName}", getSchedule.ScheduleId, leagueName);
+            return CreatedAtAction(nameof(Get), new { leagueName, id = getSchedule.ScheduleId }, getSchedule);
         }
 
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("{id:long}")]
-        public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
-            [FromBody] PutScheduleModel putSchedule, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, [FromBody] PutScheduleModel putSchedule, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Put schedule data on {LeagueName} with id {ScheduleId} by {UserName}", leagueName,
-                id, User.Identity.Name);
-
-            var dbSchedule = await _dbContext.Schedules
-                .SingleOrDefaultAsync(x => x.ScheduleId == id, cancellationToken);
-
-            ClaimsPrincipal currentUser = User;
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            dbSchedule.Name = putSchedule.Name;
-            dbSchedule.LastModifiedOn = DateTime.Now;
-            dbSchedule.LastModifiedByUserId = currentUserID;
-            dbSchedule.LastModifiedByUserName = User.Identity.Name;
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation("Written schedule data on {LeagueName} for schedule {ScheduleId} by {UserName}", leagueName,
-                dbSchedule.ScheduleId, User.Identity.Name);
-
-            var getSchedule = await _dbContext.Schedules
-                .Select(x => new GetScheduleModel()
-                {
-                    ScheduleId = x.ScheduleId,
-                    SeasonId = x.SeasonId,
-                    LeagueId = x.LeagueId,
-                    Name = x.Name,
-                    SessionIds = x.Sessions.Select(x => x.SessionId),
-                    CreatedOn = x.CreatedOn,
-                    CreatedByUserId = x.CreatedByUserId,
-                    CreatedByUserName = x.CreatedByUserName,
-                    LastModifiedOn = x.LastModifiedOn,
-                    LastModifiedByUserId = x.LastModifiedByUserId,
-                    LastModifiedByUserName = x.LastModifiedByUserName
-                })
-                .Where(x => x.ScheduleId == dbSchedule.ScheduleId)
-                .SingleOrDefaultAsync(cancellationToken);
-
-            _logger.LogInformation("Return schedule entry from {LeagueName} for schedule id {ScheduleId}", leagueName,
+            _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Put",
+                leagueName, id, User.Identity.Name);
+            var leagueUser = new LeagueUser(leagueName, User);
+            var request = new PutScheduleRequest(leagueId, leagueUser, id, putSchedule);
+            var getSchedule = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return entry for schedule {ScheduleId} from {LeagueName}", leagueName,
                 getSchedule.ScheduleId);
             return Ok(getSchedule);
         }
 
         [HttpDelete]
-        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromQuery] long id,
-            CancellationToken cancellationToken = default)
+        [RequireLeagueRole(LeagueRoles.Admin)]
+        [Route("{id:long}")]
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Deleting schedule {ScheduleId} from {LeagueName} by {UserName}", id, leagueName,
+            _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Delete",
+                id, leagueName,
                 User.Identity.Name);
-
-            var dbSchedule = await _dbContext.Schedules
-                .SingleOrDefaultAsync(x => x.ScheduleId == id, cancellationToken);
-
-            if (dbSchedule == null)
-            {
-                _logger.LogInformation("Not deleted: Schedule {ScheduleId} does not exist", id);
-                return NoContent();
-            }
-            if (dbSchedule.LeagueId != leagueId)
-            {
-                _logger.LogInformation("Forbid to delete schedule {ScheduleId} because it does not belong to {LeagueName}",
-                    id, leagueName);
-                return Forbid();
-            }
-
-            _dbContext.Schedules.Remove(dbSchedule);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Deleted schedule {ScheduleId} from {LeagueName} by {UserName}", id, leagueName,
+            var request = new DeleteScheduleRequest(leagueId, id);
+            await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Deleted schedule {ScheduleId} from {LeagueName}", id, leagueName,
                 User.Identity.Name);
             return NoContent();
         }
