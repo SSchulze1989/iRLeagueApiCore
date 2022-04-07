@@ -15,16 +15,6 @@ namespace iRLeagueApiCore.Communication.Models
     public class PutSessionModel
     {
         /// <summary>
-        /// Unique identifier - Use 0 for creating new session
-        /// </summary>
-        [DataMember]
-        public long SessionId { get; set; }
-        /// <summary>
-        /// Id of the schedule this session belongs to
-        /// </summary>
-        [DataMember]
-        public long? ScheduleId { get; set; }
-        /// <summary>
         /// Short Title of the session
         /// </summary>
         [DataMember]
@@ -95,11 +85,6 @@ namespace iRLeagueApiCore.Communication.Models
         /// </summary>
         [DataMember]
         public string Name { get; set; }
-        /// <summary>
-        /// If session is subsession provide the id of the parent session here. If not leave at default (null)
-        /// </summary>
-        [DataMember(IsRequired = false)]
-        public long? ParentSessionId { get; set; }
         /// <summary>
         /// If session is subsession provide the the numer here for ordering. If not leave at default (0)
         /// </summary>

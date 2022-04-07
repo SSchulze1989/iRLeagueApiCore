@@ -14,12 +14,22 @@ namespace iRLeagueApiCore.Communication.Models
         /// Unique identifier
         /// </summary>
         [DataMember]
-        public new long SessionId { get; set; }
+        public long SessionId { get; set; }
         /// <summary>
         /// Id of the league this session belongs to
         /// </summary>
         [DataMember]
         public long LeagueId { get; set; }
+        /// <summary>
+        /// Id of the schedule this session belongs to
+        /// </summary>
+        [DataMember]
+        public long? ScheduleId { get; set; }
+        /// <summary>
+        /// If session is subsession provide the id of the parent session here. If not leave at default (null)
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        public long? ParentSessionId { get; set; }
         /// <summary>
         /// Flag shows if result is available
         /// </summary>

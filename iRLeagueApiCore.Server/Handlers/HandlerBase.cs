@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -41,6 +43,30 @@ namespace iRLeagueApiCore.Server.Handlers
             return await dbContext.Seasons
                 .Where(x => x.LeagueId == leagueId)
                 .SingleOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken);
+        }
+
+        protected virtual async Task<TrackConfigEntity> GetTrackConfigEntityAsync(long? trackConfigId, CancellationToken cancellationToken = default)
+        {
+            return await dbContext.TrackConfigs
+                .SingleOrDefaultAsync(x => x.TrackId == trackConfigId, cancellationToken);
+        }
+
+        protected virtual T CreateVersionEntity<T> (LeagueUser user, T target) where T : IVersionEntity
+        {
+            target.CreatedOn = DateTime.UtcNow;
+            target.CreatedByUserId = user.Id;
+            target.CreatedByUserName = user.Name;
+            target.Version = 0;
+            return target;
+        }
+
+        protected virtual T UpdateVersionEntity<T> (LeagueUser user, T target) where T : IVersionEntity
+        {
+            target.LastModifiedOn = DateTime.UtcNow;
+            target.LastModifiedByUserId = user.Id;
+            target.LastModifiedByUserName = user.Name;
+            target.Version++;
+            return target;
         }
     }
 }
