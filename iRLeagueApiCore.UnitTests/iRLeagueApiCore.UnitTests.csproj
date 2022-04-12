@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentIdentityBuilder" Version="0.0.1" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.0.*" />
+    <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.15">
       <PrivateAssets>all</PrivateAssets>

@@ -70,7 +70,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
             {
                 roles = testLeagueRoles;
             }
-            var builder = IdentityBuilders.BuildPrincipal()
+            var builder = StaticIdentityBuilders.BuildPrincipal()
                 .WithName(userName)
                 .WithIdentifier(userId);
             foreach(var role in roles)
