@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Scorings;
@@ -107,6 +108,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("/{leagueName}/Seasons/{seasonId:long}/Scorings")]
         [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetScoringModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, [FromBody] PostScoringModel model, CancellationToken cancellationToken = default)
         {
@@ -142,6 +144,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("{id:long}")]
         [HttpPut]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult<GetScoringModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, [FromBody] PutScoringModel model, CancellationToken cancellationToken = default)
         {
@@ -176,6 +179,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("{id:long}")]
         [HttpDelete]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
@@ -210,6 +214,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("{id:long}/AddSession/{sessionId:long}")]
         [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult> AddSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, [FromRoute] long sessionId, CancellationToken cancellationToken = default)
         {
@@ -244,6 +249,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("{id:long}/RemoveSession/{sessionId:long}")]
         [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         public async Task<ActionResult> RemoveSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, [FromRoute] long sessionId, CancellationToken cancellationToken = default)
         {
