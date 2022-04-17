@@ -49,8 +49,8 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("{id:long}")]
         public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] all leagues by {UserName}", "Get",
-                User.Identity.Name);
+            _logger.LogInformation("[{Method}] league {LeagueId} by {UserName}", 
+                "Get", id, User.Identity.Name);
             var request = new GetLeagueRequest(id);
             var getLeague = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return league entry for id {LeagueId}", id);
@@ -62,7 +62,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("")]
         public async Task<ActionResult<GetLeagueModel>> Post([FromBody] PostLeagueModel postLeague, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] league data by {UserName}",
+            _logger.LogInformation("[{Method}] new league by {UserName}",
                 "Post", User.Identity.Name);
             var leagueUser = new LeagueUser(null, User);
             var request = new PostLeagueRequest(leagueUser, postLeague);

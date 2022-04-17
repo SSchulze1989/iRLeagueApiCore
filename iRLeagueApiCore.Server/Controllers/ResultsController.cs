@@ -1,6 +1,8 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Filters;
+using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueDatabaseCore.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,130 +16,85 @@ using System.Threading.Tasks;
 namespace iRLeagueApiCore.Server.Controllers
 {
     [ApiController]
-    [Route("/{leagueName}/Result")]
+    [Route("/{leagueName}/[controller]")]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
     public class ResultsController : LeagueApiController
     {
-        private readonly LeagueDbContext _dbContext;
         private readonly ILogger<ResultsController> _logger;
+        private readonly IMediator mediator;
 
-        public ResultsController(ILogger<ResultsController> logger, LeagueDbContext dbContext)
+        public ResultsController(ILogger<ResultsController> logger, IMediator mediator)
         {
-            _dbContext = dbContext;
             _logger = logger;
+            this.mediator = mediator;
         }
 
-        private static Expression<Func<ScoredResultEntity, GetResultModel>> GetResultModelFromDbExpression => result => new GetResultModel()
+        /// <summary>
+        /// Get single result from specific session and scoring
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="scoringId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/{leagueName}/Session/{sessionId:long}/Scoring/{scoringId:long}/[controller]")]
+        public async Task<ActionResult<GetResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId,
+            [FromRoute] long scoringId, CancellationToken cancellationToken)
         {
-            LeagueId = result.LeagueId,
-            SeasonId = result.Result.Session.Schedule.Season.SeasonId,
-            SeasonName = result.Result.Session.Schedule.Season.SeasonName,
-            ScheduleId = result.Result.Session.Schedule.ScheduleId,
-            ScheduleName = result.Result.Session.Schedule.Name,
-            ScoringId = result.ScoringId,
-            ScoringName = result.Scoring.Name,
-            SessionId = result.ResultId,
-            SessionName = result.Result.Session.Name,
-            ResultRows = result.ScoredResultRows.Select(row => new GetResultRowModel()
-            {
-                MemberId = row.ResultRow.MemberId,
-                Interval = new TimeSpan(row.ResultRow.Interval),
-                FastestLapTime = new TimeSpan(row.ResultRow.FastestLapTime),
-                AvgLapTime = new TimeSpan(row.ResultRow.AvgLapTime),
-                Firstname = row.ResultRow.Member.Firstname,
-                Lastname = row.ResultRow.Member.Lastname,
-                TeamName = row.Team.Name,
-                StartPosition = row.ResultRow.StartPosition,
-                FinishPosition = row.ResultRow.FinishPosition,
-                FinalPosition = row.FinalPosition,
-                RacePoints = row.RacePoints,
-                PenaltyPoints = row.PenaltyPoints,
-                BonusPoints = row.BonusPoints,
-                TotalPoints = row.TotalPoints,
-                Car = row.ResultRow.Car,
-                CarClass = row.ResultRow.CarClass,
-                CarId = row.ResultRow.CarId,
-                CarNumber = row.ResultRow.CarNumber,
-                ClassId = row.ResultRow.ClassId,
-                CompletedLaps = row.ResultRow.CompletedLaps,
-                CompletedPct = row.ResultRow.CompletedPct,
-                Division = row.ResultRow.Division,
-                FastLapNr = row.ResultRow.FastLapNr,
-                FinalPositionChange = row.FinalPositionChange,
-                Incidents = row.ResultRow.Incidents,
-                LeadLaps = row.ResultRow.LeadLaps,
-                License = row.ResultRow.License,
-                NewIrating = row.ResultRow.NewIrating,
-                NewLicenseLevel = row.ResultRow.NewLicenseLevel,
-                NewSafetyRating = row.ResultRow.NewSafetyRating,
-                OldIrating = row.ResultRow.OldIrating,
-                OldLicenseLevel = row.ResultRow.OldLicenseLevel,
-                OldSafetyRating = row.ResultRow.OldSafetyRating,
-                PositionChange = row.ResultRow.PositionChange,
-                QualifyingTime = new TimeSpan(row.ResultRow.QualifyingTime),
-                SeasonStartIrating = row.ResultRow.SeasonStartIrating,
-                Status = row.ResultRow.Status,
-                TeamId = row.TeamId
-            }),
-            CreatedOn = result.CreatedOn,
-            LastModifiedOn = result.LastModifiedOn
-        };
+            _logger.LogInformation("[{Method}] result from session {SessionId} and scoring {ScoringId} in {LeagueName} by {UserName}", 
+                "Get", sessionId, scoringId, leagueName, User.Identity.Name);
+            var request = new GetResultRequest(leagueId, sessionId, scoringId);
+            var getResult = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return entry for result {SessionId},{ScoringId} from {LeagueName}", 
+                getResult.SessionId, getResult.ScoringId, leagueName);
+            return Ok(getResult);
+        }
 
-        [HttpGet("FromSeason")]
+        /// <summary>
+        /// Get all results from a season
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="seasonId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/{leagueName}/Season/{seasonId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long id, CancellationToken cancellationToken = default)
+            [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Get results from {LeagueName} for season id {SeasonId} by {Username}", leagueName, id,
-                User.Identity.Name);
-
-            var dbResults = _dbContext.ScoredResults
-                .Where(x => x.LeagueId == leagueId);
-
-            dbResults = dbResults
-                .Where(x => x.Result.Session.Schedule.SeasonId == id);
-
-            var getResult = await dbResults
-                .Select(GetResultModelFromDbExpression)
-                .ToListAsync(cancellationToken);
-
-            if (getResult.Count() == 0)
-            {
-                _logger.LogInformation("No Results found in {LeagueName} for season id {SeasonId}", leagueName, id);
-                return NotFound();
-            }
-
-            _logger.LogInformation("Return {Count} result entries from {LeagueName} for season id {SeasonId}", getResult.Count(), leagueName, id);
-
-            return Ok(getResult);
+            _logger.LogInformation("[{Method}] all results from season {SeasonId} in {LeagueName} by {UserName}",
+                "Get", seasonId, leagueName, User.Identity.Name);
+            var request = new GetResultsFromSeasonRequest(leagueId, seasonId);
+            var getResults = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} entries for result from season {SeasonId} in {LeagueName}",
+                getResults.Count(), seasonId, leagueName);
+            return Ok(getResults);
         }
 
-        [HttpGet("FromSession")]
+        /// <summary>
+        /// Get all results from a session
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/{leagueName}/Session/{sessionId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long id, CancellationToken cancellationToken = default)
+            [FromRoute] long sessionId, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Get results from {LeagueName} for session id {SessionId} by {Username}", leagueName, id,
-                User.Identity.Name);
-
-            var dbResults = _dbContext.ScoredResults
-                .Where(x => x.LeagueId == leagueId);
-
-            dbResults = dbResults
-                .Where(x => x.Result.ResultId == id);
-
-            var getResult = await dbResults
-                .Select(GetResultModelFromDbExpression)
-                .ToListAsync(cancellationToken);
-
-            if (getResult.Count() == 0)
-            {
-                _logger.LogInformation("No Results found in {LeagueName} for session id {SessionId}", leagueName, id);
-                return NotFound();
-            }
-
-            _logger.LogInformation("Return {Count} result entries from {LeagueName} for session id {SessionId}", getResult.Count(), leagueName, id);
-
-            return Ok(getResult);
+            _logger.LogInformation("[{Method}] all results from session {SessionId} in {LeagueName} by {UserName}",
+                "Get", sessionId, leagueName, User.Identity.Name);
+            var request = new GetResultsFromSessionRequest(leagueId, sessionId);
+            var getResults = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} entries for result from session {SessionId} in {LeagueName}",
+                getResults.Count(), sessionId, leagueName);
+            return Ok(getResults);
         }
     }
 }
