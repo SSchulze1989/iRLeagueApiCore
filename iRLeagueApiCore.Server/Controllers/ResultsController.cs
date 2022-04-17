@@ -84,38 +84,6 @@ namespace iRLeagueApiCore.Server.Controllers
             LastModifiedOn = result.LastModifiedOn
         };
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromQuery] long[] ids, CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("Get results from {LeagueName} for ids {ResultIds} by {Username}", leagueName, ids,
-                User.Identity.Name);
-
-            var dbResults = _dbContext.ScoredResults
-                .Where(x => x.Result.LeagueId == leagueId)
-                .Where(x => x.Scoring.ShowResults);
-
-            if (ids != null && ids.Count() > 0)
-            {
-                dbResults = dbResults
-                    .Where(x => ids.Contains(x.ResultId));
-            }
-
-            var getResult = await dbResults
-                .Select(GetResultModelFromDbExpression)
-                .ToListAsync(cancellationToken);
-
-            if (getResult.Count() == 0)
-            {
-                _logger.LogInformation("No Results found in {LeagueName} for ids {ResultIds}", leagueName, ids);
-                return NotFound();
-            }
-
-            _logger.LogInformation("Return {Count} result entries from {LeagueName} for ids {ResultIds}", getResult.Count(), leagueName, ids);
-
-            return Ok(getResult);
-        }
-
         [HttpGet("FromSeason")]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromQuery] long id, CancellationToken cancellationToken = default)

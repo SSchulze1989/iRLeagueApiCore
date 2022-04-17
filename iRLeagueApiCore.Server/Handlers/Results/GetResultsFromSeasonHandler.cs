@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record GetResultsRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<GetResultModel>>;
+    public record GetResultsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<GetResultModel>>;
 
-    public class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsRequest>, IRequestHandler<GetResultsRequest, IEnumerable<GetResultModel>>
+    public class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest>, IRequestHandler<GetResultsFromSeasonRequest, IEnumerable<GetResultModel>>
     {
-        public GetResultsFromSeasonHandler(ILogger<GetResultsFromSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsRequest>> validators) :
+        public GetResultsFromSeasonHandler(ILogger<GetResultsFromSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromSeasonRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<IEnumerable<GetResultModel>> Handle(GetResultsRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetResultModel>> Handle(GetResultsFromSeasonRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getResults = await MapToGetResultModelsFromSeasonAsync(request.LeagueId, request.SeasonId, cancellationToken);

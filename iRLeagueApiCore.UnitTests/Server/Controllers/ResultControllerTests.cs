@@ -21,25 +21,5 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         {
             Fixture = fixture;
         }
-
-        [Fact]
-        public async void GetDefaultResult()
-        {
-            using (var dbContext = Fixture.CreateDbContext())
-            {
-                const string testLeagueName = "TestLeague";
-                const long testLeagueId = 1;
-                const long testResultId = 1;
-
-                var controller = AddContexts.AddMemberControllerContext(new ResultsController(MockLogger, dbContext));
-                var result = (await controller.Get(testLeagueName, testLeagueId, new long[] { testResultId })).Result;
-
-                Assert.IsType<OkObjectResult>(result);
-                var resultValue = (IEnumerable<GetResultModel>)((OkObjectResult)result).Value;
-                var getResult = resultValue.First();
-
-                Assert.Equal(testResultId, getResult.SessionId);
-            }
-        }
     }
 }
