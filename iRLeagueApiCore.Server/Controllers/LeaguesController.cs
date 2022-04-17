@@ -47,7 +47,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("{id:long}")]
-        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<GetLeagueModel>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] league {LeagueId} by {UserName}", 
                 "Get", id, User.Identity.Name);
