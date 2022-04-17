@@ -3,6 +3,7 @@ using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,14 +13,11 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public record ScoringAddSessionRequest(long LeagueId, long ScoringId, long SessionId) : IRequest;
 
-    public class ScoringAddSessionHandler : ScoringHandlerBase, IRequestHandler<ScoringAddSessionRequest>
+    public class ScoringAddSessionHandler : ScoringHandlerBase<ScoringAddSessionHandler, ScoringAddSessionRequest>, IRequestHandler<ScoringAddSessionRequest>
     {
-        private readonly IEnumerable<IValidator<ScoringAddSessionRequest>> validators;
-
-        public ScoringAddSessionHandler(LeagueDbContext dbContext, IEnumerable<IValidator<ScoringAddSessionRequest>> validators)
-            : base(dbContext)
+        public ScoringAddSessionHandler(ILogger<ScoringAddSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<ScoringAddSessionRequest>> validators) : 
+            base(logger, dbContext, validators)
         {
-            this.validators = validators;
         }
 
         public async Task<Unit> Handle(ScoringAddSessionRequest request, CancellationToken cancellationToken)

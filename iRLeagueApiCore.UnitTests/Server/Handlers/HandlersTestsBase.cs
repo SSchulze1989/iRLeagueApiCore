@@ -1,7 +1,10 @@
-﻿using FluentValidation;
+﻿using FluentIdentityBuilder;
+using FluentValidation;
 using FluentValidation.Results;
+using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Scorings;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
@@ -11,6 +14,8 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -26,8 +31,13 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected readonly ILogger<THandler> logger;
 
         protected const long testLeagueId = 1;
+        protected const string testLeagueName = "TestLeague";
         protected const long testSeasonId = 1;
         protected const long testScoringId = 1;
+        protected const long testScheduleId = 1;
+        protected const string testUserName = "TestUser";
+        protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
+        protected static IEnumerable<string> testLeagueRoles = new string[] { LeagueRoles.Member };
 
         public HandlersTestsBase(DbTestFixture fixture)
         {
@@ -51,6 +61,29 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected virtual void DefaultAssertions(TRequest request, TResult result, LeagueDbContext dbContext)
         {
             Assert.NotNull(result);
+        }
+
+        protected virtual ClaimsPrincipal DefaultPrincipal(string leagueName = testLeagueName, string userName = testUserName,
+            string userId = testUserId, IEnumerable<string> roles = default)
+        {
+            if (roles == null)
+            {
+                roles = testLeagueRoles;
+            }
+            var builder = StaticIdentityBuilders.BuildPrincipal()
+                .WithName(userName)
+                .WithIdentifier(userId);
+            foreach(var role in roles)
+            {
+                builder.WithRole(LeagueRoles.GetLeagueRoleName(leagueName, role));
+            }
+            return builder.Create();
+        }
+
+        protected virtual LeagueUser DefaultUser(string leagueName = testLeagueName, string userName = testUserName, 
+            string userId = testUserId, IEnumerable<string> roles = default)
+        {
+            return new LeagueUser(leagueName, DefaultPrincipal(leagueName, userName, userId, roles));
         }
 
         /// <summary>

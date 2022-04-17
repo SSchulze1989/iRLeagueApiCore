@@ -1,7 +1,10 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
+using iRLeagueApiCore.Server.Handlers.Sessions;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
@@ -20,241 +24,108 @@ namespace iRLeagueApiCore.Server.Controllers
     /// </summary>
     [ApiController]
     [Authorize]
-    [ServiceFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [TypeFilter(typeof(InsertLeagueIdAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class SessionsController : LeagueApiController
     {
         private readonly ILogger<SessionsController> _logger;
-        private readonly LeagueDbContext _dbContext;
+        private readonly IMediator mediator;
 
-        public SessionsController(ILogger<SessionsController> logger, LeagueDbContext dbContext)
+        public SessionsController(ILogger<SessionsController> logger, IMediator mediator)
         {
             _logger = logger;
-            _dbContext = dbContext;
+            this.mediator = mediator;
         }
 
-        private static Expression<Func<SessionEntity, GetSessionModel>> MapToSessionModelExpr { get; } = x => new GetSessionModel()
-        {
-            SessionId = x.SessionId,
-            ScheduleId = x.ScheduleId,
-            LeagueId = x.LeagueId,
-            PracticeAttached = x.PracticeAttached ?? false,
-            QualyAttached = x.QualyAttached ?? false,
-            PracticeLength = x.PracticeLength,
-            QualyLength = x.QualyLength,
-            Date = x.Date,
-            Duration = x.Duration,
-            Laps = x.Laps ?? 0,
-            RaceLength = x.RaceLength,
-            Name = x.Name,
-            SessionTitle = x.SessionTitle,
-            //SessionType = x.SessionType,
-            SubSessionIds = x.SubSessions.Select(x => x.SessionId),
-            ParentSessionId = x.ParentSessionId,
-            SubSessionNr = x.SubSessionNr,
-            TrackId = x.TrackId,
-            HasResult = x.Result != null,
-            CreatedOn = x.CreatedOn,
-            CreatedByUserId = x.CreatedByUserId,
-            CreatedByUserName = x.CreatedByUserName,
-            LastModifiedOn = x.LastModifiedOn,
-            LastModifiedByUserId = x.LastModifiedByUserId,
-            LastModifiedByUserName = x.LastModifiedByUserName
-        };
-
-
         [HttpGet]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
-        public async Task<ActionResult<IEnumerable<GetSessionModel>>> Get([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
-            [FromQuery] long[] ids)
+        [Route("")]
+        public async Task<ActionResult<IEnumerable<GetSessionModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
+            CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Get sessions from {LeagueName} for ids {SessionIds} by {UserName}", leagueName, ids,
+            _logger.LogInformation("[{Method}] all sessions from {LeagueName} by {UserName}", "Get", leagueName,
                 User.Identity.Name);
-
-            IQueryable<SessionEntity> dbSessions = _dbContext.Sessions
-                .Where(x => x.LeagueId == leagueId);
-
-            if (ids != null && ids.Count() > 0)
-            {
-                dbSessions = dbSessions.Where(x => ids.Contains(x.SessionId));
-            }
-
-            if (dbSessions.Count() == 0)
-            {
-                _logger.LogInformation("No sessions found in {LeagueName} for ids {SessionIds}", leagueName, ids);
-                return NotFound();
-            }
-
-            var getSessions = await dbSessions
-                .Select(MapToSessionModelExpr)
-                .ToListAsync();
-
-            _logger.LogInformation("Return {Count} session entries from {LeagueName} for ids {SessionIds}", getSessions.Count(),
-                leagueName, ids);
+            var request = new GetSessionsRequest(leagueId);
+            var getSessions = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} session entries from {LeagueName}", getSessions.Count(),
+                leagueName);
             return Ok(getSessions);
         }
 
-        [HttpPut]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
-        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [ParameterIgnore] long leagueId,
-            [FromQuery] PutSessionModel putSession)
+        [HttpGet]
+        [Route("{id:long}")]
+        public async Task<ActionResult<GetSessionModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Put session data on {LeagueName} with id {SessionId} by {UserName}", leagueName,
-                putSession.SessionId, User.Identity.Name);
+            _logger.LogInformation("[{Method}] session {SessionId} from {LeagueName} by {UserName}", "Get",
+                id, leagueName, User.Identity.Name);
+            var request = new GetSessionRequest(leagueId, id);
+            var getSession = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return entry for session {SessionId} from {LeagueName}", getSession.SessionId, leagueName);
+            return Ok(getSession);
+        }
 
-            var dbSession = await _dbContext.Sessions
-                .SingleOrDefaultAsync(x => x.SessionId == putSession.SessionId);
+        [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("/{leagueName}/Schedules/{scheduleId:long}/Sessions")]
+        public async Task<ActionResult<GetSessionModel>> PostToSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long scheduleId, [FromBody] PostSessionModel postSession, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] new session to schedule {ScheduleId} in {LeagueName} by {UserName}", "Post", leagueName,
+                scheduleId, User.Identity.Name);
+            var leagueUser = new LeagueUser(leagueName, User);
+            var request = new PostSessionToScheduleRequest(leagueId, scheduleId, leagueUser, postSession);
+            var getSession = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return created entry for session {SessionId} from {LeagueName}", getSession.SessionId, leagueName);
+            return CreatedAtAction(nameof(Get), new { leagueName, id = getSession.SessionId }, getSession);
+        }
 
-            ClaimsPrincipal currentUser = User;
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+        [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("/{leagueName}/Sessions/{parentId:long}/SubSession")]
+        public async Task<ActionResult<GetSessionModel>> PostToParentSession([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long parentId, [FromBody] PostSessionModel postSession, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] new session to parent session {ParentSessionId} in {LeagueName} by {UserName}", "Post", leagueName,
+                parentId, User.Identity.Name);
+            var leagueUser = new LeagueUser(leagueName, User);
+            var request = new PostSessionToParentSessionRequest(leagueId, parentId, leagueUser, postSession);
+            var getSession = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return created entry for session {SessionId} from {LeagueName}", getSession.SessionId, leagueName);
+            return CreatedAtAction(nameof(Get), new { leagueName, id = getSession.SessionId }, getSession);
+        }
 
-            if (dbSession == null)
-            {
-                _logger.LogInformation("Create session {SessionName}", putSession.Name);
-                dbSession = new SessionEntity()
-                {
-                    LeagueId = leagueId,
-                    CreatedOn = DateTime.Now,
-                    CreatedByUserId = currentUserID,
-                    CreatedByUserName = User.Identity.Name
-                };
-                _dbContext.Sessions.Add(dbSession);
-            }
-            else if (dbSession.LeagueId != leagueId)
-            {
-                _logger.LogInformation("Session {SessionId} belongs to another league", putSession.SessionId);
-                return BadRequestMessage("Session not found", $"No session with id {putSession.ScheduleId} could be found");
-            }
-
-            // update schedule if changed
-            if (dbSession.ScheduleId != putSession.ScheduleId)
-            {
-                _logger.LogInformation("Move session {SessionId} to schedule {ScheduleId}", putSession.SessionId, putSession.ScheduleId);
-                if (putSession.ScheduleId == null)
-                {
-                    _dbContext.Entry(dbSession)
-                        .Reference(x => x.Schedule)
-                        .Load();
-
-                    dbSession.Schedule = null;
-                    // dont delete session
-                    _dbContext.Entry(dbSession)
-                        .State = EntityState.Modified;
-                }
-                else
-                {
-                    var schedule = await _dbContext.Schedules
-                    .Include(x => x.Sessions)
-                    .SingleOrDefaultAsync(x => x.ScheduleId == putSession.ScheduleId);
-
-                    if (schedule == null)
-                    {
-                        _logger.LogInformation("Failed to move session {SessionId}: schedule {ScheduleId} not found", putSession.SessionId, putSession.ScheduleId);
-                        return BadRequest($"No schedule with id:{putSession.ScheduleId} found");
-                    }
-                    if (leagueId != schedule.LeagueId)
-                    {
-                        _logger.LogInformation("Failed to move session {SessionId}: schedule {ScheduleId} does not belong to league {LeagueName}",
-                            putSession.SessionId, putSession.ScheduleId, leagueName);
-                        return WrongLeague($"Schedule with id:{putSession.ScheduleId} does not belong to the specified league");
-                    }
-
-                    schedule.Sessions.Add(dbSession);
-                }
-            }
-
-            // update parent session if changed
-            if (dbSession.ParentSessionId != putSession.ParentSessionId)
-            {
-                _logger.LogInformation("Move session {SessionId} to parent session {ParentSessionId}", putSession.SessionId, putSession.ParentSessionId);
-                if (putSession.ParentSessionId == null)
-                {
-                    await _dbContext.Entry(dbSession)
-                        .Reference(x => x.ParentSession)
-                        .LoadAsync();
-                    dbSession.ParentSession.SubSessions.Remove(dbSession);
-                }
-                else
-                {
-                    var parentSession = await _dbContext.Sessions
-                        .SingleOrDefaultAsync(x => x.SessionId == putSession.ParentSessionId);
-
-                    if (parentSession == null)
-                    {
-                        _logger.LogInformation("Failed to move session {SessionId}: parent session {ParentSessionId} not found", putSession.SessionId, putSession.ParentSessionId);
-                        return BadRequest($"No session with id:{putSession.ParentSessionId} found");
-                    }
-                    if (parentSession == dbSession)
-                    {
-                        _logger.LogInformation("Failed to move session {SessionId}: parent session is same as child session", putSession.SessionId, putSession.ParentSessionId);
-                        return BadRequest($"Parent session is same as entry id:{putSession.ParentSessionId}");
-                    }
-                    if (parentSession.LeagueId != leagueId)
-                    {
-                        _logger.LogInformation("Failed to move session {SessionId}: parent session {ParentSessionId} does not belong to league {LeagueName}",
-                            putSession.SessionId, putSession.ParentSessionId, leagueName);
-                        return WrongLeague($"Session with id:{parentSession.SessionId} does not belong to the specified league");
-                    }
-
-                    parentSession.SubSessions.Add(dbSession);
-                }
-            }
-
-            dbSession.Date = putSession.Date;
-            dbSession.Duration = putSession.Duration;
-            dbSession.Laps = putSession.Laps;
-            dbSession.Name = putSession.Name;
-            dbSession.PracticeAttached = putSession.PracticeAttached;
-            dbSession.PracticeLength = putSession.PracticeLength;
-            dbSession.QualyAttached = putSession.QualyAttached;
-            dbSession.QualyLength = putSession.QualyLength;
-            dbSession.RaceLength = putSession.RaceLength;
-            dbSession.SessionTitle = putSession.SessionTitle;
-            //dbSession.SessionType = putSession.SessionType;
-            dbSession.SubSessionNr = putSession.SubSessionNr;
-            dbSession.LastModifiedOn = DateTime.Now;
-            dbSession.LastModifiedByUserId = currentUserID;
-            dbSession.LastModifiedByUserName = User.Identity.Name;
-
-            await _dbContext.SaveChangesAsync();
-            _logger.LogInformation("Written session data on {LeagueName} for session {SessionId} by {UserName}", leagueName,
-                dbSession.SessionId, User.Identity.Name);
-
-            var getSession = await _dbContext.Sessions
-                .Select(MapToSessionModelExpr)
-                .SingleAsync(x => x.SessionId == dbSession.SessionId);
-
-            _logger.LogInformation("Return session entry from {LeagueName} for session id {SessionId}", leagueName,
+        [HttpPut]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("{id:long}")]
+        public async Task<ActionResult<GetSessionModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, [FromBody] PutSessionModel putSession, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] session {SessionId} from {LeagueName} by {UserName}", "Put",
+                leagueName, id, User.Identity.Name);
+            var leagueUser = new LeagueUser(leagueName, User);
+            var request = new PutSessionRequest(leagueId, leagueUser, id, putSession);
+            var getSession = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return entry for session {SessionId} from {LeagueName}", leagueName,
                 getSession.SessionId);
             return Ok(getSession);
         }
 
         [HttpDelete]
-        [ServiceFilter(typeof(InsertLeagueIdAttribute))]
-        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [ParameterIgnore] long leagueId, [FromQuery] long id)
+        [RequireLeagueRole(LeagueRoles.Admin)]
+        [Route("{id:long}")]
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long id, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Request to delete Session {SessionId} from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
-
-            var dbSession = await _dbContext.Sessions
-                .Include(x => x.Schedule)
-                    .ThenInclude(x => x.Sessions)
-                .SingleOrDefaultAsync(x => x.SessionId == id && x.LeagueId == leagueId);
-
-            if (dbSession == null)
-            {
-                _logger.LogInformation("Session {SessionId} on {LeagueName} not found", id, leagueName);
-                return NotFound();
-            }
-
-            _dbContext.Sessions.Remove(dbSession);
-            await _dbContext.SaveChangesAsync();
-
-            _logger.LogInformation("Session {SessionId} deleted from {LeagueName} by {Username}", id, leagueName, User.Identity.Name);
-
-            return Ok();
+            _logger.LogInformation("[{Method}] session {SessionId} from {LeagueName} by {UserName}", "Delete",
+                id, leagueName,
+                User.Identity.Name);
+            var request = new DeleteSessionRequest(leagueId, id);
+            await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Deleted session {SessionId} from {LeagueName}", id, leagueName,
+                User.Identity.Name);
+            return NoContent();
         }
     }
 }

@@ -12,16 +12,10 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public record DeleteScoringRequest(long LeagueId, long ScoringId) : IRequest;
 
-    public class DeleteScoringHandler : ScoringHandlerBase, IRequestHandler<DeleteScoringRequest>
+    public class DeleteScoringHandler : ScoringHandlerBase<DeleteScoringHandler, DeleteScoringRequest>, IRequestHandler<DeleteScoringRequest>
     {
-        private readonly ILogger<DeleteScoringHandler> _logger;
-        private readonly IEnumerable<IValidator<DeleteScoringRequest>> validators;
-
-        public DeleteScoringHandler(ILogger<DeleteScoringHandler> logger, IEnumerable<IValidator<DeleteScoringRequest>> validators,
-            LeagueDbContext dbContext) : base(dbContext)
+        public DeleteScoringHandler(ILogger<DeleteScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteScoringRequest>> validators) : base(logger, dbContext, validators)
         {
-            _logger = logger;
-            this.validators = validators;
         }
 
         public async Task<Unit> Handle(DeleteScoringRequest request, CancellationToken cancellationToken)

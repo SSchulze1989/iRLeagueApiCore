@@ -21,6 +21,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
+    [Collection("ControllerTests")]
     public class AdminControllerTests
     {
         readonly ILogger<AdminController> _mockLogger = new Mock<ILogger<AdminController>>().Object;

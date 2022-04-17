@@ -4,10 +4,11 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.Server.Validation.Scorings
 {
-    public class PutScoringModelValidator : PostScoringModelValidator
+    public class PutScoringModelValidator : AbstractValidator<PutScoringModel>
     {
-        public PutScoringModelValidator(LeagueDbContext dbContext) : base(dbContext)
+        public PutScoringModelValidator(PostScoringModelValidator postScoringModelValidator)
         {
+            Include(postScoringModelValidator);
         }
     }
 }

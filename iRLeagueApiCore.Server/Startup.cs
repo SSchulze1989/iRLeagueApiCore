@@ -167,9 +167,6 @@ namespace iRLeagueApiCore.Server
                  };
              });
 
-            services.AddScoped<LeagueAuthorizeAttribute>();
-            services.AddScoped<InsertLeagueIdAttribute>();
-
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         }
