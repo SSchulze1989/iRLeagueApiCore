@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,8 +20,9 @@ namespace iRLeagueApiCore.Client.Results
             {
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    var content = await httpResponse.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
-                    return new ClientActionResult<T>(content);
+                    var content = httpResponse.StatusCode != HttpStatusCode.NoContent ?
+                        await httpResponse.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) : default;
+                    return new ClientActionResult<T>(content, httpResponse.StatusCode);
                 }
 
                 string message;
@@ -37,6 +39,12 @@ namespace iRLeagueApiCore.Client.Results
                     case HttpStatusCode.Forbidden:
                         {
                             message = "Forbidden";
+                            errors = new object[0];
+                            break;
+                        }
+                    case HttpStatusCode.NotFound:
+                        {
+                            message = "Not Found";
                             errors = new object[0];
                             break;
                         }
@@ -92,6 +100,27 @@ namespace iRLeagueApiCore.Client.Results
         public static async Task<ClientActionResult<NoContent>> DeleteAsClientActionResult(this HttpClient httpClient, string query, CancellationToken cancellationToken= default)
         {
             return await (await httpClient.DeleteAsync(query, cancellationToken)).ToClientActionResultAsync<NoContent>(cancellationToken);
+        }
+
+        public static object CoerceValueType(this JsonElement element)
+        {
+            var valueKind = element.ValueKind;
+
+            switch (valueKind)
+            {
+                case JsonValueKind.Number:
+                    return element.GetDouble();
+                case JsonValueKind.String:
+                    return element.GetString();
+                case JsonValueKind.True:
+                    return element.GetBoolean();
+                case JsonValueKind.False:
+                    return element.GetBoolean();
+                case JsonValueKind.Array:
+                    return element.EnumerateArray().Select(x => x.CoerceValueType());
+                default:
+                    throw new InvalidOperationException($"Failed to coerce value type from JsonElement - Could not detect object type from raw value: {element.GetRawText()}");
+            }
         }
     }
 }

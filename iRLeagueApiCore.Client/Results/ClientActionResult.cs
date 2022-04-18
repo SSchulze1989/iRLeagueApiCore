@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.Client.Results
 {
     public struct ClientActionResult<T>
     {
-        public ClientActionResult(T content) : this(true, "", content, HttpStatusCode.OK)
+        public ClientActionResult(T content, HttpStatusCode httpStatusCode) : this(true, "", content, httpStatusCode)
         { }
 
         public ClientActionResult(bool success, string message, T content, HttpStatusCode httpStatusCode, IEnumerable<object> errors = null)
