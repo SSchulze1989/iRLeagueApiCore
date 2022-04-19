@@ -25,47 +25,50 @@ namespace iRLeagueApiCore.Client.Results
                     return new ClientActionResult<T>(content, httpResponse.StatusCode);
                 }
 
-                string message;
+                string status = "";
+                string message = "";
                 IEnumerable<object> errors;
                 switch (httpResponse.StatusCode)
                 {
                     case HttpStatusCode.BadRequest:
                         {
                             var response = await httpResponse.Content.ReadFromJsonAsync<BadRequestResponse>(cancellationToken: cancellationToken);
-                            message = response.Status;
+                            status = response.Status;
                             errors = response.Errors.Cast<object>();
                             break;
                         }
                     case HttpStatusCode.Forbidden:
                         {
-                            message = "Forbidden";
+                            status = "Forbidden";
                             errors = new object[0];
                             break;
                         }
                     case HttpStatusCode.NotFound:
                         {
-                            message = "Not Found";
+                            status = "Not Found";
                             errors = new object[0];
                             break;
                         }
                     case HttpStatusCode.InternalServerError:
                         {
                             var response = await httpResponse.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+                            status = "Internal server Error";
                             message = response;
                             errors = new object[] { "Internal server Error " };
                             break;
                         }
                     default:
-                        message = "Unknown Response";
+                        status = "Unknown Response";
+                        message = "";
                         errors = new object[0];
                         break;
                 }
-                return new ClientActionResult<T>(false, message, default, httpResponse.StatusCode, errors);
+                return new ClientActionResult<T>(false, status, message, default, httpResponse.StatusCode, errors);
             }
             catch (Exception ex) when (ex is InvalidOperationException)
             {
                 var errors = new object[] { ex };
-                return new ClientActionResult<T>(false, ex.Message, default, 0, errors);
+                return new ClientActionResult<T>(false, "Error", ex.Message, default, 0, errors);
             }
         }
 
@@ -78,28 +81,28 @@ namespace iRLeagueApiCore.Client.Results
             catch (Exception ex) when (ex is InvalidOperationException || ex is HttpRequestException)
             {
                 var errors = new object[] { ex };
-                return new ClientActionResult<T>(false, ex.Message, default, 0, errors);
+                return new ClientActionResult<T>(false, "Error", ex.Message, default, 0, errors);
             }
         }
 
         public static async Task<ClientActionResult<T>> GetAsClientActionResult<T>(this HttpClient httpClient, string query, CancellationToken cancellationToken = default)
         {
-            return await (await httpClient.GetAsync(query, cancellationToken)).ToClientActionResultAsync<T>(cancellationToken);
+            return await httpClient.GetAsync(query, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
         }
 
         public static async Task<ClientActionResult<TResponse>> PostAsClientActionResult<TResponse, TPost>(this HttpClient httpClient, string query, TPost body, CancellationToken cancellationToken = default)
         {
-            return await (await httpClient.PostAsJsonAsync(query, body, cancellationToken)).ToClientActionResultAsync<TResponse>(cancellationToken);
+            return await httpClient.PostAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(cancellationToken);
         }
 
         public static async Task<ClientActionResult<TResponse>> PutAsClientActionResult<TResponse, TPut>(this HttpClient httpClient, string query, TPut body , CancellationToken cancellationToken = default)
         {
-            return await (await httpClient.PutAsJsonAsync(query, body, cancellationToken)).ToClientActionResultAsync<TResponse>(cancellationToken);
+            return await httpClient.PutAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(cancellationToken);
         }
 
         public static async Task<ClientActionResult<NoContent>> DeleteAsClientActionResult(this HttpClient httpClient, string query, CancellationToken cancellationToken= default)
         {
-            return await (await httpClient.DeleteAsync(query, cancellationToken)).ToClientActionResultAsync<NoContent>(cancellationToken);
+            return await httpClient.DeleteAsync(query, cancellationToken).AsClientActionResultAsync<NoContent>(cancellationToken);
         }
 
         public static object CoerceValueType(this JsonElement element)
