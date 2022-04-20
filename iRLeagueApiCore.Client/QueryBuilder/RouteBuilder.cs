@@ -9,20 +9,17 @@ namespace iRLeagueApiCore.Client.QueryBuilder
     public class RouteBuilder : IRouteBuilder
     {
         private readonly List<string> parts;
-        private readonly bool isRelative;
         
         private IParameterBuilder ParameterBuilder { get; set; }
 
-        public RouteBuilder(bool isRelative = true)
+        public RouteBuilder()
         {
             parts = new List<string>();
-            this.isRelative = isRelative;
         }
 
-        public RouteBuilder(List<string> parts, bool isRelative = true)
+        public RouteBuilder(List<string> parts)
         {
             this.parts = parts;
-            this.isRelative = isRelative;
         }
 
         public IRouteBuilder AddEndpoint(string name)
@@ -60,7 +57,7 @@ namespace iRLeagueApiCore.Client.QueryBuilder
 
         public RouteBuilder Copy()
         {
-            return new RouteBuilder(parts, isRelative);
+            return new RouteBuilder(parts);
         }
     }
 }
