@@ -12,25 +12,28 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
         private readonly HttpClient httpClient;
         private readonly RouteBuilder routeBuilder;
 
-        public SeasonByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder)
+        private string QueryUrl => routeBuilder.Build();
+
+        public SeasonByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, long seasonId)
         {
             this.httpClient = httpClient;
             this.routeBuilder = routeBuilder;
+            routeBuilder.AddParameter(seasonId);
         }
 
-        Task<ClientActionResult<NoContent>> ISeasonByIdEndpoint.Delete(CancellationToken cancellationToken)
+        async Task<ClientActionResult<NoContent>> ISeasonByIdEndpoint.Delete(CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return await httpClient.DeleteAsClientActionResult(QueryUrl, cancellationToken);
         }
 
-        Task<ClientActionResult<GetSeasonModel>> ISeasonByIdEndpoint.Get(CancellationToken cancellationToken)
+        async Task<ClientActionResult<GetSeasonModel>> ISeasonByIdEndpoint.Get(CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return await httpClient.GetAsClientActionResult<GetSeasonModel>(QueryUrl, cancellationToken);
         }
 
-        Task<ClientActionResult<GetSeasonModel>> ISeasonByIdEndpoint.Put(PutSeasonModel model, CancellationToken cancellationToken)
+        async Task<ClientActionResult<GetSeasonModel>> ISeasonByIdEndpoint.Put(PutSeasonModel model, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return await httpClient.PutAsClientActionResult<GetSeasonModel, PutSeasonModel>(QueryUrl, model, cancellationToken);
         }
     }
 }

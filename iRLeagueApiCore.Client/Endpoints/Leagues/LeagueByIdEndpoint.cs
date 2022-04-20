@@ -14,51 +14,31 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     public class LeagueByIdEndpoint : ILeagueByIdEndpoint
     {
-        private readonly ILogger<LeagueByIdEndpoint> _logger;
         private readonly HttpClient httpClient;
         private readonly RouteBuilder routeBuilder;
 
-        public long Id { get; }
+        private string QueryUrl => routeBuilder.Build();
 
-        public LeagueByIdEndpoint(ILogger<LeagueByIdEndpoint> logger, HttpClient httpClient, RouteBuilder routeBuilder, long id)
+        public LeagueByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, long leagueId)
         {
-            _logger = logger;
             this.httpClient = httpClient;
             this.routeBuilder = routeBuilder;
-            Id = id;
+            routeBuilder.AddParameter(leagueId);
         }
 
-        Task<ClientActionResult<NoContent>> ILeagueByIdEndpoint.Delete(CancellationToken cancellationToken)
+        async Task<ClientActionResult<NoContent>> ILeagueByIdEndpoint.Delete(CancellationToken cancellationToken)
         {
-            return Delete(cancellationToken);
+            return await httpClient.DeleteAsClientActionResult(QueryUrl, cancellationToken);
         }
 
-        Task<ClientActionResult<GetLeagueModel>> ILeagueByIdEndpoint.Get(CancellationToken cancellationToken)
+        async Task<ClientActionResult<GetLeagueModel>> ILeagueByIdEndpoint.Get(CancellationToken cancellationToken)
         {
-            return Get(cancellationToken);
+            return await httpClient.GetAsClientActionResult<GetLeagueModel>(QueryUrl, cancellationToken);
         }
 
-        Task<ClientActionResult<GetLeagueModel>> ILeagueByIdEndpoint.Put(PutLeagueModel model, CancellationToken cancellationToken)
+        async Task<ClientActionResult<GetLeagueModel>> ILeagueByIdEndpoint.Put(PutLeagueModel model, CancellationToken cancellationToken)
         {
-            return Put(model, cancellationToken);
-        }
-
-        private async Task<ClientActionResult<NoContent>> Delete(CancellationToken cancellationToken = default)
-        {
-            var query = routeBuilder.Build();
-            return await httpClient.DeleteAsClientActionResult(query, cancellationToken);
-        }
-
-        private async Task<ClientActionResult<GetLeagueModel>> Get(CancellationToken cancellationToken = default)
-        {
-            var query = routeBuilder.Build();
-            return await httpClient.GetAsClientActionResult<GetLeagueModel>(query, cancellationToken);
-        }
-
-        public async Task<ClientActionResult<GetLeagueModel>> Put(PutLeagueModel model, CancellationToken cancellationToken = default)
-        {
-            var query = routeBuilder.Build();
-            return await httpClient.PutAsClientActionResult<GetLeagueModel, PutLeagueModel>(query, model, cancellationToken);
+            return await httpClient.PutAsClientActionResult<GetLeagueModel, PutLeagueModel>(QueryUrl, model, cancellationToken);
         }
     }
 }

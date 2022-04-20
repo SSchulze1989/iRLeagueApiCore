@@ -15,51 +15,36 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     public class LeaguesEndpoint : ILeaguesEndpoint
     {
-        private readonly ILogger<LeaguesEndpoint> _logger;
         private readonly HttpClient httpClient;
+        private readonly RouteBuilder routeBuilder;
 
-        private const string endpoint = "Leagues";
+        private string QueryUrl => routeBuilder.Build();
 
-        public LeaguesEndpoint(ILogger<LeaguesEndpoint> logger, HttpClient httpClient)
+        public LeaguesEndpoint(HttpClient httpClient, RouteBuilder routeBuilder)
         {
-            _logger = logger;
             this.httpClient = httpClient;
+            this.routeBuilder = routeBuilder;
+            routeBuilder.AddEndpoint("Leagues");
         }
 
-        public async Task<ClientActionResult<IEnumerable<GetLeagueModel>>> GetAll(CancellationToken cancellationToken = default)
+        async Task<ClientActionResult<IEnumerable<GetLeagueModel>>> ILeaguesEndpoint.Get(CancellationToken cancellationToken)
         {
-            var query = new RouteBuilder()
-                .AddEndpoint(endpoint)
-                .Build();
-            return await httpClient.GetAsClientActionResult<IEnumerable<GetLeagueModel>>(query, cancellationToken);
+            return await httpClient.GetAsClientActionResult<IEnumerable<GetLeagueModel>>(QueryUrl, cancellationToken);
         }
 
-        public async Task<ClientActionResult<GetLeagueModel>> Post(PostLeagueModel model, CancellationToken cancellationToken = default)
+        async Task<ClientActionResult<GetLeagueModel>> ILeaguesEndpoint.Post(PostLeagueModel model, CancellationToken cancellationToken)
         {
-            var query = new RouteBuilder()
-                .AddEndpoint(endpoint)
-                .Build();
-            return await httpClient.PostAsClientActionResult<GetLeagueModel, PostLeagueModel>(query, model, cancellationToken);
-        }
-
-        Task<ClientActionResult<IEnumerable<GetLeagueModel>>> ILeaguesEndpoint.GetAll(CancellationToken cancellationToken)
-        {
-            return GetAll(cancellationToken);
-        }
-
-        Task<ClientActionResult<GetLeagueModel>> ILeaguesEndpoint.Post(PostLeagueModel model, CancellationToken cancellationToken)
-        {
-            return Post(model, cancellationToken);
+            return await httpClient.PostAsClientActionResult<GetLeagueModel, PostLeagueModel>(QueryUrl, model, cancellationToken);
         }
 
         ILeagueByIdEndpoint ILeaguesEndpoint.WithId(long leagueId)
         {
-            throw new NotImplementedException();
+            return new LeagueByIdEndpoint(httpClient, routeBuilder.Copy(), leagueId);
         }
 
-        ILeagueByNameEndpoint ILeaguesEndpoint.WithName(string name)
+        ILeagueByNameEndpoint ILeaguesEndpoint.WithName(string leagueName)
         {
-            throw new NotImplementedException();
+            return new LeagueByNameEndpoint(httpClient, routeBuilder.Copy(), leagueName);
         }
     }
 }

@@ -19,6 +19,12 @@ namespace iRLeagueApiCore.Client.QueryBuilder
             this.isRelative = isRelative;
         }
 
+        public RouteBuilder(List<string> parts, bool isRelative = true)
+        {
+            this.parts = parts;
+            this.isRelative = isRelative;
+        }
+
         public IRouteBuilder AddEndpoint(string name)
         {
             parts.Add(name);
@@ -50,6 +56,11 @@ namespace iRLeagueApiCore.Client.QueryBuilder
         {
             ParameterBuilder = parameterBuilder?.Invoke(new ParameterBuilder());
             return this;
+        }
+
+        public RouteBuilder Copy()
+        {
+            return new RouteBuilder(parts, isRelative);
         }
     }
 }
