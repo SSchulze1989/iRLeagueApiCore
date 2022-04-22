@@ -74,5 +74,30 @@ namespace iRLeagueApiCore.UnitTests.Client
             Assert.Equal("bearer", authHeader?.Scheme, ignoreCase: true);
             Assert.Equal(testToken, authHeader?.Parameter);
         }
+
+        [Fact]
+        public async Task ShouldNotSendAuthenticatedRequestAfterLogOut()
+        {
+            AuthenticationHeaderValue authHeader = default;
+            var messageHandler = MockHelpers.TestMessageHandler(x =>
+            {
+                authHeader = x.Headers.Authorization;
+                return new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonConvert.SerializeObject(default)),
+                };
+            });
+
+            var httpClient = new HttpClient(messageHandler);
+            httpClient.BaseAddress = new Uri(baseUrl);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", testToken);
+
+            var apiClient = new LeagueApiClient(Logger, httpClient);
+            apiClient.LogOut();
+            await apiClient.Leagues().Get();
+
+            Assert.Null(authHeader);
+        }
     }
 }
