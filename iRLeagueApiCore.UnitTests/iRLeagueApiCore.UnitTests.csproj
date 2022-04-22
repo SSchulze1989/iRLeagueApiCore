@@ -34,4 +34,8 @@
     <ProjectReference Include="..\iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Client\Endpoints\Leagues\" />
+  </ItemGroup>
+
 </Project>
