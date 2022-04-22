@@ -13,7 +13,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints
 {
     public class EndpointsTests
     {
-        public const string BaseUrl = "https://example.com/api/";
+        public static string BaseUrl = "https://example.com/api/";
 
         public static async Task TestRequestUrl<TEndpoint>(string expectedUrl, Func<HttpClient, TEndpoint> endpoint, Func<TEndpoint, Task> action)
         {
