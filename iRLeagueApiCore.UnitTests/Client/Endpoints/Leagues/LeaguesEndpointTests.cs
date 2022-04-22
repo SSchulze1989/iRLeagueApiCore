@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Leagues;
+﻿using iRLeagueApiCore.Client.Endpoints;
+using iRLeagueApiCore.Client.Endpoints.Leagues;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Communication.Models;
 using Moq;
@@ -48,6 +49,13 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints.Leagues
             testClient.BaseAddress = new Uri(BaseUrl);
             ILeaguesEndpoint endpoint = new LeaguesEndpoint(testClient, new RouteBuilder());
             await endpoint.Get();
+
+            await endpoint
+                .WithName("testLeague")
+                .Scorings()
+                .WithId(1)
+                .AddSession(1)
+                .Post();
                 
             Assert.Equal(shouldRequestUrl, requestUrl);
         }

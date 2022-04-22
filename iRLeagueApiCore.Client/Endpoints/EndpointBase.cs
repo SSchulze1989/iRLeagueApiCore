@@ -16,7 +16,7 @@ namespace iRLeagueApiCore.Client.Endpoints
         public EndpointBase(HttpClient httpClient, RouteBuilder routeBuilder)
         {
             HttpClient = httpClient;
-            RouteBuilder = routeBuilder;
+            RouteBuilder = routeBuilder.Copy();
         }
     }
 }

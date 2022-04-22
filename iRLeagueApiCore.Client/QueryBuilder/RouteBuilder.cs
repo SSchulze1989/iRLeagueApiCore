@@ -57,7 +57,14 @@ namespace iRLeagueApiCore.Client.QueryBuilder
 
         public RouteBuilder Copy()
         {
-            return new RouteBuilder(parts);
+            return new RouteBuilder(new List<string>(parts));
+        }
+
+        public IRouteBuilder RemoveLast()
+        {
+            if (parts.Count > 0)
+                parts.RemoveAt(parts.Count - 1);
+            return this;
         }
     }
 }

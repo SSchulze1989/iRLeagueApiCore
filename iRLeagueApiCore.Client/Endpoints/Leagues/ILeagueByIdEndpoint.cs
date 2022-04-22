@@ -10,10 +10,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
-    public interface ILeagueByIdEndpoint
+    public interface ILeagueByIdEndpoint : IUpdateEndpoint<GetLeagueModel, PutLeagueModel>
     {
-        public Task<ClientActionResult<GetLeagueModel>> Get(CancellationToken cancellationToken = default);
-        public Task<ClientActionResult<GetLeagueModel>> Put(PutLeagueModel model, CancellationToken cancellationToken = default);
-        public Task<ClientActionResult<NoContent>> Delete(CancellationToken cancellationToken = default);
     }
 }

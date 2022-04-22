@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.QueryBuilder;
+﻿using iRLeagueApiCore.Client.Endpoints.Schedules;
+using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Communication.Models;
 using Microsoft.Extensions.Logging;
@@ -12,22 +13,17 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
-    internal class SeasonsEndpoint : EndpointBase, ISeasonsEndpoint
+    internal class SeasonsEndpoint : PostGetAllEndpoint<GetSeasonModel, PostSeasonModel>, ISeasonsEndpoint
     {
         public SeasonsEndpoint(HttpClient httpClient, RouteBuilder routeBuilder) :
             base(httpClient, routeBuilder)
         {
-            routeBuilder.AddEndpoint("Seasons");
+            RouteBuilder.AddEndpoint("Seasons");
         }
 
-        async Task<ClientActionResult<GetSeasonModel>> IPostEndpoint<GetSeasonModel, PostSeasonModel>.Post(PostSeasonModel model, CancellationToken cancellationToken)
-        {
-            return await HttpClient.PostAsClientActionResult<GetSeasonModel, PostSeasonModel>(QueryUrl, model, cancellationToken);
-        }
-
-        ISeasonByIdEndpoint ISeasonsEndpoint.WitId(long seasonId)
-        {
-            return new SeasonByIdEndpoint(HttpClient, RouteBuilder.Copy(), seasonId);
+        ISeasonByIdEndpoint IWithIdEndpoint<ISeasonByIdEndpoint>.WithId(long id)
+        { 
+            return new SeasonByIdEndpoint(HttpClient, RouteBuilder, id);
         }
     }
 }

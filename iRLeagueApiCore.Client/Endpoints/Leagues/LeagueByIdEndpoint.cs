@@ -12,33 +12,12 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
-    public class LeagueByIdEndpoint : ILeagueByIdEndpoint
+    public class LeagueByIdEndpoint : UpdateEndpoint<GetLeagueModel, PutLeagueModel>, ILeagueByIdEndpoint
     {
-        private readonly HttpClient httpClient;
-        private readonly RouteBuilder routeBuilder;
-
-        private string QueryUrl => routeBuilder.Build();
-
-        public LeagueByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, long leagueId)
+        public LeagueByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, long leagueId) : 
+            base (httpClient, routeBuilder)
         {
-            this.httpClient = httpClient;
-            this.routeBuilder = routeBuilder;
-            routeBuilder.AddParameter(leagueId);
-        }
-
-        async Task<ClientActionResult<NoContent>> ILeagueByIdEndpoint.Delete(CancellationToken cancellationToken)
-        {
-            return await httpClient.DeleteAsClientActionResult(QueryUrl, cancellationToken);
-        }
-
-        async Task<ClientActionResult<GetLeagueModel>> ILeagueByIdEndpoint.Get(CancellationToken cancellationToken)
-        {
-            return await httpClient.GetAsClientActionResult<GetLeagueModel>(QueryUrl, cancellationToken);
-        }
-
-        async Task<ClientActionResult<GetLeagueModel>> ILeagueByIdEndpoint.Put(PutLeagueModel model, CancellationToken cancellationToken)
-        {
-            return await httpClient.PutAsClientActionResult<GetLeagueModel, PutLeagueModel>(QueryUrl, model, cancellationToken);
+            RouteBuilder.AddParameter(leagueId);
         }
     }
 }

@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints
 {
-    public interface IGetAllEndpoint<T>
+    public interface IGetAllEndpoint<T> : IGetEndpoint<IEnumerable<T>>
     {
-        Task<ClientActionResult<IEnumerable<T>>> GetAll(CancellationToken cancellationToken = default);
     }
 }
