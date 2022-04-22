@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Communication.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +11,13 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public class ScoringHandlerBase
+    public class ScoringHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
     {
-        protected readonly LeagueDbContext dbContext;
         protected const char pointsDelimiter = ';';
 
-        public ScoringHandlerBase(LeagueDbContext dbContext)
+        public ScoringHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<FluentValidation.IValidator<TRequest>> validators) : 
+            base(logger, dbContext, validators)
         {
-            this.dbContext = dbContext;
         }
 
         protected static string ConvertBasePoints(IEnumerable<double> points)
@@ -44,21 +44,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .Where(x => string.IsNullOrEmpty(x) == false) ?? new string[0];
         }
 
-        protected virtual async Task<ScheduleEntity> GetScheduleEntityAsync(long leagueId, long? scheduleId, CancellationToken cancellationToken = default)
-        {
-            return await dbContext.Schedules
-                .Where(x => x.LeagueId == leagueId)
-                .SingleOrDefaultAsync(x => x.ScheduleId == scheduleId, cancellationToken);
-        }
-
-        protected virtual async Task<ScoringEntity> GetScoringEntityAsync(long leagueId, long? scoringId, CancellationToken cancellationToken = default)
-        {
-            return await dbContext.Scorings
-                .Where(x => x.LeagueId == leagueId)
-                .SingleOrDefaultAsync(x => x.ScoringId == scoringId, cancellationToken);
-        }
-
-        protected virtual async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long seasonId, CancellationToken cancellationToken = default)
+        protected override async Task<SeasonEntity> GetSeasonEntityAsync(long leagueId, long? seasonId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Seasons
                 .Include(x => x.Scorings)

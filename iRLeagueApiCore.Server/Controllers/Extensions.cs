@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using iRLeagueApiCore.Communication.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -8,10 +9,10 @@ namespace iRLeagueApiCore.Server.Controllers
     {
         public static ActionResult ToActionResult(this ValidationException ex)
         {
-            var response = new
+            var response = new BadRequestResponse()
             {
                 Status = "Bad request",
-                Errors = ex.Errors.Select(error => new
+                Errors = ex.Errors.Select(error => new ValidationError()
                 {
                     Property = error.PropertyName,
                     Error = error.ErrorMessage,

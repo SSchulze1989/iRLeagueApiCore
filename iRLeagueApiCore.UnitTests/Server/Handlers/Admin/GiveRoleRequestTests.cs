@@ -16,6 +16,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Admin
 {
+    [Collection("HandlerTests")]
     public class GiveRoleRequestTests : IClassFixture<IdentityFixture>
     {
         private readonly IdentityFixture fixture;

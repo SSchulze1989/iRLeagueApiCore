@@ -18,6 +18,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
+    [Collection("ControllerTests")]
     public class ScoringControllerTests
     {
         private readonly ILogger<ScoringsController> logger;

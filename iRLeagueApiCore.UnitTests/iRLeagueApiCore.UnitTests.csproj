@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.0.*" />
+    <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.15">
       <PrivateAssets>all</PrivateAssets>
@@ -28,8 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\iRLeagueApiCore.Client\iRLeagueApiCore.Client.csproj" />
     <ProjectReference Include="..\iRLeagueApiCore.Communication\iRLeagueApiCore.Communication.csproj" />
     <ProjectReference Include="..\iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Client\Endpoints\Leagues\" />
   </ItemGroup>
 
 </Project>

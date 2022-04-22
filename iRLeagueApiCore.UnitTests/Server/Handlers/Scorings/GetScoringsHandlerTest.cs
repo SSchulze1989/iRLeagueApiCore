@@ -22,7 +22,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 
         protected override GetScoringHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetScoringRequest> validator)
         {
-            return new GetScoringHandler(dbContext, new IValidator<GetScoringRequest>[] { validator });
+            return new GetScoringHandler(logger, dbContext, new IValidator<GetScoringRequest>[] { validator });
         }
 
         protected override GetScoringRequest DefaultRequest()

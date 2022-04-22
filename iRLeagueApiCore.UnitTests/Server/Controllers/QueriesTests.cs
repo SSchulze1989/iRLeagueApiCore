@@ -6,6 +6,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
+    [Collection("ControllerTests")]
     public class QueriesTests : IClassFixture<DbTestFixture>
     {
         private DbTestFixture Fixture { get; }
