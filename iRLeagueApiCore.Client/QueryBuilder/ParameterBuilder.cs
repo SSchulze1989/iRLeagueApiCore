@@ -32,7 +32,7 @@ namespace iRLeagueApiCore.Client.QueryBuilder
 
         public string Build()
         {
-            return string.Join('&', _parameters);
+            return string.Join("&", _parameters);
         }
 
         private string ParameterString<T>(string name, T value)

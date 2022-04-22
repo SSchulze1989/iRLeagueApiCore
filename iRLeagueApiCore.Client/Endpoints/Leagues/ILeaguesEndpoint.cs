@@ -11,8 +11,8 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     public interface ILeaguesEndpoint : IGetAllEndpoint<GetLeagueModel>
     {
-        public Task<ClientActionResult<GetLeagueModel>> Post(PostLeagueModel model, CancellationToken cancellationToken = default);
-        public ILeagueByIdEndpoint WithId(long leagueId);
-        public ILeagueByNameEndpoint WithName(string name); 
+        Task<ClientActionResult<GetLeagueModel>> Post(PostLeagueModel model, CancellationToken cancellationToken = default);
+        ILeagueByIdEndpoint WithId(long leagueId);
+        ILeagueByNameEndpoint WithName(string name); 
     }
 }

@@ -1,14 +1,16 @@
 ﻿using iRLeagueApiCore.Communication.Responses;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+#if NETCOREAPP
+using System.Net.Http.Json;
+using System.Text.Json;
+#endif
 
 namespace iRLeagueApiCore.Client.Results
 {
@@ -51,7 +53,11 @@ namespace iRLeagueApiCore.Client.Results
                         }
                     case HttpStatusCode.InternalServerError:
                         {
+#if NETCOREAPP
                             var response = await httpResponse.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+#else
+                            var response = await httpResponse.Content.ReadAsStringAsync();
+#endif
                             status = "Internal server Error";
                             message = response;
                             errors = new object[] { "Internal server Error " };
@@ -105,25 +111,24 @@ namespace iRLeagueApiCore.Client.Results
             return await httpClient.DeleteAsync(query, cancellationToken).AsClientActionResultAsync<NoContent>(cancellationToken);
         }
 
-        public static object CoerceValueType(this JsonElement element)
+#if !NETCOREAPP
+        public static async Task<T> ReadFromJsonAsync<T>(this HttpContent httpContent, CancellationToken cancellationToken = default)
         {
-            var valueKind = element.ValueKind;
-
-            switch (valueKind)
-            {
-                case JsonValueKind.Number:
-                    return element.GetDouble();
-                case JsonValueKind.String:
-                    return element.GetString();
-                case JsonValueKind.True:
-                    return element.GetBoolean();
-                case JsonValueKind.False:
-                    return element.GetBoolean();
-                case JsonValueKind.Array:
-                    return element.EnumerateArray().Select(x => x.CoerceValueType());
-                default:
-                    throw new InvalidOperationException($"Failed to coerce value type from JsonElement - Could not detect object type from raw value: {element.GetRawText()}");
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            return JsonConvert.DeserializeObject<T>(await httpContent.ReadAsStringAsync());
         }
+
+        public static async Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient client, string requestUri, T value, CancellationToken cancellationToken = default)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(value));
+            return await client.PostAsync(requestUri, content, cancellationToken);
+        }
+
+        public static async Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient client, string requestUri, T value, CancellationToken cancellationToken = default)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(value));
+            return await client.PutAsync(requestUri, content, cancellationToken);
+        }
+#endif
     }
 }

@@ -7,6 +7,6 @@ namespace iRLeagueApiCore.Client.Endpoints
 {
     public interface IPostEndpoint<TResult, TModel>
     {
-        public Task<ClientActionResult<TResult>> Post(TModel model, CancellationToken cancellationToken = default);
+        Task<ClientActionResult<TResult>> Post(TModel model, CancellationToken cancellationToken = default);
     }
 }

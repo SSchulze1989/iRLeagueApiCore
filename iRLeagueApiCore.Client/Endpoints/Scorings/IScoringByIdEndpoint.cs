@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Scorings
 {
     public interface IScoringByIdEndpoint : IUpdateEndpoint<GetScoringModel, PutScoringModel>
     {
-        public IPostEndpoint<NoContent, NoContent> AddSession(long sessionId);
-        public IPostEndpoint<NoContent, NoContent> RemoveSession(long sessionId);
+        IPostEndpoint<NoContent, NoContent> AddSession(long sessionId);
+        IPostEndpoint<NoContent, NoContent> RemoveSession(long sessionId);
     }
 }

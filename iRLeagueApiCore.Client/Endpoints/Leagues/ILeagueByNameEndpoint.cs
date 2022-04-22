@@ -12,9 +12,9 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     public interface ILeagueByNameEndpoint
     {
-        public ISeasonsEndpoint Seasons();
-        public ISchedulesEndpoint Schedules();
-        public ISessionsEndpoint Sessions();
-        public IScoringsEndpoint Scorings();
+        ISeasonsEndpoint Seasons();
+        ISchedulesEndpoint Schedules();
+        ISessionsEndpoint Sessions();
+        IScoringsEndpoint Scorings();
     }
 }

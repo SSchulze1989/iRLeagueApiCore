@@ -37,7 +37,8 @@ namespace iRLeagueApiCore.Client.QueryBuilder
         public string Build()
         {
             var builder = new StringBuilder();
-            builder.AppendJoin('/', parts);
+            var joinedString = string.Join("/", parts);
+            builder.Append(joinedString);
             if (ParameterBuilder != null)
             {
                 var parameterString = ParameterBuilder.Build();

@@ -11,11 +11,11 @@ namespace iRLeagueApiCore.Client
 {
     public interface ILeagueApiClient
     {
-        public bool IsLoggedIn { get; }
-        public ILeagueByNameEndpoint CurrentLeague { get; }
-        public ILeaguesEndpoint Leagues();
-        public Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default);
-        public void LogOut();
-        public void SetCurrentLeague(string leagueName);
+        bool IsLoggedIn { get; }
+        ILeagueByNameEndpoint CurrentLeague { get; }
+        ILeaguesEndpoint Leagues();
+        Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default);
+        void LogOut();
+        void SetCurrentLeague(string leagueName);
     }
 }

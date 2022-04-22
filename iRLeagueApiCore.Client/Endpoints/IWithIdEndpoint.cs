@@ -8,6 +8,6 @@ namespace iRLeagueApiCore.Client.Endpoints
 {
     public interface IWithIdEndpoint<T>
     {
-        public T WithId(long id);
+        T WithId(long id);
     }
 }
