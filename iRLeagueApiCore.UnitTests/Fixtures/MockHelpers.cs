@@ -8,11 +8,14 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Moq.Protected;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Identity.Test
@@ -136,6 +139,18 @@ namespace Microsoft.AspNetCore.Identity.Test
                 })
                 .Verifiable();
             return mockMediator.Object;
+        }
+
+        public static HttpMessageHandler TestMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> result)
+        {
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync((HttpRequestMessage message, CancellationToken cancellationToken) =>
+                {
+                    return result.Invoke(message);
+                });
+            return mockHttpMessageHandler.Object;
         }
     }
 }
