@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
-    public interface ISeasonsEndpoint
+    public interface ISeasonsEndpoint : IPostEndpoint<GetSeasonModel, PostSeasonModel>
     {
-        public Task<ClientActionResult<GetSeasonModel>> Post(PostSeasonModel model, CancellationToken cancellationToken = default);
         public ISeasonByIdEndpoint WitId(long seasonId);
     }
 }

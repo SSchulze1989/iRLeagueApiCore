@@ -5,12 +5,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
-    public interface ISeasonByIdEndpoint
+    public interface ISeasonByIdEndpoint : IUpdateEndpoint<GetSeasonModel, PutSeasonModel>
     {
-        public Task<ClientActionResult<GetSeasonModel>> Get(CancellationToken cancellationToken = default);
-
-        public Task<ClientActionResult<GetSeasonModel>> Put(PutSeasonModel model, CancellationToken cancellationToken = default);
-
-        public Task<ClientActionResult<NoContent>> Delete(CancellationToken cancellationToken = default);
     }
 }

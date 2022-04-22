@@ -12,28 +12,22 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
-    internal class SeasonsEndpoint : ISeasonsEndpoint
+    internal class SeasonsEndpoint : EndpointBase, ISeasonsEndpoint
     {
-        private readonly HttpClient httpClient;
-        private readonly RouteBuilder routeBuilder;
-
-        private string QueryUrl => routeBuilder.Build();
-
-        public SeasonsEndpoint(HttpClient httpClient, RouteBuilder routeBuilder)
+        public SeasonsEndpoint(HttpClient httpClient, RouteBuilder routeBuilder) :
+            base(httpClient, routeBuilder)
         {
-            this.httpClient = httpClient;
-            this.routeBuilder = routeBuilder;
             routeBuilder.AddEndpoint("Seasons");
         }
 
-        async Task<ClientActionResult<GetSeasonModel>> ISeasonsEndpoint.Post(PostSeasonModel model, CancellationToken cancellationToken)
+        async Task<ClientActionResult<GetSeasonModel>> IPostEndpoint<GetSeasonModel, PostSeasonModel>.Post(PostSeasonModel model, CancellationToken cancellationToken)
         {
-            return await httpClient.PostAsClientActionResult<GetSeasonModel, PostSeasonModel>(QueryUrl, model, cancellationToken);
+            return await HttpClient.PostAsClientActionResult<GetSeasonModel, PostSeasonModel>(QueryUrl, model, cancellationToken);
         }
 
         ISeasonByIdEndpoint ISeasonsEndpoint.WitId(long seasonId)
         {
-            return new SeasonByIdEndpoint(httpClient, routeBuilder.Copy(), seasonId);
+            return new SeasonByIdEndpoint(HttpClient, RouteBuilder.Copy(), seasonId);
         }
     }
 }

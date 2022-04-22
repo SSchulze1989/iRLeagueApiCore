@@ -48,7 +48,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints.Leagues
             testClient.BaseAddress = new Uri(BaseUrl);
             ILeaguesEndpoint endpoint = new LeaguesEndpoint(testClient, new RouteBuilder());
             await endpoint.Get();
-
+                
             Assert.Equal(shouldRequestUrl, requestUrl);
         }
     }
