@@ -53,7 +53,7 @@ namespace iRLeagueApiCore.Server
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("*ireleaguemanager.net*")
+                        builder.WithOrigins("*irleaguemanager.net*")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });

@@ -37,6 +37,7 @@ namespace iRLeagueApiCore.Client
         public async Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default)
         {
             // request to login endpoint
+            logger.LogInformation("Log in for {User} ...", username);
             var requestUrl = "Authenticate/Login";
             var body = new
             {
@@ -47,12 +48,14 @@ namespace iRLeagueApiCore.Client
 
             if (result.Success)
             {
+                logger.LogInformation("Log in successful!");
                 // set authorization header
                 string token = result.Content.Token;
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 return true;
             }
-            
+
+            logger.LogError("Login failed: {Status}", result.Status);
             return false;
         }
 
