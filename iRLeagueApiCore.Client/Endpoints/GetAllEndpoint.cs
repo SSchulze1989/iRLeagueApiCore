@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.QueryBuilder;
+﻿using iRLeagueApiCore.Client.Http;
+using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,14 @@ namespace iRLeagueApiCore.Client.Endpoints
 {
     public class GetAllEndpoint<T> : EndpointBase, IGetAllEndpoint<T>
     {
-        public GetAllEndpoint(HttpClient httpClient, RouteBuilder routeBuilder) : 
-            base(httpClient, routeBuilder)
+        public GetAllEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+            base(httpClientWrapper, routeBuilder)
         {
         }
 
         async Task<ClientActionResult<IEnumerable<T>>> IGetEndpoint<IEnumerable<T>>.Get(CancellationToken cancellationToken)
         {
-            return await HttpClient.GetAsClientActionResult<IEnumerable<T>>(QueryUrl, cancellationToken);
+            return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<T>>(QueryUrl, cancellationToken);
         }
     }
 }

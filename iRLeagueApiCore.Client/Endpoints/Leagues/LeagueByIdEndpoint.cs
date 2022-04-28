@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.QueryBuilder;
+﻿using iRLeagueApiCore.Client.Http;
+using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Communication.Models;
 using Microsoft.Extensions.Logging;
@@ -14,8 +15,8 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     public class LeagueByIdEndpoint : UpdateEndpoint<GetLeagueModel, PutLeagueModel>, ILeagueByIdEndpoint
     {
-        public LeagueByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, long leagueId) : 
-            base (httpClient, routeBuilder)
+        public LeagueByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long leagueId) : 
+            base (httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddParameter(leagueId);
         }

@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.QueryBuilder;
+﻿using iRLeagueApiCore.Client.Http;
+using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Communication.Models;
 using System.Net.Http;
@@ -7,8 +8,8 @@ namespace iRLeagueApiCore.Client.Endpoints.Scorings
 {
     internal class ScoringByIdEndpoint : UpdateEndpoint<GetScoringModel, PutScoringModel>, IScoringByIdEndpoint
     {
-        public ScoringByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, long scoringId) : 
-            base(httpClient, routeBuilder)
+        public ScoringByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scoringId) : 
+            base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddParameter(scoringId);
         }
@@ -18,7 +19,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Scorings
             var addSessionBuilder = RouteBuilder.Copy();
             addSessionBuilder.AddEndpoint("AddSession");
             addSessionBuilder.AddParameter(sessionId);
-            return new PostEndpoint<NoContent, NoContent>(HttpClient, addSessionBuilder);
+            return new PostEndpoint<NoContent, NoContent>(HttpClientWrapper, addSessionBuilder);
         }
 
         IPostEndpoint<NoContent, NoContent> IScoringByIdEndpoint.RemoveSession(long sessionId)
@@ -26,7 +27,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Scorings
             var removeSessionBuilder = RouteBuilder.Copy();
             removeSessionBuilder.AddEndpoint("RemoveSession");
             removeSessionBuilder.AddParameter(sessionId);
-            return new PostEndpoint<NoContent, NoContent>(HttpClient, removeSessionBuilder);
+            return new PostEndpoint<NoContent, NoContent>(HttpClientWrapper, removeSessionBuilder);
         }
     }
 }

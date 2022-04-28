@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Client
         ILeagueByNameEndpoint CurrentLeague { get; }
         ILeaguesEndpoint Leagues();
         Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default);
-        void LogOut();
+        Task LogOut();
         void SetCurrentLeague(string leagueName);
     }
 }
