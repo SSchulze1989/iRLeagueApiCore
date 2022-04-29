@@ -9,16 +9,17 @@ namespace iRLeagueApiCore.Client.Results
 {
     public struct ClientActionResult<T>
     {
-        public ClientActionResult(T content, HttpStatusCode httpStatusCode) : this(true, "Success", "", content, httpStatusCode)
+        public ClientActionResult(T content, HttpStatusCode httpStatusCode, string requestUrl = "") : this(true, "Success", "", content, httpStatusCode, requestUrl)
         { }
 
-        public ClientActionResult(bool success, string status, string message, T content, HttpStatusCode httpStatusCode, IEnumerable<object> errors = null)
+        public ClientActionResult(bool success, string status, string message, T content, HttpStatusCode httpStatusCode, string requestUrl = "", IEnumerable<object> errors = null)
         {
             Success = success;
             Status = status;
             Message = message;
             Content = content;
             HttpStatusCode = httpStatusCode;
+            RequestUrl = requestUrl;
             Errors = errors ?? new object[0];
         }
 
@@ -27,6 +28,7 @@ namespace iRLeagueApiCore.Client.Results
         public string Message { get; }
         public T Content { get; }
         public HttpStatusCode HttpStatusCode { get; }
+        public string RequestUrl { get; }
         public IEnumerable<object> Errors { get; }
     }
 

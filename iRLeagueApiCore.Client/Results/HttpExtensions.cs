@@ -18,13 +18,14 @@ namespace iRLeagueApiCore.Client.Results
     {
         public static async Task<ClientActionResult<T>> ToClientActionResultAsync<T>(this HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         {
+            string requestUrl = httpResponse.RequestMessage?.RequestUri?.AbsoluteUri;
             try
             {
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var content = httpResponse.StatusCode != HttpStatusCode.NoContent ?
                         await httpResponse.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) : default;
-                    return new ClientActionResult<T>(content, httpResponse.StatusCode);
+                    return new ClientActionResult<T>(content, httpResponse.StatusCode, requestUrl);
                 }
 
                 string status = "";
@@ -69,25 +70,28 @@ namespace iRLeagueApiCore.Client.Results
                         errors = new object[0];
                         break;
                 }
-                return new ClientActionResult<T>(false, status, message, default, httpResponse.StatusCode, errors);
+                return new ClientActionResult<T>(false, status, message, default, httpResponse.StatusCode, requestUrl, errors);
             }
             catch (Exception ex) when (ex is InvalidOperationException)
             {
                 var errors = new object[] { ex };
-                return new ClientActionResult<T>(false, "Error", ex.Message, default, 0, errors);
+                return new ClientActionResult<T>(false, "Error", ex.ToString(), default, 0, requestUrl, errors);
             }
         }
 
         public static async Task<ClientActionResult<T>> AsClientActionResultAsync<T>(this Task<HttpResponseMessage> request, CancellationToken cancellationToken = default)
         {
+            string requestUrl = "";
             try
             {
-                return await (await request).ToClientActionResultAsync<T>(cancellationToken);
+                var result = await request;
+                requestUrl = result.RequestMessage?.RequestUri?.AbsoluteUri;
+                return await result.ToClientActionResultAsync<T>(cancellationToken);
             }
             catch (Exception ex) when (ex is InvalidOperationException || ex is HttpRequestException)
             {
                 var errors = new object[] { ex };
-                return new ClientActionResult<T>(false, "Error", ex.Message, default, 0, errors);
+                return new ClientActionResult<T>(false, "Error", "Exception: " + ex, default, 0, requestUrl, errors);
             }
         }
 

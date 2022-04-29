@@ -22,25 +22,25 @@ namespace iRLeagueApiCore.Client.Http
 
         public async Task<HttpResponseMessage> Get(string uri, CancellationToken cancellationToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(uri, UriKind.RelativeOrAbsolute));
             return await SendRequest(request, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> Post(string uri, object data, CancellationToken cancellationToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+            var request = new HttpRequestMessage(HttpMethod.Post, new Uri(uri, UriKind.RelativeOrAbsolute));
             return await SendRequest(request, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> Put(string uri, object data, CancellationToken cancellationToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, uri);
+            var request = new HttpRequestMessage(HttpMethod.Put, new Uri(uri, UriKind.RelativeOrAbsolute));
             return await SendRequest(request, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> Delete(string uri, CancellationToken cancellationToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, uri);
+            var request = new HttpRequestMessage(HttpMethod.Delete, new Uri(uri, UriKind.RelativeOrAbsolute));
             return await SendRequest(request, cancellationToken);
         }
 
