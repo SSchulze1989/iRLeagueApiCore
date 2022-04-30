@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity.Test;
+﻿using iRLeagueApiCore.Client.Http;
+using Microsoft.AspNetCore.Identity.Test;
+using Moq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints
     {
         public static string BaseUrl = "https://example.com/api/";
 
-        public static async Task TestRequestUrl<TEndpoint>(string expectedUrl, Func<HttpClient, TEndpoint> endpoint, Func<TEndpoint, Task> action)
+        public static async Task TestRequestUrl<TEndpoint>(string expectedUrl, Func<HttpClientWrapper, TEndpoint> endpoint, Func<TEndpoint, Task> action)
         {
             var content = new StringContent(JsonConvert.SerializeObject(null));
             string requestUrl = "";
@@ -31,7 +33,8 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints
 
             var testClient = new HttpClient(httpMessageHandler);
             testClient.BaseAddress = new Uri(BaseUrl);
-            await action.Invoke(endpoint.Invoke(testClient));
+            var testClientWrapper = new HttpClientWrapper(testClient, Mock.Of<IAsyncTokenProvider>());
+            await action.Invoke(endpoint.Invoke(testClientWrapper));
 
             Assert.Equal(expectedUrl, requestUrl);
         }

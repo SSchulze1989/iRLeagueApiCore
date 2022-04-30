@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Results;
+﻿using iRLeagueApiCore.Client.Http;
+using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Communication.Responses;
 using Moq;
 using Moq.Protected;
@@ -19,6 +20,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
     {
         private const string testString = "TestMessage";
         private const long testValue = 42;
+        private const string testToken = "asgöahsgpasiakojsatlwetaet";
 
         [Fact]
         public async Task ShouldReturnActionResult()
@@ -142,6 +144,36 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
         }
 
         [Fact]
+        public async Task ShouldAddJWTHeader()
+        {
+            var mockMessageHandler = new Mock<HttpMessageHandler>();
+            var content = new StringContent(TestContent.AsJson());
+            mockMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    Content = null
+                });
+            mockMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => 
+                    x.Headers.Authorization != null && x.Headers.Authorization.Parameter == testToken), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = content
+                });
+            var mockTokenProvider = new Mock<IAsyncTokenProvider>();
+            mockTokenProvider.Setup(x => x.GetTokenAsync())
+                .ReturnsAsync(testToken);
+            var client = new HttpClient(mockMessageHandler.Object);
+            var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
+
+            var result = await wrapper.SendRequest(new HttpRequestMessage(HttpMethod.Get, "https://example.com"), default);
+            Assert.True(result.IsSuccessStatusCode);
+        }
+
+        [Fact]
         public async Task ShouldWrapHttpGetRequest()
         {
             var mockMessageHandler = new Mock<HttpMessageHandler>();
@@ -153,9 +185,11 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                     StatusCode = HttpStatusCode.OK,
                     Content = content
                 });
+            var mockTokenProvider = new Mock<IAsyncTokenProvider>();
             var client = new HttpClient(mockMessageHandler.Object);
+            var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
 
-            var result = await client.GetAsClientActionResult<TestContent>("https://example.com");
+            var result = await wrapper.GetAsClientActionResult<TestContent>("https://example.com");
             Assert.True(result.Success);
         }
 
@@ -171,10 +205,12 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                     StatusCode = HttpStatusCode.OK,
                     Content = content
                 });
+            var mockTokenProvider = new Mock<IAsyncTokenProvider>();
             var client = new HttpClient(mockMessageHandler.Object);
+            var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
             var model = new TestContent();
 
-            var result = await client.PostAsClientActionResult<TestContent, TestContent>("https://example.com", model);
+            var result = await wrapper.PostAsClientActionResult<TestContent>("https://example.com", model);
             Assert.True(result.Success);
         }
 
@@ -190,10 +226,12 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                     StatusCode = HttpStatusCode.OK,
                     Content = content
                 });
+            var mockTokenProvider = new Mock<IAsyncTokenProvider>();
             var client = new HttpClient(mockMessageHandler.Object);
+            var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
             var model = new TestContent();
 
-            var result = await client.PutAsClientActionResult<TestContent, TestContent>("https://example.com", model);
+            var result = await wrapper.PutAsClientActionResult<TestContent>("https://example.com", model);
             Assert.True(result.Success);
         }
 
@@ -209,9 +247,11 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                     StatusCode = HttpStatusCode.OK,
                     Content = content
                 });
+            var mockTokenProvider = new Mock<IAsyncTokenProvider>();
             var client = new HttpClient(mockMessageHandler.Object);
+            var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
 
-            var result = await client.DeleteAsClientActionResult("https://example.com");
+            var result = await wrapper.DeleteAsClientActionResult("https://example.com");
             Assert.True(result.Success);
         }
 
