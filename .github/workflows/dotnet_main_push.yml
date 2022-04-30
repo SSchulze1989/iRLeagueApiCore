@@ -9,7 +9,7 @@ jobs:
     env:
       BUILD_CONFIG: Release
       TEST_USER: root
-      TEST_PASSWORD: TestPass123
+      TEST_PASSWORD: root
       TEST_DATABASE: TestDatabase
       NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
