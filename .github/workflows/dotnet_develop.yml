@@ -28,14 +28,6 @@ jobs:
       run: |
         sudo /etc/init.d/mysql start
         mysql -e 'CREATE DATABASE $TEST_DATABASE;' -u$TEST_USER -p$TEST_PASSWORD
-    #- name: Setup MySQL
-    #  uses: mirromutth/mysql-action@v1.1
-    #  with:        
-    #    # Required if "mysql user" is empty, default is empty. The root superuser password
-    #    mysql root password: $TEST_PASSWORD
-    #    # MYSQL_DATABASE - name for the default database that is created
-    #    mysql database: $TEST_DATABASE
-    #    mysql version: '8.0'
     - name: Set secrets
       run: dotnet user-secrets set "ConnectionStrings:ModelDb" "server=localhost;database=$TEST_DATABASE;user=$TEST_USER;password=$TEST_PASSWORD" --project iRLeagueApiCore.UnitTests
     - name: Restore dependencies
