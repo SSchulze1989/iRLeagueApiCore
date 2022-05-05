@@ -26,10 +26,11 @@ namespace iRLeagueApiCore.Client
         {
             this.logger = logger;
             this.httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore);
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             this.tokenStore = tokenStore;
         }
 
-        public bool IsLoggedIn { get; private set; }
+        public bool IsLoggedIn => string.IsNullOrEmpty(tokenStore.GetTokenAsync().Result) == false;
 
         public ILeagueByNameEndpoint CurrentLeague => Leagues().WithName(CurrentLeagueName);
 
@@ -58,11 +59,9 @@ namespace iRLeagueApiCore.Client
                 // set authorization header
                 string token = result.Content.Token;
                 await tokenStore.SetTokenAsync(token);
-                IsLoggedIn = true;
                 return true;
             }
 
-            IsLoggedIn = false;
             logger.LogError("Login failed: {Status}", result.Status);
             return false;
         }
@@ -71,7 +70,6 @@ namespace iRLeagueApiCore.Client
         {
             await tokenStore.ClearTokenAsync();
             logger.LogInformation("User logged out");
-            IsLoggedIn = false;
         }
 
         public void SetCurrentLeague(string leagueName)

@@ -40,6 +40,12 @@ namespace iRLeagueApiCore.Client.Results
                             errors = response.Errors.Cast<object>();
                             break;
                         }
+                    case HttpStatusCode.Unauthorized:
+                        {
+                            status = "Unauthorized";
+                            errors = new object[0];
+                            break;
+                        }
                     case HttpStatusCode.Forbidden:
                         {
                             status = "Forbidden";
