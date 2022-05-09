@@ -61,6 +61,20 @@ namespace iRLeagueApiCore.Server.Controllers
             return Ok(getSchedule);
         }
 
+        [HttpGet]
+        [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
+        public async Task<ActionResult<IEnumerable<GetScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long seasonId, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] all schedules from season {SeasonId} in {LeagueName} by {UserName}",
+                "Get", seasonId, leagueName, User.Identity.Name);
+            var request = new GetSchedulesFromSeasonRequest(leagueId, seasonId);
+            var getSchedules = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} entries for schedules from season {SeasonId} in {LeagueName}",
+                getSchedules.Count(), seasonId, leagueName);
+            return Ok(getSchedules);
+        }
+
         [HttpPost]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
