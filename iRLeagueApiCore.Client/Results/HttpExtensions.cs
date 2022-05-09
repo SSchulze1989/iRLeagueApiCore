@@ -58,6 +58,13 @@ namespace iRLeagueApiCore.Client.Results
                             errors = new object[0];
                             break;
                         }
+                    case HttpStatusCode.MethodNotAllowed:
+                        {
+                            status = "Method Not Allowed";
+                            message = $"Method {httpResponse.RequestMessage.Method.Method} not allowed on {httpResponse.RequestMessage.RequestUri}";
+                            errors = new object[0];
+                            break;
+                        }
                     case HttpStatusCode.InternalServerError:
                         {
 #if NETCOREAPP

@@ -9,6 +9,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
     public interface ISeasonByIdEndpoint : IUpdateEndpoint<GetSeasonModel, PutSeasonModel>
     {
+        long Id { get; }
         IPostGetAllEndpoint<GetScheduleModel, PostScheduleModel> Schedules();
         IPostGetAllEndpoint<GetScoringModel, PostScoringModel> Scorings();
         IGetAllEndpoint<GetResultModel> Results();

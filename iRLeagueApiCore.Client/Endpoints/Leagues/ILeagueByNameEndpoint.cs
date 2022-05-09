@@ -12,6 +12,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     public interface ILeagueByNameEndpoint
     {
+        string Name { get; }
         ISeasonsEndpoint Seasons();
         ISchedulesEndpoint Schedules();
         ISessionsEndpoint Sessions();

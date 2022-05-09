@@ -10,9 +10,12 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     internal class LeagueByNameEndpoint : EndpointBase, ILeagueByNameEndpoint
     {
+        public string Name { get; }
+
         public LeagueByNameEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, string leagueName) : 
             base (httpClientWrapper, routeBuilder)
         {
+            Name = leagueName;
             RouteBuilder.AddParameter(leagueName);
         }
 
