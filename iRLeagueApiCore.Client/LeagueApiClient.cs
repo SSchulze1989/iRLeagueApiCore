@@ -31,7 +31,7 @@ namespace iRLeagueApiCore.Client
             this.tokenStore = tokenStore;
         }
 
-        public bool IsLoggedIn => string.IsNullOrEmpty(tokenStore.GetTokenAsync().Result) == false;
+        public bool IsLoggedIn => tokenStore.IsLoggedIn;
 
         public ILeagueByNameEndpoint CurrentLeague { get; private set; }
         public ISeasonByIdEndpoint CurrentSeason { get; private set; }
