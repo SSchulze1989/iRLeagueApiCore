@@ -93,7 +93,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <returns><typeparamref name="TResult"/> Result of the handle method</returns>
         public virtual async Task<TResult> HandleDefaultAsync()
         {
-            using var tx = new TransactionScope();
+            using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var dbContext = fixture.CreateDbContext();
 
             var request = DefaultRequest();
@@ -125,7 +125,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext> assertions, 
             Action<TRequest, LeagueDbContext> preTestAssertions = default)
         {
-            using var tx = new TransactionScope();
+            using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var dbContext = fixture.CreateDbContext();
 
             var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
@@ -142,7 +142,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// </summary
         public virtual async Task HandleValidationFailedAsync()
         {
-            using var tx = new TransactionScope();
+            using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var dbContext = fixture.CreateDbContext();
             var mockValidator = MockHelpers.MockValidator<TRequest>();
             mockValidator.Setup(x => x.Validate(It.IsAny<TRequest>()))
