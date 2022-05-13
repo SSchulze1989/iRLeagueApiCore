@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client;
+using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.UnitTests.Client.Endpoints;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ namespace iRLeagueApiCore.UnitTests.Client
         private ILogger<LeagueApiClient> Logger { get; } = new Mock<ILogger<LeagueApiClient>>().Object;
 
         [Fact]
-        public async Task ShouldSetAuthenticationHeader()
+        public async Task ShouldSetAuthenticationToken()
         {
             var messageHandler = MockHelpers.TestMessageHandler(x => new HttpResponseMessage()
             {
@@ -37,17 +38,20 @@ namespace iRLeagueApiCore.UnitTests.Client
                 })),
             });
 
+            string token = null;
+            var mockTokenStore = new Mock<ITokenStore>();
+            mockTokenStore.Setup(x => x.SetTokenAsync(It.IsAny<string>()))
+                .Callback<string>(x => token = x);
+
             var httpClient = new HttpClient(messageHandler);
             httpClient.BaseAddress = new Uri(baseUrl);
 
-            var apiClient = new LeagueApiClient(Logger, httpClient);
+            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
 
             var result = await apiClient.LogIn("testUser", "testPassword");
 
             Assert.True(result);
-            var authHeader = httpClient.DefaultRequestHeaders.Authorization;
-            Assert.Equal("bearer", authHeader.Scheme, ignoreCase: true);
-            Assert.Equal(testToken, authHeader.Parameter);
+            Assert.Equal(testToken, token);
         }
 
         [Fact]
@@ -63,12 +67,13 @@ namespace iRLeagueApiCore.UnitTests.Client
                     Content = new StringContent(JsonConvert.SerializeObject(default)),
                 };
             });
-
+            var mockTokenStore = new Mock<ITokenStore>();
+            mockTokenStore.Setup(x => x.GetTokenAsync())
+                .ReturnsAsync(testToken);
             var httpClient = new HttpClient(messageHandler);
             httpClient.BaseAddress = new Uri(baseUrl);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", testToken);
 
-            var apiClient = new LeagueApiClient(Logger, httpClient);
+            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
             await apiClient.Leagues().Get();
 
             Assert.Equal("bearer", authHeader?.Scheme, ignoreCase: true);
@@ -89,15 +94,22 @@ namespace iRLeagueApiCore.UnitTests.Client
                 };
             });
 
+            string token = testToken;
+            var mockTokenStore = new Mock<ITokenStore>();
+            mockTokenStore.Setup(x => x.SetTokenAsync(It.IsAny<string>()))
+                .Callback<string>(x => token = x);
+            mockTokenStore.Setup(x => x.ClearTokenAsync())
+                .Callback(() => token = null);
+            mockTokenStore.Setup(x => x.GetTokenAsync())
+                .ReturnsAsync(testToken);
             var httpClient = new HttpClient(messageHandler);
             httpClient.BaseAddress = new Uri(baseUrl);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", testToken);
 
-            var apiClient = new LeagueApiClient(Logger, httpClient);
-            apiClient.LogOut();
+            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
+            await apiClient.LogOut();
             await apiClient.Leagues().Get();
 
-            Assert.Null(authHeader);
+            Assert.True(string.IsNullOrEmpty(token));
         }
     }
 }

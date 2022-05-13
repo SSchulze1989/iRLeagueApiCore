@@ -13,6 +13,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
+    [Collection("HandlerTests")]
     public class GetResultsFromSeasonHandlerTests : HandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<GetResultModel>>
     {
         public GetResultsFromSeasonHandlerTests(DbTestFixture fixture) : base(fixture)

@@ -11,7 +11,7 @@ jobs:
     env:
       BUILD_CONFIG: Debug
       TEST_USER: root
-      TEST_PASSWORD: TestPass123
+      TEST_PASSWORD: root
       TEST_DATABASE: TestDatabase
       NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -22,7 +22,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
         source-url: https://nuget.pkg.github.com/SSchulze1989/index.json
     - name: Setup MySQL
       uses: mirromutth/mysql-action@v1.1

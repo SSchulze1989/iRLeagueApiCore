@@ -4,6 +4,6 @@ namespace iRLeagueApiCore.Client.Endpoints.Schedules
 {
     public interface IScheduleByIdEndpoint : IUpdateEndpoint<GetScheduleModel, PutScheduleModel>
     {
-        IPostEndpoint<GetSessionModel, PostSessionModel> Sessions();
+        IPostGetAllEndpoint<GetSessionModel, PostSessionModel> Sessions();
     }
 }

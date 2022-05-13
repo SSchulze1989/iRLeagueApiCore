@@ -3,19 +3,20 @@ using iRLeagueApiCore.Client.QueryBuilder;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using iRLeagueApiCore.Client.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints
 {
     public class EndpointBase
     {
-        protected HttpClient HttpClient { get; }
+        protected HttpClientWrapper HttpClientWrapper { get; }
         protected RouteBuilder RouteBuilder { get; }
 
         protected string QueryUrl => RouteBuilder.Build();
 
-        public EndpointBase(HttpClient httpClient, RouteBuilder routeBuilder)
+        public EndpointBase(HttpClientWrapper httpClient, RouteBuilder routeBuilder)
         {
-            HttpClient = httpClient;
+            HttpClientWrapper = httpClient;
             RouteBuilder = routeBuilder.Copy();
         }
     }

@@ -66,6 +66,21 @@ namespace iRLeagueApiCore.Server.Controllers
             return Ok(getSession);
         }
 
+        [HttpGet]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("/{leagueName}/Schedules/{scheduleId:long}/Sessions")]
+        public async Task<ActionResult<GetSessionModel>> PostToSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
+            [FromRoute] long scheduleId, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] all sessions in schedule {ScheduleId} from {LeagueName} by {UserName}", "Get", leagueName,
+                scheduleId, User.Identity.Name);
+            var request = new GetSessionsFromScheduleRequest(leagueId, scheduleId);
+            var getSessions = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} entries for sessions in schedule {ScheduleId} from {LeagueName}", 
+                getSessions.Count(), scheduleId, leagueName);
+            return Ok(getSessions);
+        }
+
         [HttpPost]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("/{leagueName}/Schedules/{scheduleId:long}/Sessions")]
@@ -123,8 +138,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 User.Identity.Name);
             var request = new DeleteSessionRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Deleted session {SessionId} from {LeagueName}", id, leagueName,
-                User.Identity.Name);
+            _logger.LogInformation("Deleted session {SessionId} from {LeagueName}", id, leagueName);
             return NoContent();
         }
     }

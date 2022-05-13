@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Communication.Responses;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using iRLeagueApiCore.Client.Http;
 #if NETCOREAPP
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -18,13 +18,14 @@ namespace iRLeagueApiCore.Client.Results
     {
         public static async Task<ClientActionResult<T>> ToClientActionResultAsync<T>(this HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         {
+            string requestUrl = httpResponse.RequestMessage?.RequestUri?.AbsoluteUri;
             try
             {
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var content = httpResponse.StatusCode != HttpStatusCode.NoContent ?
                         await httpResponse.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) : default;
-                    return new ClientActionResult<T>(content, httpResponse.StatusCode);
+                    return new ClientActionResult<T>(content, httpResponse.StatusCode, requestUrl);
                 }
 
                 string status = "";
@@ -39,6 +40,12 @@ namespace iRLeagueApiCore.Client.Results
                             errors = response.Errors.Cast<object>();
                             break;
                         }
+                    case HttpStatusCode.Unauthorized:
+                        {
+                            status = "Unauthorized";
+                            errors = new object[0];
+                            break;
+                        }
                     case HttpStatusCode.Forbidden:
                         {
                             status = "Forbidden";
@@ -48,6 +55,13 @@ namespace iRLeagueApiCore.Client.Results
                     case HttpStatusCode.NotFound:
                         {
                             status = "Not Found";
+                            errors = new object[0];
+                            break;
+                        }
+                    case HttpStatusCode.MethodNotAllowed:
+                        {
+                            status = "Method Not Allowed";
+                            message = $"Method {httpResponse.RequestMessage.Method.Method} not allowed on {httpResponse.RequestMessage.RequestUri}";
                             errors = new object[0];
                             break;
                         }
@@ -69,25 +83,28 @@ namespace iRLeagueApiCore.Client.Results
                         errors = new object[0];
                         break;
                 }
-                return new ClientActionResult<T>(false, status, message, default, httpResponse.StatusCode, errors);
+                return new ClientActionResult<T>(false, status, message, default, httpResponse.StatusCode, requestUrl, errors);
             }
             catch (Exception ex) when (ex is InvalidOperationException)
             {
                 var errors = new object[] { ex };
-                return new ClientActionResult<T>(false, "Error", ex.Message, default, 0, errors);
+                return new ClientActionResult<T>(false, "Error", ex.ToString(), default, 0, requestUrl, errors);
             }
         }
 
         public static async Task<ClientActionResult<T>> AsClientActionResultAsync<T>(this Task<HttpResponseMessage> request, CancellationToken cancellationToken = default)
         {
+            string requestUrl = "";
             try
             {
-                return await (await request).ToClientActionResultAsync<T>(cancellationToken);
+                var result = await request;
+                requestUrl = result.RequestMessage?.RequestUri?.AbsoluteUri;
+                return await result.ToClientActionResultAsync<T>(cancellationToken);
             }
             catch (Exception ex) when (ex is InvalidOperationException || ex is HttpRequestException)
             {
                 var errors = new object[] { ex };
-                return new ClientActionResult<T>(false, "Error", ex.Message, default, 0, errors);
+                return new ClientActionResult<T>(false, "Error", "Exception: " + ex, default, 0, requestUrl, errors);
             }
         }
 
@@ -96,9 +113,19 @@ namespace iRLeagueApiCore.Client.Results
             return await httpClient.GetAsync(query, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
         }
 
+        public static async Task<ClientActionResult<T>> GetAsClientActionResult<T>(this HttpClientWrapper httpClientWrapper, string query, CancellationToken cancellationToken = default)
+        {
+            return await httpClientWrapper.Get(query, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
+        }
+
         public static async Task<ClientActionResult<TResponse>> PostAsClientActionResult<TResponse, TPost>(this HttpClient httpClient, string query, TPost body, CancellationToken cancellationToken = default)
         {
             return await httpClient.PostAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(cancellationToken);
+        }
+
+        public static async Task<ClientActionResult<T>> PostAsClientActionResult<T>(this HttpClientWrapper httpClientWrapper, string query, object body, CancellationToken cancellationToken = default)
+        {
+            return await httpClientWrapper.Post(query, body, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
         }
 
         public static async Task<ClientActionResult<TResponse>> PutAsClientActionResult<TResponse, TPut>(this HttpClient httpClient, string query, TPut body , CancellationToken cancellationToken = default)
@@ -106,29 +133,19 @@ namespace iRLeagueApiCore.Client.Results
             return await httpClient.PutAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(cancellationToken);
         }
 
+        public static async Task<ClientActionResult<T>> PutAsClientActionResult<T>(this HttpClientWrapper httpClientWrapper, string query, object body, CancellationToken cancellationToken = default)
+        {
+            return await httpClientWrapper.Put(query, body, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
+        }
+
         public static async Task<ClientActionResult<NoContent>> DeleteAsClientActionResult(this HttpClient httpClient, string query, CancellationToken cancellationToken= default)
         {
             return await httpClient.DeleteAsync(query, cancellationToken).AsClientActionResultAsync<NoContent>(cancellationToken);
         }
 
-#if !NETCOREAPP
-        public static async Task<T> ReadFromJsonAsync<T>(this HttpContent httpContent, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<NoContent>> DeleteAsClientActionResult(this HttpClientWrapper httpClientWrapper, string query, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            return JsonConvert.DeserializeObject<T>(await httpContent.ReadAsStringAsync());
+            return await httpClientWrapper.Delete(query, cancellationToken).AsClientActionResultAsync<NoContent>(cancellationToken);
         }
-
-        public static async Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient client, string requestUri, T value, CancellationToken cancellationToken = default)
-        {
-            var content = new StringContent(JsonConvert.SerializeObject(value));
-            return await client.PostAsync(requestUri, content, cancellationToken);
-        }
-
-        public static async Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient client, string requestUri, T value, CancellationToken cancellationToken = default)
-        {
-            var content = new StringContent(JsonConvert.SerializeObject(value));
-            return await client.PutAsync(requestUri, content, cancellationToken);
-        }
-#endif
     }
 }

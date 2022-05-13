@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using System.Net.Http;
 
@@ -9,30 +10,33 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
     internal class LeagueByNameEndpoint : EndpointBase, ILeagueByNameEndpoint
     {
-        public LeagueByNameEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, string leagueName) : 
-            base (httpClient, routeBuilder)
+        public string Name { get; }
+
+        public LeagueByNameEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, string leagueName) : 
+            base (httpClientWrapper, routeBuilder)
         {
+            Name = leagueName;
             RouteBuilder.AddParameter(leagueName);
         }
 
         ISchedulesEndpoint ILeagueByNameEndpoint.Schedules()
         {
-            return new SchedulesEndpoint(HttpClient, RouteBuilder);
+            return new SchedulesEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
         ISeasonsEndpoint ILeagueByNameEndpoint.Seasons()
         {
-            return new SeasonsEndpoint(HttpClient, RouteBuilder);
+            return new SeasonsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
         ISessionsEndpoint ILeagueByNameEndpoint.Sessions()
         {
-            return new SessionsEndpoint(HttpClient, RouteBuilder);
+            return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
         IScoringsEndpoint ILeagueByNameEndpoint.Scorings()
         {
-            return new ScoringsEndpoint(HttpClient, RouteBuilder);
+            return new ScoringsEndpoint(HttpClientWrapper, RouteBuilder);
         }
     }
 }

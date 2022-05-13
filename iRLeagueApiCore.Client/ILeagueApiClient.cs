@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Leagues;
+using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Results;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,11 @@ namespace iRLeagueApiCore.Client
     {
         bool IsLoggedIn { get; }
         ILeagueByNameEndpoint CurrentLeague { get; }
+        ISeasonByIdEndpoint CurrentSeason { get; }
         ILeaguesEndpoint Leagues();
         Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default);
-        void LogOut();
+        Task LogOut();
         void SetCurrentLeague(string leagueName);
+        void SetCurrentSeason(string leagueName, long seasonId);
     }
 }

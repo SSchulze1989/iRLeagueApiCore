@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Communication.Models;
 using System.Net.Http;
@@ -7,15 +8,15 @@ namespace iRLeagueApiCore.Client.Endpoints.Schedules
 {
     internal class ScheduleByIdEndpoint : UpdateEndpoint<GetScheduleModel, PutScheduleModel>, IScheduleByIdEndpoint
     {
-        public ScheduleByIdEndpoint(HttpClient httpClient, RouteBuilder routeBuilder, long scheduleId) : 
-            base(httpClient, routeBuilder)
+        public ScheduleByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scheduleId) : 
+            base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddParameter(scheduleId);
         }
 
-        public IPostEndpoint<GetSessionModel, PostSessionModel> Sessions()
+        public IPostGetAllEndpoint<GetSessionModel, PostSessionModel> Sessions()
         {
-            return new SessionsEndpoint(HttpClient, RouteBuilder);
+            return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
         }
     }
 }
