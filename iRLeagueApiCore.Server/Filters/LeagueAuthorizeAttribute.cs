@@ -29,8 +29,8 @@ namespace iRLeagueApiCore.Server.Filters
             // infer league name from context
             if (context.RouteData.Values.TryGetValue("leagueName", out var leagueNameObject) == false)
             {
-                _logger.LogError("Failed to authorize league: could not find {leagueName} in route values");
-                throw new InvalidOperationException("Missing {leagueName} in action route");
+                _logger.LogError("Missing [leagueName] parameter in action route");
+                throw new InvalidOperationException("Missing [leagueName] in action route");
             }
             var leagueName = (string)leagueNameObject;
 

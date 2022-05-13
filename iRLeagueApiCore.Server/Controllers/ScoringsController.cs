@@ -233,7 +233,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             catch (ResourceNotFoundException)
             {
-                _logger.LogInformation("Session {SessionId} in scoring {ScoringId} not found inside {LeagueName}", id, leagueName);
+                _logger.LogInformation("Session {SessionId} in scoring {ScoringId} not found inside {LeagueName}", sessionId, id, leagueName);
                 return NotFound();
             }
         }
@@ -268,7 +268,7 @@ namespace iRLeagueApiCore.Server.Controllers
             }
             catch (ResourceNotFoundException)
             {
-                _logger.LogInformation("Session {SessionId} in scoring {ScoringId} not found inside {LeagueName}", id, leagueName);
+                _logger.LogInformation("Session {SessionId} in scoring {ScoringId} not found inside {LeagueName}", sessionId, id, leagueName);
                 return NotFound();
             }
         }
@@ -288,7 +288,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             try
             {
-                _logger.LogInformation("Get scorings from season {SeasonId in {LeagueName} by {UserName}",
+                _logger.LogInformation("Get scorings from season {SeasonId} in {LeagueName} by {UserName}",
                     seasonId, leagueName, User.Identity.Name);
                 var request = new GetScoringsFromSeasonRequest(leagueId, seasonId);
                 var getScorings = await mediator.Send(request, cancellationToken);

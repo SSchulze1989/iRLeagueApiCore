@@ -103,8 +103,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 User.Identity.Name);
             var request = new DeleteSeasonRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Deleted season {SeasonId} from {LeagueName}", id, leagueName,
-                User.Identity.Name);
+            _logger.LogInformation("Deleted season {SeasonId} from {LeagueName}", id, leagueName);
             return NoContent();
         }
     }

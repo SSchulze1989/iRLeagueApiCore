@@ -138,8 +138,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 User.Identity.Name);
             var request = new DeleteSessionRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Deleted session {SessionId} from {LeagueName}", id, leagueName,
-                User.Identity.Name);
+            _logger.LogInformation("Deleted session {SessionId} from {LeagueName}", id, leagueName);
             return NoContent();
         }
     }
