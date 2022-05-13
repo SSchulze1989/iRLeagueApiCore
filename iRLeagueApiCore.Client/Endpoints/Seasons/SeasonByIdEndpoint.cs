@@ -10,10 +10,12 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
     internal class SeasonByIdEndpoint : UpdateEndpoint<GetSeasonModel, PutSeasonModel>, ISeasonByIdEndpoint
     {
+        public long Id { get; }
 
         public SeasonByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long seasonId) :
             base(httpClientWrapper, routeBuilder)
         {
+            Id = seasonId;
             RouteBuilder.AddParameter(seasonId);
         }
 

@@ -14,11 +14,13 @@ namespace iRLeagueApiCore.Client.Http
     {
         private readonly HttpClient httpClient;
         private readonly IAsyncTokenProvider tokenProvider;
+        private readonly ILeagueApiClient apiClient;
 
-        public HttpClientWrapper(HttpClient httpClient, IAsyncTokenProvider tokenProvider)
+        public HttpClientWrapper(HttpClient httpClient, IAsyncTokenProvider tokenProvider, ILeagueApiClient apiClient = default)
         {
             this.httpClient = httpClient;
             this.tokenProvider = tokenProvider;
+            this.apiClient = apiClient;
         }
 
         public async Task<HttpResponseMessage> Get(string uri, CancellationToken cancellationToken)
@@ -50,7 +52,12 @@ namespace iRLeagueApiCore.Client.Http
         public async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             await AddJWTTokenAsync(request);
-            return await httpClient.SendAsync(request, cancellationToken);
+            var result = await httpClient.SendAsync(request, cancellationToken);
+            if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await apiClient?.LogOut();
+            }
+            return result;
         }
 
         private async Task AddJWTTokenAsync(HttpRequestMessage request)
