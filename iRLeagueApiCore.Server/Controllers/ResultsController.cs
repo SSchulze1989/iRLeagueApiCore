@@ -40,7 +40,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Session/{sessionId:long}/Scoring/{scoringId:long}/[controller]")]
+        [Route("/{leagueName}/Sessions/{sessionId:long}/Scoring/{scoringId:long}/[controller]")]
         public async Task<ActionResult<GetResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId,
             [FromRoute] long scoringId, CancellationToken cancellationToken)
         {
@@ -62,7 +62,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Season/{seasonId:long}/[controller]")]
+        [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
@@ -84,7 +84,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Session/{sessionId:long}/[controller]")]
+        [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long sessionId, CancellationToken cancellationToken = default)
         {
