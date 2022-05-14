@@ -29,11 +29,11 @@ namespace iRLeagueApiCore.Server.Handlers.Sessions
             return getSessions;
         }
 
-        private async Task<IEnumerable<GetSessionModel>> MapToGetSessionModelsAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
+        private async Task<IEnumerable<GetSessionModel>> MapToGetSessionModelsAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
         {
             return await dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId)
-                .Where(x => x.SessionId == sessionId)
+                .Where(x => x.Schedule.SeasonId == seasonId)
                 .Select(MapToGetSessionModelExpression)
                 .ToListAsync(cancellationToken);
         }
