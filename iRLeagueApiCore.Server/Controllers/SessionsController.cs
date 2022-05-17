@@ -67,9 +67,8 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
-        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("/{leagueName}/Schedules/{scheduleId:long}/Sessions")]
-        public async Task<ActionResult<GetSessionModel>> PostToSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<GetSessionModel>>> GetFromSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long scheduleId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all sessions in schedule {ScheduleId} from {LeagueName} by {UserName}", "Get", leagueName,
@@ -78,6 +77,20 @@ namespace iRLeagueApiCore.Server.Controllers
             var getSessions = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for sessions in schedule {ScheduleId} from {LeagueName}", 
                 getSessions.Count(), scheduleId, leagueName);
+            return Ok(getSessions);
+        }
+
+        [HttpGet]
+        [Route("/{leagueName}/Seasons/{seasonId:long}/Sessions")]
+        public async Task<ActionResult<IEnumerable<GetSessionModel>>> GetSessions([FromRoute] string leagueName, [FromFilter] long leagueId, 
+            [FromRoute] long seasonId, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("[{Method}] all sessions in season {SeasonId} from {LeagueName} by {UserName}",
+                "Get", seasonId, leagueName, User.Identity.Name);
+            var request = new GetSessionsFromSeasonRequest(leagueId, seasonId);
+            var getSessions = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} entries for sessions in season {SeasonId} from {LeagueName}",
+                getSessions.Count(), seasonId, leagueName);
             return Ok(getSessions);
         }
 
