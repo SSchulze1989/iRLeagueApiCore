@@ -117,8 +117,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 User.Identity.Name);
             var request = new DeleteScheduleRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Deleted schedule {ScheduleId} from {LeagueName}", id, leagueName,
-                User.Identity.Name);
+            _logger.LogInformation("Deleted schedule {ScheduleId} from {LeagueName}", id, leagueName);
             return NoContent();
         }
     }

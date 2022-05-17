@@ -11,7 +11,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Sessions
         public SessionByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long sessionId) : 
             base(httpClientWrapper, routeBuilder)
         {
-            routeBuilder.AddParameter(sessionId);
+            RouteBuilder.AddParameter(sessionId);
         }
 
         IResultsEndpoint ISessionByIdEndpoint.Results()

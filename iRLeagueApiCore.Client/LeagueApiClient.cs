@@ -26,7 +26,7 @@ namespace iRLeagueApiCore.Client
         public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, ITokenStore tokenStore)
         {
             this.logger = logger;
-            this.httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore);
+            this.httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             this.tokenStore = tokenStore;
         }
