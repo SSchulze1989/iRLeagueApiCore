@@ -4,19 +4,19 @@ namespace iRLeagueApiCore.Server.Models.ResultsParsing
 {
     public struct ParseWeather
     {
-        public int type;
-        public int temp_units;
-        public int temp_value;
-        public int rel_humidity;
-        public int fog;
-        public int wind_dir;
-        public int wind_units;
-        public int wind_value;
-        public int skies;
-        public int weather_var_initial;
-        public int weather_var_ongoing;
-        public int time_of_day;
-        public DateTime simulated_start_utc_time;
-        public long simulated_start_utc_offset;
+        public int type { get; set; }
+        public int temp_units { get; set; }
+        public int temp_value { get; set; }
+        public int rel_humidity { get; set; }
+        public int fog { get; set; }
+        public int wind_dir { get; set; }
+        public int wind_units { get; set; }
+        public int wind_value { get; set; }
+        public int skies { get; set; }
+        public int weather_var_initial { get; set; }
+        public int weather_var_ongoing { get; set; }
+        public int time_of_day { get; set; }
+        public DateTime simulated_start_utc_time { get; set; }
+        public long simulated_start_utc_offset { get; set; }
     }
 }
