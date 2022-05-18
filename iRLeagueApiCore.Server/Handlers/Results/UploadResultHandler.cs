@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Models.ResultsParsing;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -28,11 +30,23 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             // decode file
             var data = await ParseDataStream(request.dataStream, cancellationToken);
+            
+            // add to database
+            var session = await GetSessionEntityAsync(request.leagueId, request.ResultId, cancellationToken) 
+                ?? throw new ResourceNotFoundException();
             var result = ReadResults(data, request.sessionResultIndex);
-
-            // Todo: add to database
+            session.Result = result;
 
             return true;
+        }
+
+        private async Task<SessionEntity> GetSessionEntityAsync(long leagueId, long resultId, CancellationToken cancellationToken)
+        {
+            // search for session first to check if result will be valid
+            return await dbContext.Sessions
+                .Where(x => x.LeagueId == leagueId)
+                .Where(x => x.SessionId == resultId)
+                .SingleOrDefaultAsync(cancellationToken);
         }
 
         private async Task<ParseSimSessionResult> ParseDataStream(Stream dataStream, CancellationToken cancellationToken)
