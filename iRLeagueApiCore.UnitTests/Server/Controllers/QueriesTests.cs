@@ -37,9 +37,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
                         ResultRows = result.ScoredResultRows
                             .Select(row => new GetResultRowModel()
                             {
-                                Firstname = row.ResultRow.Member.Firstname,
-                                Lastname = row.ResultRow.Member.Lastname,
-                                TeamName = row.ResultRow.Team.Name
+                                Firstname = row.Member.Firstname,
+                                Lastname = row.Member.Lastname,
+                                TeamName = row.Team.Name
                             }).ToArray(),
                     })
                     .Where(x => x.SeasonId == testSeasonId);

@@ -13,7 +13,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
 {
     [Collection("HandlerTests")]
-    public class GetSessionsHandlerTests : HandlersTestsBase<GetSessionsHandler, GetSessionsRequest, IEnumerable<GetSessionModel>>
+    public class GetSessionsHandlerTests : HandlersTestsBase<GetSessionsHandler, GetSessionsRequest, IEnumerable<SessionModel>>
     {
         public GetSessionsHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
         }
 
         [Fact]
-        public async override Task<IEnumerable<GetSessionModel>> HandleDefaultAsync()
+        public async override Task<IEnumerable<SessionModel>> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

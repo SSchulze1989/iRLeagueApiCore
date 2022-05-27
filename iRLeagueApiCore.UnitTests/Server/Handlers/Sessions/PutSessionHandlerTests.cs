@@ -14,7 +14,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
 {
     [Collection("HandlerTests")]
-    public class PutSessionHandlerTests : HandlersTestsBase<PutSessionHandler, PutSessionRequest, GetSessionModel>
+    public class PutSessionHandlerTests : HandlersTestsBase<PutSessionHandler, PutSessionRequest, SessionModel>
     {
         private const long testSessionId = 1;
         private const string testSessionName = "TestSession";
@@ -41,23 +41,16 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
             return DefaultRequest();
         }
 
-        protected override void DefaultAssertions(PutSessionRequest request, GetSessionModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PutSessionRequest request, SessionModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
             var testTime = DateTime.UtcNow;
             Assert.Equal(testSessionId, result.SessionId);
-            Assert.Equal(testSessionTitle, result.SessionTitle);
             Assert.Equal(testSessionName, result.Name);
             Assert.Equal(testSessionDate, result.Date);
             Assert.Equal(testSessionType, result.SessionType);
             Assert.Equal(testTrackId, result.TrackId);
             Assert.Equal(testSessionDuration, result.Duration);
-            Assert.Equal(testSessionDuration, result.PracticeLength);
-            Assert.Equal(testSessionDuration, result.QualyLength);
-            Assert.Equal(testSessionDuration, result.RaceLength);
-            Assert.Equal(testAttached, result.QualyAttached);
-            Assert.Equal(testAttached, result.PracticeAttached);
-            Assert.Equal(testSubSessionNr, result.SubSessionNr);
             Assert.Equal(testTime, result.LastModifiedOn.GetValueOrDefault(), TimeSpan.FromMinutes(1));
             Assert.Equal(request.User.Id, result.LastModifiedByUserId);
             Assert.Equal(request.User.Name, result.LastModifiedByUserName);
@@ -67,25 +60,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
         {
             var model = new PutSessionModel()
             {
-                SessionTitle = testSessionTitle,
                 Name = testSessionName,
                 SessionType = testSessionType,
                 Date = testSessionDate,
                 TrackId = testTrackId,
                 Duration = testSessionDuration,
-                Laps = testLaps,
-                PracticeLength = testSessionDuration,
-                QualyLength = testSessionDuration,
-                RaceLength = testSessionDuration,
-                QualyAttached = testAttached,
-                PracticeAttached = testAttached,
-                SubSessionNr = testSubSessionNr,
             };
             return new PutSessionRequest(leagueId, DefaultUser(), sessionId, model);
         }
 
         [Fact]
-        public async override Task<GetSessionModel> HandleDefaultAsync()
+        public async override Task<SessionModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

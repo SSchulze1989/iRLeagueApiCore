@@ -26,26 +26,58 @@ namespace iRLeagueApiCore.Server.Handlers.Sessions
                 .SingleOrDefaultAsync(x => x.SessionId == sessionId);
         }
 
-        protected virtual async Task<SessionEntity> MapToSessionEntityAsync(long leagueId, LeagueUser user, PutSessionModel putSession, SessionEntity target,
+        protected virtual async Task<SessionEntity> MapToSessionEntityAsync(LeagueUser user, PutSessionModel putSession, SessionEntity target,
             CancellationToken cancellationToken)
         {
             target.Date = putSession.Date;
             target.Duration = putSession.Duration;
-            target.SubSessionNr = putSession.SubSessionNr;
-            target.Laps = putSession.Laps;
             target.Name = putSession.Name;
-            target.PracticeAttached = putSession.PracticeAttached;
-            target.PracticeLength = putSession.PracticeLength;
-            target.QualyAttached = putSession.QualyAttached;
-            target.QualyLength = putSession.QualyLength;
-            target.RaceLength = putSession.RaceLength;
-            target.SessionTitle = putSession.SessionTitle;
             target.SessionType = putSession.SessionType;
             target.Track = await GetTrackConfigEntityAsync(putSession.TrackId, cancellationToken);
+            MapToSubSessionEntityCollection(user, putSession.SubSessions, target.SubSessions, cancellationToken);
             return UpdateVersionEntity(user, target);
         }
 
-        protected virtual async Task<GetSessionModel> MapToGetSessionModelAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
+        protected virtual void MapToSubSessionEntityCollection(LeagueUser user, IEnumerable<PutSessionSubSessionModel> putSubSessions,
+            ICollection<SubSessionEntity> target, CancellationToken cancellationToken)
+        {
+            List<long> keepSubSessionIds = new List<long>();
+            foreach(var putSubSession in putSubSessions)
+            {
+                // try to find subsession in target collection
+                var subSessionEntity = target.SingleOrDefault(x => x.SubSessionId == putSubSession.SubSessionId);
+                // create new subsession if no previous id was given
+                if (putSubSession.SubSessionId == 0)
+                {
+                    subSessionEntity = new SubSessionEntity();
+                }
+                if (subSessionEntity == null)
+                {
+                    throw new InvalidOperationException($"Error while mapping SubSessionEntities to Session: SubSessionId:{putSubSession.SubSessionId} does not exist in target collection SubSessions");
+                }
+                MapToSubSessionEntity(user, putSubSession, subSessionEntity);
+            }
+            // remove subsessions that are not referenced
+            var removeSubSessions = target
+                .ExceptBy(putSubSessions.Select(x => x.SubSessionId), x => x.SubSessionId);
+            foreach (var removeSubSession in removeSubSessions)
+            {
+                target.Remove(removeSubSession);
+            }
+        }
+
+        protected virtual SubSessionEntity MapToSubSessionEntity(LeagueUser user, PutSessionSubSessionModel putSubSession, SubSessionEntity target)
+        {
+            target.Duration = putSubSession.Duration;
+            target.StartOffset = putSubSession.StartOffset;
+            target.Laps = putSubSession.Laps;
+            target.Name = putSubSession.Name;
+            target.SessionType = putSubSession.SessionType;
+            target.SubSessionNr = putSubSession.SubSessionNr;
+            return UpdateVersionEntity(user, target);
+        }
+
+        protected virtual async Task<SessionModel> MapToGetSessionModelAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
         {
             return await dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId)
@@ -54,25 +86,20 @@ namespace iRLeagueApiCore.Server.Handlers.Sessions
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        protected virtual Expression<Func<SessionEntity, GetSessionModel>> MapToGetSessionModelExpression => x => new GetSessionModel()
+        protected virtual Expression<Func<SessionEntity, SessionModel>> MapToGetSessionModelExpression => x => new SessionModel()
         {
             SessionId = x.SessionId,
             ScheduleId = x.ScheduleId,
             LeagueId = x.LeagueId,
-            PracticeAttached = x.PracticeAttached ?? false,
-            QualyAttached = x.QualyAttached ?? false,
-            PracticeLength = x.PracticeLength,
-            QualyLength = x.QualyLength,
             Date = x.Date,
             Duration = x.Duration,
-            Laps = x.Laps ?? 0,
-            RaceLength = x.RaceLength,
             Name = x.Name,
-            SessionTitle = x.SessionTitle,
             SessionType = x.SessionType,
-            SubSessionIds = x.SubSessions.Select(x => x.SessionId),
-            ParentSessionId = x.ParentSessionId,
-            SubSessionNr = x.SubSessionNr,
+            SubSessions = x.SubSessions
+                .AsQueryable()
+                .OrderBy(x => x.SubSessionNr)
+                .Select(MapToGetSubSessionModelExpression)
+                .ToList(),
             TrackId = x.TrackId,
             HasResult = x.Result != null,
             CreatedOn = x.CreatedOn,
@@ -81,6 +108,17 @@ namespace iRLeagueApiCore.Server.Handlers.Sessions
             LastModifiedOn = x.LastModifiedOn,
             LastModifiedByUserId = x.LastModifiedByUserId,
             LastModifiedByUserName = x.LastModifiedByUserName
+        };
+
+        protected virtual Expression<Func<SubSessionEntity, SubSessionModel>> MapToGetSubSessionModelExpression => x => new SubSessionModel()
+        {
+            SubSessionId = x.SubSessionId,
+            SubSessionNr = x.SubSessionNr,
+            Name = x.Name,
+            SessionType = x.SessionType,
+            StartOffset = x.StartOffset,
+            Duration = x.Duration,
+            Laps = x.Laps,
         };
     }
 }

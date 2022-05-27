@@ -14,7 +14,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
 {
     [Collection("HandlerTests")]
-    public class PostSessionToScheduleHandlerTests : HandlersTestsBase<PostSessionToScheduleHandler, PostSessionToScheduleRequest, GetSessionModel>
+    public class PostSessionToScheduleHandlerTests : HandlersTestsBase<PostSessionToScheduleHandler, PostSessionToScheduleRequest, SessionModel>
     {
         public PostSessionToScheduleHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -38,7 +38,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
             return new PostSessionToScheduleRequest(leagueId, scheduleId, DefaultUser(), model);
         }
 
-        protected override void DefaultAssertions(PostSessionToScheduleRequest request, GetSessionModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PostSessionToScheduleRequest request, SessionModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
             // assert collection
@@ -54,7 +54,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
         }
 
         [Fact]
-        public async override Task<GetSessionModel> HandleDefaultAsync()
+        public async override Task<SessionModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

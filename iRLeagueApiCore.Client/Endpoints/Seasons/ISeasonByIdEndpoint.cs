@@ -13,6 +13,6 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
         IPostGetAllEndpoint<GetScheduleModel, PostScheduleModel> Schedules();
         IPostGetAllEndpoint<GetScoringModel, PostScoringModel> Scorings();
         IGetAllEndpoint<GetResultModel> Results();
-        IGetAllEndpoint<GetSessionModel> Sessions();
+        IGetAllEndpoint<SessionModel> Sessions();
     }
 }

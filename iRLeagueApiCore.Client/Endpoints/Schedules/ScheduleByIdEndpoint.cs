@@ -14,7 +14,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Schedules
             RouteBuilder.AddParameter(scheduleId);
         }
 
-        public IPostGetAllEndpoint<GetSessionModel, PostSessionModel> Sessions()
+        public IPostGetAllEndpoint<SessionModel, PostSessionModel> Sessions()
         {
             return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
         }

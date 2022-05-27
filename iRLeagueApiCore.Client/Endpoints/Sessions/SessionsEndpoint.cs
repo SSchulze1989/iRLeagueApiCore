@@ -5,7 +5,7 @@ using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Sessions
 {
-    internal class SessionsEndpoint : PostGetAllEndpoint<GetSessionModel, PostSessionModel>, ISessionsEndpoint
+    internal class SessionsEndpoint : PostGetAllEndpoint<SessionModel, PostSessionModel>, ISessionsEndpoint
     {
         public SessionsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
             base(httpClientWrapper, routeBuilder)

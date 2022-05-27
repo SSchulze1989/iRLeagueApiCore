@@ -14,21 +14,21 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Sessions
 {
-    public record PutSessionRequest(long LeagueId, LeagueUser User, long SessionId, PutSessionModel Model) : IRequest<GetSessionModel>;
+    public record PutSessionRequest(long LeagueId, LeagueUser User, long SessionId, PutSessionModel Model) : IRequest<SessionModel>;
 
-    public class PutSessionHandler : SessionHandlerBase<PutSessionHandler, PutSessionRequest>, IRequestHandler<PutSessionRequest, GetSessionModel>
+    public class PutSessionHandler : SessionHandlerBase<PutSessionHandler, PutSessionRequest>, IRequestHandler<PutSessionRequest, SessionModel>
     {
         public PutSessionHandler(ILogger<PutSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutSessionRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetSessionModel> Handle(PutSessionRequest request, CancellationToken cancellationToken)
+        public async Task<SessionModel> Handle(PutSessionRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var putSession = await GetSessionEntityAsync(request.LeagueId, request.SessionId, cancellationToken)
                 ?? throw new ResourceNotFoundException();
-            await MapToSessionEntityAsync(request.LeagueId, request.User, request.Model, putSession, cancellationToken);
+            await MapToSessionEntityAsync(request.User, request.Model, putSession, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
             var getSession = await MapToGetSessionModelAsync(request.LeagueId, request.SessionId, cancellationToken)
                 ?? throw new ResourceNotFoundException();
