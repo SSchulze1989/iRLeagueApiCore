@@ -14,7 +14,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
 {
     [Collection("HandlerTests")]
-    public class PostLeagueHandlerTests : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, GetLeagueModel>
+    public class PostLeagueHandlerTests : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, LeagueModel>
     {
         private const string postLeagueName = "PostLeague";
 
@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
         }
 
         [Fact]
-        public override async Task<GetLeagueModel> HandleDefaultAsync()
+        public override async Task<LeagueModel> HandleDefaultAsync()
         {
             var result = await base.HandleDefaultAsync();
             return result;

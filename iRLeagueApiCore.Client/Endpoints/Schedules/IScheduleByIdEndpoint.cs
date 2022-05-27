@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Client.Endpoints.Schedules
 {
-    public interface IScheduleByIdEndpoint : IUpdateEndpoint<GetScheduleModel, PutScheduleModel>
+    public interface IScheduleByIdEndpoint : IUpdateEndpoint<ScheduleModel, PutScheduleModel>
     {
         IPostGetAllEndpoint<SessionModel, PostSessionModel> Sessions();
     }

@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<IEnumerable<GetLeagueModel>>> GetAll(CancellationToken cancellationToken = default)
+        public async Task<ActionResult<IEnumerable<LeagueModel>>> GetAll(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all leagues by {UserName}", "Get",
                 User.Identity.Name);
@@ -47,7 +47,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("{id:long}")]
-        public async Task<ActionResult<GetLeagueModel>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<LeagueModel>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] league {LeagueId} by {UserName}", 
                 "Get", id, User.Identity.Name);
@@ -60,7 +60,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost]
         [Authorize(Roles = UserRoles.Admin)]
         [Route("")]
-        public async Task<ActionResult<GetLeagueModel>> Post([FromBody] PostLeagueModel postLeague, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<LeagueModel>> Post([FromBody] PostLeagueModel postLeague, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] new league by {UserName}",
                 "Post", User.Identity.Name);
@@ -74,7 +74,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         [Authorize(Roles = UserRoles.Admin)]
         [Route("{id}")]
-        public async Task<ActionResult<GetLeagueModel>> Put([FromRoute] long id, [FromBody] PutLeagueModel putLeague, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<LeagueModel>> Put([FromRoute] long id, [FromBody] PutLeagueModel putLeague, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] league data with {LeagueId} by {UserName}", id,
                 "Put", User.Identity.Name);

@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public record PutScoringRequest(long LeagueId, long ScoringId, PutScoringModel Model) : IRequest<GetScoringModel>;
+    public record PutScoringRequest(long LeagueId, long ScoringId, PutScoringModel Model) : IRequest<ScoringModel>;
 
-    public class PutScoringHandler : ScoringHandlerBase<PutScoringHandler, PutScoringRequest>, IRequestHandler<PutScoringRequest, GetScoringModel>
+    public class PutScoringHandler : ScoringHandlerBase<PutScoringHandler, PutScoringRequest>, IRequestHandler<PutScoringRequest, ScoringModel>
     {
         public PutScoringHandler(ILogger<PutScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutScoringRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetScoringModel> Handle(PutScoringRequest request, CancellationToken cancellationToken = default)
+        public async Task<ScoringModel> Handle(PutScoringRequest request, CancellationToken cancellationToken = default)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var putScoring = await GetScoringEntityAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();

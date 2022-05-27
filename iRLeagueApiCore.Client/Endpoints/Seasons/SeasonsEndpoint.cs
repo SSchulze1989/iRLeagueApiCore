@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
-    internal class SeasonsEndpoint : PostGetAllEndpoint<GetSeasonModel, PostSeasonModel>, ISeasonsEndpoint
+    internal class SeasonsEndpoint : PostGetAllEndpoint<SeasonModel, PostSeasonModel>, ISeasonsEndpoint
     {
         public SeasonsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)

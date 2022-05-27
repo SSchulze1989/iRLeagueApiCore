@@ -13,7 +13,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
     [Collection("HandlerTests")]
-    public class GetSchedulesHandlerTests : HandlersTestsBase<GetSchedulesHandler, GetSchedulesRequest, IEnumerable<GetScheduleModel>>
+    public class GetSchedulesHandlerTests : HandlersTestsBase<GetSchedulesHandler, GetSchedulesRequest, IEnumerable<ScheduleModel>>
     {
         public GetSchedulesHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -34,7 +34,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
             return new GetSchedulesRequest(leagueId);
         }
 
-        protected override void DefaultAssertions(GetSchedulesRequest request, IEnumerable<GetScheduleModel> result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetSchedulesRequest request, IEnumerable<ScheduleModel> result, LeagueDbContext dbContext)
         {
             foreach(var dbSchedule in dbContext.Schedules.Where(x => x.LeagueId == testLeagueId))
             {
@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
         }
 
         [Fact]
-        public override async Task<IEnumerable<GetScheduleModel>> HandleDefaultAsync()
+        public override async Task<IEnumerable<ScheduleModel>> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

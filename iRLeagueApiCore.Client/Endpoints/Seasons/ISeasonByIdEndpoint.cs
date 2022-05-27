@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
-    public interface ISeasonByIdEndpoint : IUpdateEndpoint<GetSeasonModel, PutSeasonModel>
+    public interface ISeasonByIdEndpoint : IUpdateEndpoint<SeasonModel, PutSeasonModel>
     {
         long Id { get; }
-        IPostGetAllEndpoint<GetScheduleModel, PostScheduleModel> Schedules();
-        IPostGetAllEndpoint<GetScoringModel, PostScoringModel> Scorings();
-        IGetAllEndpoint<GetResultModel> Results();
+        IPostGetAllEndpoint<ScheduleModel, PostScheduleModel> Schedules();
+        IPostGetAllEndpoint<ScoringModel, PostScoringModel> Scorings();
+        IGetAllEndpoint<ResultModel> Results();
         IGetAllEndpoint<SessionModel> Sessions();
     }
 }

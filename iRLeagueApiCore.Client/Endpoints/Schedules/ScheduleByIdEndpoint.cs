@@ -6,7 +6,7 @@ using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Schedules
 {
-    internal class ScheduleByIdEndpoint : UpdateEndpoint<GetScheduleModel, PutScheduleModel>, IScheduleByIdEndpoint
+    internal class ScheduleByIdEndpoint : UpdateEndpoint<ScheduleModel, PutScheduleModel>, IScheduleByIdEndpoint
     {
         public ScheduleByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scheduleId) : 
             base(httpClientWrapper, routeBuilder)

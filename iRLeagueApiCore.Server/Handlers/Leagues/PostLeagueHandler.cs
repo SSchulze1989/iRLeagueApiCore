@@ -16,16 +16,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Leagues
 {
-    public record PostLeagueRequest(LeagueUser User, PostLeagueModel Model) : IRequest<GetLeagueModel>;
+    public record PostLeagueRequest(LeagueUser User, PostLeagueModel Model) : IRequest<LeagueModel>;
 
-    public class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, PostLeagueRequest>, IRequestHandler<PostLeagueRequest, GetLeagueModel>
+    public class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, PostLeagueRequest>, IRequestHandler<PostLeagueRequest, LeagueModel>
     {
         public PostLeagueHandler(ILogger<PostLeagueHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostLeagueRequest>> validators)
             : base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetLeagueModel> Handle(PostLeagueRequest request, CancellationToken cancellationToken = default)
+        public async Task<LeagueModel> Handle(PostLeagueRequest request, CancellationToken cancellationToken = default)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             _logger.LogInformation("Create league {LeagueName}", request.Model.Name);

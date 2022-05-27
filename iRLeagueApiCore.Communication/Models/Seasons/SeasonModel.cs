@@ -4,22 +4,19 @@ using System.Runtime.Serialization;
 
 namespace iRLeagueApiCore.Communication.Models
 {
-    /// <summary>
-    /// Schema for fetching an existing league
-    /// </summary>
     [DataContract]
-    public class GetLeagueModel : PostLeagueModel, IVersionModel
+    public class SeasonModel : PutSeasonModel, IVersionModel
     {
-        /// <summary>
-        /// Unique league id
-        /// </summary>
         [DataMember]
-        public long Id { get; set; }
-        /// <summary>
-        /// Ids of seasons in this league
-        /// </summary>
+        public long SeasonId { get; set; }
         [DataMember]
-        public IEnumerable<long> SeasonIds { get; set; }
+        public long LeagueId { get; set; }
+        [DataMember]
+        public DateTime? SeasonStart { get; set; }
+        [DataMember]
+        public DateTime? SeasonEnd { get; set; }
+        [DataMember]
+        public IEnumerable<long> ScheduleIds { get; set; }
 
         #region version
         /// <summary>

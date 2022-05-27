@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons
 {
-    public record PutSeasonRequest(long LeagueId, LeagueUser User, long SeasonId, PutSeasonModel Model) : IRequest<GetSeasonModel>;
+    public record PutSeasonRequest(long LeagueId, LeagueUser User, long SeasonId, PutSeasonModel Model) : IRequest<SeasonModel>;
 
-    public class PutSeasonHandler : SeasonHandlerBase<PutSeasonHandler, PutSeasonRequest>, IRequestHandler<PutSeasonRequest, GetSeasonModel>
+    public class PutSeasonHandler : SeasonHandlerBase<PutSeasonHandler, PutSeasonRequest>, IRequestHandler<PutSeasonRequest, SeasonModel>
     {
         public PutSeasonHandler(ILogger<PutSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutSeasonRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetSeasonModel> Handle(PutSeasonRequest request, CancellationToken cancellationToken)
+        public async Task<SeasonModel> Handle(PutSeasonRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var putSeason = await GetSeasonEntityAsync(request.LeagueId, request.SeasonId, cancellationToken)

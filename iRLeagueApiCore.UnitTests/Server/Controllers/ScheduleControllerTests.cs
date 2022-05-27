@@ -34,9 +34,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             logger = Mock.Of<ILogger<SchedulesController>>();
         }
 
-        private static GetScheduleModel DefaultGetModel()
+        private static ScheduleModel DefaultGetModel()
         {
-            return new GetScheduleModel()
+            return new ScheduleModel()
             {
                 LeagueId = testLeagueId,
                 ScheduleId = testScheduleId,
@@ -57,8 +57,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetSchedulesValid()
         {
-            var expectedResult = new GetScheduleModel[] { DefaultGetModel() };
-            var mediator = MockHelpers.TestMediator<GetSchedulesRequest, IEnumerable<GetScheduleModel>>(x =>
+            var expectedResult = new ScheduleModel[] { DefaultGetModel() };
+            var mediator = MockHelpers.TestMediator<GetSchedulesRequest, IEnumerable<ScheduleModel>>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
@@ -73,7 +73,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task GetScheduleValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<GetScheduleRequest, GetScheduleModel>(x =>
+            var mediator = MockHelpers.TestMediator<GetScheduleRequest, ScheduleModel>(x =>
                 x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
@@ -88,7 +88,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task PostScheduleValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PostScheduleRequest, GetScheduleModel>(x =>
+            var mediator = MockHelpers.TestMediator<PostScheduleRequest, ScheduleModel>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
@@ -103,7 +103,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task PutScheduleValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PutScheduleRequest, GetScheduleModel>(x =>
+            var mediator = MockHelpers.TestMediator<PutScheduleRequest, ScheduleModel>(x =>
                 x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
