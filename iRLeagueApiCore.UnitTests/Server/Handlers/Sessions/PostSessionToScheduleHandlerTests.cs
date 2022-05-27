@@ -34,6 +34,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
         {
             var model = new PostSessionModel()
             {
+                SubSessions = new List<PutSessionSubSessionModel>(),
             };
             return new PostSessionToScheduleRequest(leagueId, scheduleId, DefaultUser(), model);
         }

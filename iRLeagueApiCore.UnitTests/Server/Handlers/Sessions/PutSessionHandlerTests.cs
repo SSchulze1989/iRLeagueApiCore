@@ -23,6 +23,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
         private const long testSessionId = 1;
         private const string testSessionName = "TestSession";
         private const string testSessionTitle = "TestTitle";
+        private const string testSubSessionName = "TestSubSession";
         private static readonly DateTime testSessionDate = DateTime.Today;
         private const SessionType testSessionType = SessionType.Heat;
         private const long testTrackId = 5;
@@ -58,6 +59,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
             Assert.Equal(testTime, result.LastModifiedOn.GetValueOrDefault(), TimeSpan.FromMinutes(1));
             Assert.Equal(request.User.Id, result.LastModifiedByUserId);
             Assert.Equal(request.User.Name, result.LastModifiedByUserName);
+            var subSession = result.SubSessions.FirstOrDefault();
+            Assert.NotNull(subSession);
+            Assert.Equal(testSubSessionName, subSession.Name);
+            Assert.Equal(testSessionType, subSession.SessionType);
+            Assert.Equal(testSubSessionNr, subSession.SubSessionNr);
         }
 
         private PutSessionRequest DefaultRequest(long leagueId = testLeagueId, long sessionId = testSessionId)
@@ -69,6 +75,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
                 Date = testSessionDate,
                 TrackId = testTrackId,
                 Duration = testSessionDuration,
+                SubSessions = new List<PutSessionSubSessionModel>()
+                {
+                    new PutSessionSubSessionModel()
+                    {
+                        Name = testSubSessionName,
+                        SessionType = testSessionType,
+                        SubSessionNr = testSubSessionNr,
+                    }
+                },
             };
             return new PutSessionRequest(leagueId, DefaultUser(), sessionId, model);
         }

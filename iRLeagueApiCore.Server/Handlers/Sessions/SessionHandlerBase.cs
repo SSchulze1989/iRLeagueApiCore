@@ -22,6 +22,7 @@ namespace iRLeagueApiCore.Server.Handlers.Sessions
         protected virtual async Task<SessionEntity> GetSessionEntityAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
         {
             return await dbContext.Sessions
+                .Include(x => x.SubSessions)
                 .Where(x => x.LeagueId == leagueId)
                 .SingleOrDefaultAsync(x => x.SessionId == sessionId);
         }
