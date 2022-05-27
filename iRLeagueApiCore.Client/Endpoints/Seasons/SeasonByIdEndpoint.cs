@@ -25,7 +25,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
             return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
-        IGetAllEndpoint<GetSessionModel> ISeasonByIdEndpoint.Sessions()
+        IGetAllEndpoint<SessionModel> ISeasonByIdEndpoint.Sessions()
         {
             return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
         }

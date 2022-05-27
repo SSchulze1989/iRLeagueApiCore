@@ -34,9 +34,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             logger = Mock.Of<ILogger<SessionsController>>();
         }
 
-        private static GetSessionModel DefaultGetModel()
+        private static SessionModel DefaultGetModel()
         {
-            return new GetSessionModel()
+            return new SessionModel()
             {
                 LeagueId = testLeagueId,
                 SessionId = testSessionId,
@@ -67,8 +67,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetSessionsValid()
         {
-            var expectedResult = new GetSessionModel[] { DefaultGetModel() };
-            var mediator = MockHelpers.TestMediator<GetSessionsRequest, IEnumerable<GetSessionModel>>(x =>
+            var expectedResult = new SessionModel[] { DefaultGetModel() };
+            var mediator = MockHelpers.TestMediator<GetSessionsRequest, IEnumerable<SessionModel>>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
 
@@ -83,7 +83,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task GetSessionValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<GetSessionRequest, GetSessionModel>(x =>
+            var mediator = MockHelpers.TestMediator<GetSessionRequest, SessionModel>(x =>
                 x.LeagueId == testLeagueId && x.SessionId == testSessionId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
 
@@ -98,7 +98,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task PostSessionToScheduleValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PostSessionToScheduleRequest, GetSessionModel>(x =>
+            var mediator = MockHelpers.TestMediator<PostSessionToScheduleRequest, SessionModel>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
 
@@ -110,25 +110,10 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         }
 
         [Fact]
-        public async Task PostSessionToParentSessionValid()
-        {
-            var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PostSessionToParentSessionRequest, GetSessionModel>(x =>
-                x.LeagueId == testLeagueId, expectedResult);
-            var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
-
-            var result = await controller.PostToParentSession(testLeagueName, testLeagueId, testSessionId, DefaultPostModel());
-            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
-            Assert.Equal(expectedResult, createdResult.Value);
-            var mediatorMock = Mock.Get(mediator);
-            mediatorMock.Verify(x => x.Send(It.IsAny<PostSessionToParentSessionRequest>(), default));
-        }
-
-        [Fact]
         public async Task PutSessionValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PutSessionRequest, GetSessionModel>(x =>
+            var mediator = MockHelpers.TestMediator<PutSessionRequest, SessionModel>(x =>
                 x.LeagueId == testLeagueId && x.SessionId == testSessionId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
 

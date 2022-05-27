@@ -8,7 +8,7 @@ namespace iRLeagueApiCore.Communication.Models
     /// Scheme for fetching a session entry
     /// </summary>
     [DataContract]
-    public class GetSessionModel : PutSessionModel, IVersionModel
+    public class SessionModel : PutSessionModel, IVersionModel
     {
         /// <summary>
         /// Unique identifier
@@ -36,10 +36,10 @@ namespace iRLeagueApiCore.Communication.Models
         [DataMember]
         public bool HasResult { get; set; }
         /// <summary>
-        /// List of subsession ids if session is multisession event
+        /// List of subsessions
         /// </summary>
         [DataMember]
-        public IEnumerable<long> SubSessionIds { get; set; }
+        public new IEnumerable<SubSessionModel> SubSessions { get; set; }
 
         #region version
         /// <summary>

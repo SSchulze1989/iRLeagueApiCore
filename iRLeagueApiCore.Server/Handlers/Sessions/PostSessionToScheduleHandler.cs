@@ -13,20 +13,20 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Sessions
 {
-    public record PostSessionToScheduleRequest(long LeagueId, long ScheduleId, LeagueUser User, PostSessionModel Model) : IRequest<GetSessionModel>;
+    public record PostSessionToScheduleRequest(long LeagueId, long ScheduleId, LeagueUser User, PostSessionModel Model) : IRequest<SessionModel>;
 
-    public class PostSessionToScheduleHandler : SessionHandlerBase<PostSessionToScheduleHandler, PostSessionToScheduleRequest>, IRequestHandler<PostSessionToScheduleRequest, GetSessionModel>
+    public class PostSessionToScheduleHandler : SessionHandlerBase<PostSessionToScheduleHandler, PostSessionToScheduleRequest>, IRequestHandler<PostSessionToScheduleRequest, SessionModel>
     {
         public PostSessionToScheduleHandler(ILogger<PostSessionToScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSessionToScheduleRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetSessionModel> Handle(PostSessionToScheduleRequest request, CancellationToken cancellationToken)
+        public async Task<SessionModel> Handle(PostSessionToScheduleRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var postSession = await CreateSessionOnScheduleAsync(request.LeagueId, request.ScheduleId, request.User, cancellationToken);
-            postSession = await MapToSessionEntityAsync(request.LeagueId, request.User, request.Model, postSession, cancellationToken);
+            postSession = await MapToSessionEntityAsync(request.User, request.Model, postSession, cancellationToken);
             dbContext.Sessions.Add(postSession);
             await dbContext.SaveChangesAsync(cancellationToken);
             var getSession = await MapToGetSessionModelAsync(request.LeagueId, postSession.SessionId, cancellationToken)
