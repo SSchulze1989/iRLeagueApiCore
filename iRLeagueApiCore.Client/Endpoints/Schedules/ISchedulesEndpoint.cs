@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Schedules
 {
-    public interface ISchedulesEndpoint : IPostGetAllEndpoint<GetScheduleModel, PostScheduleModel>, IWithIdEndpoint<IScheduleByIdEndpoint>
+    public interface ISchedulesEndpoint : IPostGetAllEndpoint<ScheduleModel, PostScheduleModel>, IWithIdEndpoint<IScheduleByIdEndpoint>
     {
     }
 }

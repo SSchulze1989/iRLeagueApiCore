@@ -36,7 +36,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<IEnumerable<GetScheduleModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
             CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all schedules from {LeagueName} by {UserName}", "Get", leagueName,
@@ -50,7 +50,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("{id:long}")]
-        public async Task<ActionResult<GetScheduleModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<ScheduleModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Get",
@@ -63,7 +63,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<GetScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all schedules from season {SeasonId} in {LeagueName} by {UserName}",
@@ -78,7 +78,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-        public async Task<ActionResult<GetScheduleModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<ScheduleModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, [FromBody] PostScheduleModel postSchedule, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] new schedule to {LeagueName} by {UserName}", "Post", leagueName,
@@ -93,7 +93,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("{id:long}")]
-        public async Task<ActionResult<GetScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<ScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, [FromBody] PutScheduleModel putSchedule, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Put",

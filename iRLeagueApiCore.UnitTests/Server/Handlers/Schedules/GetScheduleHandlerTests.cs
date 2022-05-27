@@ -13,7 +13,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
     [Collection("HandlerTests")]
-    public class GetScheduleHandlerTests : HandlersTestsBase<GetScheduleHandler, GetScheduleRequest, GetScheduleModel>
+    public class GetScheduleHandlerTests : HandlersTestsBase<GetScheduleHandler, GetScheduleRequest, ScheduleModel>
     {
         public GetScheduleHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -34,14 +34,14 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
             return new GetScheduleRequest(leagueId, scheduleId);
         }
 
-        protected override void DefaultAssertions(GetScheduleRequest request, GetScheduleModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetScheduleRequest request, ScheduleModel result, LeagueDbContext dbContext)
         {
             Assert.Equal(request.LeagueId, result.LeagueId);
             Assert.Equal(request.ScheduleId, result.ScheduleId);
         }
 
         [Fact]
-        public override async Task<GetScheduleModel> HandleDefaultAsync()
+        public override async Task<ScheduleModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

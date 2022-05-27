@@ -1,21 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
 {
-    [DataContract]
-    public class GetScheduleModel : PutScheduleModel, IVersionModel
+    /// <summary>
+    /// Schema for fetching an existing scoring
+    /// </summary>
+    public class ScoringModel : PutScoringModel, IVersionModel
     {
+        /// <summary>
+        /// Id of the scoring
+        /// </summary>
+        [DataMember]
+        public long Id { get; set; }
+        /// <summary>
+        /// Id of the league the scoring belongs to
+        /// </summary>
         [DataMember]
         public long LeagueId { get; set; }
-        [DataMember]
-        public long ScheduleId { get; set; }
+        /// <summary>
+        /// Id of the season the scoring belongs to
+        /// </summary>
         [DataMember]
         public long SeasonId { get; set; }
+        /// <summary>
+        /// Ids of session connected to the scoring
+        /// </summary>
         [DataMember]
         public IEnumerable<long> SessionIds { get; set; }
-
         #region version
         /// <summary>
         /// Date of creation

@@ -16,7 +16,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
         }
 
-        public Expression<Func<ScoredResultEntity, GetResultModel>> MapToGetResultModelExpression => result => new GetResultModel()
+        public Expression<Func<ScoredResultEntity, ResultModel>> MapToGetResultModelExpression => result => new ResultModel()
         {
             LeagueId = result.LeagueId,
             SeasonId = result.Result.Session.Schedule.Season.SeasonId,
@@ -27,7 +27,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             ScoringName = result.Scoring.Name,
             SessionId = result.ResultId,
             SessionName = result.Result.Session.Name,
-            ResultRows = result.ScoredResultRows.Select(row => new GetResultRowModel()
+            ResultRows = result.ScoredResultRows.Select(row => new ResultRowModel()
             {
                 MemberId = row.MemberId,
                 Interval = new TimeSpan(row.Interval),

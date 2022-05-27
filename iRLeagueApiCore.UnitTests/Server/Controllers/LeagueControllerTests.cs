@@ -40,9 +40,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             return AddContexts.AddAdminControllerContext(new LeaguesController(MockLogger, mediator));
         }
 
-        private GetLeagueModel DefaultGetModel()
+        private LeagueModel DefaultGetModel()
         {
-            return new GetLeagueModel()
+            return new LeagueModel()
             {
                 Id = testLeagueId,
                 Name = testLeagueName,
@@ -70,8 +70,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetAll()
         {
-            var expectedResult = new GetLeagueModel[] { DefaultGetModel() };
-            var mediator = MockHelpers.TestMediator<GetLeaguesRequest, IEnumerable<GetLeagueModel>>(result: expectedResult);
+            var expectedResult = new LeagueModel[] { DefaultGetModel() };
+            var mediator = MockHelpers.TestMediator<GetLeaguesRequest, IEnumerable<LeagueModel>>(result: expectedResult);
             var controller = CreateController(mediator);
             var result = await controller.GetAll();
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -84,7 +84,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task Get()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<GetLeagueRequest, GetLeagueModel>(
+            var mediator = MockHelpers.TestMediator<GetLeagueRequest, LeagueModel>(
                 x => x.leagueId == testLeagueId, expectedResult);
             var controller = CreateController(mediator);
             var result = await controller.Get(testLeagueId);
@@ -98,7 +98,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task Post()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PostLeagueRequest, GetLeagueModel>(
+            var mediator = MockHelpers.TestMediator<PostLeagueRequest, LeagueModel>(
                 x => x.Model.Name == testLeagueName, expectedResult);
             var controller = CreateController(mediator);
             var result = await controller.Post(DefaultPostModel());
@@ -112,7 +112,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task Put()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PutLeagueRequest, GetLeagueModel>(
+            var mediator = MockHelpers.TestMediator<PutLeagueRequest, LeagueModel>(
                 x => x.LeagueId == testLeagueId, expectedResult);
             var controller = CreateController(mediator);
             var result = await controller.Put(testLeagueId, DefaultPutModel());

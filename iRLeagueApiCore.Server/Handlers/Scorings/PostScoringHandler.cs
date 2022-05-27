@@ -13,16 +13,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public record PostScoringRequest(long LeagueId, long SeasonId, PostScoringModel Model) : IRequest<GetScoringModel>;
+    public record PostScoringRequest(long LeagueId, long SeasonId, PostScoringModel Model) : IRequest<ScoringModel>;
 
-    public class PostScoringHandler : ScoringHandlerBase<PostScoringHandler, PostScoringRequest>, IRequestHandler<PostScoringRequest, GetScoringModel>
+    public class PostScoringHandler : ScoringHandlerBase<PostScoringHandler, PostScoringRequest>, IRequestHandler<PostScoringRequest, ScoringModel>
     {
         public PostScoringHandler(ILogger<PostScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostScoringRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetScoringModel> Handle(PostScoringRequest request, CancellationToken cancellationToken = default)
+        public async Task<ScoringModel> Handle(PostScoringRequest request, CancellationToken cancellationToken = default)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             _logger.LogInformation("Creating scoring for league {LeagueId} in season {SeasonId}",

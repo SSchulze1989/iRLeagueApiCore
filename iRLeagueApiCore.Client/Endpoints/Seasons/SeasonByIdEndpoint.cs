@@ -9,7 +9,7 @@ using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
-    internal class SeasonByIdEndpoint : UpdateEndpoint<GetSeasonModel, PutSeasonModel>, ISeasonByIdEndpoint
+    internal class SeasonByIdEndpoint : UpdateEndpoint<SeasonModel, PutSeasonModel>, ISeasonByIdEndpoint
     {
         public long Id { get; }
 
@@ -20,7 +20,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
             RouteBuilder.AddParameter(seasonId);
         }
 
-        IGetAllEndpoint<GetResultModel> ISeasonByIdEndpoint.Results()
+        IGetAllEndpoint<ResultModel> ISeasonByIdEndpoint.Results()
         {
             return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
         }
@@ -30,12 +30,12 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
             return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
-        IPostGetAllEndpoint<GetScheduleModel, PostScheduleModel> ISeasonByIdEndpoint.Schedules()
+        IPostGetAllEndpoint<ScheduleModel, PostScheduleModel> ISeasonByIdEndpoint.Schedules()
         {
             return new SchedulesEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
-        IPostGetAllEndpoint<GetScoringModel, PostScoringModel> ISeasonByIdEndpoint.Scorings()
+        IPostGetAllEndpoint<ScoringModel, PostScoringModel> ISeasonByIdEndpoint.Scorings()
         {
             return new ScoringsEndpoint(HttpClientWrapper, RouteBuilder);
         }

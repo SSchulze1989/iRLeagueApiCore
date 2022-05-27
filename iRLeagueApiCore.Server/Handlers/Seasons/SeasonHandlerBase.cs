@@ -34,7 +34,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             return target;
         }
 
-        protected virtual async Task<GetSeasonModel> MapToGetSeasonModel(long leagueId, long seasonId, CancellationToken cancellationToken)
+        protected virtual async Task<SeasonModel> MapToGetSeasonModel(long leagueId, long seasonId, CancellationToken cancellationToken)
         {
             return await dbContext.Seasons
                 .Where(x => x.LeagueId == leagueId)
@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
                 .SingleOrDefaultAsync();
         }
 
-        protected Expression<Func<SeasonEntity, GetSeasonModel>> MapToGetSeasonModelExpression => x => new GetSeasonModel()
+        protected Expression<Func<SeasonEntity, SeasonModel>> MapToGetSeasonModelExpression => x => new SeasonModel()
         {
             SeasonId = x.SeasonId,
             Finished = x.Finished,

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Scorings
 {
-    internal class ScoringsEndpoint : PostGetAllEndpoint<GetScoringModel, PostScoringModel>, IScoringsEndpoint
+    internal class ScoringsEndpoint : PostGetAllEndpoint<ScoringModel, PostScoringModel>, IScoringsEndpoint
     {
         public ScoringsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
             base(httpClientWrapper, routeBuilder)

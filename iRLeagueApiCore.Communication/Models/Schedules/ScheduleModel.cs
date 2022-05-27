@@ -5,18 +5,16 @@ using System.Runtime.Serialization;
 namespace iRLeagueApiCore.Communication.Models
 {
     [DataContract]
-    public class GetSeasonModel : PutSeasonModel, IVersionModel
+    public class ScheduleModel : PutScheduleModel, IVersionModel
     {
-        [DataMember]
-        public long SeasonId { get; set; }
         [DataMember]
         public long LeagueId { get; set; }
         [DataMember]
-        public DateTime? SeasonStart { get; set; }
+        public long ScheduleId { get; set; }
         [DataMember]
-        public DateTime? SeasonEnd { get; set; }
+        public long SeasonId { get; set; }
         [DataMember]
-        public IEnumerable<long> ScheduleIds { get; set; }
+        public IEnumerable<long> SessionIds { get; set; }
 
         #region version
         /// <summary>

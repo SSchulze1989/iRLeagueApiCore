@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
-    public record GetScoringsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<GetScoringModel>>;
+    public record GetScoringsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<ScoringModel>>;
     public class GetScoringsFromSeasonHandler : ScoringHandlerBase<GetScoringsFromSeasonHandler, GetScoringsFromSeasonRequest>, 
-        IRequestHandler<GetScoringsFromSeasonRequest, IEnumerable<GetScoringModel>>
+        IRequestHandler<GetScoringsFromSeasonRequest, IEnumerable<ScoringModel>>
     {
         public GetScoringsFromSeasonHandler(ILogger<GetScoringsFromSeasonHandler> logger, LeagueDbContext dbContext, 
             IEnumerable<IValidator<GetScoringsFromSeasonRequest>> validators) : 
@@ -24,14 +24,14 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
         {
         }
 
-        public async Task<IEnumerable<GetScoringModel>> Handle(GetScoringsFromSeasonRequest request,
+        public async Task<IEnumerable<ScoringModel>> Handle(GetScoringsFromSeasonRequest request,
             CancellationToken cancellationToken = default)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             return await MapToGetScoringModelFromSeason(request.LeagueId, request.SeasonId, cancellationToken);
         }
 
-        private async Task<IEnumerable<GetScoringModel>> MapToGetScoringModelFromSeason(long leagueId, long seasonId,
+        private async Task<IEnumerable<ScoringModel>> MapToGetScoringModelFromSeason(long leagueId, long seasonId,
             CancellationToken cancellationToken = default)
         {
             var seasonScorings = await dbContext.Seasons

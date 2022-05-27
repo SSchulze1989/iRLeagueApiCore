@@ -36,7 +36,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<IEnumerable<GetSeasonModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<SeasonModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
             CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all seasons from {LeagueName} by {UserName}", "Get", leagueName,
@@ -50,7 +50,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("{id:long}")]
-        public async Task<ActionResult<GetSeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        public async Task<ActionResult<SeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Get",
@@ -64,7 +64,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("")]
-        public async Task<ActionResult<GetSeasonModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<SeasonModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromBody] PostSeasonModel postSeason, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] new season to {LeagueName} by {UserName}", "Post", leagueName, 
@@ -79,7 +79,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("{id:long}")]
-        public async Task<ActionResult<GetSeasonModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<SeasonModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, [FromBody] PutSeasonModel putSeason, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Put",

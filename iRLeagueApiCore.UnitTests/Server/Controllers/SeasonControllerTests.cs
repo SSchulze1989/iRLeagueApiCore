@@ -33,9 +33,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             logger = Mock.Of<ILogger<SeasonsController>>();
         }
 
-        private static GetSeasonModel DefaultGetModel()
+        private static SeasonModel DefaultGetModel()
         {
-            return new GetSeasonModel()
+            return new SeasonModel()
             {
                 LeagueId = testLeagueId,
                 SeasonId = testSeasonId,
@@ -66,8 +66,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetSeasonsValid()
         {
-            var expectedResult = new GetSeasonModel[] { DefaultGetModel() };
-            var mediator = MockHelpers.TestMediator<GetSeasonsRequest, IEnumerable<GetSeasonModel>>(x =>
+            var expectedResult = new SeasonModel[] { DefaultGetModel() };
+            var mediator = MockHelpers.TestMediator<GetSeasonsRequest, IEnumerable<SeasonModel>>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
@@ -82,7 +82,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task GetSeasonValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<GetSeasonRequest, GetSeasonModel>(x =>
+            var mediator = MockHelpers.TestMediator<GetSeasonRequest, SeasonModel>(x =>
                 x.LeagueId == testLeagueId && x.SeasonId == testSeasonId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
@@ -97,7 +97,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task PostSeasonValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PostSeasonRequest, GetSeasonModel>(x =>
+            var mediator = MockHelpers.TestMediator<PostSeasonRequest, SeasonModel>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
@@ -112,7 +112,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task PutSeasonValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PutSeasonRequest, GetSeasonModel>(x =>
+            var mediator = MockHelpers.TestMediator<PutSeasonRequest, SeasonModel>(x =>
                 x.LeagueId == testLeagueId && x.SeasonId == testSeasonId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 

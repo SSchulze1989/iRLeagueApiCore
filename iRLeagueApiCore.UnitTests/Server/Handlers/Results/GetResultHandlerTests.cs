@@ -14,7 +14,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
     [Collection("HandlerTests")]
-    public class GetResultHandlerTests : HandlersTestsBase<GetResultHandler, GetResultRequest, GetResultModel>
+    public class GetResultHandlerTests : HandlersTestsBase<GetResultHandler, GetResultRequest, ResultModel>
     {
         public GetResultHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             return new GetResultRequest(leagueId, seasonId, scoringId);
         }
 
-        protected override void DefaultAssertions(GetResultRequest request, GetResultModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetResultRequest request, ResultModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
             var actualResult = dbContext.ScoredResults
@@ -52,7 +52,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         }
 
         [Fact]
-        public async override Task<GetResultModel> HandleDefaultAsync()
+        public async override Task<ResultModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }
@@ -76,7 +76,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             await HandleNotFoundRequestAsync(request);
         }
 
-        private void AssertResultData(ScoredResultEntity expected, GetResultModel test)
+        private void AssertResultData(ScoredResultEntity expected, ResultModel test)
         {
             Assert.Equal(expected.ResultId, test.SessionId);
             Assert.Equal(expected.ScoringId, test.ScoringId);
@@ -85,7 +85,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             AssertResultRowData(expected.ScoredResultRows.First(), test.ResultRows.First());
         }
 
-        private void AssertResultRowData(ScoredResultRowEntity expected, GetResultRowModel test)
+        private void AssertResultRowData(ScoredResultRowEntity expected, ResultRowModel test)
         {
             Assert.Equal(expected.BonusPoints, test.BonusPoints);
             Assert.Equal(expected.FinalPosition, test.FinalPosition);
