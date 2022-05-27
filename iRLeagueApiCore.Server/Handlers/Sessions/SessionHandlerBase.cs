@@ -50,6 +50,7 @@ namespace iRLeagueApiCore.Server.Handlers.Sessions
                 if (putSubSession.SubSessionId == 0)
                 {
                     subSessionEntity = new SubSessionEntity();
+                    target.Add(subSessionEntity);
                 }
                 if (subSessionEntity == null)
                 {
