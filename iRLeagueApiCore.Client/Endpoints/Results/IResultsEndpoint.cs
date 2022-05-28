@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results
 {
-    public interface IResultsEndpoint : IGetAllEndpoint<GetResultModel>
+    public interface IResultsEndpoint : IGetAllEndpoint<ResultModel>
     {
     }
 }

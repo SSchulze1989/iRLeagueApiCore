@@ -52,7 +52,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
         [InlineData(1, 42, false)]
         public async Task ValidateMainScoring(long leagueId, long? mainScoringId, bool expectValid)
         {
-            var dbContext = fixture.CreateDbContext();
+            using var dbContext = fixture.CreateDbContext();
             var request = DefaultRequest(leagueId);
             request.Model.MainScoringId = mainScoringId;
             var validator = CreateValidator(dbContext);
@@ -69,7 +69,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
         [InlineData(0, false)]
         public async Task ValidateLeagueId(long leagueId, bool expectValid)
         {
-            var dbContext = fixture.CreateDbContext();
+            using var dbContext = fixture.CreateDbContext();
             var request = DefaultRequest(leagueId);
             var validator = CreateValidator(dbContext);
             var result = await validator.TestValidateAsync(request);
@@ -85,7 +85,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
         [InlineData(0, false)]
         public async Task ValidateSeasonId(long seasonId, bool expectValid)
         {
-            var dbContext = fixture.CreateDbContext();
+            using var dbContext = fixture.CreateDbContext();
             var request = DefaultRequest(seasonId: seasonId);
             var validator = CreateValidator(dbContext);
             var result = await validator.TestValidateAsync(request);
@@ -102,7 +102,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
         [InlineData(null, false)]
         public async Task ValidateSeasonName(string name, bool expectValid)
         {
-            var dbContext = fixture.CreateDbContext();
+            using var dbContext = fixture.CreateDbContext();
             var request = DefaultRequest();
             request.Model.SeasonName = name;
             var validator = CreateValidator(dbContext);

@@ -33,9 +33,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             logger = Mock.Of<ILogger<ScoringsController>>();
         }
 
-        private static GetScoringModel DefaultGetModel()
+        private static ScoringModel DefaultGetModel()
         {
-            return new GetScoringModel()
+            return new ScoringModel()
             {
                 Id = testScoringId,
                 LeagueId = testLeagueId,
@@ -68,8 +68,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetScoringsValid()
         {
-            var expectedResult = new GetScoringModel[] { DefaultGetModel() };
-            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<GetScoringModel>>(x =>
+            var expectedResult = new ScoringModel[] { DefaultGetModel() };
+            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<ScoringModel>>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
@@ -83,7 +83,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetScoringsNotFound()
         {
-            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<GetScoringModel>>(throws: NotFound());
+            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<ScoringModel>>(throws: NotFound());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Get(testLeagueName, testLeagueId);
@@ -93,7 +93,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetScoringsValidationFailed()
         {
-            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<GetScoringModel>>(throws: ValidationFailed());
+            var mediator = MockHelpers.TestMediator<GetScoringsRequest, IEnumerable<ScoringModel>>(throws: ValidationFailed());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Get(testLeagueName, testLeagueId);
@@ -104,7 +104,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task GetScoringValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<GetScoringRequest, GetScoringModel>(x =>
+            var mediator = MockHelpers.TestMediator<GetScoringRequest, ScoringModel>(x =>
                 x.LeagueId == testLeagueId && x.ScoringId == testScoringId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
@@ -118,7 +118,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetScoringNotFound()
         {
-            var mediator = MockHelpers.TestMediator<GetScoringRequest, GetScoringModel>(throws: NotFound());
+            var mediator = MockHelpers.TestMediator<GetScoringRequest, ScoringModel>(throws: NotFound());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Get(testLeagueName, testLeagueId, testScoringId);
@@ -128,7 +128,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task GetScoringValidationFailed()
         {
-            var mediator = MockHelpers.TestMediator<GetScoringRequest, GetScoringModel>(throws: ValidationFailed());
+            var mediator = MockHelpers.TestMediator<GetScoringRequest, ScoringModel>(throws: ValidationFailed());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Get(testLeagueName, testLeagueId, testScoringId);
@@ -139,7 +139,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task PostScoringValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PostScoringRequest, GetScoringModel>(x =>
+            var mediator = MockHelpers.TestMediator<PostScoringRequest, ScoringModel>(x =>
                 x.LeagueId == testLeagueId && x.SeasonId == testSeasonId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
@@ -153,7 +153,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task PostScoringNotFound()
         {
-            var mediator = MockHelpers.TestMediator<PostScoringRequest, GetScoringModel>(throws: NotFound());
+            var mediator = MockHelpers.TestMediator<PostScoringRequest, ScoringModel>(throws: NotFound());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Post(testLeagueName, testLeagueId, testSeasonId, DefaultPostModel());
@@ -163,7 +163,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task PostScoringValidationFailed()
         {
-            var mediator = MockHelpers.TestMediator<PostScoringRequest, GetScoringModel>(throws: ValidationFailed());
+            var mediator = MockHelpers.TestMediator<PostScoringRequest, ScoringModel>(throws: ValidationFailed());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Post(testLeagueName, testLeagueId, testSeasonId, DefaultPostModel());
@@ -174,7 +174,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         public async Task PutScoringValid()
         {
             var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PutScoringRequest, GetScoringModel>(x =>
+            var mediator = MockHelpers.TestMediator<PutScoringRequest, ScoringModel>(x =>
                 x.LeagueId == testLeagueId && x.ScoringId == testScoringId, expectedResult);
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
@@ -188,7 +188,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task PutScoringNotFound()
         {
-            var mediator = MockHelpers.TestMediator<PutScoringRequest, GetScoringModel>(throws: NotFound());
+            var mediator = MockHelpers.TestMediator<PutScoringRequest, ScoringModel>(throws: NotFound());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Put(testLeagueName, testLeagueId, testScoringId, DefaultPutModel());
@@ -198,7 +198,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async Task PutScoringValidationFailed()
         {
-            var mediator = MockHelpers.TestMediator<PutScoringRequest, GetScoringModel>(throws: ValidationFailed());
+            var mediator = MockHelpers.TestMediator<PutScoringRequest, ScoringModel>(throws: ValidationFailed());
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Put(testLeagueName, testLeagueId, testScoringId, DefaultPutModel());

@@ -13,7 +13,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
     [Collection("HandlerTests")]
-    public class PostScheduleHandlerTests : HandlersTestsBase<PostScheduleHandler, PostScheduleRequest, GetScheduleModel>
+    public class PostScheduleHandlerTests : HandlersTestsBase<PostScheduleHandler, PostScheduleRequest, ScheduleModel>
     {
         private const string testScheduleName = "TestSchedule";
 
@@ -40,7 +40,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
             return new PostScheduleRequest(leagueId, seasonId, DefaultUser(), model);
         }
 
-        protected override void DefaultAssertions(PostScheduleRequest request, GetScheduleModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PostScheduleRequest request, ScheduleModel result, LeagueDbContext dbContext)
         {
             Assert.Equal(request.LeagueId, result.LeagueId);
             Assert.NotEqual(0, result.ScheduleId);
@@ -50,7 +50,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
         }
 
         [Fact]
-        public override async Task<GetScheduleModel> HandleDefaultAsync()
+        public override async Task<ScheduleModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

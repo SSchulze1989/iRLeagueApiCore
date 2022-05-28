@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Communication.Models
     /// <summary>
     /// Get a scored result row from the database
     /// </summary>
-    public class GetResultRowModel
+    public class ResultRowModel
     {
         /// <summary>
         /// First name of the driver

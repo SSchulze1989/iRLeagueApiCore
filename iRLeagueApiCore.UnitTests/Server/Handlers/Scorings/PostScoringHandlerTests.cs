@@ -18,7 +18,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
     [Collection("HandlerTests")]
-    public class PostScoringHandlerTests : HandlersTestsBase<PostScoringHandler, PostScoringRequest, GetScoringModel>, IClassFixture<DbTestFixture>
+    public class PostScoringHandlerTests : HandlersTestsBase<PostScoringHandler, PostScoringRequest, ScoringModel>, IClassFixture<DbTestFixture>
     { 
         public PostScoringHandlerTests(DbTestFixture fixture) : base(fixture)
         { }
@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             return new PostScoringHandler(logger, dbContext, new IValidator<PostScoringRequest>[] { validator });
         }
 
-        protected override void DefaultAssertions(PostScoringRequest request, GetScoringModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PostScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
             Assert.NotEqual(0, result.Id);
@@ -53,7 +53,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         }
 
         [Fact]
-        public override async Task<GetScoringModel> HandleDefaultAsync()
+        public override async Task<ScoringModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

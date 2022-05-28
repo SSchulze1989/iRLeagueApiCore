@@ -13,16 +13,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons
 {
-    public record PostSeasonRequest(long LeagueId, LeagueUser user, PostSeasonModel Model) : IRequest<GetSeasonModel>;
+    public record PostSeasonRequest(long LeagueId, LeagueUser user, PostSeasonModel Model) : IRequest<SeasonModel>;
 
-    public class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, GetSeasonModel>
+    public class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, SeasonModel>
     {
         public PostSeasonHandler(ILogger<PostSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSeasonRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetSeasonModel> Handle(PostSeasonRequest request, CancellationToken cancellationToken)
+        public async Task<SeasonModel> Handle(PostSeasonRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             

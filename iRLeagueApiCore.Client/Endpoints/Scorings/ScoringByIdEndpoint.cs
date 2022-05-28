@@ -6,7 +6,7 @@ using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Scorings
 {
-    internal class ScoringByIdEndpoint : UpdateEndpoint<GetScoringModel, PutScoringModel>, IScoringByIdEndpoint
+    internal class ScoringByIdEndpoint : UpdateEndpoint<ScoringModel, PutScoringModel>, IScoringByIdEndpoint
     {
         public ScoringByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scoringId) : 
             base(httpClientWrapper, routeBuilder)

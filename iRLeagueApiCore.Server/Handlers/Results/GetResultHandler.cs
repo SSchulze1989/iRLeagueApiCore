@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record GetResultRequest(long LeagueId, long SessionId, long ScoringId) : IRequest<GetResultModel>;
+    public record GetResultRequest(long LeagueId, long SessionId, long ScoringId) : IRequest<ResultModel>;
 
-    public class GetResultHandler : ResultHandlerBase<GetResultHandler, GetResultRequest>, IRequestHandler<GetResultRequest, GetResultModel>
+    public class GetResultHandler : ResultHandlerBase<GetResultHandler, GetResultRequest>, IRequestHandler<GetResultRequest, ResultModel>
     {
         public GetResultHandler(ILogger<GetResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetResultModel> Handle(GetResultRequest request, CancellationToken cancellationToken)
+        public async Task<ResultModel> Handle(GetResultRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getResult = await MapToGetResultModelAsync(request.LeagueId, request.SessionId, request.ScoringId, cancellationToken)
@@ -29,7 +29,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return getResult;
         }
 
-        private async Task<GetResultModel> MapToGetResultModelAsync(long leagueId, long sessionId, long ScoringId, CancellationToken cancellationToken)
+        private async Task<ResultModel> MapToGetResultModelAsync(long leagueId, long sessionId, long ScoringId, CancellationToken cancellationToken)
         {
             return await dbContext.ScoredResults
                 .Where(x => x.LeagueId == leagueId)

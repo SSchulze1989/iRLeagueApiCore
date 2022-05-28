@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
-    public class LeagueByIdEndpoint : UpdateEndpoint<GetLeagueModel, PutLeagueModel>, ILeagueByIdEndpoint
+    public class LeagueByIdEndpoint : UpdateEndpoint<LeagueModel, PutLeagueModel>, ILeagueByIdEndpoint
     {
         public LeagueByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long leagueId) : 
             base (httpClientWrapper, routeBuilder)

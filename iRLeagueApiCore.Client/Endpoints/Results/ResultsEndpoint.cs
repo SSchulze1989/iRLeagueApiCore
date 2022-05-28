@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results
 {
-    internal class ResultsEndpoint : GetAllEndpoint<GetResultModel>, IResultsEndpoint
+    internal class ResultsEndpoint : GetAllEndpoint<ResultModel>, IResultsEndpoint
     {
         public ResultsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
             base(httpClientWrapper, routeBuilder)

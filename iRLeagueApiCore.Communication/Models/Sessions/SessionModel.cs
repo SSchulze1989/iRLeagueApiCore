@@ -4,19 +4,42 @@ using System.Runtime.Serialization;
 
 namespace iRLeagueApiCore.Communication.Models
 {
+    /// <summary>
+    /// Scheme for fetching a session entry
+    /// </summary>
     [DataContract]
-    public class GetSeasonModel : PutSeasonModel, IVersionModel
+    public class SessionModel : PutSessionModel, IVersionModel
     {
+        /// <summary>
+        /// Unique identifier
+        /// </summary>
         [DataMember]
-        public long SeasonId { get; set; }
+        public long SessionId { get; set; }
+        /// <summary>
+        /// Id of the league this session belongs to
+        /// </summary>
         [DataMember]
         public long LeagueId { get; set; }
+        /// <summary>
+        /// Id of the schedule this session belongs to
+        /// </summary>
         [DataMember]
-        public DateTime? SeasonStart { get; set; }
+        public long? ScheduleId { get; set; }
+        /// <summary>
+        /// If session is subsession provide the id of the parent session here. If not leave at default (null)
+        /// </summary>
+        [DataMember(IsRequired = false)]
+        public long? ParentSessionId { get; set; }
+        /// <summary>
+        /// Flag shows if result is available
+        /// </summary>
         [DataMember]
-        public DateTime? SeasonEnd { get; set; }
+        public bool HasResult { get; set; }
+        /// <summary>
+        /// List of subsessions
+        /// </summary>
         [DataMember]
-        public IEnumerable<long> ScheduleIds { get; set; }
+        public new IEnumerable<SubSessionModel> SubSessions { get; set; }
 
         #region version
         /// <summary>

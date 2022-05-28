@@ -14,16 +14,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules
 {
-    public record PostScheduleRequest(long LeagueId, long seasonId, LeagueUser User, PostScheduleModel Model) : IRequest<GetScheduleModel>;
+    public record PostScheduleRequest(long LeagueId, long seasonId, LeagueUser User, PostScheduleModel Model) : IRequest<ScheduleModel>;
 
     public class PostScheduleHandler : ScheduleHandlerBase<PostScheduleHandler, PostScheduleRequest>,
-        IRequestHandler<PostScheduleRequest, GetScheduleModel>
+        IRequestHandler<PostScheduleRequest, ScheduleModel>
     {
         public PostScheduleHandler(ILogger<PostScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostScheduleRequest>> validators) : base(logger, dbContext, validators)
         {
         }
 
-        public async Task<GetScheduleModel> Handle(PostScheduleRequest request, CancellationToken cancellationToken)
+        public async Task<ScheduleModel> Handle(PostScheduleRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var postSchedule = await CreateScheduleEntityAsync(request.LeagueId, request.seasonId, request.User, cancellationToken);

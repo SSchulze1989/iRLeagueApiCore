@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
-    public interface ILeaguesEndpoint : IGetAllEndpoint<GetLeagueModel>
+    public interface ILeaguesEndpoint : IGetAllEndpoint<LeagueModel>
     {
-        Task<ClientActionResult<GetLeagueModel>> Post(PostLeagueModel model, CancellationToken cancellationToken = default);
+        Task<ClientActionResult<LeagueModel>> Post(PostLeagueModel model, CancellationToken cancellationToken = default);
         ILeagueByIdEndpoint WithId(long leagueId);
         ILeagueByNameEndpoint WithName(string name); 
     }

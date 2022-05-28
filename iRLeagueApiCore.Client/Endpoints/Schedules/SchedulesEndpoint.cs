@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Schedules
 {
-    internal class SchedulesEndpoint : PostGetAllEndpoint<GetScheduleModel, PostScheduleModel>, ISchedulesEndpoint
+    internal class SchedulesEndpoint : PostGetAllEndpoint<ScheduleModel, PostScheduleModel>, ISchedulesEndpoint
     {
         public SchedulesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
         {

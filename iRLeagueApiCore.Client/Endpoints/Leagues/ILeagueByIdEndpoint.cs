@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
-    public interface ILeagueByIdEndpoint : IUpdateEndpoint<GetLeagueModel, PutLeagueModel>
+    public interface ILeagueByIdEndpoint : IUpdateEndpoint<LeagueModel, PutLeagueModel>
     {
     }
 }

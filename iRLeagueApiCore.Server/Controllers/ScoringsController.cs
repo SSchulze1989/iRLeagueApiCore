@@ -39,7 +39,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetScoringModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<ScoringModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             CancellationToken cancellationToken = default)
         {
             try
@@ -73,7 +73,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("{id:long}")]
         [HttpGet]
-        public async Task<ActionResult<GetScoringModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<ScoringModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             try
@@ -109,7 +109,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("/{leagueName}/Seasons/{seasonId:long}/Scorings")]
         [HttpPost]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult<GetScoringModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<ScoringModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, [FromBody] PostScoringModel model, CancellationToken cancellationToken = default)
         {
             try
@@ -145,7 +145,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("{id:long}")]
         [HttpPut]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult<GetScoringModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<ScoringModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, [FromBody] PutScoringModel model, CancellationToken cancellationToken = default)
         {
             try
@@ -283,7 +283,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [Route("/{leagueName}/Seasons/{seasonId}/Scorings")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetScoringModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        public async Task<ActionResult<IEnumerable<ScoringModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             try
