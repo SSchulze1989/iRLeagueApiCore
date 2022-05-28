@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record UploadResultRequest(long leagueId, long ResultId, Stream dataStream, int sessionResultIndex) : IRequest<bool>;
+    public record UploadResultRequest(long leagueId, long ResultId, Stream dataStream, IDictionary<int, int> Map) : IRequest<bool>;
 
     public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
         IRequestHandler<UploadResultRequest, bool>
@@ -34,8 +34,9 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             // add to database
             var session = await GetSessionEntityAsync(request.leagueId, request.ResultId, cancellationToken) 
                 ?? throw new ResourceNotFoundException();
-            var result = ReadResults(data, request.sessionResultIndex);
+            var result = await ReadResultsAsync(data, session, request.Map, cancellationToken);
             session.Result = result;
+            await dbContext.SaveChangesAsync();
 
             return true;
         }
@@ -46,6 +47,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return await dbContext.Sessions
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.SessionId == resultId)
+                .Include(x => x.SubSessions)
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
@@ -54,15 +56,64 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return await JsonSerializer.DeserializeAsync<ParseSimSessionResult>(dataStream, cancellationToken: cancellationToken);
         }
 
-        private ResultEntity ReadResults(ParseSimSessionResult data, int sessionResultIndex)
+        private async Task<ResultEntity> ReadResultsAsync(ParseSimSessionResult data, SessionEntity session, IDictionary<int, int> map,
+            CancellationToken cancellationToken)
         {
             // create entities
             var result = new ResultEntity();
-            result.IRSimSessionDetails = ReadDetails(data);
-            var sessionResultData = data.session_results.ElementAtOrDefault(sessionResultIndex);
-            var laps = sessionResultData.results.Max(x => x.laps_complete);
-            result.ResultRows = sessionResultData.results.Select(x => ReadResultRow(data, x, laps)).ToList();
+            var details = ReadDetails(data);
+            IDictionary<int, SubResultEntity> subResults = new Dictionary<int, SubResultEntity>();
+            foreach (var subResultData in data.session_results)
+            {
+                var subResult = await ReadSubResultsAsync(data, subResultData, details, cancellationToken);
+                subResults.Add(subResult);
+            }
+            var mappedSubResults = MapToSubSessions(subResults, session, map);
+            foreach (var subResult in mappedSubResults)
+            {
+                result.SubResults.Add(subResult);
+            }
             return result;
+        }
+
+        private async Task<MemberEntity> GetOrCreateMemberAsync(ParseSessionResultRow row, CancellationToken cancellationToken)
+        {
+            var member = await dbContext.Members
+                .Where(x => x.IRacingId == row.cust_id.ToString())
+                .SingleOrDefaultAsync();
+            if (member == null)
+            {
+                var (firstname, Lastname) = GetFirstnameLastname(row.cust_id.ToString());
+                member = new MemberEntity()
+                {
+                    Firstname = firstname,
+                    Lastname = Lastname,
+                    IRacingId = row.cust_id.ToString(),
+                };
+                dbContext.Members.Add(member);
+            }
+            return member;
+        }
+
+        private (string, string) GetFirstnameLastname(string name)
+        {
+            return name.Split(' ') switch { var a => (a[0], a[1]) };
+        }
+
+        private async Task<KeyValuePair<int, SubResultEntity>> ReadSubResultsAsync(ParseSimSessionResult sessionData, ParseSessionResult data, IRSimSessionDetailsEntity details,
+            CancellationToken cancellationToken)
+        {
+            var subResult = new SubResultEntity();
+            subResult.IRSimSessionDetails = details;
+            var laps = data.results.Max(x => x.laps_complete);
+            var resultRows = new List<ResultRowEntity>();
+            foreach (var row in data.results)
+            {
+                resultRows.Add(await ReadResultRowAsync(sessionData, row, laps, cancellationToken));
+            }
+            subResult.ResultRows = resultRows;
+            var subResultNr = data.simsession_number;
+            return new KeyValuePair<int, SubResultEntity>(subResultNr, subResult);
         }
 
         private IRSimSessionDetailsEntity ReadDetails(ParseSimSessionResult data)
@@ -114,7 +165,8 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return details;
         }
 
-        private ResultRowEntity ReadResultRow(ParseSimSessionResult sessionData, ParseSessionResultRow data, int laps)
+        private async Task<ResultRowEntity> ReadResultRowAsync(ParseSimSessionResult sessionData, ParseSessionResultRow data, int laps,
+            CancellationToken cancellationToken)
         {
             var row = new ResultRowEntity();
 
@@ -135,11 +187,12 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.FinishPosition = data.position;
             row.Incidents = data.incidents;
             row.Interval = data.interval;
-            row.IracingId = data.cust_id.ToString();
+            row.IRacingId = data.cust_id.ToString();
             row.LeadLaps = data.laps_lead;
             row.License = sessionData.license_category;
+            row.Member = await GetOrCreateMemberAsync(data, cancellationToken);
             row.NewCpi = data.new_cpi;
-            row.NewIrating = data.newi_rating;
+            row.NewIRating = data.newi_rating;
             row.NewLicenseLevel = data.new_license_level;
             row.NewSafetyRating = data.new_sub_level;
             row.NumContactLaps = -1;
@@ -147,7 +200,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.NumPitStops = -1;
             row.OfftrackLaps = "";
             row.OldCpi = data.old_cpi;
-            row.OldIrating = data.oldi_rating;
+            row.OldIRating = data.oldi_rating;
             row.OldLicenseLevel = data.old_license_level;
             row.OldSafetyRating = data.old_sub_level;
             row.PittedLaps = "";
@@ -160,6 +213,27 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.Status = data.reason_out_id;
             
             return row;
+        }
+
+        private IEnumerable<SubResultEntity> MapToSubSessions(IDictionary<int, SubResultEntity> subResults, SessionEntity session, IDictionary<int, int> map)
+        { 
+            var mappedResults = new List<SubResultEntity>();
+            foreach(var pair in map)
+            {
+                var subResultNr = pair.Key;
+                var subSessionNr = pair.Value;
+                if (subResults.ContainsKey(subResultNr) == false)
+                {
+                    throw new InvalidOperationException($"Error while trying to map subResult Nr.{subResultNr} to subSession Nr.{subSessionNr}: no result with this subResultNr exists");
+                }
+                var subResult = subResults[subResultNr];
+                var subSession = session.SubSessions
+                    .SingleOrDefault(x => x.SubSessionNr == subSessionNr)
+                    ?? throw new InvalidOperationException($"Error while trying to map subResult Nr.{subResultNr} to subSession Nr.{subSessionNr}: no subSession with this subSessionNr exists");
+                subResult.SubSession = subSession;
+                mappedResults.Add(subResult);
+            }
+            return mappedResults;
         }
     }
 }
