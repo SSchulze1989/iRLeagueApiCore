@@ -40,8 +40,8 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Session/{sessionId:long}/Scoring/{scoringId:long}/[controller]")]
-        public async Task<ActionResult<GetResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId,
+        [Route("/{leagueName}/Sessions/{sessionId:long}/Scoring/{scoringId:long}/[controller]")]
+        public async Task<ActionResult<ResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId,
             [FromRoute] long scoringId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] result from session {SessionId} and scoring {ScoringId} in {LeagueName} by {UserName}", 
@@ -62,8 +62,8 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Season/{seasonId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
+        [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
+        public async Task<ActionResult<IEnumerable<ResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from season {SeasonId} in {LeagueName} by {UserName}",
@@ -84,8 +84,8 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Session/{sessionId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<GetResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
+        [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
+        public async Task<ActionResult<IEnumerable<ResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long sessionId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from session {SessionId} in {LeagueName} by {UserName}",

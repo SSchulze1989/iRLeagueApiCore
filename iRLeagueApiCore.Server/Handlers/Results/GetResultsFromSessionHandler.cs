@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record GetResultsFromSessionRequest(long LeagueId, long SessionId) : IRequest<IEnumerable<GetResultModel>>;
+    public record GetResultsFromSessionRequest(long LeagueId, long SessionId) : IRequest<IEnumerable<ResultModel>>;
 
     public class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsFromSessionHandler, GetResultsFromSessionRequest>, 
-        IRequestHandler<GetResultsFromSessionRequest, IEnumerable<GetResultModel>>
+        IRequestHandler<GetResultsFromSessionRequest, IEnumerable<ResultModel>>
     {
         public GetResultsFromSessionHandler(ILogger<GetResultsFromSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromSessionRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<IEnumerable<GetResultModel>> Handle(GetResultsFromSessionRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ResultModel>> Handle(GetResultsFromSessionRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getResults = await MapToGetResultModelsFromSessionAsync(request.LeagueId, request.SessionId, cancellationToken);
@@ -33,7 +33,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return getResults;
         }
 
-        private async Task<IEnumerable<GetResultModel>> MapToGetResultModelsFromSessionAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
+        private async Task<IEnumerable<ResultModel>> MapToGetResultModelsFromSessionAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
         {
             return await dbContext.ScoredResults
                 .Where(x => x.LeagueId == leagueId)

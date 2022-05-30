@@ -13,7 +13,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
 {
     [Collection("HandlerTests")]
-    public class PutSeasonHandlerTests : HandlersTestsBase<PutSeasonHandler, PutSeasonRequest, GetSeasonModel>
+    public class PutSeasonHandlerTests : HandlersTestsBase<PutSeasonHandler, PutSeasonRequest, SeasonModel>
     {
         private const string testSeasonName = "TestSeason";
 
@@ -45,7 +45,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
             Assert.NotEqual(dbContext.Seasons.Single(x => x.SeasonId == request.SeasonId).SeasonName, request.Model.SeasonName);
         }
 
-        protected override void DefaultAssertions(PutSeasonRequest request, GetSeasonModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PutSeasonRequest request, SeasonModel result, LeagueDbContext dbContext)
         {
             Assert.Equal(dbContext.Seasons.Single(x => x.SeasonId == request.SeasonId).SeasonName, request.Model.SeasonName);
             Assert.Equal(request.Model.SeasonName, result.SeasonName);
@@ -53,7 +53,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
         }
 
         [Fact]
-        public async override Task<GetSeasonModel> HandleDefaultAsync()
+        public async override Task<SeasonModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

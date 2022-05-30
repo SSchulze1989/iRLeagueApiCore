@@ -29,17 +29,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
 
                 // query results by season id
                 var query = context.ScoredResults
-                    .Select(result => new GetResultModel()
+                    .Select(result => new ResultModel()
                     {
                         LeagueId = result.LeagueId,
                         SeasonId = result.Result.Session.Schedule.SeasonId,
                         SessionId = result.ResultId,
                         ResultRows = result.ScoredResultRows
-                            .Select(row => new GetResultRowModel()
+                            .Select(row => new ResultRowModel()
                             {
-                                Firstname = row.ResultRow.Member.Firstname,
-                                Lastname = row.ResultRow.Member.Lastname,
-                                TeamName = row.ResultRow.Team.Name
+                                Firstname = row.Member.Firstname,
+                                Lastname = row.Member.Lastname,
+                                TeamName = row.Team.Name
                             }).ToArray(),
                     })
                     .Where(x => x.SeasonId == testSeasonId);

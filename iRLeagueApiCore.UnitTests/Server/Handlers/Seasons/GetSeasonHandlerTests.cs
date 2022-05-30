@@ -13,7 +13,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
 {
     [Collection("HandlerTests")]
-    public class GetSeasonHandlerTests : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, GetSeasonModel>
+    public class GetSeasonHandlerTests : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, SeasonModel>
     {
         public GetSeasonHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
         }
 
         [Fact]
-        public async override Task<GetSeasonModel> HandleDefaultAsync()
+        public async override Task<SeasonModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

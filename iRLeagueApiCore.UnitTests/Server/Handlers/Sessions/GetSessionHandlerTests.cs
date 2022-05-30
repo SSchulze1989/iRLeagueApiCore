@@ -13,7 +13,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
 {
     [Collection("HandlerTests")]
-    public class GetSessionHandlerTests : HandlersTestsBase<GetSessionHandler, GetSessionRequest, GetSessionModel>
+    public class GetSessionHandlerTests : HandlersTestsBase<GetSessionHandler, GetSessionRequest, SessionModel>
     {
         private const long testSessionId = 1;
 
@@ -36,7 +36,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
             return new GetSessionRequest(leagueId, sessionId);
         }
 
-        protected override void DefaultAssertions(GetSessionRequest request, GetSessionModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetSessionRequest request, SessionModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
             // Assert properties are mapped
@@ -47,27 +47,19 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
             Assert.Equal(entity.CreatedOn, result.CreatedOn);
             Assert.Equal(entity.Date, result.Date);
             Assert.Equal(entity.Duration, result.Duration);
-            Assert.Equal(entity.Laps.GetValueOrDefault(), result.Laps);
             Assert.Equal(entity.LastModifiedByUserId, result.LastModifiedByUserId);
             Assert.Equal(entity.LastModifiedByUserName, result.LastModifiedByUserName);
             Assert.Equal(entity.LastModifiedOn, result.LastModifiedOn);
             Assert.Equal(entity.LeagueId, result.LeagueId);
             Assert.Equal(entity.Name, result.Name);
-            Assert.Equal(entity.PracticeAttached.GetValueOrDefault(), result.PracticeAttached);
-            Assert.Equal(entity.PracticeLength, result.PracticeLength);
-            Assert.Equal(entity.QualyAttached.GetValueOrDefault(), result.QualyAttached);
-            Assert.Equal(entity.QualyLength, result.QualyLength);
-            Assert.Equal(entity.RaceLength, result.RaceLength);
             Assert.Equal(entity.ScheduleId, result.ScheduleId);
             Assert.Equal(entity.SessionId, result.SessionId);
-            Assert.Equal(entity.SessionTitle, result.SessionTitle);
             Assert.Equal(entity.SessionType, result.SessionType);
-            Assert.Equal(entity.SubSessionNr, result.SubSessionNr);
             Assert.Equal(entity.TrackId, result.TrackId);
         }
 
         [Fact]
-        public async override Task<GetSessionModel> HandleDefaultAsync()
+        public async override Task<SessionModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }

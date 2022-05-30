@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace iRLeagueApiCore.Communication.Models
 {
     [DataContract]
-    public class GetScheduleModel : PutScheduleModel, IVersionModel
+    public class ScheduleModel : PutScheduleModel, IVersionModel
     {
         [DataMember]
         public long LeagueId { get; set; }

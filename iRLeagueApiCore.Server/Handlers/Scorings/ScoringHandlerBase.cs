@@ -79,7 +79,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             return target;
         }
 
-        protected virtual async Task<GetScoringModel> MapToGetScoringModelAsync(long leagueId, long scoringId, CancellationToken cancellationToken = default)
+        protected virtual async Task<ScoringModel> MapToGetScoringModelAsync(long leagueId, long scoringId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Scorings
                 .Where(x => x.LeagueId == leagueId)
@@ -88,7 +88,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        protected Expression<Func<ScoringEntity, GetScoringModel>> MapToGetScoringModelExpression => source => new GetScoringModel()
+        protected Expression<Func<ScoringEntity, ScoringModel>> MapToGetScoringModelExpression => source => new ScoringModel()
         {
             Id = source.ScoringId,
             AccumulateBy = source.AccumulateBy,

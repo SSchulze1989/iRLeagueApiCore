@@ -6,12 +6,12 @@ using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Sessions
 {
-    internal class SessionByIdEndpoint : UpdateEndpoint<GetSessionModel, PutSessionModel>, ISessionByIdEndpoint
+    internal class SessionByIdEndpoint : UpdateEndpoint<SessionModel, PutSessionModel>, ISessionByIdEndpoint
     {
         public SessionByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long sessionId) : 
             base(httpClientWrapper, routeBuilder)
         {
-            routeBuilder.AddParameter(sessionId);
+            RouteBuilder.AddParameter(sessionId);
         }
 
         IResultsEndpoint ISessionByIdEndpoint.Results()

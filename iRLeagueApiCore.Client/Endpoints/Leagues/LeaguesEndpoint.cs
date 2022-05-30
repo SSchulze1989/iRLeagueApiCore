@@ -28,14 +28,14 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
             routeBuilder.AddEndpoint("Leagues");
         }
 
-        async Task<ClientActionResult<IEnumerable<GetLeagueModel>>> IGetEndpoint<IEnumerable<GetLeagueModel>>.Get(CancellationToken cancellationToken)
+        async Task<ClientActionResult<IEnumerable<LeagueModel>>> IGetEndpoint<IEnumerable<LeagueModel>>.Get(CancellationToken cancellationToken)
         {
-            return await httpClientWrapper.GetAsClientActionResult<IEnumerable<GetLeagueModel>>(QueryUrl, cancellationToken);
+            return await httpClientWrapper.GetAsClientActionResult<IEnumerable<LeagueModel>>(QueryUrl, cancellationToken);
         }
 
-        async Task<ClientActionResult<GetLeagueModel>> ILeaguesEndpoint.Post(PostLeagueModel model, CancellationToken cancellationToken)
+        async Task<ClientActionResult<LeagueModel>> ILeaguesEndpoint.Post(PostLeagueModel model, CancellationToken cancellationToken)
         {
-            return await httpClientWrapper.PostAsClientActionResult<GetLeagueModel>(QueryUrl, model, cancellationToken);
+            return await httpClientWrapper.PostAsClientActionResult<LeagueModel>(QueryUrl, model, cancellationToken);
         }
 
         ILeagueByIdEndpoint ILeaguesEndpoint.WithId(long leagueId)

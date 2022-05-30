@@ -1,46 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Communication.Models
 {
     /// <summary>
-    /// Scheme for fetching a session entry
+    /// Schema for fetching an existing scoring
     /// </summary>
-    [DataContract]
-    public class GetSessionModel : PutSessionModel, IVersionModel
+    public class ScoringModel : PutScoringModel, IVersionModel
     {
         /// <summary>
-        /// Unique identifier
+        /// Id of the scoring
         /// </summary>
         [DataMember]
-        public long SessionId { get; set; }
+        public long Id { get; set; }
         /// <summary>
-        /// Id of the league this session belongs to
+        /// Id of the league the scoring belongs to
         /// </summary>
         [DataMember]
         public long LeagueId { get; set; }
         /// <summary>
-        /// Id of the schedule this session belongs to
+        /// Id of the season the scoring belongs to
         /// </summary>
         [DataMember]
-        public long? ScheduleId { get; set; }
+        public long SeasonId { get; set; }
         /// <summary>
-        /// If session is subsession provide the id of the parent session here. If not leave at default (null)
-        /// </summary>
-        [DataMember(IsRequired = false)]
-        public long? ParentSessionId { get; set; }
-        /// <summary>
-        /// Flag shows if result is available
+        /// Ids of session connected to the scoring
         /// </summary>
         [DataMember]
-        public bool HasResult { get; set; }
-        /// <summary>
-        /// List of subsession ids if session is multisession event
-        /// </summary>
-        [DataMember]
-        public IEnumerable<long> SubSessionIds { get; set; }
-
+        public IEnumerable<long> SessionIds { get; set; }
         #region version
         /// <summary>
         /// Date of creation

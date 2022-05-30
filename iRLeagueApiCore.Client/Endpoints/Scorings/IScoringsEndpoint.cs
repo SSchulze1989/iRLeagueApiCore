@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Scorings
 {
-    public interface IScoringsEndpoint : IPostGetAllEndpoint<GetScoringModel, PostScoringModel>, IWithIdEndpoint<IScoringByIdEndpoint>
+    public interface IScoringsEndpoint : IPostGetAllEndpoint<ScoringModel, PostScoringModel>, IWithIdEndpoint<IScoringByIdEndpoint>
     {
     }
 }

@@ -12,15 +12,15 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules
 {
-    public record GetSchedulesRequest(long LeagueId) : IRequest<IEnumerable<GetScheduleModel>>;
+    public record GetSchedulesRequest(long LeagueId) : IRequest<IEnumerable<ScheduleModel>>;
 
-    public class GetSchedulesHandler : ScheduleHandlerBase<GetSchedulesHandler, GetSchedulesRequest>, IRequestHandler<GetSchedulesRequest, IEnumerable<GetScheduleModel>>
+    public class GetSchedulesHandler : ScheduleHandlerBase<GetSchedulesHandler, GetSchedulesRequest>, IRequestHandler<GetSchedulesRequest, IEnumerable<ScheduleModel>>
     {
         public GetSchedulesHandler(ILogger<GetSchedulesHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetSchedulesRequest>> validators) : base(logger, dbContext, validators)
         {
         }
 
-        public async Task<IEnumerable<GetScheduleModel>> Handle(GetSchedulesRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ScheduleModel>> Handle(GetSchedulesRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getSchedules = await MapToGetScheduleModelsAsync(request.LeagueId, cancellationToken);
@@ -31,7 +31,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules
             return getSchedules;
         }
 
-        protected virtual async Task<IEnumerable<GetScheduleModel>> MapToGetScheduleModelsAsync(long leagueId, CancellationToken cancellationToken)
+        protected virtual async Task<IEnumerable<ScheduleModel>> MapToGetScheduleModelsAsync(long leagueId, CancellationToken cancellationToken)
         {
             return await dbContext.Schedules
                 .Where(x => x.LeagueId == leagueId)

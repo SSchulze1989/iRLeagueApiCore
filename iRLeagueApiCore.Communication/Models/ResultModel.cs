@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Communication.Models
     /// <summary>
     /// Get a complete scored result from the database
     /// </summary>
-    public class GetResultModel
+    public class ResultModel
     {
         /// <summary>
         /// Id of the league
@@ -56,7 +56,7 @@ namespace iRLeagueApiCore.Communication.Models
         /// List of entries 
         /// </summary>
         [DataMember(IsRequired = true)]
-        public IEnumerable<GetResultRowModel> ResultRows { get; set; }
+        public IEnumerable<ResultRowModel> ResultRows { get; set; }
 
         #region version
         /// <summary>

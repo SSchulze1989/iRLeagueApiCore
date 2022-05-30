@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues
             return leagueEntity;
         }
 
-        protected virtual async Task<GetLeagueModel> MapToGetLeagueModelAsync(long leagueId, CancellationToken cancellationToken)
+        protected virtual async Task<LeagueModel> MapToGetLeagueModelAsync(long leagueId, CancellationToken cancellationToken)
         {
             return await dbContext.Leagues
                 .Where(x => x.Id == leagueId)
@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        protected Expression<Func<LeagueEntity, GetLeagueModel>> MapToGetLeagueModelExpression => x => new GetLeagueModel()
+        protected Expression<Func<LeagueEntity, LeagueModel>> MapToGetLeagueModelExpression => x => new LeagueModel()
         {
             Id = x.Id,
             Name = x.Name,

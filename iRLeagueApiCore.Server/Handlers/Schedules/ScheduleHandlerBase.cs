@@ -30,7 +30,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules
             return target;
         }
 
-        protected virtual async Task<GetScheduleModel> MapToGetScheduleModelAsync(long leagueId, long scheduleId, CancellationToken cancellationToken)
+        protected virtual async Task<ScheduleModel> MapToGetScheduleModelAsync(long leagueId, long scheduleId, CancellationToken cancellationToken)
         {
             return await dbContext.Schedules
                 .Where(x => x.LeagueId == leagueId)
@@ -39,7 +39,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        protected virtual Expression<Func<ScheduleEntity, GetScheduleModel>> MapToGetScheduleModelExpression => x => new GetScheduleModel()
+        protected virtual Expression<Func<ScheduleEntity, ScheduleModel>> MapToGetScheduleModelExpression => x => new ScheduleModel()
         {
             LeagueId = x.LeagueId,
             ScheduleId = x.ScheduleId,

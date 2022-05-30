@@ -14,7 +14,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
     [Collection("HandlerTests")]
-    public class PutScoringHandlerTests : HandlersTestsBase<PutScoringHandler, PutScoringRequest, GetScoringModel>
+    public class PutScoringHandlerTests : HandlersTestsBase<PutScoringHandler, PutScoringRequest, ScoringModel>
     {
         private const string NewScoringName = "New scoring Name";
 
@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             return DefaultRequest(testLeagueId, testScoringId);
         }
 
-        protected override void DefaultAssertions(PutScoringRequest request, GetScoringModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(PutScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
             Assert.Equal(NewScoringName, result.Name);
@@ -52,7 +52,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         }
 
         [Fact]
-        public override async Task<GetScoringModel> HandleDefaultAsync()
+        public override async Task<ScoringModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }
