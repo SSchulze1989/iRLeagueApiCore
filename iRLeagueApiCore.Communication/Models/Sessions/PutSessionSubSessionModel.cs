@@ -5,6 +5,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+#if NETCOREAPP
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+#endif
 
 namespace iRLeagueApiCore.Communication.Models
 {
@@ -33,7 +37,11 @@ namespace iRLeagueApiCore.Communication.Models
         /// Type of the subsession
         /// </summary>
         [DataMember]
-        public SessionType SessionType { get; set; }
+#if NETCOREAPP
+        [EnumDataType(typeof(SimSessionType))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
+        public SimSessionType SessionType { get; set; }
         /// <summary>
         /// Offset start time from the start of the parent session
         /// </summary>

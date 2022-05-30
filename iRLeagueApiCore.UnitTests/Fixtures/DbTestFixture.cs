@@ -190,6 +190,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 var subSession = new SubSessionEntity()
                 {
                     Name = "Race",
+                    SessionType = SimSessionType.Race,
+                    Duration = TimeSpan.FromMinutes(random.Next(20)+10),
                 };
                 session.SubSessions.Add(subSession);
                 schedule1.Sessions.Add(session);
@@ -214,6 +216,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 var subSession = new SubSessionEntity()
                 {
                     Name = "Race",
+                    SessionType = SimSessionType.Race,
+                    Duration = TimeSpan.FromMinutes(random.Next(20) + 10),
                 };
                 session.SubSessions.Add(subSession);
                 schedule2.Sessions.Add(session);
