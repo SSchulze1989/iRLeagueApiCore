@@ -108,11 +108,19 @@ namespace iRLeagueApiCore.Communication.Models
         /// Type of session that this scoring can be applied to
         /// </summary>
         [DataMember]
+#if NETCOREAPP
+        [EnumDataType(typeof(SessionType))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
         public SessionType ScoringSessionType { get; set; }
         /// <summary>
         /// Defines how the sessions for this scoring are selected
         /// </summary>
         [DataMember]
+#if NETCOREAPP
+        [EnumDataType(typeof(ScoringSessionSelectionType))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
         public ScoringSessionSelectionType SessionSelectType { get; set; }
         /// <summary>
         /// List of weights for each accumulated scoring separated by ',' - only for accumlated scorings
@@ -123,11 +131,19 @@ namespace iRLeagueApiCore.Communication.Models
         /// Select the column for identifying rows that belong together
         /// </summary>
         [DataMember]
+#if NETCOREAPP
+        [EnumDataType(typeof(AccumulateByOption))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
         public AccumulateByOption AccumulateBy { get; set; }
         /// <summary>
         /// Select the method to accumulate scorings
         /// </summary>
         [DataMember]
+#if NETCOREAPP
+        [EnumDataType(typeof(AccumulateResultsOption))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
         public AccumulateResultsOption AccumulateResultsOption { get; set; }
         /// <summary>
         /// Number of average races when using <see cref="TakeGroupAverage"/>
