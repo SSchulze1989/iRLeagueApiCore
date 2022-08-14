@@ -26,6 +26,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
         private const string testSubSessionName = "TestSubSession";
         private static readonly DateTime testSessionDate = DateTime.Today;
         private const SessionType testSessionType = SessionType.Heat;
+        private const SimSessionType testSimSessionType = SimSessionType.Race;
         private const long testTrackId = 5;
         private static readonly TimeSpan testSessionDuration = TimeSpan.FromMinutes(1.23);
         private const int testLaps = 12;
@@ -62,7 +63,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
             var subSession = result.SubSessions.FirstOrDefault();
             Assert.NotNull(subSession);
             Assert.Equal(testSubSessionName, subSession.Name);
-            Assert.Equal(testSessionType, subSession.SessionType);
+            Assert.Equal(testSimSessionType, subSession.SessionType);
             Assert.Equal(testSubSessionNr, subSession.SubSessionNr);
         }
 
@@ -80,7 +81,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Sessions
                     new PutSessionSubSessionModel()
                     {
                         Name = testSubSessionName,
-                        SessionType = testSessionType,
+                        SessionType = testSimSessionType,
                         SubSessionNr = testSubSessionNr,
                     }
                 },
