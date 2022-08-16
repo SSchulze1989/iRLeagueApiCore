@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Responses;
+﻿using iRLeagueApiCore.Common.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;

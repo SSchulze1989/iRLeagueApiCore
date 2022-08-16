@@ -19,7 +19,8 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.1.1" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.2.0" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.2.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5" />
@@ -37,16 +38,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\iRLeagueApiCore.Communication\iRLeagueApiCore.Communication.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Logs\" />
   </ItemGroup>
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.1.1</Version>
+		<Version>0.2.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

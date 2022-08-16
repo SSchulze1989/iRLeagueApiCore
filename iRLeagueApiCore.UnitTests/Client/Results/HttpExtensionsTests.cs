@@ -1,6 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Communication.Responses;
+using iRLeagueApiCore.Common.Responses;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;

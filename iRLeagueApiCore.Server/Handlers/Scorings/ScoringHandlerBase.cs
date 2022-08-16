@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
