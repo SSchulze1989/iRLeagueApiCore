@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Schedules
 {

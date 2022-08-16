@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;

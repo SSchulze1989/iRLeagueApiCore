@@ -19,7 +19,8 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.1.1" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.2.0" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.2.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5" />
@@ -34,10 +35,6 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\iRLeagueApiCore.Communication\iRLeagueApiCore.Communication.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using iRLeagueApiCore.Client.Endpoints;
 using iRLeagueApiCore.Client.Endpoints.Leagues;
 using iRLeagueApiCore.Client.QueryBuilder;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using Microsoft.AspNetCore.Identity.Test;
 using Moq;
 using Moq.Protected;

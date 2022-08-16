@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Controllers;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;

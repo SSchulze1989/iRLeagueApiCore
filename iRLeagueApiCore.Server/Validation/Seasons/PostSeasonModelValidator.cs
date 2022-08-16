@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Validation.Seasons
 {

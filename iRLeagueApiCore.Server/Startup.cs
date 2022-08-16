@@ -1,5 +1,5 @@
 using FluentValidation;
-using iRLeagueApiCore.Communication.Converters;
+using iRLeagueApiCore.Common.Converters;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;

@@ -1,5 +1,5 @@
 ﻿using FluentValidation.TestHelper;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Seasons;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.Server.Validation.Seasons;

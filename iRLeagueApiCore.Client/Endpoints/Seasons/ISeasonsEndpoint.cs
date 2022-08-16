@@ -1,6 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

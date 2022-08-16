@@ -1,7 +1,7 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using System.Threading;
 using System.Threading.Tasks;
 

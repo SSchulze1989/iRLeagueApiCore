@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using iRLeagueApiCore.Communication.Responses;
+using iRLeagueApiCore.Common.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 

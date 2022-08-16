@@ -1,7 +1,7 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Scorings

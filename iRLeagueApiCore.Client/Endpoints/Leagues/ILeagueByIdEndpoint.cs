@@ -1,5 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

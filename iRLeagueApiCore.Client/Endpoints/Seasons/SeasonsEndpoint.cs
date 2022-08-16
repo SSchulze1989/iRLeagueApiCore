@@ -2,7 +2,7 @@
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

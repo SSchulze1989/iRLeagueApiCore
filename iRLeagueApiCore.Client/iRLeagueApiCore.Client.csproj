@@ -10,12 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\iRLeagueApiCore.Communication\iRLeagueApiCore.Communication.csproj" />
   </ItemGroup>
 
 	<PropertyGroup>

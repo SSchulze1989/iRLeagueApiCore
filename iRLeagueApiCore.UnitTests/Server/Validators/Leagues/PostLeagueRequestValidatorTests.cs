@@ -1,5 +1,5 @@
 ﻿using FluentValidation.TestHelper;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Validation.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;

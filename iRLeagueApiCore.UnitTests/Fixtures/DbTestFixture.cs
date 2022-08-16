@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Enums;
+﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Http;

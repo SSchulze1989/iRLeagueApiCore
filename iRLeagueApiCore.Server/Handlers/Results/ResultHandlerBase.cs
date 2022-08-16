@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using iRLeagueApiCore.Communication.Models;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.Extensions.Logging;
 using System;

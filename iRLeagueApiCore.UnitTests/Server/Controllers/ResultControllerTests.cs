@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Communication.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Controllers;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.AspNetCore.Mvc;
