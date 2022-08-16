@@ -1,13 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Configurations>Debug;Release;</Configurations>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Endpoints\Leagues\ILeaguesEndpoint.cs~RFd17fd.TMP" />
-  </ItemGroup>
+  <PropertyGroup />
 
   <ItemGroup>
     <PackageReference Include="iRLeagueApiCore.Common" Version="0.2.0" />
