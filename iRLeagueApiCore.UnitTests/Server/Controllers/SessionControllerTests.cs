@@ -21,7 +21,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
     [Collection("ControllerTests")]
     public class SessionControllerTests
     {
-        private readonly ILogger<SessionsController> logger;
+        private readonly ILogger<EventsController> logger;
 
         const string testLeagueName = "TestLeague";
         const long testLeagueId = 1;
@@ -31,7 +31,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
 
         public SessionControllerTests()
         {
-            logger = Mock.Of<ILogger<SessionsController>>();
+            logger = Mock.Of<ILogger<EventsController>>();
         }
 
         private static SessionModel DefaultGetModel()
@@ -70,7 +70,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             var expectedResult = new SessionModel[] { DefaultGetModel() };
             var mediator = MockHelpers.TestMediator<GetSessionsRequest, IEnumerable<SessionModel>>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
-            var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
+            var controller = AddContexts.AddMemberControllerContext(new EventsController(logger, mediator));
 
             var result = await controller.GetAll(testLeagueName, testLeagueId);
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -85,7 +85,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             var expectedResult = DefaultGetModel();
             var mediator = MockHelpers.TestMediator<GetSessionRequest, SessionModel>(x =>
                 x.LeagueId == testLeagueId && x.SessionId == testSessionId, expectedResult);
-            var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
+            var controller = AddContexts.AddMemberControllerContext(new EventsController(logger, mediator));
 
             var result = await controller.Get(testLeagueName, testLeagueId, testSessionId);
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -100,7 +100,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             var expectedResult = DefaultGetModel();
             var mediator = MockHelpers.TestMediator<PostSessionToScheduleRequest, SessionModel>(x =>
                 x.LeagueId == testLeagueId, expectedResult);
-            var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
+            var controller = AddContexts.AddMemberControllerContext(new EventsController(logger, mediator));
 
             var result = await controller.PostToSchedule(testLeagueName, testLeagueId, testScheduleId, DefaultPostModel());
             var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -115,7 +115,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             var expectedResult = DefaultGetModel();
             var mediator = MockHelpers.TestMediator<PutSessionRequest, SessionModel>(x =>
                 x.LeagueId == testLeagueId && x.SessionId == testSessionId, expectedResult);
-            var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
+            var controller = AddContexts.AddMemberControllerContext(new EventsController(logger, mediator));
 
             var result = await controller.Put(testLeagueName, testLeagueId, testSessionId, DefaultPutModel());
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -129,7 +129,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         {
             var mediator = MockHelpers.TestMediator<DeleteSessionRequest, Unit>(x =>
                 x.LeagueId == testLeagueId && x.SessionId == testSessionId);
-            var controller = AddContexts.AddMemberControllerContext(new SessionsController(logger, mediator));
+            var controller = AddContexts.AddMemberControllerContext(new EventsController(logger, mediator));
 
             var result = await controller.Delete(testLeagueName, testLeagueId, testSessionId);
             Assert.IsType<NoContentResult>(result);
