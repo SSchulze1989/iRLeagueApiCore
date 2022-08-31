@@ -2,7 +2,7 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Sessions;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueApiCore.Server.Validation.Sessions;
+using iRLeagueApiCore.Server.Validation.Events;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using System;
@@ -47,9 +47,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Sessions
             return new PostSessionToScheduleRequest(leagueId, scheduleId, LeagueUser.Empty, model);
         }
 
-        private static PostSessionToScheduleRequestValidator CreateValidator(LeagueDbContext dbContext)
+        private static PostEventToScheduleRequestValidator CreateValidator(LeagueDbContext dbContext)
         {
-            return new PostSessionToScheduleRequestValidator(dbContext);
+            return new PostEventToScheduleRequestValidator(dbContext);
         }
 
         [Fact]

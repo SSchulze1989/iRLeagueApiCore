@@ -2,7 +2,7 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Sessions;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueApiCore.Server.Validation.Sessions;
+using iRLeagueApiCore.Server.Validation.Events;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using System;
@@ -46,9 +46,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Sessions
             return new PutSessionRequest(leagueId, LeagueUser.Empty, sessionId, model);
         }
 
-        private static PutSessionRequestValidator CreateValidator(LeagueDbContext dbContext)
+        private static PutEventRequestValidator CreateValidator(LeagueDbContext dbContext)
         {
-            return new PutSessionRequestValidator(dbContext);
+            return new PutEventRequestValidator(dbContext);
         }
 
         [Fact]

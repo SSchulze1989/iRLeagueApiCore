@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace iRLeagueApiCore.Server.Validation.Sessions
+namespace iRLeagueApiCore.Server.Validation.Events
 {
     internal class CollectionAttribute : Attribute
     {
