@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record UploadResultRequest(long leagueId, long ResultId, Stream dataStream, IDictionary<int, int> Map) : IRequest<bool>;
+    public record UploadResultRequest(long leagueId, long EventId, Stream dataStream, IDictionary<int, int> Map) : IRequest<bool>;
 
     public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
         IRequestHandler<UploadResultRequest, bool>
@@ -32,22 +32,22 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             var data = await ParseDataStream(request.dataStream, cancellationToken);
             
             // add to database
-            var session = await GetSessionEntityAsync(request.leagueId, request.ResultId, cancellationToken) 
+            var @event = await GetEventEntityAsync(request.leagueId, request.EventId, cancellationToken) 
                 ?? throw new ResourceNotFoundException();
-            var result = await ReadResultsAsync(data, session, request.Map, cancellationToken);
-            session.Result = result;
+            var result = await ReadResultsAsync(data, @event, request.Map, cancellationToken);
+            @event.EventResult = result;
             await dbContext.SaveChangesAsync();
 
             return true;
         }
 
-        private async Task<SessionEntity> GetSessionEntityAsync(long leagueId, long resultId, CancellationToken cancellationToken)
+        private async Task<EventEntity> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             // search for session first to check if result will be valid
-            return await dbContext.Sessions
+            return await dbContext.Events
                 .Where(x => x.LeagueId == leagueId)
-                .Where(x => x.SessionId == resultId)
-                .Include(x => x.SubSessions)
+                .Where(x => x.EventId == eventId)
+                .Include(x => x.Sessions)
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
@@ -56,22 +56,22 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return await JsonSerializer.DeserializeAsync<ParseSimSessionResult>(dataStream, cancellationToken: cancellationToken);
         }
 
-        private async Task<ResultEntity> ReadResultsAsync(ParseSimSessionResult data, SessionEntity session, IDictionary<int, int> map,
+        private async Task<EventResultEntity> ReadResultsAsync(ParseSimSessionResult data, EventEntity @event, IDictionary<int, int> map,
             CancellationToken cancellationToken)
         {
             // create entities
-            var result = new ResultEntity();
+            var result = new EventResultEntity();
             var details = ReadDetails(data);
-            IDictionary<int, SubResultEntity> subResults = new Dictionary<int, SubResultEntity>();
-            foreach (var subResultData in data.session_results)
+            IDictionary<int, SessionResultEntity> sessionResults = new Dictionary<int, SessionResultEntity>();
+            foreach (var sessionResultData in data.session_results)
             {
-                var subResult = await ReadSubResultsAsync(data, subResultData, details, cancellationToken);
-                subResults.Add(subResult);
+                var sessionResult = await ReadSessionResultsAsync(data, sessionResultData, details, cancellationToken);
+                sessionResults.Add(sessionResult);
             }
-            var mappedSubResults = MapToSubSessions(subResults, session, map);
-            foreach (var subResult in mappedSubResults)
+            var mappedSessionResults = MapToSubSessions(sessionResults, @event, map);
+            foreach (var subResult in mappedSessionResults)
             {
-                result.SubResults.Add(subResult);
+                result.SessionResults.Add(subResult);
             }
             return result;
         }
@@ -100,20 +100,20 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return name.Split(' ') switch { var a => (a[0], a[1]) };
         }
 
-        private async Task<KeyValuePair<int, SubResultEntity>> ReadSubResultsAsync(ParseSimSessionResult sessionData, ParseSessionResult data, IRSimSessionDetailsEntity details,
+        private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(ParseSimSessionResult sessionData, ParseSessionResult data, IRSimSessionDetailsEntity details,
             CancellationToken cancellationToken)
         {
-            var subResult = new SubResultEntity();
-            subResult.IRSimSessionDetails = details;
+            var sessionResult = new SessionResultEntity();
+            sessionResult.IRSimSessionDetails = details;
             var laps = data.results.Max(x => x.laps_complete);
             var resultRows = new List<ResultRowEntity>();
             foreach (var row in data.results)
             {
                 resultRows.Add(await ReadResultRowAsync(sessionData, row, laps, cancellationToken));
             }
-            subResult.ResultRows = resultRows;
-            var subResultNr = data.simsession_number;
-            return new KeyValuePair<int, SubResultEntity>(subResultNr, subResult);
+            sessionResult.ResultRows = resultRows;
+            var sessionResultNr = data.simsession_number;
+            return new KeyValuePair<int, SessionResultEntity>(sessionResultNr, sessionResult);
         }
 
         private IRSimSessionDetailsEntity ReadDetails(ParseSimSessionResult data)
@@ -215,23 +215,23 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return row;
         }
 
-        private IEnumerable<SubResultEntity> MapToSubSessions(IDictionary<int, SubResultEntity> subResults, SessionEntity session, IDictionary<int, int> map)
+        private IEnumerable<SessionResultEntity> MapToSubSessions(IDictionary<int, SessionResultEntity> subResults, EventEntity @event, IDictionary<int, int> map)
         { 
-            var mappedResults = new List<SubResultEntity>();
+            var mappedResults = new List<SessionResultEntity>();
             foreach(var pair in map)
             {
-                var subResultNr = pair.Key;
-                var subSessionNr = pair.Value;
-                if (subResults.ContainsKey(subResultNr) == false)
+                var sessionResultNr = pair.Key;
+                var sessionNr = pair.Value;
+                if (subResults.ContainsKey(sessionResultNr) == false)
                 {
-                    throw new InvalidOperationException($"Error while trying to map subResult Nr.{subResultNr} to subSession Nr.{subSessionNr}: no result with this subResultNr exists");
+                    throw new InvalidOperationException($"Error while trying to map subResult Nr.{sessionResultNr} to subSession Nr.{sessionNr}: no result with this subResultNr exists");
                 }
-                var subResult = subResults[subResultNr];
-                var subSession = session.SubSessions
-                    .SingleOrDefault(x => x.SubSessionNr == subSessionNr)
-                    ?? throw new InvalidOperationException($"Error while trying to map subResult Nr.{subResultNr} to subSession Nr.{subSessionNr}: no subSession with this subSessionNr exists");
-                subResult.SubSession = subSession;
-                mappedResults.Add(subResult);
+                var sessionResult = subResults[sessionResultNr];
+                var session = @event.Sessions
+                    .SingleOrDefault(x => x.SessionNr == sessionNr)
+                    ?? throw new InvalidOperationException($"Error while trying to map subResult Nr.{sessionResultNr} to subSession Nr.{sessionNr}: no subSession with this subSessionNr exists");
+                sessionResult.Session = session;
+                mappedResults.Add(sessionResult);
             }
             return mappedResults;
         }
