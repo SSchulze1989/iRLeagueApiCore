@@ -12,31 +12,31 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record GetResultRequest(long LeagueId, long SessionId, long ScoringId) : IRequest<ResultModel>;
+    public record GetResultRequest(long LeagueId, long EventId, long ResultTabId) : IRequest<EventResultTabModel>;
 
-    public class GetResultHandler : ResultHandlerBase<GetResultHandler, GetResultRequest>, IRequestHandler<GetResultRequest, ResultModel>
+    public class GetResultHandler : ResultHandlerBase<GetResultHandler, GetResultRequest>, IRequestHandler<GetResultRequest, EventResultTabModel>
     {
         public GetResultHandler(ILogger<GetResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultRequest>> validators) : 
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<ResultModel> Handle(GetResultRequest request, CancellationToken cancellationToken)
+        public async Task<EventResultTabModel> Handle(GetResultRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            var getResult = await MapToGetResultModelAsync(request.LeagueId, request.SessionId, request.ScoringId, cancellationToken)
+            var getResult = await MapToEventResultModelAsync(request.LeagueId, request.EventId, request.ResultTabId, cancellationToken)
                 ?? throw new ResourceNotFoundException();
             return getResult;
         }
 
-        private async Task<ResultModel> MapToGetResultModelAsync(long leagueId, long sessionId, long ScoringId, CancellationToken cancellationToken)
+        private async Task<EventResultTabModel> MapToEventResultModelAsync(long leagueId, long eventId, long resultTabId, CancellationToken cancellationToken)
         {
-            return await dbContext.ScoredResults
+            return await dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == leagueId)
-                .Where(x => x.ResultId == sessionId)
-                .Where(x => x.ScoringId == ScoringId)
-                .Select(MapToGetResultModelExpression)
-                .SingleOrDefaultAsync(cancellationToken);
+                .Where(x => x.EventId == eventId)
+                .Where(x => x.ResultTabId == resultTabId)
+                .Select(MapToEventResultModelExpression)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

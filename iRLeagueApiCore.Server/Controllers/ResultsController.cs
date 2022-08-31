@@ -35,21 +35,21 @@ namespace iRLeagueApiCore.Server.Controllers
         /// </summary>
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
-        /// <param name="sessionId"></param>
-        /// <param name="scoringId"></param>
+        /// <param name="eventId"></param>
+        /// <param name="resultTabId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Sessions/{sessionId:long}/Scoring/{scoringId:long}/[controller]")]
-        public async Task<ActionResult<ResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId,
-            [FromRoute] long scoringId, CancellationToken cancellationToken)
+        [Route("/{leagueName}/Events/{eventId:long}/ResultTabs/{resultTabId:long}/[controller]")]
+        public async Task<ActionResult<EventResultTabModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+            [FromRoute] long resultTabId, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[{Method}] result from session {SessionId} and scoring {ScoringId} in {LeagueName} by {UserName}", 
-                "Get", sessionId, scoringId, leagueName, User.Identity.Name);
-            var request = new GetResultRequest(leagueId, sessionId, scoringId);
+            _logger.LogInformation("[{Method}] result from session {EventId} and result tab {ResultTabId} in {LeagueName} by {UserName}", 
+                "Get", eventId, resultTabId, leagueName, User.Identity.Name);
+            var request = new GetResultRequest(leagueId, eventId, resultTabId);
             var getResult = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return entry for result {SessionId},{ScoringId} from {LeagueName}", 
-                getResult.SessionId, getResult.ScoringId, leagueName);
+            _logger.LogInformation("Return entry for result {EventId},{ResultTabId} from {LeagueName}", 
+                getResult.EventId, getResult.ResultTabId, leagueName);
             return Ok(getResult);
         }
 
@@ -80,20 +80,20 @@ namespace iRLeagueApiCore.Server.Controllers
         /// </summary>
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
-        /// <param name="sessionId"></param>
+        /// <param name="eventId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
+        [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<ResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromRoute] long sessionId, CancellationToken cancellationToken = default)
+            [FromRoute] long eventId, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] all results from session {SessionId} in {LeagueName} by {UserName}",
-                "Get", sessionId, leagueName, User.Identity.Name);
-            var request = new GetResultsFromSessionRequest(leagueId, sessionId);
+            _logger.LogInformation("[{Method}] all results from event {EventId} in {LeagueName} by {UserName}",
+                "Get", eventId, leagueName, User.Identity.Name);
+            var request = new GetResultsFromEventRequest(leagueId, eventId);
             var getResults = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return {Count} entries for result from session {SessionId} in {LeagueName}",
-                getResults.Count(), sessionId, leagueName);
+            _logger.LogInformation("Return {Count} entries for result from event {EventId} in {LeagueName}",
+                getResults.Count(), eventId, leagueName);
             return Ok(getResults);
         }
     }

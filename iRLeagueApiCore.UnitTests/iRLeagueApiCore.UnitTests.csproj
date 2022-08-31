@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.2.0" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.2.0" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.0" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">
       <PrivateAssets>all</PrivateAssets>

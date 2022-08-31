@@ -12,20 +12,20 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record GetResultsFromSessionRequest(long LeagueId, long SessionId) : IRequest<IEnumerable<ResultModel>>;
+    public record GetResultsFromEventRequest(long LeagueId, long EventId) : IRequest<IEnumerable<EventResultTabModel>>;
 
-    public class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsFromSessionHandler, GetResultsFromSessionRequest>, 
-        IRequestHandler<GetResultsFromSessionRequest, IEnumerable<ResultModel>>
+    public class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsFromSessionHandler, GetResultsFromEventRequest>, 
+        IRequestHandler<GetResultsFromEventRequest, IEnumerable<EventResultTabModel>>
     {
-        public GetResultsFromSessionHandler(ILogger<GetResultsFromSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromSessionRequest>> validators) :
+        public GetResultsFromSessionHandler(ILogger<GetResultsFromSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromEventRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<IEnumerable<ResultModel>> Handle(GetResultsFromSessionRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventResultTabModel>> Handle(GetResultsFromEventRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            var getResults = await MapToGetResultModelsFromSessionAsync(request.LeagueId, request.SessionId, cancellationToken);
+            var getResults = await MapToGetResultModelsFromSessionAsync(request.LeagueId, request.EventId, cancellationToken);
             if (getResults.Count() == 0)
             {
                 throw new ResourceNotFoundException();
@@ -33,12 +33,12 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return getResults;
         }
 
-        private async Task<IEnumerable<ResultModel>> MapToGetResultModelsFromSessionAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
+        private async Task<IEnumerable<EventResultTabModel>> MapToGetResultModelsFromSessionAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
-            return await dbContext.ScoredResults
+            return await dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == leagueId)
-                .Where(x => x.Result.Session.SessionId == sessionId)
-                .Select(MapToGetResultModelExpression)
+                .Where(x => x.EventId == eventId)
+                .Select(MapToEventResultModelExpression)
                 .ToListAsync(cancellationToken);
         }
     }
