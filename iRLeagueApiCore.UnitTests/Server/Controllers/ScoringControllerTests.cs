@@ -39,9 +39,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             {
                 Id = testScoringId,
                 LeagueId = testLeagueId,
-                SeasonId = testSeasonId,
-                BasePoints = new double[0],
-                BonusPoints = new string[0]
             };
         }
 
@@ -132,41 +129,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
             var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
 
             var result = await controller.Get(testLeagueName, testLeagueId, testScoringId);
-            Assert.IsType<BadRequestObjectResult>(result.Result);
-        }
-
-        [Fact]
-        public async Task PostScoringValid()
-        {
-            var expectedResult = DefaultGetModel();
-            var mediator = MockHelpers.TestMediator<PostScoringRequest, ScoringModel>(x =>
-                x.LeagueId == testLeagueId && x.SeasonId == testSeasonId, expectedResult);
-            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
-
-            var result = await controller.Post(testLeagueName, testLeagueId, testSeasonId, DefaultPostModel());
-            var okResult = Assert.IsType<CreatedAtActionResult>(result.Result);
-            Assert.Equal(expectedResult, okResult.Value);
-            var mediatorMock = Mock.Get(mediator);
-            mediatorMock.Verify(x => x.Send(It.IsAny<PostScoringRequest>(), default));
-        }
-
-        [Fact]
-        public async Task PostScoringNotFound()
-        {
-            var mediator = MockHelpers.TestMediator<PostScoringRequest, ScoringModel>(throws: NotFound());
-            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
-
-            var result = await controller.Post(testLeagueName, testLeagueId, testSeasonId, DefaultPostModel());
-            Assert.IsType<NotFoundResult>(result.Result);
-        }
-
-        [Fact]
-        public async Task PostScoringValidationFailed()
-        {
-            var mediator = MockHelpers.TestMediator<PostScoringRequest, ScoringModel>(throws: ValidationFailed());
-            var controller = AddContexts.AddMemberControllerContext(new ScoringsController(logger, mediator));
-
-            var result = await controller.Post(testLeagueName, testLeagueId, testSeasonId, DefaultPostModel());
             Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 

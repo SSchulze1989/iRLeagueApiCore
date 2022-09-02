@@ -39,8 +39,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         {
             base.DefaultAssertions(request, result, dbContext);
             Assert.NotEmpty(result);
-            Assert.NotNull(result.First().BasePoints);
-            Assert.NotNull(result.First().BonusPoints);
         }
 
         [Fact]

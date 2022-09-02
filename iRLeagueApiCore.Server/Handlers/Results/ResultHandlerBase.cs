@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,25 +17,20 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
         }
 
-        public Expression<Func<ScoredEventResultEntity, EventResultTabModel>> MapToEventResultModelExpression => result => new EventResultTabModel()
+        public Expression<Func<ScoredEventResultEntity, EventResultModel>> MapToEventResultModelExpression => result => new EventResultModel()
         {
-            Description = result.ResultTab.Description,
             EventId = result.EventId,
             LeagueId = result.LeagueId,
-            Name = result.ResultTab.Name,
-            ResultConfigId = result.ResultConfigId ?? default,
-            ResultTabId = result.ResultTabId,
-            SeasonId = result.Event.Schedule.SeasonId,
-            Results = result.ScoredSessionResults.Select(sessionResult => new ResultModel()
+            EventName = result.Event.Name,
+            DisplayName = result.Name,
+            ResultId = result.ResultId,
+            Date = result.Event.Date.GetValueOrDefault(),
+            TrackId = result.Event.TrackId.GetValueOrDefault(),
+            TrackName = string.Join(" ", result.Event.Track.TrackGroup.TrackName, result.Event.Track.ConfigName),
+            SessionResults = result.ScoredSessionResults.Select(sessionResult => new ResultModel()
             {
-                LeagueId = result.LeagueId,
-                SeasonId = result.Event.Schedule.SeasonId,
-                SeasonName = result.Event.Schedule.Season.SeasonName,
-                ScheduleId = result.Event.Schedule.ScheduleId,
-                ScheduleName = result.Event.Schedule.Name,
+                LeagueId = sessionResult.LeagueId,
                 ScoringId = sessionResult.ScoringId,
-                ScoringName = sessionResult.Scoring != null ? sessionResult.Scoring.Name : default,
-                SessionId = default,
                 SessionName = sessionResult.Name,
                 ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowModel()
                 {
@@ -77,8 +73,8 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                     Status = row.Status,
                     TeamId = row.TeamId
                 }),
-                CreatedOn = result.CreatedOn,
-                LastModifiedOn = result.LastModifiedOn,
+                CreatedOn = sessionResult.CreatedOn,
+                LastModifiedOn = sessionResult.LastModifiedOn,
             }),
         };
     }

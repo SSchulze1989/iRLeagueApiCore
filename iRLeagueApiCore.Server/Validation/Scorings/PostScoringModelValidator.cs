@@ -18,22 +18,6 @@ namespace iRLeagueApiCore.Server.Validation.Scorings
         public PostScoringModelValidator(LeagueDbContext dbContext)
         {
             this.dbContext = dbContext;
-
-            RuleFor(x => x.BasePoints)
-                .NotNull();
-            RuleFor(x => x.BonusPoints)
-                .Cascade(CascadeMode.Stop)
-                .NotNull()
-                .WithMessage("Cannot be null")
-                .Must(BonusPointsValid)
-                .WithMessage("Collection contains invalid values");
-            RuleFor(x => x.ExtScoringSourceId)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty()
-                .WithMessage($"Cannot be null when {nameof(PostScoringModel.TakeResultsFromExtSource)} is true")
-                .MustAsync(ScoringExists)
-                .WithMessage("Scoring does not exist")
-                .When(x => x.TakeResultsFromExtSource == true);
         }
 
         private bool BonusPointsValid(IEnumerable<string> bonusPoints)

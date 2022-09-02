@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
@@ -14,7 +15,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
     [Collection("HandlerTests")]
-    public class GetResultHandlerTests : HandlersTestsBase<GetResultHandler, GetResultRequest, ResultModel>
+    public class GetResultHandlerTests : HandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
     {
         public GetResultHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -30,29 +31,29 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             return DefaultRequest();
         }
 
-        private GetResultRequest DefaultRequest(long leagueId = testLeagueId, long seasonId = testSeasonId, long scoringId = testScoringId)
+        private GetResultRequest DefaultRequest(long leagueId = testLeagueId, long resultId = testResultId)
         {
-            return new GetResultRequest(leagueId, seasonId, scoringId);
+            return new GetResultRequest(leagueId, resultId);
         }
 
-        protected override void DefaultAssertions(GetResultRequest request, ResultModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetResultRequest request, EventResultModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
-            var actualResult = dbContext.ScoredResults
+            var actualResult = dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == request.LeagueId)
-                .Where(x => x.ScoringId == request.ScoringId)
-                .Where(x => x.Result.Session.SessionId == request.SessionId)
-                .Include(x => x.Scoring)
-                .Include(x => x.ScoredResultRows)
+                .Where(x => x.ResultId == request.ResultId)
+                .Include(x => x.ScoredSessionResults)
+                    .ThenInclude(x => x.ScoredResultRows)
                         .ThenInclude(x => x.Member)
-                .Include(x => x.ScoredResultRows)
-                    .ThenInclude(x => x.Team)
+                .Include(x => x.ScoredSessionResults)
+                    .ThenInclude(x => x.ScoredResultRows)
+                        .ThenInclude(x => x.Team)
                 .Single();
-            AssertResultData(actualResult, result);
+            AssertEventResultData(actualResult, result);
         }
 
         [Fact]
-        public async override Task<ResultModel> HandleDefaultAsync()
+        public async override Task<EventResultModel> HandleDefaultAsync()
         {
             return await base.HandleDefaultAsync();
         }
@@ -64,23 +65,25 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         }
 
         [Theory]
-        [InlineData(0, testSeasonId, testScoringId)]
-        [InlineData(testLeagueId, 0, testScoringId)]
-        [InlineData(testLeagueId, testSeasonId, 0)]
-        [InlineData(42, testSeasonId, testScoringId)]
-        [InlineData(testLeagueId, 42, testScoringId)]
-        [InlineData(testLeagueId, testSeasonId, 42)]
-        public async Task HandleNotFoundAsync(long leagueId, long seasonId, long scoringId)
+        [InlineData(0, testResultId)]
+        [InlineData(testLeagueId, 0)]
+        [InlineData(42, testResultId)]
+        [InlineData(testLeagueId, 42)]
+        public async Task HandleNotFoundAsync(long leagueId, long resultId)
         {
-            var request = DefaultRequest(leagueId, seasonId, scoringId);
+            var request = DefaultRequest(leagueId, resultId);
             await HandleNotFoundRequestAsync(request);
         }
 
-        private void AssertResultData(ScoredResultEntity expected, ResultModel test)
+        private void AssertEventResultData(ScoredEventResultEntity expected, EventResultModel test)
         {
-            Assert.Equal(expected.ResultId, test.SessionId);
+            Assert.Equal(expected.LeagueId, test.LeagueId);
+            AssertSessionResultData(expected.ScoredSessionResults.First(), test.SessionResults.First());
+        }
+
+        private void AssertSessionResultData(ScoredSessionResultEntity expected, ResultModel test)
+        {
             Assert.Equal(expected.ScoringId, test.ScoringId);
-            Assert.Equal(expected.Scoring.Name, test.ScoringName);
             Assert.Equal(expected.LeagueId, test.LeagueId);
             AssertResultRowData(expected.ScoredResultRows.First(), test.ResultRows.First());
         }

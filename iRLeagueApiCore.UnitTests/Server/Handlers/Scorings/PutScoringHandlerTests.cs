@@ -32,8 +32,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             var model = new PutScoringModel()
             {
                 Name = NewScoringName,
-                BasePoints = new double[0],
-                BonusPoints = new string[0]
             };
             return new PutScoringRequest(leagueId, scoringId, model);
         }
@@ -47,8 +45,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         {
             base.DefaultAssertions(request, result, dbContext);
             Assert.Equal(NewScoringName, result.Name);
-            Assert.Empty(result.BasePoints);
-            Assert.Empty(result.BonusPoints);
         }
 
         [Fact]

@@ -52,12 +52,12 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             MainScoringId = x.MainScoringScoringId,
             ScheduleIds = x.Schedules.Select(x => x.ScheduleId).ToList(),
             SeasonEnd = x.Schedules
-                .SelectMany(x => x.Sessions)
+                .SelectMany(x => x.Events)
                 .Select(x => x.Date)
                 .OrderByDescending(x => x)
                 .FirstOrDefault(),
             SeasonStart = x.Schedules
-                .SelectMany(x => x.Sessions)
+                .SelectMany(x => x.Events)
                 .Select(x => x.Date)
                 .OrderBy(x => x)
                 .FirstOrDefault(),

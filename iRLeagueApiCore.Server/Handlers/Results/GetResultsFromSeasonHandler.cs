@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
@@ -12,16 +13,16 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record GetResultsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<EventResultTabModel>>;
+    public record GetResultsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<EventResultModel>>;
 
-    public class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest>, IRequestHandler<GetResultsFromSeasonRequest, IEnumerable<EventResultTabModel>>
+    public class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest>, IRequestHandler<GetResultsFromSeasonRequest, IEnumerable<EventResultModel>>
     {
         public GetResultsFromSeasonHandler(ILogger<GetResultsFromSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromSeasonRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<IEnumerable<EventResultTabModel>> Handle(GetResultsFromSeasonRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventResultModel>> Handle(GetResultsFromSeasonRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getResults = await MapToGetResultModelsFromSeasonAsync(request.LeagueId, request.SeasonId, cancellationToken);
@@ -32,7 +33,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return getResults;
         }
 
-        private async Task<IEnumerable<EventResultTabModel>> MapToGetResultModelsFromSeasonAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
+        private async Task<IEnumerable<EventResultModel>> MapToGetResultModelsFromSeasonAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
         {
             return await dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == leagueId)

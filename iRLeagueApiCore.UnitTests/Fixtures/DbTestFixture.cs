@@ -169,12 +169,12 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 LastModifiedByUserName = ClientUserName,
                 LastModifiedByUserId = ClientGuid
             };
-            // Create sessions on schedule1
-            for (int i = 0; i < 5; i++)
+            // Create events on schedule1
+            for (int i=0; i< 5; i++)
             {
-                var session = new SessionEntity()
+                var @event = new EventEntity()
                 {
-                    Name = $"S1 Session {i + 1}",
+                    Name = $"S1 Event {i + 1}",
                     CreatedOn = DateTime.Now,
                     CreatedByUserName = ClientUserName,
                     CreatedByUserId = ClientGuid,
@@ -185,22 +185,27 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                         .SelectMany(x => x.TrackConfigs)
                         .Skip(i)
                         .FirstOrDefault(),
-                    //SessionType = (SessionType)i + 1
                 };
-                var subSession = new SubSessionEntity()
+                var session = new SessionEntity()
                 {
                     Name = "Race",
-                    SessionType = SimSessionType.Race,
-                    Duration = TimeSpan.FromMinutes(random.Next(20)+10),
+                    CreatedOn = DateTime.Now,
+                    CreatedByUserName = ClientUserName,
+                    CreatedByUserId = ClientGuid,
+                    LastModifiedOn = DateTime.Now,
+                    LastModifiedByUserName = ClientUserName,
+                    LastModifiedByUserId = ClientGuid,
+                    SessionType = SessionType.Race,
+                    Duration = TimeSpan.FromMinutes(random.Next(20) + 10),
                 };
-                session.SubSessions.Add(subSession);
-                schedule1.Sessions.Add(session);
+                @event.Sessions.Add(session);
+                schedule1.Events.Add(@event);
             }
             for (int i = 0; i < 2; i++)
             {
-                var session = new SessionEntity()
+                var @event = new EventEntity()
                 {
-                    Name = $"S2 Session {i + 1}",
+                    Name = $"S2 Event {i + 1}",
                     CreatedOn = DateTime.Now,
                     CreatedByUserName = ClientUserName,
                     CreatedByUserId = ClientGuid,
@@ -211,16 +216,21 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                         .SelectMany(x => x.TrackConfigs)
                         .Skip(i)
                         .FirstOrDefault(),
-                    //SessionType = (SessionType)i + 1
                 };
-                var subSession = new SubSessionEntity()
+                var session = new SessionEntity()
                 {
                     Name = "Race",
-                    SessionType = SimSessionType.Race,
+                    CreatedOn = DateTime.Now,
+                    CreatedByUserName = ClientUserName,
+                    CreatedByUserId = ClientGuid,
+                    LastModifiedOn = DateTime.Now,
+                    LastModifiedByUserName = ClientUserName,
+                    LastModifiedByUserId = ClientGuid,
+                    SessionType = SessionType.Race,
                     Duration = TimeSpan.FromMinutes(random.Next(20) + 10),
                 };
-                session.SubSessions.Add(subSession);
-                schedule2.Sessions.Add(session);
+                @event.Sessions.Add(session);
+                schedule2.Events.Add(@event);
             }
             context.Leagues.Add(league1);
             league1.Seasons.Add(season1);
@@ -279,25 +289,36 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 .ToList();
 
             // create results
+            var resultConfig = new ResultConfigurationEntity()
+            {
+                Name = "Test result Config",
+                DisplayName = "Overall"
+            };
             var scoring = new ScoringEntity()
             {
                 Name = "Testscoring",
                 ShowResults = true
             };
-            season1.Scorings.Add(scoring);
+            resultConfig.Scorings.Add(scoring);
+            league1.ResultConfigs.Add(resultConfig);
 
-            foreach (var session in league1.Seasons.SelectMany(x => x.Schedules).SelectMany(x => x.Sessions)
+            foreach (var @event in league1.Seasons
+                .SelectMany(x => x.Schedules)
+                .SelectMany(x => x.Events)
                 .SkipLast(1))
-            {;
-                var result = new ResultEntity();
-                foreach (var subSession in session.SubSessions)
+            {
+                var eventResult = new EventResultEntity();
+                var scoredResult = new ScoredEventResultEntity()
                 {
-                    var subResult = new SubResultEntity();
-                    subSession.SubResult = subResult;
-                    result.SubResults.Add(subResult);
-                    var scoredResult = new ScoredResultEntity();
-                    scoring.ScoredResults.Add(scoredResult);
-                    result.ScoredResults.Add(scoredResult);
+                    Name = resultConfig.DisplayName,
+                };
+                foreach (var session in @event.Sessions)
+                {
+                    var sessionResult = new SessionResultEntity();
+                    sessionResult.Session = session;
+                    eventResult.SessionResults.Add(sessionResult);
+                    var scoredSessionResult = new ScoredSessionResultEntity();
+                    scoredResult.ScoredSessionResults.Add(scoredSessionResult);
                     for (int i = 0; i < 10; i++)
                     {
                         var resultRow = new ResultRowEntity()
@@ -310,18 +331,18 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                             AvgLapTime = GetTimeSpan(random).Ticks,
                             Interval = GetTimeSpan(random).Ticks
                         };
-                        subResult.ResultRows.Add(resultRow);
+                        sessionResult.ResultRows.Add(resultRow);
                         var scoredResultRow = new ScoredResultRowEntity(resultRow)
                         {
                             FinalPosition = i + 1,
                             RacePoints = 10 - i,
                             TotalPoints = 10 - i
                         };
-                        scoredResult.ScoredResultRows.Add(scoredResultRow);
+                        scoredSessionResult.ScoredResultRows.Add(scoredResultRow);
                     }
                 }
-                scoring.Sessions.Add(session);
-                session.Result = result;
+                @event.EventResult = eventResult;
+                @event.ScoredEventResults.Add(scoredResult);
             }
         }
 

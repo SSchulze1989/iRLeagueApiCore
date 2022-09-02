@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
@@ -12,17 +13,17 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record GetResultsFromEventRequest(long LeagueId, long EventId) : IRequest<IEnumerable<EventResultTabModel>>;
+    public record GetResultsFromEventRequest(long LeagueId, long EventId) : IRequest<IEnumerable<EventResultModel>>;
 
     public class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsFromSessionHandler, GetResultsFromEventRequest>, 
-        IRequestHandler<GetResultsFromEventRequest, IEnumerable<EventResultTabModel>>
+        IRequestHandler<GetResultsFromEventRequest, IEnumerable<EventResultModel>>
     {
         public GetResultsFromSessionHandler(ILogger<GetResultsFromSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromEventRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
 
-        public async Task<IEnumerable<EventResultTabModel>> Handle(GetResultsFromEventRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventResultModel>> Handle(GetResultsFromEventRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getResults = await MapToGetResultModelsFromSessionAsync(request.LeagueId, request.EventId, cancellationToken);
@@ -33,7 +34,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return getResults;
         }
 
-        private async Task<IEnumerable<EventResultTabModel>> MapToGetResultModelsFromSessionAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+        private async Task<IEnumerable<EventResultModel>> MapToGetResultModelsFromSessionAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             return await dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == leagueId)

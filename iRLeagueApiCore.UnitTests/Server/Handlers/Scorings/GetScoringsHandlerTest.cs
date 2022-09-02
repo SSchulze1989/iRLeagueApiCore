@@ -38,8 +38,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         protected override void DefaultAssertions(GetScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
-            Assert.NotNull(result.BasePoints);
-            Assert.NotNull(result.BonusPoints);
         }
 
         [Fact]

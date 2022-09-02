@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueDatabaseCore.Models;
@@ -31,7 +32,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         /// <summary>
-        /// Get single result from specific session and scoring
+        /// Get single result from specific resultId
         /// </summary>
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
@@ -40,16 +41,16 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/{leagueName}/Events/{eventId:long}/ResultTabs/{resultTabId:long}/[controller]")]
-        public async Task<ActionResult<EventResultTabModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
-            [FromRoute] long resultTabId, CancellationToken cancellationToken)
+        [Route("{id:long}")]
+        public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long resultId, 
+            CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[{Method}] result from session {EventId} and result tab {ResultTabId} in {LeagueName} by {UserName}", 
-                "Get", eventId, resultTabId, leagueName, User.Identity.Name);
-            var request = new GetResultRequest(leagueId, eventId, resultTabId);
+            _logger.LogInformation("[{Method}] result {ResultId} in {LeagueName} by {UserName}", 
+                "Get", resultId, leagueName, User.Identity.Name);
+            var request = new GetResultRequest(leagueId, resultId);
             var getResult = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return entry for result {EventId},{ResultTabId} from {LeagueName}", 
-                getResult.EventId, getResult.ResultTabId, leagueName);
+            _logger.LogInformation("Return entry for result {ResultId} from {LeagueName}", 
+                getResult.ResultId, leagueName);
             return Ok(getResult);
         }
 
@@ -63,7 +64,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<ResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from season {SeasonId} in {LeagueName} by {UserName}",
@@ -85,7 +86,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<ResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<EventResultEntity>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long eventId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from event {EventId} in {LeagueName} by {UserName}",

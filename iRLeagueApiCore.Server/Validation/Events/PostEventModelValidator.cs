@@ -15,6 +15,8 @@ namespace iRLeagueApiCore.Server.Validation.Events
 
         public PostEventModelValidator(LeagueDbContext dbContext)
         {
+            this.dbContext = dbContext;
+
             RuleFor(x => x.Sessions)
                 .NotNull()
                 .WithMessage("Sessions required");
