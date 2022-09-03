@@ -22,9 +22,9 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             _logger.LogInformation("Deleted league id {LeagueId}", request.LeagueId);
-            var deleteLeague = await GetLeagueEntityAsync(request.LeagueId) ?? throw new ResourceNotFoundException();
+            var deleteLeague = await GetLeagueEntityAsync(request.LeagueId, cancellationToken) ?? throw new ResourceNotFoundException();
             dbContext.Remove(deleteLeague);
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogInformation("Deleted league {LeagueName} with league id {LeagueId} successfully", deleteLeague.Name, deleteLeague.Id);
             return Unit.Value;
         }

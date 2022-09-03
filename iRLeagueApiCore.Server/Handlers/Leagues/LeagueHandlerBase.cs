@@ -59,12 +59,6 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues
             LastModifiedOn = x.LastModifiedOn,
         };
 
-        protected virtual async Task<LeagueEntity> GetLeagueEntityAsync(long leagueId)
-        {
-            return await dbContext.Leagues
-                .SingleOrDefaultAsync(x => x.Id == leagueId);
-        }
-
         protected virtual LeagueEntity MapToLeagueEntity(long leagueId, LeagueUser user, PutLeagueModel putLeague, LeagueEntity leagueEntity)
         {
             leagueEntity.NameFull = putLeague.NameFull;
