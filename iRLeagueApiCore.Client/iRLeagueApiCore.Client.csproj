@@ -10,7 +10,7 @@
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<TargetFrameworks>net5.0</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 		<PackageId>iRLeagueApiCore.Client</PackageId>
 		<Version>0.2.0</Version>
 		<Authors>Simon Schulze</Authors>

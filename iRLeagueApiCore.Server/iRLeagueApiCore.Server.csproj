@@ -42,14 +42,24 @@
     <Folder Include="Logs\" />
   </ItemGroup>
 
-	<Target Name="CopyReferenceFiles" BeforeTargets="Build">
+	<Target Name="CopyReferenceFiles" AfterTargets="AfterBuild">
 		<ItemGroup>
 			<XmlReferenceFiles Condition="%(PackageReference.CopyToOutputDirectory) != ''" 
-							   Include="$(NugetPackageRoot)/%(PackageReference.Identity)/%(PackageReference.Version)/%(PackageReference.CopyToOutputDirectory)/*.xml">
+							   Include="$(NugetPackageRoot)$([System.String]::Copy(%(PackageReference.Identity)).ToLower())/%(PackageReference.Version)/%(PackageReference.CopyToOutputDirectory)/*.xml">
 			</XmlReferenceFiles>
 		</ItemGroup>
-		<Message Text="Copying reference files %(XmlReferenceFiles.Filename)%(Extension) to $(OutputPath)" Importance="High" />
-		<Copy SourceFiles="@(XmlReferenceFiles)" DestinationFolder="$(OutputPath)" Condition="Exists('%(RootDir)%(Directory)%(Filename)%(Extension)')" />
+		<Message Text="Copying reference files %(XmlReferenceFiles.RootDir)%(Directory)%(Filename)%(Extension) to $(OutDir)" Importance="High" />
+		<Copy SourceFiles="@(XmlReferenceFiles)" DestinationFolder="$(OutputPath)"/>
+	</Target>
+
+	<Target Name="CopyReferenceFilesOnPublish" AfterTargets="AfterPublish">
+		<ItemGroup>
+			<XmlReferenceFiles Condition="%(PackageReference.CopyToOutputDirectory) != ''"
+							   Include="$(NugetPackageRoot)$([System.String]::Copy(%(PackageReference.Identity)).ToLower())/%(PackageReference.Version)/%(PackageReference.CopyToOutputDirectory)/*.xml">
+			</XmlReferenceFiles>
+		</ItemGroup>
+		<Message Text="Copying reference files %(XmlReferenceFiles.RootDir)%(Directory)%(Filename)%(Extension) to $(PublishDir)" Importance="High" />
+		<Copy SourceFiles="@(XmlReferenceFiles)" DestinationFolder="$(OutputPath)"/>
 	</Target>
 
 	<PropertyGroup>

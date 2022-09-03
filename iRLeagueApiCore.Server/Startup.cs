@@ -114,7 +114,7 @@ namespace iRLeagueApiCore.Server
                 });
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Server.xml");
                 c.IncludeXmlComments(xmlPath);
-                xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Communication.xml");
+                xmlPath = Path.Combine(AppContext.BaseDirectory, "iRLeagueApiCore.Common.xml");
                 c.IncludeXmlComments(xmlPath);
                 c.MapType<TimeSpan>(() => new OpenApiSchema()
                 {
