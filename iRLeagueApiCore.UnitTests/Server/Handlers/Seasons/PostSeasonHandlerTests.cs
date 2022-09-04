@@ -49,15 +49,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
         }
 
         [Fact]
-        public async override Task<SeasonModel> ShouldHandleDefaultAsync()
+        public async override Task<SeasonModel> ShouldHandleDefault()
         {
-            return await base.ShouldHandleDefaultAsync();
+            return await base.ShouldHandleDefault();
         }
 
         [Fact]
-        public override async Task ShouldHandleValidationFailedAsync()
+        public override async Task ShouldHandleValidationFailed()
         {
-            await base.ShouldHandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailed();
         }
 
         [Theory]

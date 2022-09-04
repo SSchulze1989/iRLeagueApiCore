@@ -291,16 +291,27 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             // create results
             var resultConfig = new ResultConfigurationEntity()
             {
-                Name = "Test result Config",
+                Name = "Resultconfig 1",
                 DisplayName = "Overall"
             };
             var scoring = new ScoringEntity()
             {
-                Name = "Testscoring",
+                Name = "Scoring 1",
                 ShowResults = true
+            };
+            var pointRule = new PointRuleEntity()
+            {
+                Name = "Pointrule 1",
+                BonusPoints = new Dictionary<string, int>() { { "p1", 5 }, { "p2", 3 }, { "p3", 1 } },
+                FinalSortOptions = new SortOptions[] { SortOptions.TotalPtsAsc, SortOptions.PenPtsDesc },
+                MaxPoints = 30,
+                PointDropOff = 1,
+                PointsPerPlace = new int[] { 5, 4, 3, 2, 1 },
+                PointsSortOptions = new SortOptions[] { SortOptions.PosAsc, SortOptions.IntvlAsc },
             };
             resultConfig.Scorings.Add(scoring);
             league1.ResultConfigs.Add(resultConfig);
+            league1.PointRules.Add(pointRule);
 
             foreach (var @event in league1.Seasons
                 .SelectMany(x => x.Schedules)

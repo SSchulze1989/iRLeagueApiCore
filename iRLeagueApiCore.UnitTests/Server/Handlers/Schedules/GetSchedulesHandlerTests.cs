@@ -43,15 +43,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
         }
 
         [Fact]
-        public override async Task<IEnumerable<ScheduleModel>> ShouldHandleDefaultAsync()
+        public override async Task<IEnumerable<ScheduleModel>> ShouldHandleDefault()
         {
-            return await base.ShouldHandleDefaultAsync();
+            return await base.ShouldHandleDefault();
         }
 
         [Fact]
-        public override async Task ShouldHandleValidationFailedAsync()
+        public override async Task ShouldHandleValidationFailed()
         {
-            await base.ShouldHandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailed();
         }
 
         [Theory]

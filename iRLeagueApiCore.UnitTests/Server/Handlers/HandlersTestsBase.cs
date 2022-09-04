@@ -37,6 +37,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected const long testScoringId = 1;
         protected const long testScheduleId = 1;
         protected const long testResultId = 1;
+        protected const long testPointRuleId = 1;
         protected const long testResultConfigId = 1;
         protected const string testUserName = "TestUser";
         protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
@@ -94,7 +95,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <para/>Assertions can be modified by overriding <see cref="DefaultAssertions"/>
         /// </summary>
         /// <returns><typeparamref name="TResult"/> Result of the handle method</returns>
-        public virtual async Task<TResult> ShouldHandleDefaultAsync()
+        public virtual async Task<TResult> ShouldHandleDefault()
         {
             using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var dbContext = fixture.CreateDbContext();
@@ -145,7 +146,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <summary>
         /// Run the <see cref="IRequestHandler{TRequest, TResonse}.Handle"/> method and assert throwing <see cref="ValidationException"/>
         /// </summary
-        public virtual async Task ShouldHandleValidationFailedAsync()
+        public virtual async Task ShouldHandleValidationFailed()
         {
             using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var dbContext = fixture.CreateDbContext();
