@@ -39,9 +39,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
         }
 
         [Fact]
-        public override async Task<LeagueModel> HandleDefaultAsync()
+        public override async Task<LeagueModel> ShouldHandleDefaultAsync()
         {
-            return await base.HandleDefaultAsync();
+            return await base.ShouldHandleDefaultAsync();
         }
 
         [Theory]
@@ -54,9 +54,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
         }
 
         [Fact]
-        public async override Task HandleValidationFailedAsync()
+        public async override Task ShouldHandleValidationFailedAsync()
         {
-            await base.HandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailedAsync();
         }
     }
 }

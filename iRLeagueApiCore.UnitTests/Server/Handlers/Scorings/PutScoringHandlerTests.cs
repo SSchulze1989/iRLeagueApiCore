@@ -48,15 +48,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         }
 
         [Fact]
-        public override async Task<ScoringModel> HandleDefaultAsync()
+        public override async Task<ScoringModel> ShouldHandleDefaultAsync()
         {
-            return await base.HandleDefaultAsync();
+            return await base.ShouldHandleDefaultAsync();
         }
 
         [Fact]
-        public override async Task HandleValidationFailedAsync()
+        public override async Task ShouldHandleValidationFailedAsync()
         {
-            await base.HandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailedAsync();
         }
 
         [Theory]

@@ -3,12 +3,6 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Identity.Test;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
@@ -40,22 +34,22 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         protected override void DefaultAssertions(PostResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
         {
             result.LeagueId.Should().Be(request.LeagueId);
-            result.ResultConfigId.Should().Be(result.ResultConfigId);
+            result.ResultConfigId.Should().NotBe(0);
             result.Name.Should().Be(request.Model.Name);
             result.DisplayName.Should().Be(request.Model.DisplayName);
             base.DefaultAssertions(request, result, dbContext);
         }
 
         [Fact]
-        public override async Task<ResultConfigModel> HandleDefaultAsync()
+        public override async Task<ResultConfigModel> ShouldHandleDefaultAsync()
         {
-            return await base.HandleDefaultAsync();
+            return await base.ShouldHandleDefaultAsync();
         }
 
         [Fact]
-        public override async Task HandleValidationFailedAsync()
+        public override async Task ShouldHandleValidationFailedAsync()
         {
-            await base.HandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailedAsync();
         }
     }
 }

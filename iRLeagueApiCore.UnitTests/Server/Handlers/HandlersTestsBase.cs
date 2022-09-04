@@ -1,4 +1,5 @@
-﻿using FluentIdentityBuilder;
+﻿using FluentAssertions;
+using FluentIdentityBuilder;
 using FluentValidation;
 using FluentValidation.Results;
 using iRLeagueApiCore.Server.Authentication;
@@ -36,6 +37,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected const long testScoringId = 1;
         protected const long testScheduleId = 1;
         protected const long testResultId = 1;
+        protected const long testResultConfigId = 1;
         protected const string testUserName = "TestUser";
         protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
         protected static IEnumerable<string> testLeagueRoles = new string[] { LeagueRoles.Member };
@@ -61,7 +63,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
 
         protected virtual void DefaultAssertions(TRequest request, TResult result, LeagueDbContext dbContext)
         {
-            Assert.NotNull(result);
+            result.Should().NotBeNull();
         }
 
         protected virtual ClaimsPrincipal DefaultPrincipal(string leagueName = testLeagueName, string userName = testUserName,
@@ -92,7 +94,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <para/>Assertions can be modified by overriding <see cref="DefaultAssertions"/>
         /// </summary>
         /// <returns><typeparamref name="TResult"/> Result of the handle method</returns>
-        public virtual async Task<TResult> HandleDefaultAsync()
+        public virtual async Task<TResult> ShouldHandleDefaultAsync()
         {
             using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var dbContext = fixture.CreateDbContext();
@@ -114,7 +116,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         public async Task HandleNotFoundRequestAsync(TRequest request = null)
         {
             request ??= DefaultRequest();
-            await Assert.ThrowsAsync<ResourceNotFoundException>(async () => await HandleSpecialAsync(request, null));
+            var act = async () => await HandleSpecialAsync(request, null);
+            await act.Should()
+                .ThrowAsync<ResourceNotFoundException>();
         }
 
         /// <summary>
@@ -141,7 +145,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <summary>
         /// Run the <see cref="IRequestHandler{TRequest, TResonse}.Handle"/> method and assert throwing <see cref="ValidationException"/>
         /// </summary
-        public virtual async Task HandleValidationFailedAsync()
+        public virtual async Task ShouldHandleValidationFailedAsync()
         {
             using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var dbContext = fixture.CreateDbContext();
@@ -154,7 +158,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
             var request = DefaultRequest();
             var handler = CreateTestHandler(dbContext, mockValidator.Object);
 
-            await Assert.ThrowsAsync<ValidationException>(async () => await handler.Handle(request, default));
+            var act = async () => await handler.Handle(request, default);
+            await act.Should()
+                .ThrowAsync<ValidationException>();
         }
     }
 }

@@ -21,6 +21,14 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
         }
 
+        protected virtual async Task<ResultConfigurationEntity> GetResultConfigEntity(long leagueId, long resultConfigId, CancellationToken cancellationToken)
+        {
+            return await dbContext.ResultConfigurations
+                .Where(x => x.LeagueId == leagueId)
+                .Where(x => x.ResultConfigId == resultConfigId)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PostResultConfigModel postResultConfig, 
             ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
         {
@@ -28,6 +36,11 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             resultConfigEntity.Name = postResultConfig.Name;
             UpdateVersionEntity(user, resultConfigEntity);
             return await Task.FromResult(resultConfigEntity);
+        }
+
+        protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PutResultConfigModel putResultConfig, ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
+        {
+            return await MapToResultConfigEntityAsync(user, (PostResultConfigModel)putResultConfig, resultConfigEntity, cancellationToken);
         }
 
         protected virtual async Task<ResultConfigModel> MapToResultConfigModel(long leagueId, long resultConfigId, CancellationToken cancellationToken)
