@@ -17,6 +17,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
+    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class ScoringsController : LeagueApiController

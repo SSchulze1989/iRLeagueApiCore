@@ -26,6 +26,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [Authorize]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
+    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
     public class EventsController : LeagueApiController

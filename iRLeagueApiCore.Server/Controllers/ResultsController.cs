@@ -20,6 +20,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [Route("/{leagueName}/[controller]")]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
+    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     public class ResultsController : LeagueApiController
     {
         private readonly ILogger<ResultsController> _logger;
