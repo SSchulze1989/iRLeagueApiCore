@@ -8,9 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.2.0" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.2.0" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.1-dev10" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.1-dev2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">
       <PrivateAssets>all</PrivateAssets>
@@ -36,6 +37,7 @@
 
   <ItemGroup>
     <Folder Include="Client\Endpoints\Leagues\" />
+    <Folder Include="Server\Validators\Scorings\" />
   </ItemGroup>
 
 </Project>

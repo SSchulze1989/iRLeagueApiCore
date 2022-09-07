@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
         long Id { get; }
         IPostGetAllEndpoint<ScheduleModel, PostScheduleModel> Schedules();
         IPostGetAllEndpoint<ScoringModel, PostScoringModel> Scorings();
-        IGetAllEndpoint<ResultModel> Results();
-        IGetAllEndpoint<SessionModel> Sessions();
+        IGetAllEndpoint<EventResultModel> Results();
+        IGetAllEndpoint<EventModel> Events();
     }
 }

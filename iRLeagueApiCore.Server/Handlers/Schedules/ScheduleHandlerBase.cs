@@ -45,7 +45,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules
             ScheduleId = x.ScheduleId,
             SeasonId = x.SeasonId,
             Name = x.Name,
-            SessionIds = x.Sessions.Select(x => x.SessionId),
+            EventIds = x.Events.Select(x => x.EventId),
             CreatedOn = x.CreatedOn,
             CreatedByUserId = x.CreatedByUserId,
             CreatedByUserName = x.CreatedByUserName,

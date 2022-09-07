@@ -22,7 +22,6 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var scoring = await GetScoringEntityAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();
-            var scoredResults = dbContext.ScoredResults.ToList();
             dbContext.Scorings.Remove(scoring);
             await dbContext.SaveChangesAsync();
             _logger.LogInformation("Removed scoring {ScoringId} inside league {LeagueId} from database", 

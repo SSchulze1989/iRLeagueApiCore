@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
@@ -14,7 +15,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
     [Collection("HandlerTests")]
-    public class GetResultsFromSeasonHandlerTests : HandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<ResultModel>>
+    public class GetResultsFromSeasonHandlerTests : HandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<EventResultModel>>
     {
         public GetResultsFromSeasonHandlerTests(DbTestFixture fixture) : base(fixture)
         {
@@ -35,25 +36,25 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             return new GetResultsFromSeasonRequest(leagueId, seasonId);
         }
 
-        protected override void DefaultAssertions(GetResultsFromSeasonRequest request, IEnumerable<ResultModel> result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetResultsFromSeasonRequest request, IEnumerable<EventResultModel> result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
-            var seasonResults = dbContext.ScoredResults
+            var seasonResults = dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == request.LeagueId)
-                .Where(x => x.Result.Session.Schedule.SeasonId == request.SeasonId);
+                .Where(x => x.Event.Schedule.SeasonId == request.SeasonId);
             Assert.Equal(seasonResults.Count(), result.Count());   
         }
 
         [Fact]
-        public async override Task<IEnumerable<ResultModel>> HandleDefaultAsync()
+        public async override Task<IEnumerable<EventResultModel>> ShouldHandleDefault()
         {
-            return await base.HandleDefaultAsync();
+            return await base.ShouldHandleDefault();
         }
 
         [Fact]
-        public async override Task HandleValidationFailedAsync()
+        public async override Task ShouldHandleValidationFailed()
         {
-            await base.HandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailed();
         }
 
         [Theory]

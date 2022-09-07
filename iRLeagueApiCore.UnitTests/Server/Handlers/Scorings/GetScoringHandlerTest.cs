@@ -39,20 +39,18 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         {
             base.DefaultAssertions(request, result, dbContext);
             Assert.NotEmpty(result);
-            Assert.NotNull(result.First().BasePoints);
-            Assert.NotNull(result.First().BonusPoints);
         }
 
         [Fact]
-        public override async Task<IEnumerable<ScoringModel>> HandleDefaultAsync()
+        public override async Task<IEnumerable<ScoringModel>> ShouldHandleDefault()
         {
-            return await base.HandleDefaultAsync();
+            return await base.ShouldHandleDefault();
         }
 
         [Fact]
-        public override async Task HandleValidationFailedAsync()
+        public override async Task ShouldHandleValidationFailed()
         {
-            await base.HandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailed();
         }
     }
 }

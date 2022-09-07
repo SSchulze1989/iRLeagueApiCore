@@ -38,14 +38,12 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         protected override void DefaultAssertions(GetScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
-            Assert.NotNull(result.BasePoints);
-            Assert.NotNull(result.BonusPoints);
         }
 
         [Fact]
-        public override async Task<ScoringModel> HandleDefaultAsync()
+        public override async Task<ScoringModel> ShouldHandleDefault()
         {
-            return await base.HandleDefaultAsync();
+            return await base.ShouldHandleDefault();
         }
 
         [Theory]
@@ -59,9 +57,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
         }
 
         [Fact]
-        public override async Task HandleValidationFailedAsync()
+        public override async Task ShouldHandleValidationFailed()
         {
-            await base.HandleValidationFailedAsync();
+            await base.ShouldHandleValidationFailed();
         }
     }
 }

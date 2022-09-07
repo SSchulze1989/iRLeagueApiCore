@@ -24,6 +24,12 @@ namespace iRLeagueApiCore.Server.Handlers
             this.validators = validators;
         }
 
+        protected virtual async Task<LeagueEntity> GetLeagueEntityAsync(long leagueId, CancellationToken cancellationToken)
+        {
+            return await dbContext.Leagues
+                .SingleOrDefaultAsync(x => x.Id == leagueId);
+        }
+
         protected virtual async Task<ScheduleEntity> GetScheduleEntityAsync(long leagueId, long? scheduleId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Schedules

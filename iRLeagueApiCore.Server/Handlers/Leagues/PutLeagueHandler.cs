@@ -23,9 +23,9 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues
         public async Task<LeagueModel> Handle(PutLeagueRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            var putLeague = await GetLeagueEntityAsync(request.LeagueId) ?? throw new ResourceNotFoundException();
+            var putLeague = await GetLeagueEntityAsync(request.LeagueId, cancellationToken) ?? throw new ResourceNotFoundException();
             MapToLeagueEntity(request.LeagueId, request.User, request.Model, putLeague);
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(cancellationToken);
             var getLeague = await MapToGetLeagueModelAsync(putLeague.Id, cancellationToken);
             return getLeague;
         }
