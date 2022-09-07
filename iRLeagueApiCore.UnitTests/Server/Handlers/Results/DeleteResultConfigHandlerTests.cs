@@ -33,11 +33,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             return DefaultRequest(testLeagueId, testResultConfigId);
         }
 
-        protected override async void DefaultAssertions(DeleteResultConfigRequest request, MediatR.Unit result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(DeleteResultConfigRequest request, MediatR.Unit result, LeagueDbContext dbContext)
         {
-            var deletedResultConfig = await dbContext.ResultConfigurations
+            var deletedResultConfig = dbContext.ResultConfigurations
                 .Where(x => x.ResultConfigId == request.ResultConfigId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefault();
             deletedResultConfig.Should().BeNull();
             base.DefaultAssertions(request, result, dbContext);
         }
