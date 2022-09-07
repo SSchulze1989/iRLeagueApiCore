@@ -5,6 +5,7 @@ using iRLeagueApiCore.Client.Endpoints.Sessions;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
@@ -20,14 +21,14 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
             RouteBuilder.AddParameter(seasonId);
         }
 
-        IGetAllEndpoint<ResultModel> ISeasonByIdEndpoint.Results()
+        IGetAllEndpoint<EventResultModel> ISeasonByIdEndpoint.Results()
         {
             return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
-        IGetAllEndpoint<SessionModel> ISeasonByIdEndpoint.Sessions()
+        IGetAllEndpoint<EventModel> ISeasonByIdEndpoint.Events()
         {
-            return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
+            return new EventsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
         IPostGetAllEndpoint<ScheduleModel, PostScheduleModel> ISeasonByIdEndpoint.Schedules()

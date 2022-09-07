@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Client.Endpoints.Results
 {
-    public interface IResultsEndpoint : IWithIdEndpoint<IResultByIdEndpoint>
+    public interface IResultConfigByIdEndpoint : IUpdateEndpoint<ResultConfigModel, PutResultConfigModel>
     {
     }
 }

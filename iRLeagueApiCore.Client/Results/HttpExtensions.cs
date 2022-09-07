@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using iRLeagueApiCore.Client.Http;
+using System.Text.Json.Serialization;
+using iRLeagueApiCore.Common.Converters;
 #if NETCOREAPP
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -16,6 +18,16 @@ namespace iRLeagueApiCore.Client.Results
 {
     public static class HttpExtensions
     {
+        private static readonly JsonSerializerOptions jsonOptions;
+
+        static HttpExtensions()
+        {
+            jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+            jsonOptions.Converters.Add(new JsonTimeSpanConverter());
+            jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        }
+
         public static async Task<ClientActionResult<T>> ToClientActionResultAsync<T>(this HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         {
             string requestUrl = httpResponse.RequestMessage?.RequestUri?.AbsoluteUri;
@@ -24,7 +36,7 @@ namespace iRLeagueApiCore.Client.Results
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var content = httpResponse.StatusCode != HttpStatusCode.NoContent ?
-                        await httpResponse.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) : default;
+                        await httpResponse.Content.ReadFromJsonAsync<T>(options: jsonOptions, cancellationToken: cancellationToken) : default;
                     return new ClientActionResult<T>(content, httpResponse.StatusCode, requestUrl);
                 }
 

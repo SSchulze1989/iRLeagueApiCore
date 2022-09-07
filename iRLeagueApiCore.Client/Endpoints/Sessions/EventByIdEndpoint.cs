@@ -2,19 +2,19 @@
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
-using System.Net.Http;
+using iRLeagueApiCore.Common.Models.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints.Sessions
 {
-    internal class SessionByIdEndpoint : UpdateEndpoint<SessionModel, PutSessionModel>, ISessionByIdEndpoint
+    internal class EventByIdEndpoint : UpdateEndpoint<EventModel, PutEventModel>, IEventByIdEndpoint
     {
-        public SessionByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long sessionId) : 
+        public EventByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long EventId) : 
             base(httpClientWrapper, routeBuilder)
         {
-            RouteBuilder.AddParameter(sessionId);
+            RouteBuilder.AddParameter(EventId);
         }
 
-        IResultsEndpoint ISessionByIdEndpoint.Results()
+        IGetAllEndpoint<EventResultModel> IEventByIdEndpoint.Results()
         {
             return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
         }

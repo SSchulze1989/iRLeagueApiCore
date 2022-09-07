@@ -1,9 +1,11 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Schedules;
+﻿using iRLeagueApiCore.Client.Endpoints.Results;
+using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
+using iRLeagueApiCore.Common.Models;
 using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
@@ -29,14 +31,19 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
             return new SeasonsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
-        ISessionsEndpoint ILeagueByNameEndpoint.Sessions()
+        IEventsEndpoint ILeagueByNameEndpoint.Events()
         {
-            return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
+            return new EventsEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
-        IScoringsEndpoint ILeagueByNameEndpoint.Scorings()
+        IResultConfigsEndpoint ILeagueByNameEndpoint.ResultConfigs()
         {
-            return new ScoringsEndpoint(HttpClientWrapper, RouteBuilder);
+            return new ResultConfigsEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
+        IPointRulesEndpoint ILeagueByNameEndpoint.PointRules()
+        {
+            return new PointRulesEndpoint(HttpClientWrapper, RouteBuilder);
         }
     }
 }
