@@ -57,6 +57,13 @@ namespace iRLeagueApiCore.Server.Handlers
                 .SingleOrDefaultAsync(x => x.TrackId == trackConfigId, cancellationToken);
         }
 
+        protected virtual async Task<ICollection<MemberEntity>> GetMemberListAsync(IEnumerable<long> memberIds, CancellationToken cancellationToken = default)
+        {
+            return await dbContext.Members
+                .Where(x => memberIds.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+        }
+
         protected virtual T CreateVersionEntity<T> (LeagueUser user, T target) where T : IVersionEntity
         {
             target.CreatedOn = DateTime.UtcNow;
