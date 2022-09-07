@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\dotnet_main_push.yml = .github\workflows\dotnet_main_push.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iRLeagueApiCore.Client", "iRLeagueApiCore.Client\iRLeagueApiCore.Client.csproj", "{F1C2BF9C-E4C7-46F9-928B-BDBE79267DE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iRLeagueApiCore.Client", "src\iRLeagueApiCore.Client\iRLeagueApiCore.Client.csproj", "{F1C2BF9C-E4C7-46F9-928B-BDBE79267DE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

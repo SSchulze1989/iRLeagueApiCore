@@ -13,6 +13,7 @@ jobs:
       TEST_USER: root
       TEST_PASSWORD: root
       TEST_DATABASE: TestDatabase
+      TEST_PROJECT: test/iRLeagueApiCore.UnitTests
       NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
     runs-on: ubuntu-latest
@@ -32,7 +33,7 @@ jobs:
         # MYSQL_DATABASE - name for the default database that is created
         mysql database: $TEST_DATABASE
     - name: Set secrets
-      run: dotnet user-secrets set "ConnectionStrings:ModelDb" "server=localhost;database=$TEST_DATABASE;user=$TEST_USER;password=$TEST_PASSWORD" --project iRLeagueApiCore.UnitTests
+      run: dotnet user-secrets set "ConnectionStrings:ModelDb" "server=localhost;database=$TEST_DATABASE;user=$TEST_USER;password=$TEST_PASSWORD" --project $TEST_PROJECT
     - name: Restore dependencies
       run: dotnet restore
     - name: Build

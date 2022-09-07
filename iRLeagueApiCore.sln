@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iRLeagueApiCore.Server", "src\iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj", "{0DC9F780-3F23-4D33-9E9C-FDF9CA9C7758}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iRLeagueApiCore.UnitTests", "tests\iRLeagueApiCore.UnitTests\iRLeagueApiCore.UnitTests.csproj", "{C4F13C57-8911-4DCD-B862-F16F0D0BEC75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "iRLeagueApiCore.UnitTests", "test\iRLeagueApiCore.UnitTests\iRLeagueApiCore.UnitTests.csproj", "{C4F13C57-8911-4DCD-B862-F16F0D0BEC75}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7F90E099-56DE-4FEF-8CA2-4F4610CDEF19}"
 	ProjectSection(SolutionItems) = preProject
