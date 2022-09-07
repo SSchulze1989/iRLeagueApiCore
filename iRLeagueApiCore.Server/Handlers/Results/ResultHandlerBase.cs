@@ -24,6 +24,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             EventName = result.Event.Name,
             DisplayName = result.Name,
             ResultId = result.ResultId,
+            SeasonId = result.Event.Schedule.SeasonId,
             Date = result.Event.Date.GetValueOrDefault(),
             TrackId = result.Event.TrackId.GetValueOrDefault(),
             TrackName = string.Join(" ", result.Event.Track.TrackGroup.TrackName, result.Event.Track.ConfigName),

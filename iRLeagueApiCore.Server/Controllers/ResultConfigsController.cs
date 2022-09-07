@@ -6,6 +6,8 @@ using iRLeagueApiCore.Server.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +28,17 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger = logger;
             this.mediator = mediator;
+        }
+
+        [HttpGet]
+        [Route("")]
+        public async Task<ActionResult<IEnumerable<ResultConfigModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("[{Method}] all resultConfigs from {LeagueName} by {UserName}", "Get", leagueName, User.Identity.Name);
+            var request = new GetResultConfigsFromLeagueRequest(leagueId);
+            var getResultConfigs = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Returning {Count} entries for resultConfigs in {LeagueName}", getResultConfigs.Count(), leagueName);
+            return Ok(getResultConfigs);
         }
 
         [HttpGet]

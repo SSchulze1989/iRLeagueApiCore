@@ -66,7 +66,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 ShowResults = scoring.ShowResults,
                 UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation,
                 UseResultSetTeam = scoring.UseResultSetTeam,
-            }),
+            }).ToList(),
         };
 
         public Expression<Func<ScoringEntity, ScoringModel>> MapToGetScoringModelExpression => source => new ScoringModel()

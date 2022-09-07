@@ -37,8 +37,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// </summary>
         /// <param name="leagueName"></param>
         /// <param name="leagueId"></param>
-        /// <param name="eventId"></param>
-        /// <param name="resultTabId"></param>
+        /// <param name="resultId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
@@ -87,7 +86,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<EventResultEntity>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long eventId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from event {EventId} in {LeagueName} by {UserName}",

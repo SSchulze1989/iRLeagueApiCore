@@ -196,6 +196,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     LastModifiedByUserName = ClientUserName,
                     LastModifiedByUserId = ClientGuid,
                     SessionType = SessionType.Race,
+                    Laps = random.Next(22) + 10,
                     Duration = TimeSpan.FromMinutes(random.Next(20) + 10),
                 };
                 @event.Sessions.Add(session);
@@ -329,6 +330,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     sessionResult.Session = session;
                     eventResult.SessionResults.Add(sessionResult);
                     var scoredSessionResult = new ScoredSessionResultEntity();
+                    scoredSessionResult.Name = session.Name;
                     scoredResult.ScoredSessionResults.Add(scoredSessionResult);
                     for (int i = 0; i < 10; i++)
                     {

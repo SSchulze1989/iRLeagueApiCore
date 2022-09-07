@@ -98,11 +98,15 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             LeagueId = @event.LeagueId,
             Name = @event.Name,
             ScheduleId = @event.ScheduleId,
+            SeasonId = @event.Schedule.SeasonId,
+            HasResult = @event.ScoredEventResults.Any(),
             Sessions = @event.Sessions.Select(session => new SessionModel()
             {
                 HasResult = session.SessionResult != null,
                 LeagueId = session.LeagueId,
                 Name = session.Name,
+                Laps = session.Laps,
+                Duration = session.Duration,
                 SessionId = session.SessionId,
                 SessionType = session.SessionType,
                 CreatedOn = session.CreatedOn,
@@ -111,7 +115,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 LastModifiedOn = session.LastModifiedOn,
                 LastModifiedByUserId = session.LastModifiedByUserId,
                 LastModifiedByUserName = session.LastModifiedByUserName
-            }),
+            }).ToList(),
             TrackId = @event.TrackId,
         };
     }
