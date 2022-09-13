@@ -26,7 +26,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             
-            var postSeason = await CreateSeasonEntity(request.LeagueId, cancellationToken);
+            var postSeason = await CreateSeasonEntity(request.User, request.LeagueId, cancellationToken);
             await MapToSeasonEntityAsync(request.LeagueId, request.User, request.Model, postSeason, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
             var getSeason = await MapToGetSeasonModel(request.LeagueId, postSeason.SeasonId, cancellationToken)
@@ -34,11 +34,11 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             return getSeason;
         }
 
-        protected async Task<SeasonEntity> CreateSeasonEntity(long leagueId, CancellationToken cancellationToken = default)
+        protected async Task<SeasonEntity> CreateSeasonEntity(LeagueUser user, long leagueId, CancellationToken cancellationToken = default)
         {
             var league = await dbContext.Leagues
                 .SingleOrDefaultAsync(x => x.Id == leagueId) ?? throw new ResourceNotFoundException();
-            var seasonEntity = new SeasonEntity();
+            var seasonEntity = CreateVersionEntity(user, new SeasonEntity());
             league.Seasons.Add(seasonEntity);
             return seasonEntity;
         }
