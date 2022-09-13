@@ -4,6 +4,7 @@ using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Scorings;
+using iRLeagueApiCore.Server.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -117,7 +118,8 @@ namespace iRLeagueApiCore.Server.Controllers
             {
                 _logger.LogInformation("Put scoring {ScoringId} inside {LeagueName} by {UserName}", leagueName,
                     id, User.Identity.Name);
-                var request = new PutScoringRequest(leagueId, id, model);
+                var leagueUser = new LeagueUser(leagueName, User);
+                var request = new PutScoringRequest(leagueId, id, leagueUser, model);
                 var getScoring = await mediator.Send(request, cancellationToken);
                 _logger.LogInformation("Returning entry for scoring {ScoringId} from {LeagueName}", getScoring.Id, leagueName);
                 return Ok(getScoring);

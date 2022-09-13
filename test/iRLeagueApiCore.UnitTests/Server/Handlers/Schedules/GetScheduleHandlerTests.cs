@@ -1,8 +1,10 @@
-﻿using FluentValidation;
+﻿using FluentAssertions;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Schedules;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +38,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 
         protected override void DefaultAssertions(GetScheduleRequest request, ScheduleModel result, LeagueDbContext dbContext)
         {
-            Assert.Equal(request.LeagueId, result.LeagueId);
-            Assert.Equal(request.ScheduleId, result.ScheduleId);
+            result.LeagueId.Should().Be(request.LeagueId);
+            result.ScheduleId.Should().Be(request.ScheduleId);
+            var scheduleEntity = dbContext.Schedules
+                .Include(x => x.Events)
+                .SingleOrDefault(x => x.ScheduleId == result.ScheduleId);
+            scheduleEntity.Should().NotBeNull();
+            result.Name.Should().Be(scheduleEntity.Name);
+            result.EventIds.Should().BeEquivalentTo(scheduleEntity.Events.Select(x => x.EventId));
+            result.SeasonId.Should().Be(scheduleEntity.SeasonId);
+            AssertVersion(scheduleEntity, result);
+            base.DefaultAssertions(request, result, dbContext);
         }
 
         [Fact]

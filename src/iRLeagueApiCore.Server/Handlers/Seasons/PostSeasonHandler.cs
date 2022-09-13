@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons
 {
-    public record PostSeasonRequest(long LeagueId, LeagueUser user, PostSeasonModel Model) : IRequest<SeasonModel>;
+    public record PostSeasonRequest(long LeagueId, LeagueUser User, PostSeasonModel Model) : IRequest<SeasonModel>;
 
     public class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, SeasonModel>
     {
@@ -27,7 +27,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             
             var postSeason = await CreateSeasonEntity(request.LeagueId, cancellationToken);
-            await MapToSeasonEntityAsync(request.LeagueId, request.user, request.Model, postSeason, cancellationToken);
+            await MapToSeasonEntityAsync(request.LeagueId, request.User, request.Model, postSeason, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
             var getSeason = await MapToGetSeasonModel(request.LeagueId, postSeason.SeasonId, cancellationToken)
                 ?? throw new InvalidOperationException($"Creating season {request.Model.SeasonName} failed");

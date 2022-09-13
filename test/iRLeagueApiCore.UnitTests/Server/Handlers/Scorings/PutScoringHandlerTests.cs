@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FluentAssertions;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Scorings;
@@ -33,7 +34,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             {
                 Name = NewScoringName,
             };
-            return new PutScoringRequest(leagueId, scoringId, model);
+            return new PutScoringRequest(leagueId, scoringId, DefaultUser(), model);
         }
 
         protected override PutScoringRequest DefaultRequest()
@@ -43,8 +44,18 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 
         protected override void DefaultAssertions(PutScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
         {
+            var expected = request.Model;
+            result.LeagueId.Should().Be(request.LeagueId);
+            result.Id.Should().Be(request.ScoringId);
+            result.Name.Should().Be(expected.Name);
+            result.ScoringKind.Should().Be(expected.ScoringKind);
+            result.ExtScoringSourceId.Should().Be(expected.ExtScoringSourceId);
+            result.MaxResultsPerGroup.Should().Be(expected.MaxResultsPerGroup);
+            result.ShowResults.Should().Be(expected.ShowResults);
+            result.UpdateTeamOnRecalculation.Should().Be(expected.UpdateTeamOnRecalculation);
+            result.UseResultSetTeam.Should().Be(expected.UseResultSetTeam);
+            AssertChanged(request.User, DateTime.UtcNow, result);
             base.DefaultAssertions(request, result, dbContext);
-            Assert.Equal(NewScoringName, result.Name);
         }
 
         [Fact]

@@ -41,10 +41,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 
         protected override void DefaultAssertions(PutResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
         {
+            var expected = request.Model;
             result.LeagueId.Should().Be(request.LeagueId);
             result.ResultConfigId.Should().Be(request.ResultConfigId);
-            result.Name.Should().Be(request.Model.Name);
-            result.DisplayName.Should().Be(request.Model.DisplayName);
+            result.Name.Should().Be(expected.Name);
+            result.DisplayName.Should().Be(expected.DisplayName);
             base.DefaultAssertions(request, result, dbContext);
         }
 

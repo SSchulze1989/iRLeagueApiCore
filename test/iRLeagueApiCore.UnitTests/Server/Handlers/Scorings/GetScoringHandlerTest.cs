@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FluentAssertions;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Scorings;
@@ -14,37 +15,58 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
     [Collection("HandlerTests")]
-    public class GetScoringsHandlerTest : HandlersTestsBase<GetScoringsHandler, GetScoringsRequest, IEnumerable<ScoringModel>>
+    public class GetScoringHandlerTest : HandlersTestsBase<GetScoringHandler, GetScoringRequest, ScoringModel>
     {
-        public GetScoringsHandlerTest(DbTestFixture fixture) : base(fixture)
+        public GetScoringHandlerTest(DbTestFixture fixture) : base(fixture)
         {
         }
 
-        protected override GetScoringsHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetScoringsRequest> validator)
+        protected override GetScoringHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetScoringRequest> validator)
         {
-            return new GetScoringsHandler(logger, dbContext, new IValidator<GetScoringsRequest>[] { validator });
+            return new GetScoringHandler(logger, dbContext, new IValidator<GetScoringRequest>[] { validator });
         }
 
-        protected override GetScoringsRequest DefaultRequest()
+        protected override GetScoringRequest DefaultRequest()
         {
             return DefaultRequest();
         }
 
-        private GetScoringsRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = 0)
+        private GetScoringRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = testScoringId)
         {
-            return new GetScoringsRequest(leagueId);
+            return new GetScoringRequest(leagueId, scoringId);
         }
 
-        protected override void DefaultAssertions(GetScoringsRequest request, IEnumerable<ScoringModel> result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
         {
+            var testScoring = dbContext.Scorings
+                .SingleOrDefault(x => x.ScoringId == request.ScoringId);
+            result.LeagueId.Should().Be(request.LeagueId);
+            result.Id.Should().Be(request.ScoringId);
+            result.Name.Should().Be(testScoring.Name);
+            result.ScoringKind.Should().Be(testScoring.ScoringKind);
+            result.ExtScoringSourceId.Should().Be(testScoring.ExtScoringSourceId);
+            result.MaxResultsPerGroup.Should().Be(testScoring.MaxResultsPerGroup);
+            result.ResultConfigId.Should().Be(testScoring.ResultConfigId);
+            result.ShowResults.Should().Be(testScoring.ShowResults);
+            result.UpdateTeamOnRecalculation.Should().Be(testScoring.UpdateTeamOnRecalculation);
+            result.UseResultSetTeam.Should().Be(testScoring.UseResultSetTeam);
             base.DefaultAssertions(request, result, dbContext);
-            Assert.NotEmpty(result);
         }
 
         [Fact]
-        public override async Task<IEnumerable<ScoringModel>> ShouldHandleDefault()
+        public override async Task<ScoringModel> ShouldHandleDefault()
         {
             return await base.ShouldHandleDefault();
+        }
+
+        [Theory]
+        [InlineData(testLeagueId, 42)]
+        [InlineData(2, testScoringId)]
+        [InlineData(42, testScoringId)]
+        public async Task HandleNotFound(long leagueId, long scoringId)
+        {
+            var request = DefaultRequest(leagueId, scoringId);
+            await HandleNotFoundRequestAsync(request);
         }
 
         [Fact]

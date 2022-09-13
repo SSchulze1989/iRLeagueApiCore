@@ -14,46 +14,37 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
     [Collection("HandlerTests")]
-    public class GetScoringHandlerTest : HandlersTestsBase<GetScoringHandler, GetScoringRequest, ScoringModel>
+    public class GetScoringsHandlerTest : HandlersTestsBase<GetScoringsHandler, GetScoringsRequest, IEnumerable<ScoringModel>>
     {
-        public GetScoringHandlerTest(DbTestFixture fixture) : base(fixture)
+        public GetScoringsHandlerTest(DbTestFixture fixture) : base(fixture)
         {
         }
 
-        protected override GetScoringHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetScoringRequest> validator)
+        protected override GetScoringsHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetScoringsRequest> validator)
         {
-            return new GetScoringHandler(logger, dbContext, new IValidator<GetScoringRequest>[] { validator });
+            return new GetScoringsHandler(logger, dbContext, new IValidator<GetScoringsRequest>[] { validator });
         }
 
-        protected override GetScoringRequest DefaultRequest()
+        protected override GetScoringsRequest DefaultRequest()
         {
             return DefaultRequest();
         }
 
-        private GetScoringRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = testScoringId)
+        private GetScoringsRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = 0)
         {
-            return new GetScoringRequest(leagueId, scoringId);
+            return new GetScoringsRequest(leagueId);
         }
 
-        protected override void DefaultAssertions(GetScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetScoringsRequest request, IEnumerable<ScoringModel> result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
+            Assert.NotEmpty(result);
         }
 
         [Fact]
-        public override async Task<ScoringModel> ShouldHandleDefault()
+        public override async Task<IEnumerable<ScoringModel>> ShouldHandleDefault()
         {
             return await base.ShouldHandleDefault();
-        }
-
-        [Theory]
-        [InlineData(testLeagueId, 42)]
-        [InlineData(2, testScoringId)]
-        [InlineData(42, testScoringId)]
-        public async Task HandleNotFound(long leagueId, long scoringId)
-        {
-            var request = DefaultRequest(leagueId, scoringId);
-            await HandleNotFoundRequestAsync(request);
         }
 
         [Fact]

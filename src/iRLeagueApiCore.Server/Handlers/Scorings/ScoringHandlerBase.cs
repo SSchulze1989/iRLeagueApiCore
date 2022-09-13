@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -44,7 +45,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .Where(x => string.IsNullOrEmpty(x) == false) ?? new string[0];
         }
 
-        protected virtual async Task<ScoringEntity> MapToScoringEntityAsync(long leagueId, PostScoringModel source, ScoringEntity target, 
+        protected virtual async Task<ScoringEntity> MapToScoringEntityAsync(LeagueUser user, long leagueId, PostScoringModel source, ScoringEntity target, 
             CancellationToken cancellationToken = default)
         {
             target.ExtScoringSource = await GetScoringEntityAsync(leagueId, source.ExtScoringSourceId, cancellationToken);
@@ -53,7 +54,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             target.ShowResults = source.ShowResults;
             target.UpdateTeamOnRecalculation = source.UpdateTeamOnRecalculation;
             target.UseResultSetTeam = source.UseResultSetTeam;
-            return target;
+            return UpdateVersionEntity(user, target);
         }
 
         protected virtual async Task<ScoringModel> MapToGetScoringModelAsync(long leagueId, long scoringId, CancellationToken cancellationToken = default)
@@ -65,14 +66,24 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        protected Expression<Func<ScoringEntity, ScoringModel>> MapToGetScoringModelExpression => source => new ScoringModel()
+        protected Expression<Func<ScoringEntity, ScoringModel>> MapToGetScoringModelExpression => scoring => new ScoringModel()
         {
-            Id = source.ScoringId,
-            MaxResultsPerGroup = source.MaxResultsPerGroup,
-            Name = source.Name,
-            ShowResults = source.ShowResults,
-            UpdateTeamOnRecalculation = source.UpdateTeamOnRecalculation,
-            UseResultSetTeam = source.UseResultSetTeam,
+            Id = scoring.ScoringId,
+            LeagueId = scoring.LeagueId,
+            ResultConfigId = scoring.ResultConfigId,
+            ExtScoringSourceId = scoring.ExtScoringSourceId,
+            ScoringKind = scoring.ScoringKind,
+            MaxResultsPerGroup = scoring.MaxResultsPerGroup,
+            Name = scoring.Name,
+            ShowResults = scoring.ShowResults,
+            UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation,
+            UseResultSetTeam = scoring.UseResultSetTeam,
+            CreatedByUserId = scoring.CreatedByUserId,
+            CreatedByUserName = scoring.CreatedByUserName,
+            CreatedOn = scoring.CreatedOn,
+            LastModifiedByUserId = scoring.LastModifiedByUserId,
+            LastModifiedByUserName = scoring.LastModifiedByUserName,
+            LastModifiedOn = scoring.LastModifiedOn,
         };
     }
 }

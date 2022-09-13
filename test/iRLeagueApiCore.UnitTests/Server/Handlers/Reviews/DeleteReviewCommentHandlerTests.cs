@@ -37,11 +37,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             return DefaultRequest(testLeagueId, testCommentId);
         }
 
+        protected override void DefaultPreTestAssertions(DeleteReviewCommentRequest request, LeagueDbContext dbContext)
+        {
+            dbContext.ReviewComments.Should().Contain(x => x.CommentId == request.CommentId);
+            base.DefaultPreTestAssertions(request, dbContext);
+        }
+
         protected override void DefaultAssertions(DeleteReviewCommentRequest request, Unit result, LeagueDbContext dbContext)
         {
-            var deletedComment = dbContext.ReviewComments
-                .SingleOrDefault(x => x.CommentId == request.CommentId);
-            deletedComment.Should().BeNull();
+            dbContext.ReviewComments.Should().NotContain(x => x.CommentId == request.CommentId);
             base.DefaultAssertions(request, result, dbContext);
         }
 
