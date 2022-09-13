@@ -75,13 +75,13 @@ namespace iRLeagueApiCore.Server.Controllers
         public async Task<ActionResult<ResultConfigModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             [FromBody] PutResultConfigModel putResultConfig, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[{Method}] new resultConfig to {LeagueName} by {UserName}", "Put", leagueName,
+            _logger.LogInformation("[{Method}] resultConfig {ResultConfigId} from {LeagueName} by {UserName}", "Put", id, leagueName,
                 User.Identity.Name);
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutResultConfigRequest(leagueId, id, leagueUser, putResultConfig);
             var getResultConfig = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return created entry for resultConfig {ResultConfigId} from {LeagueName}", getResultConfig.ResultConfigId, leagueName);
-            return CreatedAtAction(nameof(Get), new { leagueName, id = getResultConfig.ResultConfigId }, getResultConfig);
+            _logger.LogInformation("Return entry for resultConfig {ResultConfigId} from {LeagueName}", getResultConfig.ResultConfigId, leagueName);
+            return Ok(getResultConfig);
         }
 
         [HttpDelete]

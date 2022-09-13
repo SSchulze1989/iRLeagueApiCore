@@ -27,11 +27,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             target.HideCommentsBeforeVoted = putSeason.HideComments;
             target.MainScoring = await GetScoringEntityAsync(leagueId, putSeason.MainScoringId, cancellationToken);
             target.SeasonName = putSeason.SeasonName;
-            target.LastModifiedOn = DateTime.Now;
-            target.LastModifiedByUserId = user.Id;
-            target.LastModifiedByUserName = user.Name;
-            target.Version++;
-            return target;
+            return UpdateVersionEntity(user, target);
         }
 
         protected virtual async Task<SeasonModel> MapToGetSeasonModel(long leagueId, long seasonId, CancellationToken cancellationToken)

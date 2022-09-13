@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints.Sessions
 {

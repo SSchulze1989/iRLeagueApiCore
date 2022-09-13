@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FluentAssertions;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Schedules;
 using iRLeagueApiCore.UnitTests.Fixtures;
@@ -42,11 +43,12 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 
         protected override void DefaultAssertions(PutScheduleRequest request, ScheduleModel result, LeagueDbContext dbContext)
         {
-            Assert.Equal(request.LeagueId, result.LeagueId);
-            Assert.NotEqual(0, result.ScheduleId);
-            Assert.Equal(testUserId, result.LastModifiedByUserId);
-            Assert.Equal(testUserName, result.LastModifiedByUserName);
-            Assert.Equal(DateTime.UtcNow, result.LastModifiedOn.GetValueOrDefault(), TimeSpan.FromMinutes(1));
+            var expected = request.Model;
+            result.LeagueId.Should().Be(request.LeagueId);
+            result.ScheduleId.Should().Be(request.ScheduleId);
+            result.Name.Should().Be(expected.Name);
+            AssertChanged(request.User, DateTime.UtcNow, result);
+            base.DefaultAssertions(request, result, dbContext);
         }
 
         [Fact]

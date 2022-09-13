@@ -5,6 +5,7 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,17 +47,16 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 
         protected override void DefaultAssertions(PostPointRuleRequest request, PointRuleModel result, LeagueDbContext dbContext)
         {
-            var testPointRule = dbContext.PointRules
-                .SingleOrDefault(x => x.PointRuleId == result.PointRuleId);
+            var expected = request.Model;
             result.PointRuleId.Should().NotBe(0);
-            result.BonusPoints.Should().BeEquivalentTo(testPointRule.BonusPoints);
-            result.FinalSortOptions.Should().BeEquivalentTo(testPointRule.FinalSortOptions);
+            result.BonusPoints.Should().BeEquivalentTo(expected.BonusPoints);
+            result.FinalSortOptions.Should().BeEquivalentTo(expected.FinalSortOptions);
             result.LeagueId.Should().Be(request.LeagueId);
-            result.MaxPoints.Should().Be(testPointRule.MaxPoints);
-            result.Name.Should().Be(testPointRule.Name);
-            result.PointDropOff.Should().Be(testPointRule.PointDropOff);
-            result.PointsPerPlace.Should().BeEquivalentTo(testPointRule.PointsPerPlace);
-            result.PointsSortOptions.Should().BeEquivalentTo(testPointRule.PointsSortOptions);
+            result.MaxPoints.Should().Be(expected.MaxPoints);
+            result.Name.Should().Be(expected.Name);
+            result.PointDropOff.Should().Be(expected.PointDropOff);
+            result.PointsPerPlace.Should().BeEquivalentTo(expected.PointsPerPlace);
+            result.PointsSortOptions.Should().BeEquivalentTo(expected.PointsSortOptions);
             base.DefaultAssertions(request, result, dbContext);
         }
 

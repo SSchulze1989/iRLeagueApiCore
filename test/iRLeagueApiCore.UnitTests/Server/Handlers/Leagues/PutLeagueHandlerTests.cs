@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FluentAssertions;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
@@ -36,6 +37,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
                 NameFull = "Put league test"
             };
             return new PutLeagueRequest(leagueId, DefaultUser(), model);
+        }
+
+        protected override void DefaultAssertions(PutLeagueRequest request, LeagueModel result, LeagueDbContext dbContext)
+        {
+            var expected = request.Model;
+            result.Id.Should().Be(request.LeagueId);
+            result.NameFull.Should().Be(expected.NameFull);
+            AssertChanged(request.User, DateTime.UtcNow, result);
+            base.DefaultAssertions(request, result, dbContext);
         }
 
         [Fact]

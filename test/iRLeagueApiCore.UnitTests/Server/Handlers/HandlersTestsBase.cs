@@ -2,6 +2,7 @@
 using FluentIdentityBuilder;
 using FluentValidation;
 using FluentValidation.Results;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Scorings;
@@ -39,6 +40,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected const long testResultId = 1;
         protected const long testPointRuleId = 1;
         protected const long testResultConfigId = 1;
+        protected const long testReviewId = 1;
+        protected const long testMemberId = 1;
+        protected const long testCommentId = 1;
         protected const string testUserName = "TestUser";
         protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
         protected static IEnumerable<string> testLeagueRoles = new string[] { LeagueRoles.Member };
@@ -65,6 +69,33 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected virtual void DefaultAssertions(TRequest request, TResult result, LeagueDbContext dbContext)
         {
             result.Should().NotBeNull();
+        }
+
+        protected virtual void AssertVersion(IVersionEntity expected, IVersionModel result)
+        {
+            result.CreatedByUserId.Should().Be(expected.CreatedByUserId);
+            result.CreatedByUserName.Should().Be(expected.CreatedByUserName);
+            result.CreatedOn.Should().Be(expected.CreatedOn);
+            result.LastModifiedByUserId.Should().Be(expected.LastModifiedByUserId);
+            result.LastModifiedByUserName.Should().Be(expected.LastModifiedByUserName);
+            result.LastModifiedOn.Should().Be(expected.LastModifiedOn);
+        }
+
+        protected virtual void AssertCreated(LeagueUser user, DateTime time, IVersionModel result)
+        {
+            result.CreatedByUserId.Should().Be(user.Id);
+            result.CreatedByUserName.Should().Be(user.Name);
+            result.CreatedOn.Should().BeCloseTo(time, TimeSpan.FromSeconds(10));
+            result.LastModifiedByUserId.Should().Be(user.Id);
+            result.LastModifiedByUserName.Should().Be(user.Name);
+            result.LastModifiedOn.Should().BeCloseTo(time, TimeSpan.FromSeconds(10));
+        }
+
+        protected virtual void AssertChanged(LeagueUser user, DateTime time, IVersionModel result)
+        {
+            result.LastModifiedByUserId.Should().Be(user.Id);
+            result.LastModifiedByUserName.Should().Be(user.Name);
+            result.LastModifiedOn.Should().BeCloseTo(time, TimeSpan.FromSeconds(10));
         }
 
         protected virtual ClaimsPrincipal DefaultPrincipal(string leagueName = testLeagueName, string userName = testUserName,

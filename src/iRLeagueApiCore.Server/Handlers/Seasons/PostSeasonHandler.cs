@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons
 {
-    public record PostSeasonRequest(long LeagueId, LeagueUser user, PostSeasonModel Model) : IRequest<SeasonModel>;
+    public record PostSeasonRequest(long LeagueId, LeagueUser User, PostSeasonModel Model) : IRequest<SeasonModel>;
 
     public class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, SeasonModel>
     {
@@ -26,19 +26,19 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             
-            var postSeason = await CreateSeasonEntity(request.LeagueId, cancellationToken);
-            await MapToSeasonEntityAsync(request.LeagueId, request.user, request.Model, postSeason, cancellationToken);
+            var postSeason = await CreateSeasonEntity(request.User, request.LeagueId, cancellationToken);
+            await MapToSeasonEntityAsync(request.LeagueId, request.User, request.Model, postSeason, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
             var getSeason = await MapToGetSeasonModel(request.LeagueId, postSeason.SeasonId, cancellationToken)
                 ?? throw new InvalidOperationException($"Creating season {request.Model.SeasonName} failed");
             return getSeason;
         }
 
-        protected async Task<SeasonEntity> CreateSeasonEntity(long leagueId, CancellationToken cancellationToken = default)
+        protected async Task<SeasonEntity> CreateSeasonEntity(LeagueUser user, long leagueId, CancellationToken cancellationToken = default)
         {
             var league = await dbContext.Leagues
                 .SingleOrDefaultAsync(x => x.Id == leagueId) ?? throw new ResourceNotFoundException();
-            var seasonEntity = new SeasonEntity();
+            var seasonEntity = CreateVersionEntity(user, new SeasonEntity());
             league.Seasons.Add(seasonEntity);
             return seasonEntity;
         }

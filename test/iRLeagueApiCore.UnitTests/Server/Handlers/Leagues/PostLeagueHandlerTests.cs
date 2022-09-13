@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FluentAssertions;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
@@ -35,6 +36,16 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
                 NameFull = "Full test league name"
             };
             return CreateRequest(DefaultUser(), model);
+        }
+
+        protected override void DefaultAssertions(PostLeagueRequest request, LeagueModel result, LeagueDbContext dbContext)
+        {
+            var expected = request.Model;
+            result.Id.Should().NotBe(0);
+            result.Name.Should().Be(expected.Name);
+            result.NameFull.Should().Be(expected.NameFull);
+            AssertCreated(request.User, DateTime.UtcNow, result);
+            base.DefaultAssertions(request, result, dbContext);
         }
 
         protected PostLeagueRequest CreateRequest(LeagueUser user, PostLeagueModel model)

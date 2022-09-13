@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FluentAssertions;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Seasons;
 using iRLeagueApiCore.UnitTests.Fixtures;
@@ -47,9 +48,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
 
         protected override void DefaultAssertions(PutSeasonRequest request, SeasonModel result, LeagueDbContext dbContext)
         {
-            Assert.Equal(dbContext.Seasons.Single(x => x.SeasonId == request.SeasonId).SeasonName, request.Model.SeasonName);
-            Assert.Equal(request.Model.SeasonName, result.SeasonName);
-            Assert.Equal(request.SeasonId, result.SeasonId);
+            var expected = request.Model;
+            result.LeagueId.Should().Be(request.LeagueId);
+            result.SeasonId.Should().Be(request.SeasonId);
+            result.Finished.Should().Be(expected.Finished);
+            result.HideComments.Should().Be(expected.HideComments);
+            result.MainScoringId.Should().Be(expected.MainScoringId);
+            result.SeasonName.Should().Be(expected.SeasonName);
+            AssertChanged(request.User, DateTime.UtcNow, result);
+            base.DefaultAssertions(request, result, dbContext);
         }
 
         [Fact]
