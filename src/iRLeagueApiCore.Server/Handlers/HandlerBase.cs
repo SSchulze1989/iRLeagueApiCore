@@ -57,6 +57,12 @@ namespace iRLeagueApiCore.Server.Handlers
                 .SingleOrDefaultAsync(x => x.TrackId == trackConfigId, cancellationToken);
         }
 
+        protected virtual async Task<MemberEntity> GetMemberEntityAsync(long memberId, CancellationToken cancellationToken = default)
+        {
+            return await dbContext.Members
+                .FirstOrDefaultAsync(x => x.Id == memberId, cancellationToken);
+        }
+
         protected virtual async Task<ICollection<MemberEntity>> GetMemberListAsync(IEnumerable<long> memberIds, CancellationToken cancellationToken = default)
         {
             return await dbContext.Members

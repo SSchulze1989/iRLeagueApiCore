@@ -62,13 +62,13 @@ namespace iRLeagueApiCore.Server.Controllers
         public async Task<ActionResult<PointRuleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             [FromBody] PutPointRuleModel putPointRule, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[{Method}] new pointRule to {LeagueName} by {UserName}", "Put", leagueName,
+            _logger.LogInformation("[{Method}] pointRule {PointRuleId} from {LeagueName} by {UserName}", "Put", id, leagueName,
                 User.Identity.Name);
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutPointRuleRequest(leagueId, id, leagueUser, putPointRule);
             var getPointRule = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return created entry for pointRule {PointRuleId} from {LeagueName}", getPointRule.PointRuleId, leagueName);
-            return CreatedAtAction(nameof(Get), new { leagueName, id = getPointRule.PointRuleId }, getPointRule);
+            _logger.LogInformation("Return entry for pointRule {PointRuleId} from {LeagueName}", getPointRule.PointRuleId, leagueName);
+            return Ok(getPointRule);
         }
 
         [HttpDelete]

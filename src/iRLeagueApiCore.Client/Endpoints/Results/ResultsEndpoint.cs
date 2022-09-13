@@ -1,6 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
-using iRLeagueApiCore.Common.Models.Results;
+using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results
 {

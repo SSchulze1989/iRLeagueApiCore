@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueDatabaseCore.Models;
 using MediatR;

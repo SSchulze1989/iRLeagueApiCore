@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.1-dev.13" CopyToOutputDirectory="lib/net6.0">
+	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.1-dev.17" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
     <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.1-dev.3" />
 	<PackageReference Include="MediatR" Version="10.0.1" />

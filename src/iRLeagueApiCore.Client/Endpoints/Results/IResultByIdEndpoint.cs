@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Common.Models.Results;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results
 {

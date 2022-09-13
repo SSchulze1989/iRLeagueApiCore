@@ -1,5 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.UnitTests.Extensions;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -87,6 +89,15 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
 
         public static void Populate(LeagueDbContext context, Random random)
         {
+            // Create random users
+            var users = new List<LeagueUser>();
+            for (int i = 0; i < 10; i++)
+            {
+                var user = LeagueUser.Empty;
+                user.Id = Guid.NewGuid().ToString();
+                user.Name = GetRandomName(random);
+                users.Add(user);
+            }
             // Populate Tracks
             for (int i = 0; i < 2; i++)
             {
@@ -110,7 +121,6 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 }
                 context.TrackGroups.Add(group);
             }
-
             // create models
             var league1 = new LeagueEntity()
             {
@@ -357,6 +367,40 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 @event.EventResult = eventResult;
                 @event.ScoredEventResults.Add(scoredResult);
             }
+
+            // Create reviews
+            foreach (var session in league1.Seasons
+                .SelectMany(x => x.Schedules)
+                .SelectMany(x => x.Events)
+                .SelectMany(x => x.Sessions))
+            {
+                var involvedMembers = new[]
+                {
+                    members.Random(random),
+                    members.Random(random),
+                    members.Random(random),
+                }.Distinct().ToList();
+                var review = CreateVersion(new IncidentReviewEntity()
+                {
+                    AuthorName = GetRandomName(random),
+                    AuthorUserId = Guid.NewGuid().ToString(),
+                    Corner = random.Next(1, 12).ToString(),
+                    FullDescription = "Full Description",
+                    IncidentKind = "Incident Kind",
+                    IncidentNr = random.Next(1, 12).ToString(),
+                    InvolvedMembers = involvedMembers,
+                    OnLap = random.Next(1, 12).ToString(),
+                    TimeStamp = TimeSpan.FromMinutes(1),
+                    ResultLongText = "Long text for much more details on the result",
+                    Comments = new[] { RandomComment(random, users.Random(random), involvedMembers) }.ToList(),
+                    AcceptedReviewVotes = new[] {new AcceptedReviewVoteEntity() 
+                    { 
+                        MemberAtFault = involvedMembers.Random(random),
+                        Description = "Description",
+                    } }.ToList(),
+                }, users.Random(random));
+                session.IncidentReviews.Add(review);
+            }
         }
 
         private static TimeSpan GetTimeSpan(Random random)
@@ -407,6 +451,35 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 id[i] = (char)('0' + random.Next(10));
             }
             return new string(id);
+        }
+
+        private static ReviewCommentEntity RandomComment(Random random, LeagueUser user, IEnumerable<MemberEntity> involvedMembers)
+        {
+            var comment = CreateVersion(new ReviewCommentEntity()
+            {
+                AuthorName = user.Name,
+                AuthorUserId = user.Id,
+                Date = DateTime.Now,
+                Text = "Random Comment Text: " + GetRandomName(random),
+                ReviewCommentVotes = new[] { new ReviewCommentVoteEntity()
+                {
+                    MemberAtFault = involvedMembers.Random(random),
+                    Description = "Description",
+                } }.ToList(),
+            }, user);
+            return comment;
+        }
+
+        private static T CreateVersion<T>(T entity, LeagueUser user) where T : IVersionEntity
+        {
+            entity.Version = 1;
+            entity.CreatedByUserId = user.Id;
+            entity.CreatedByUserName = user.Name;
+            entity.CreatedOn = DateTime.Now;
+            entity.LastModifiedByUserId = user.Id;
+            entity.LastModifiedByUserName = user.Name;
+            entity.LastModifiedOn = DateTime.Now;
+            return entity;
         }
 
         public void Dispose()

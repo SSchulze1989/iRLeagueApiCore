@@ -24,6 +24,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
         protected virtual async Task<IncidentReviewEntity> GetReviewEntity(long leagueId, long reviewId, CancellationToken cancellationToken)
         {
             return await dbContext.IncidentReviews
+                .Include(x => x.InvolvedMembers)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.ReviewId == reviewId)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -34,6 +35,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             reviewEntity.AuthorName = user.Name;
             reviewEntity.AuthorUserId = user.Id;
             reviewEntity.Corner = postModel.Corner;
+            reviewEntity.OnLap = postModel.OnLap;
             reviewEntity.FullDescription = postModel.FullDescription;
             reviewEntity.IncidentKind = postModel.IncidentKind;
             reviewEntity.IncidentNr = postModel.IncidentNr;
@@ -67,6 +69,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             OnLap = review.OnLap,
             ReviewComments = review.Comments.Select(comment => new ReviewCommentModel()
             {
+                CommentId = comment.CommentId,
                 AuthorName = comment.AuthorName,
                 AuthorUserId = comment.AuthorUserId,
                 Date = comment.Date,
@@ -75,6 +78,8 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 Text = comment.Text,
                 Votes = comment.ReviewCommentVotes.Select(vote => new CommentVoteModel()
                 {
+                    Id = vote.ReviewVoteId,
+                    Description = vote.Description,
                     MemberAtFault = vote.MemberAtFault != null ? new MemberInfoModel()
                     {
                         MemberId = vote.MemberAtFault.Id,
@@ -82,6 +87,12 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                         LastName = vote.MemberAtFault.Lastname,
                     } : default,
                 }).ToList(),
+                CreatedByUserId = comment.CreatedByUserId,
+                CreatedByUserName = comment.CreatedByUserName,
+                CreatedOn = comment.CreatedOn,
+                LastModifiedByUserId = comment.LastModifiedByUserId,
+                LastModifiedByUserName = comment.LastModifiedByUserName,
+                LastModifiedOn = comment.LastModifiedOn,
             }),
             InvolvedMembers = review.InvolvedMembers.Select(member => new MemberInfoModel()
             {
@@ -89,6 +100,13 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 FirstName = member.Firstname,
                 LastName = member.Lastname,
             }).ToList(),
+            TimeStamp = review.TimeStamp,
+            CreatedByUserId = review.CreatedByUserId,
+            CreatedByUserName = review.CreatedByUserName,
+            CreatedOn = review.CreatedOn,
+            LastModifiedByUserId = review.LastModifiedByUserId,
+            LastModifiedByUserName = review.LastModifiedByUserName,
+            LastModifiedOn = review.LastModifiedOn,
         };
     }
 }
