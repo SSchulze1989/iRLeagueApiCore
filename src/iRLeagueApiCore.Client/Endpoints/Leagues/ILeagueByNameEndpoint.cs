@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Results;
+using iRLeagueApiCore.Client.Endpoints.Reviews;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
@@ -20,5 +21,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
         IEventsEndpoint Events();
         IResultConfigsEndpoint ResultConfigs();
         IPointRulesEndpoint PointRules();
+        IReviewsEndpoint Reviews();
+        IReviewCommentsEndpoint ReviewComments();
     }
 }
