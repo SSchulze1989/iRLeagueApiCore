@@ -81,7 +81,6 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpDelete]
         [Route("{id:long}")]
-        [Route("/{leagueName}/Reviews/{reviewId:long}/[controller]/{id:long}")]
         public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             CancellationToken cancellationToken)
         {

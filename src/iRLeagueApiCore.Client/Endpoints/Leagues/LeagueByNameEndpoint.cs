@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Results;
+using iRLeagueApiCore.Client.Endpoints.Reviews;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
@@ -44,6 +45,16 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
         IPointRulesEndpoint ILeagueByNameEndpoint.PointRules()
         {
             return new PointRulesEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
+        IReviewsEndpoint ILeagueByNameEndpoint.Reviews()
+        {
+            return new ReviewsEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
+        IReviewCommentsEndpoint ILeagueByNameEndpoint.ReviewComments()
+        {
+            return new ReviewCommentsEndpoint(HttpClientWrapper, RouteBuilder);
         }
     }
 }
