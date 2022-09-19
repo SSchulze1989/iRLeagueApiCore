@@ -46,7 +46,7 @@ namespace iRLeagueApiCore.UnitTests.Client
             var httpClient = new HttpClient(messageHandler);
             httpClient.BaseAddress = new Uri(baseUrl);
 
-            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
+            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object, default);
 
             var result = await apiClient.LogIn("testUser", "testPassword");
 
@@ -73,7 +73,7 @@ namespace iRLeagueApiCore.UnitTests.Client
             var httpClient = new HttpClient(messageHandler);
             httpClient.BaseAddress = new Uri(baseUrl);
 
-            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
+            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object, default);
             await apiClient.Leagues().Get();
 
             Assert.Equal("bearer", authHeader?.Scheme, ignoreCase: true);
@@ -105,7 +105,7 @@ namespace iRLeagueApiCore.UnitTests.Client
             var httpClient = new HttpClient(messageHandler);
             httpClient.BaseAddress = new Uri(baseUrl);
 
-            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
+            var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object, default);
             await apiClient.LogOut();
             await apiClient.Leagues().Get();
 
