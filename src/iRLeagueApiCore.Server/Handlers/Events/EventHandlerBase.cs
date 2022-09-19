@@ -77,6 +77,9 @@ namespace iRLeagueApiCore.Server.Handlers.Events
         {
             target.Name = putSession.Name;
             target.SessionType = putSession.SessionType;
+            target.SessionNr = putSession.SessionNr;
+            target.Laps = putSession.Laps;
+            target.Duration = putSession.Duration;
             return UpdateVersionEntity(user, target);
         }
 
@@ -103,6 +106,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             Sessions = @event.Sessions.Select(session => new SessionModel()
             {
                 HasResult = session.SessionResult != null,
+                SessionNr = session.SessionNr,
                 LeagueId = session.LeagueId,
                 Name = session.Name,
                 Laps = session.Laps,
