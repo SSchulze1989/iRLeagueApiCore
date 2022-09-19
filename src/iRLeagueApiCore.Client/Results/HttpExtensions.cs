@@ -18,17 +18,7 @@ namespace iRLeagueApiCore.Client.Results
 {
     public static class HttpExtensions
     {
-        private static readonly JsonSerializerOptions jsonOptions;
-
-        static HttpExtensions()
-        {
-            jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-            jsonOptions.Converters.Add(new JsonStringEnumConverter());
-            jsonOptions.Converters.Add(new JsonTimeSpanConverter());
-            jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        }
-
-        public static async Task<ClientActionResult<T>> ToClientActionResultAsync<T>(this HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<T>> ToClientActionResultAsync<T>(this HttpResponseMessage httpResponse, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
         {
             string requestUrl = httpResponse.RequestMessage?.RequestUri?.AbsoluteUri;
             try
@@ -47,7 +37,7 @@ namespace iRLeagueApiCore.Client.Results
                 {
                     case HttpStatusCode.BadRequest:
                         {
-                            var response = await httpResponse.Content.ReadFromJsonAsync<BadRequestResponse>(cancellationToken: cancellationToken);
+                            var response = await httpResponse.Content.ReadFromJsonAsync<BadRequestResponse>(options: jsonOptions, cancellationToken: cancellationToken);
                             status = response.Status;
                             errors = response.Errors.Cast<object>();
                             break;
@@ -97,21 +87,21 @@ namespace iRLeagueApiCore.Client.Results
                 }
                 return new ClientActionResult<T>(false, status, message, default, httpResponse.StatusCode, requestUrl, errors);
             }
-            catch (Exception ex) when (ex is InvalidOperationException)
+            catch (Exception ex) when (ex is InvalidOperationException || ex is JsonException)
             {
                 var errors = new object[] { ex };
                 return new ClientActionResult<T>(false, "Error", ex.ToString(), default, 0, requestUrl, errors);
             }
         }
 
-        public static async Task<ClientActionResult<T>> AsClientActionResultAsync<T>(this Task<HttpResponseMessage> request, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<T>> AsClientActionResultAsync<T>(this Task<HttpResponseMessage> request, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
         {
             string requestUrl = "";
             try
             {
                 var result = await request;
                 requestUrl = result.RequestMessage?.RequestUri?.AbsoluteUri;
-                return await result.ToClientActionResultAsync<T>(cancellationToken);
+                return await result.ToClientActionResultAsync<T>(jsonOptions, cancellationToken);
             }
             catch (Exception ex) when (ex is InvalidOperationException || ex is HttpRequestException)
             {
@@ -120,44 +110,24 @@ namespace iRLeagueApiCore.Client.Results
             }
         }
 
-        public static async Task<ClientActionResult<T>> GetAsClientActionResult<T>(this HttpClient httpClient, string query, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<T>> GetAsClientActionResult<T>(this HttpClient httpClient, string query, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
         {
-            return await httpClient.GetAsync(query, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
+            return await httpClient.GetAsync(query, cancellationToken).AsClientActionResultAsync<T>(jsonOptions, cancellationToken);
         }
 
-        public static async Task<ClientActionResult<T>> GetAsClientActionResult<T>(this HttpClientWrapper httpClientWrapper, string query, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<TResponse>> PostAsClientActionResult<TResponse, TPost>(this HttpClient httpClient, string query, TPost body, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
         {
-            return await httpClientWrapper.Get(query, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
+            return await httpClient.PostAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(jsonOptions, cancellationToken);
         }
 
-        public static async Task<ClientActionResult<TResponse>> PostAsClientActionResult<TResponse, TPost>(this HttpClient httpClient, string query, TPost body, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<TResponse>> PutAsClientActionResult<TResponse, TPut>(this HttpClient httpClient, string query, TPut body , JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
         {
-            return await httpClient.PostAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(cancellationToken);
+            return await httpClient.PutAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(jsonOptions, cancellationToken);
         }
 
-        public static async Task<ClientActionResult<T>> PostAsClientActionResult<T>(this HttpClientWrapper httpClientWrapper, string query, object body, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<NoContent>> DeleteAsClientActionResult(this HttpClient httpClient, string query, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
         {
-            return await httpClientWrapper.Post(query, body, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
-        }
-
-        public static async Task<ClientActionResult<TResponse>> PutAsClientActionResult<TResponse, TPut>(this HttpClient httpClient, string query, TPut body , CancellationToken cancellationToken = default)
-        {
-            return await httpClient.PutAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(cancellationToken);
-        }
-
-        public static async Task<ClientActionResult<T>> PutAsClientActionResult<T>(this HttpClientWrapper httpClientWrapper, string query, object body, CancellationToken cancellationToken = default)
-        {
-            return await httpClientWrapper.Put(query, body, cancellationToken).AsClientActionResultAsync<T>(cancellationToken);
-        }
-
-        public static async Task<ClientActionResult<NoContent>> DeleteAsClientActionResult(this HttpClient httpClient, string query, CancellationToken cancellationToken= default)
-        {
-            return await httpClient.DeleteAsync(query, cancellationToken).AsClientActionResultAsync<NoContent>(cancellationToken);
-        }
-
-        public static async Task<ClientActionResult<NoContent>> DeleteAsClientActionResult(this HttpClientWrapper httpClientWrapper, string query, CancellationToken cancellationToken = default)
-        {
-            return await httpClientWrapper.Delete(query, cancellationToken).AsClientActionResultAsync<NoContent>(cancellationToken);
+            return await httpClient.DeleteAsync(query, cancellationToken).AsClientActionResultAsync<NoContent>(jsonOptions, cancellationToken);
         }
     }
 }
