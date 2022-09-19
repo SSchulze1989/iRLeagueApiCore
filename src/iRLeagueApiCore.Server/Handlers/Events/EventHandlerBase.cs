@@ -23,6 +23,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
         protected virtual async Task<EventEntity> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             return await dbContext.Events
+                .Include(x => x.Sessions)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
                 .FirstOrDefaultAsync();
