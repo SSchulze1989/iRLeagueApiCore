@@ -73,7 +73,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             AssertVersion(expected, result);
         }
 
-        private void AssertCommentVote(ReviewCommentVoteEntity expected, CommentVoteModel result)
+        private void AssertCommentVote(ReviewCommentVoteEntity expected, VoteModel result)
         {
             result.Id.Should().Be(expected.ReviewVoteId);
             result.Description.Should().Be(expected.Description);

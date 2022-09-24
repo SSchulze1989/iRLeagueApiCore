@@ -45,7 +45,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             return await MapToReviewCommentEntityAsync(user, (PostReviewCommentModel)putComment, commentEntity, cancellationToken);
         }
 
-        protected virtual async Task<ReviewCommentVoteEntity> MapToCommentVoteEntityAsync(CommentVoteModel voteModel, ReviewCommentVoteEntity voteEntity,
+        protected virtual async Task<ReviewCommentVoteEntity> MapToCommentVoteEntityAsync(VoteModel voteModel, ReviewCommentVoteEntity voteEntity,
             CancellationToken cancellationToken)
         {
             voteEntity.Description = voteModel.Description;
@@ -55,13 +55,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             return voteEntity;
         }
 
-        protected virtual async Task<VoteCategoryEntity> GetVoteCategoryEntityAsync(long leagueId, long voteCategoryId)
-        {
-            return await dbContext.VoteCategorys
-                .FirstOrDefaultAsync(x => x.CatId == voteCategoryId);
-        }
-
-        protected virtual async Task<ICollection<ReviewCommentVoteEntity>> MapCommentVoteList(IEnumerable<CommentVoteModel> voteModels,
+        protected virtual async Task<ICollection<ReviewCommentVoteEntity>> MapCommentVoteList(IEnumerable<VoteModel> voteModels,
             ICollection<ReviewCommentVoteEntity> voteEntities, CancellationToken cancellationToken)
         {
             // Map votes
@@ -104,7 +98,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             Date = comment.Date,
             ReviewId = comment.ReviewId.GetValueOrDefault(),
             Text = comment.Text,
-            Votes = comment.ReviewCommentVotes.Select(vote => new CommentVoteModel()
+            Votes = comment.ReviewCommentVotes.Select(vote => new VoteModel()
             {
                 Id = vote.ReviewVoteId,
                 Description = vote.Description,

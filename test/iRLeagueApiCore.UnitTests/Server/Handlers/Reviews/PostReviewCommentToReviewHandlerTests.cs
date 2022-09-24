@@ -23,7 +23,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
         private static PutReviewCommentModel TestReviewComment => new PutReviewCommentModel()
         {
             Text = "Test Comment",
-            Votes = new[] { new CommentVoteModel()
+            Votes = new[] { new VoteModel()
             {
                 Description = "Test Vote",
                 MemberAtFault = new MemberInfoModel() { MemberId = testMemberId},
@@ -61,7 +61,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             base.DefaultAssertions(request, result, dbContext);
         }
 
-        private void AssertCommentVote(CommentVoteModel expected, CommentVoteModel result)
+        private void AssertCommentVote(VoteModel expected, VoteModel result)
         {
             result.Description.Should().Be(expected.Description);
             AssertMemberInfo(expected.MemberAtFault, result.MemberAtFault);

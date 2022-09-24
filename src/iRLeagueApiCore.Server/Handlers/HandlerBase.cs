@@ -63,6 +63,12 @@ namespace iRLeagueApiCore.Server.Handlers
                 .FirstOrDefaultAsync(x => x.Id == memberId, cancellationToken);
         }
 
+        protected virtual async Task<VoteCategoryEntity> GetVoteCategoryEntityAsync(long leagueId, long voteCategoryId)
+        {
+            return await dbContext.VoteCategorys
+                .FirstOrDefaultAsync(x => x.CatId == voteCategoryId);
+        }
+
         protected virtual async Task<ICollection<MemberEntity>> GetMemberListAsync(IEnumerable<long> memberIds, CancellationToken cancellationToken = default)
         {
             return await dbContext.Members

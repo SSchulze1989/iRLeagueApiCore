@@ -392,7 +392,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     OnLap = random.Next(1, 12).ToString(),
                     TimeStamp = TimeSpan.FromMinutes(1),
                     ResultLongText = "Long text for much more details on the result",
-                    Comments = new[] { RandomComment(random, users.Random(random), involvedMembers) }.ToList(),
+                    Comments = new[] { RandomComment(random, users.Random(random), involvedMembers), RandomComment(random, users.Random(random), involvedMembers) }.ToList(),
                     AcceptedReviewVotes = new[] {new AcceptedReviewVoteEntity() 
                     { 
                         MemberAtFault = involvedMembers.Random(random),
