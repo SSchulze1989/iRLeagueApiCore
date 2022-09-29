@@ -22,10 +22,11 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
         {
         }
 
-        protected virtual async Task<IncidentReviewEntity> GetReviewEntity(long leagueId, long reviewId, CancellationToken cancellationToken)
+        protected virtual async Task<IncidentReviewEntity?> GetReviewEntity(long leagueId, long reviewId, CancellationToken cancellationToken)
         {
             return await dbContext.IncidentReviews
                 .Include(x => x.InvolvedMembers)
+                .Include(x => x.AcceptedReviewVotes)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.ReviewId == reviewId)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -82,7 +83,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             return voteEntity;
         }
 
-        protected virtual async Task<ReviewModel> MapToReviewModel(long leagueId, long reviewId, CancellationToken cancellationToken)
+        protected virtual async Task<ReviewModel?> MapToReviewModel(long leagueId, long reviewId, CancellationToken cancellationToken)
         {
             var query = dbContext.IncidentReviews
                 .Where(x => x.LeagueId == leagueId)
@@ -96,6 +97,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             LeagueId = review.LeagueId,
             ReviewId = review.ReviewId,
             SessionId = review.SessionId,
+            SessionNr = review.Session.SessionNr,
             SessionName = review.Session.Name,
             EventId = review.Session.EventId,
             SeasonId = review.Session.Event.Schedule.SeasonId,

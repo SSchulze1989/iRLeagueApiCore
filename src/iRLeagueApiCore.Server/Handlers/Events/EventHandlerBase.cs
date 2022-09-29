@@ -20,7 +20,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
         {
         }
 
-        protected virtual async Task<EventEntity> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+        protected virtual async Task<EventEntity?> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             return await dbContext.Events
                 .Include(x => x.Sessions)
@@ -84,7 +84,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             return UpdateVersionEntity(user, target);
         }
 
-        protected virtual async Task<EventModel> MapToEventModelAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+        protected virtual async Task<EventModel?> MapToEventModelAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             return await dbContext.Events
                 .Where(x => x.LeagueId == leagueId)

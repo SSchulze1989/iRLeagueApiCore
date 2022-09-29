@@ -33,7 +33,15 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
                 new MemberInfoModel() { MemberId = testMemberId},
                 new MemberInfoModel() { MemberId = testMemberId + 1},
             },
-            VoteResults = new VoteModel[0],
+            VoteResults = new[]
+            {
+                new VoteModel() { 
+                    Id = 1,
+                    VoteCategoryId = testVoteCategory, 
+                    Description = "Vote Description", 
+                    MemberAtFault = new MemberInfoModel() { MemberId = testMemberId } 
+                },
+            },
         };
 
         protected override PutReviewHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutReviewRequest> validator)
@@ -67,6 +75,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             {
                 AssertMemberInfo(expectedMember, member);
             }
+            result.VoteResults.Should().HaveSameCount(expected.VoteResults);
+            foreach((var vote, var expectedVote) in result.VoteResults.Zip(expected.VoteResults))
+            {
+                AssertVote(expectedVote, vote);
+            }
             AssertChanged(request.User, DateTime.UtcNow, result);
             base.DefaultAssertions(request, result, dbContext);
         }
@@ -74,6 +87,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
         private void AssertMemberInfo(MemberInfoModel expected, MemberInfoModel result)
         {
             result.MemberId.Should().Be(expected.MemberId);
+        }
+
+        private void AssertVote(VoteModel expected, VoteModel result)
+        {
+            if (expected.Id != default)
+            {
+                result.Id.Should().Be(expected.Id);
+            }
+            AssertMemberInfo(result.MemberAtFault, expected.MemberAtFault);
+            result.Description.Should().Be(expected.Description);
+            result.VoteCategoryId.Should().Be(expected.VoteCategoryId);
         }
 
         [Fact]

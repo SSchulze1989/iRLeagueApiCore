@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Exceptions
 {
     public class ResourceNotFoundException : Exception
     {
-        public string ResourceName { get; }
+        public string ResourceName { get; } = string.Empty;
         public ResourceNotFoundException() : this("Requested resource was not found")
         {
         }

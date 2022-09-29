@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules
                 ?? throw new ResourceNotFoundException();
             putSchedule = MapToScheduleEntity(request.User, request.Model, putSchedule);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getSchedule = await MapToGetScheduleModelAsync(request.LeagueId, request.ScheduleId, cancellationToken);
+            var getSchedule = await MapToGetScheduleModelAsync(request.LeagueId, request.ScheduleId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getSchedule;
         }
     }

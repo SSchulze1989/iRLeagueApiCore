@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
     public class GiveRoleRequest : UserRoleModel, IRequest
     {
         public string LeagueName { get; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; } = default!;
 
         public GiveRoleRequest(string leagueName, UserRoleModel UserRole)
         {

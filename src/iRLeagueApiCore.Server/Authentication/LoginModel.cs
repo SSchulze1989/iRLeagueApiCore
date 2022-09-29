@@ -11,11 +11,11 @@ namespace iRLeagueApiCore.Server.Authentication
         /// User name as registered
         /// </summary>
         [Required(ErrorMessage = "User Name is required")]
-        public string Username { get; set; }
+        public string Username { get; set; } = string.Empty;
         /// <summary>
         /// User password
         /// </summary>
         [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 }

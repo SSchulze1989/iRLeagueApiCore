@@ -32,15 +32,15 @@ namespace iRLeagueApiCore.Server.Filters
                 _logger.LogError("Missing [leagueName] parameter in action route");
                 throw new InvalidOperationException("Missing [leagueName] in action route");
             }
-            var leagueName = (string)leagueNameObject;
+            var leagueName = (string)leagueNameObject!;
 
             // get user from httpcontext
             var user = context.HttpContext.User;
-            var userName = user.Identity.IsAuthenticated ? user.Identity.Name : "Anonymous";
+            var userName = (user.Identity != null && user.Identity.IsAuthenticated) ? user.Identity.Name : "Anonymous";
 
             _logger.LogInformation("Authorizing request for {UserName} on {leagueName}", userName, leagueName);
 
-            if (user == null || user.Identity.IsAuthenticated == false)
+            if (user == null || user.Identity == null || user.Identity.IsAuthenticated == false)
             {
                 _logger.LogInformation("Permission denied for Anonymous user on {LeagueName}. League is not public", leagueName);
                 context.Result = new UnauthorizedResult();
@@ -48,7 +48,7 @@ namespace iRLeagueApiCore.Server.Filters
             }
 
             // check if specific league role required
-            var requireLeagueRoleAttribute = (RequireLeagueRoleAttribute)context.ActionDescriptor.EndpointMetadata
+            var requireLeagueRoleAttribute = (RequireLeagueRoleAttribute?)context.ActionDescriptor.EndpointMetadata
                 .LastOrDefault(x => x.GetType() == typeof(RequireLeagueRoleAttribute));
 
             if (requireLeagueRoleAttribute?.Roles.Count() > 0)

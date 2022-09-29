@@ -22,7 +22,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
         {
         }
 
-        protected virtual async Task<ReviewCommentEntity> GetCommentEntityAsync(long leagueId, long commentId, CancellationToken cancellationToken)
+        protected virtual async Task<ReviewCommentEntity?> GetCommentEntityAsync(long leagueId, long commentId, CancellationToken cancellationToken)
         {
             return await dbContext.ReviewComments
                 .Include(x => x.ReviewCommentVotes)
@@ -80,7 +80,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             return voteEntities;
         }
 
-        protected virtual async Task<ReviewCommentModel> MapToReviewCommentModelAsync(long leagueId, long commentId, CancellationToken cancellationToken)
+        protected virtual async Task<ReviewCommentModel?> MapToReviewCommentModelAsync(long leagueId, long commentId, CancellationToken cancellationToken)
         {
             return await dbContext.ReviewComments
                 .Where(x => x.LeagueId == leagueId)

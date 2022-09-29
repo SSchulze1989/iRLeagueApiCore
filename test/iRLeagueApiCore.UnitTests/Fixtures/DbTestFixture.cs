@@ -369,6 +369,16 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             }
 
             // Create reviews
+            for (int i=0; i<3; i++)
+            {
+                var cat = new VoteCategoryEntity()
+                {
+                    Index = i,
+                    Text = $"Cat {i + 1}",
+                    DefaultPenalty = i + 1,
+                };
+                context.VoteCategorys.Add(cat);
+            }
             foreach (var session in league1.Seasons
                 .SelectMany(x => x.Schedules)
                 .SelectMany(x => x.Events)
