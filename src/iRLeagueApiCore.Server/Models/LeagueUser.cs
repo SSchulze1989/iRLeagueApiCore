@@ -14,10 +14,8 @@ namespace iRLeagueApiCore.Server.Models
 
         public LeagueUser(string leagueName, ClaimsPrincipal principal)
         {
-            Id = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value 
-                ?? throw new InvalidOperationException($"Could not create {nameof(LeagueUser)}: Principal is missing claim of type {nameof(ClaimTypes)}.{nameof(ClaimTypes.NameIdentifier)}={ClaimTypes.NameIdentifier}");
-            Name = principal.Identity?.Name
-                ?? throw new InvalidOperationException($"Could not create {nameof(LeagueUser)}: Principal is missing {nameof(principal.Identity)}");
+            Id = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            Name = principal.Identity?.Name ?? string.Empty;
             Roles = principal.FindAll(ClaimTypes.Role)
                 .Select(x => x.Value)
                 .Where(role => LeagueRoles.IsLeagueRoleName(leagueName, role));

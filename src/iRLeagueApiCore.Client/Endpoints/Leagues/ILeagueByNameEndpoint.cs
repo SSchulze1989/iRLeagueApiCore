@@ -23,5 +23,6 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
         IPointRulesEndpoint PointRules();
         IReviewsEndpoint Reviews();
         IReviewCommentsEndpoint ReviewComments();
+        ISessionsEndpoint Sessions();
     }
 }

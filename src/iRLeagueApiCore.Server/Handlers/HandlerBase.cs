@@ -65,7 +65,7 @@ namespace iRLeagueApiCore.Server.Handlers
 
         protected virtual async Task<VoteCategoryEntity?> GetVoteCategoryEntityAsync(long leagueId, long voteCategoryId)
         {
-            return await dbContext.VoteCategorys
+            return await dbContext.VoteCategories
                 .FirstOrDefaultAsync(x => x.CatId == voteCategoryId);
         }
 
