@@ -103,6 +103,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 Id = vote.ReviewVoteId,
                 Description = vote.Description,
                 VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
+                VoteCategoryText = vote.VoteCategory.Text,
                 MemberAtFault = new MemberInfoModel()
                 {
                     MemberId = vote.MemberAtFault.Id,

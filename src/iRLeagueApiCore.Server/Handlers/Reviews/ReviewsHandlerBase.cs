@@ -121,6 +121,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 {
                     Id = vote.ReviewVoteId,
                     VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
+                    VoteCategoryText = vote.VoteCategory.Text,
                     Description = vote.Description,
                     MemberAtFault = vote.MemberAtFault != null ? new MemberInfoModel()
                     {
@@ -147,6 +148,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             {
                 Id = vote.ReviewVoteId,
                 VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
+                VoteCategoryText = vote.VoteCategory.Text,
                 Description = vote.Description,
                 MemberAtFault = vote.MemberAtFault != null ? new MemberInfoModel()
                 {
