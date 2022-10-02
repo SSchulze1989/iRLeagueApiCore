@@ -285,19 +285,23 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             GenerateMembers(context, random);
 
             // assign members to league
-            foreach (var member in context.Members)
-            {
-                var leagueMember = new LeagueMemberEntity()
-                {
-                    Member = member,
-                    League = league1
-                };
-                context.Set<LeagueMemberEntity>().Add(leagueMember);
-            }
-
             var members = context.Members
                 .Local
                 .ToList();
+            var leagues = context.Leagues
+                .Local
+                .ToList();
+            foreach (var member in members)
+            {
+                foreach (var league in leagues)
+                {
+                    var leagueMember = new LeagueMemberEntity()
+                    {
+                        Member = member,
+                    };
+                    league.LeagueMembers.Add(leagueMember);
+                }
+            }
 
             // create results
             var resultConfig = new ResultConfigurationEntity()
@@ -377,7 +381,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     Text = $"Cat {i + 1}",
                     DefaultPenalty = i + 1,
                 };
-                context.VoteCategorys.Add(cat);
+                context.VoteCategories.Add(cat);
             }
             foreach (var session in league1.Seasons
                 .SelectMany(x => x.Schedules)
