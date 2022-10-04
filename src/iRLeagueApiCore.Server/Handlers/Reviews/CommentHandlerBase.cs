@@ -49,8 +49,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             CancellationToken cancellationToken)
         {
             voteEntity.Description = voteModel.Description;
-            voteEntity.MemberAtFault = await GetMemberEntityAsync(voteModel.MemberAtFault.MemberId, cancellationToken)
-                ?? throw new HandlerOperationException("Error while trying to update vote entity: MemberAtFault was null");
+            voteEntity.MemberAtFault = await GetMemberEntityAsync(voteModel.MemberAtFault?.MemberId, cancellationToken);
             voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId);
             return voteEntity;
         }

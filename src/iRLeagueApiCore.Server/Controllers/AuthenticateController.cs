@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common.Models.Users;
+using iRLeagueApiCore.Server.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

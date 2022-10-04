@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -51,13 +52,14 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             return users.GroupBy(x => x.user, x => x.role);
         }
 
-        private GetAdminUserModel MapToAdminUserModel(ApplicationUser user, IEnumerable<string> roles)
+        private static GetAdminUserModel MapToAdminUserModel(ApplicationUser user, IEnumerable<string> roles)
         {
+            var parts = user.FullName.Split(';');
             return new GetAdminUserModel()
             {
                 UserName = user.UserName,
-                Firsname = user.FullName?.Split(' ').First(),
-                Lastname = user.FullName?.Split(' ').Last(),
+                Firsname = parts.ElementAtOrDefault(0) ?? string.Empty,
+                Lastname = parts.ElementAtOrDefault(1) ?? string.Empty,
                 Email = user.Email,
                 Roles = roles,
             };

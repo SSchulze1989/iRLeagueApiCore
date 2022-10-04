@@ -54,16 +54,16 @@ namespace iRLeagueApiCore.Server.Handlers
         protected virtual async Task<TrackConfigEntity?> GetTrackConfigEntityAsync(long? trackConfigId, CancellationToken cancellationToken = default)
         {
             return await dbContext.TrackConfigs
-                .SingleOrDefaultAsync(x => x.TrackId == trackConfigId, cancellationToken);
+                .FirstOrDefaultAsync(x => x.TrackId == trackConfigId, cancellationToken);
         }
 
-        protected virtual async Task<MemberEntity?> GetMemberEntityAsync(long memberId, CancellationToken cancellationToken = default)
+        protected virtual async Task<MemberEntity?> GetMemberEntityAsync(long? memberId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Members
                 .FirstOrDefaultAsync(x => x.Id == memberId, cancellationToken);
         }
 
-        protected virtual async Task<VoteCategoryEntity?> GetVoteCategoryEntityAsync(long leagueId, long voteCategoryId)
+        protected virtual async Task<VoteCategoryEntity?> GetVoteCategoryEntityAsync(long leagueId, long? voteCategoryId)
         {
             return await dbContext.VoteCategories
                 .FirstOrDefaultAsync(x => x.CatId == voteCategoryId);
