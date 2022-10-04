@@ -36,7 +36,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review {ReviewId} from {LeagueName} by {UserName}", "Get", id, leagueName,
-                    User.Identity.Name);
+                    GetUsername());
             var request = new GetReviewRequest(leagueId, id);
             var getReview = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Returning entry for review {ReviewId} from {LeagueName}", getReview.ReviewId, leagueName);
@@ -49,7 +49,7 @@ namespace iRLeagueApiCore.Server.Controllers
             PostReviewModel postReview, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review to session {SessionId} from {LeagueName} by {UserName}", "Post",
-                sessionId, leagueName, User.Identity.Name);
+                sessionId, leagueName, GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostReviewToSessionRequest(leagueId, sessionId, leagueUser, postReview);
             var getReview = await mediator.Send(request, cancellationToken);
@@ -63,7 +63,7 @@ namespace iRLeagueApiCore.Server.Controllers
             PutReviewModel putReview, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review {ReviewId} from {LeagueName} by {UserName}", "Put", id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutReviewRequest(leagueId, id, leagueUser, putReview);
             var getReview = await mediator.Send(request, cancellationToken);
@@ -78,7 +78,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger.LogInformation("[{Method}] review {ReviewId} from {LeagueName} by {UserName}", "Delete",
                 id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new DeleteReviewRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted review {ReviewId} from {LeagueName}", id, leagueName);
@@ -91,7 +91,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long sessionId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] all reviews on session {SessionId} from {LeagueName} by {UserName}", "Get",
-                sessionId, leagueName, User.Identity.Name);
+                sessionId, leagueName, GetUsername());
             var request = new GetReviewsFromSessionRequest(leagueId, sessionId);
             var getReviews = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for reviews on session {SessionId} from {LeagueName}",
@@ -105,12 +105,26 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long eventId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] all reviews on event {EventId} from {LeagueName} by {UserName}", "Get",
-                eventId, leagueName, User.Identity.Name);
+                eventId, leagueName, GetUsername());
             var request = new GetReviewsFromEventRequest(leagueId, eventId);
             var getReviews = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for reviews on event {EventId} from {LeagueName}",
                 getReviews.Count(), eventId, leagueName);
             return Ok(getReviews);
+        }
+
+        [HttpPost]
+        [Route("{id:long}/MoveToSession/{sessionId:long}")]
+        public async Task<ActionResult<ReviewModel>> MoveReviewToSession([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id, 
+            [FromRoute] long sessionId, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("[{Method}] Move review {ReviewId} to event {EventId} from {LeagueName} by {UserName}", "Post",
+                id, sessionId, leagueName, GetUsername());
+            var leagueUser = new LeagueUser(leagueName, User);
+            var request = new MoveReviewToSessionRequest(leagueId, sessionId, id, leagueUser);
+            var getReview = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return entry for review {ReviewId} from {LeagueName}", getReview.ReviewId, leagueName);
+            return Ok(getReview);
         }
     }
 }

@@ -6,6 +6,7 @@ using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -29,7 +30,8 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             var postComment = await CreateCommentEntityOnReviewAsync(request.LeagueId, request.ReviewId, request.User, cancellationToken);
             postComment = await MapToReviewCommentEntityAsync(request.User, request.Model, postComment, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getComment = await MapToReviewCommentModelAsync(postComment.LeagueId, postComment.CommentId, cancellationToken);
+            var getComment = await MapToReviewCommentModelAsync(postComment.LeagueId, postComment.CommentId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getComment;
         }
 

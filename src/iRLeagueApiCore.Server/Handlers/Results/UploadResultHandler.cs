@@ -41,7 +41,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return true;
         }
 
-        private async Task<EventEntity> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+        private async Task<EventEntity?> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             // search for session first to check if result will be valid
             return await dbContext.Events

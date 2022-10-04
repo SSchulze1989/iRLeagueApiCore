@@ -57,7 +57,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             return UpdateVersionEntity(user, target);
         }
 
-        protected virtual async Task<ScoringModel> MapToGetScoringModelAsync(long leagueId, long scoringId, CancellationToken cancellationToken = default)
+        protected virtual async Task<ScoringModel?> MapToGetScoringModelAsync(long leagueId, long scoringId, CancellationToken cancellationToken = default)
         {
             return await dbContext.Scorings
                 .Where(x => x.LeagueId == leagueId)

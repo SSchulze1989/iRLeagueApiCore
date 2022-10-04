@@ -47,7 +47,7 @@ namespace iRLeagueApiCore.Server.Controllers
             try
             {
                 _logger.LogInformation("Get scorings from {LeagueName} by {UserName}", leagueName,
-                    User.Identity.Name);
+                    GetUsername());
                 var request = new GetScoringsRequest(leagueId);
                 var getScorings = await mediator.Send(request, cancellationToken);
                 _logger.LogInformation("Returning {Count} entries for scorings from {LeagueName}", getScorings.Count(), leagueName);
@@ -81,7 +81,7 @@ namespace iRLeagueApiCore.Server.Controllers
             try
             {
                 _logger.LogInformation("Get scoring {ScoringId} from {LeagueName} by {UserName}", id, leagueName,
-                    User.Identity.Name);
+                    GetUsername());
                 var request = new GetScoringRequest(leagueId, id);
                 var getScoring = await mediator.Send(request, cancellationToken);
                 _logger.LogInformation("Returning entry for scoring {ScoringId} from {LeagueName}", id, leagueName);
@@ -117,7 +117,7 @@ namespace iRLeagueApiCore.Server.Controllers
             try
             {
                 _logger.LogInformation("Put scoring {ScoringId} inside {LeagueName} by {UserName}", leagueName,
-                    id, User.Identity.Name);
+                    id, GetUsername());
                 var leagueUser = new LeagueUser(leagueName, User);
                 var request = new PutScoringRequest(leagueId, id, leagueUser, model);
                 var getScoring = await mediator.Send(request, cancellationToken);
@@ -153,7 +153,7 @@ namespace iRLeagueApiCore.Server.Controllers
             try
             {
                 _logger.LogInformation("Delete scoring {ScoringId} from {LeagueName} by {UserName}", leagueName,
-                    id, User.Identity.Name);
+                    id, GetUsername());
                 var request = new DeleteScoringRequest(leagueId, id);
                 await mediator.Send(request, cancellationToken);
                 return NoContent();

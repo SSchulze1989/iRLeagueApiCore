@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 ?? throw new ResourceNotFoundException();
             putEvent = await MapToEventEntityAsync(request.User, request.Event, putEvent, cancellationToken);
             dbContext.SaveChanges();
-            var getEvent = await MapToEventModelAsync(request.LeagueId, putEvent.EventId, cancellationToken);
+            var getEvent = await MapToEventModelAsync(request.LeagueId, putEvent.EventId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getEvent;
         }
     }

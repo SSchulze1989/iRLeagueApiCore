@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models.Members;
 using iRLeagueApiCore.Common.Models.Reviews;
+using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,10 +22,11 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
         {
         }
 
-        protected virtual async Task<IncidentReviewEntity> GetReviewEntity(long leagueId, long reviewId, CancellationToken cancellationToken)
+        protected virtual async Task<IncidentReviewEntity?> GetReviewEntity(long leagueId, long reviewId, CancellationToken cancellationToken)
         {
             return await dbContext.IncidentReviews
                 .Include(x => x.InvolvedMembers)
+                .Include(x => x.AcceptedReviewVotes)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.ReviewId == reviewId)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -41,10 +43,46 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             reviewEntity.IncidentNr = postModel.IncidentNr;
             reviewEntity.TimeStamp = postModel.TimeStamp;
             reviewEntity.InvolvedMembers = await GetMemberListAsync(postModel.InvolvedMembers.Select(x => x.MemberId), cancellationToken);
+            reviewEntity.ResultLongText = postModel.ResultText;
+            reviewEntity.AcceptedReviewVotes = await MapToAcceptedVoteList(postModel.VoteResults, reviewEntity.AcceptedReviewVotes, cancellationToken);
             return UpdateVersionEntity(user, reviewEntity);
         }
 
-        protected virtual async Task<ReviewModel> MapToReviewModel(long leagueId, long reviewId, CancellationToken cancellationToken)
+        protected virtual async Task<ICollection<AcceptedReviewVoteEntity>> MapToAcceptedVoteList(IEnumerable<VoteModel> voteModels,
+            ICollection<AcceptedReviewVoteEntity> voteEntities, CancellationToken cancellationToken)
+        {
+            // Map votes
+            foreach (var voteModel in voteModels)
+            {
+                var voteEntity = voteEntities
+                    .FirstOrDefault(x => x.ReviewVoteId == voteModel.Id);
+                if (voteEntity == null)
+                {
+                    voteEntity = new AcceptedReviewVoteEntity();
+                    voteEntities.Add(voteEntity);
+                }
+                await MapToAcceptedReviewVoteEntityAsync(voteModel, voteEntity, cancellationToken);
+            }
+            // Delete votes that are no longer in source collection
+            var deleteVotes = voteEntities
+                .Where(x => voteModels.Any(y => y.Id == x.ReviewVoteId) == false);
+            foreach (var deleteVote in deleteVotes)
+            {
+                dbContext.Remove(deleteVote);
+            }
+            return voteEntities;
+        }
+
+        protected virtual async Task<AcceptedReviewVoteEntity> MapToAcceptedReviewVoteEntityAsync(VoteModel voteModel, AcceptedReviewVoteEntity voteEntity,
+            CancellationToken cancellationToken)
+        {
+            voteEntity.Description = voteModel.Description;
+            voteEntity.MemberAtFault = await GetMemberEntityAsync((voteModel.MemberAtFault?.MemberId).GetValueOrDefault(), cancellationToken);
+            voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId);
+            return voteEntity;
+        }
+
+        protected virtual async Task<ReviewModel?> MapToReviewModel(long leagueId, long reviewId, CancellationToken cancellationToken)
         {
             var query = dbContext.IncidentReviews
                 .Where(x => x.LeagueId == leagueId)
@@ -58,6 +96,8 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             LeagueId = review.LeagueId,
             ReviewId = review.ReviewId,
             SessionId = review.SessionId,
+            SessionNr = review.Session.SessionNr,
+            SessionName = review.Session.Name,
             EventId = review.Session.EventId,
             SeasonId = review.Session.Event.Schedule.SeasonId,
             AuthorName = review.AuthorName,
@@ -76,9 +116,11 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 LeagueId = comment.LeagueId,
                 ReviewId = comment.ReviewId.GetValueOrDefault(),
                 Text = comment.Text,
-                Votes = comment.ReviewCommentVotes.Select(vote => new CommentVoteModel()
+                Votes = comment.ReviewCommentVotes.Select(vote => new VoteModel()
                 {
                     Id = vote.ReviewVoteId,
+                    VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
+                    VoteCategoryText = vote.VoteCategory.Text,
                     Description = vote.Description,
                     MemberAtFault = vote.MemberAtFault != null ? new MemberInfoModel()
                     {
@@ -99,6 +141,20 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 MemberId = member.Id,
                 FirstName = member.Firstname,
                 LastName = member.Lastname,
+            }).ToList(),
+            ResultText = review.ResultLongText,
+            VoteResults = review.AcceptedReviewVotes.Select(vote => new VoteModel()
+            {
+                Id = vote.ReviewVoteId,
+                VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
+                VoteCategoryText = vote.VoteCategory.Text,
+                Description = vote.Description,
+                MemberAtFault = vote.MemberAtFault != null ? new MemberInfoModel()
+                {
+                    MemberId = vote.MemberAtFault.Id,
+                    FirstName = vote.MemberAtFault.Firstname,
+                    LastName = vote.MemberAtFault.Lastname,
+                } : default,
             }).ToList(),
             TimeStamp = review.TimeStamp,
             CreatedByUserId = review.CreatedByUserId,

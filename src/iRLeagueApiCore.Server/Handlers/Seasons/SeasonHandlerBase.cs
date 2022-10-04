@@ -30,7 +30,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             return UpdateVersionEntity(user, target);
         }
 
-        protected virtual async Task<SeasonModel> MapToGetSeasonModel(long leagueId, long seasonId, CancellationToken cancellationToken)
+        protected virtual async Task<SeasonModel?> MapToGetSeasonModel(long leagueId, long seasonId, CancellationToken cancellationToken)
         {
             return await dbContext.Seasons
                 .Where(x => x.LeagueId == leagueId)

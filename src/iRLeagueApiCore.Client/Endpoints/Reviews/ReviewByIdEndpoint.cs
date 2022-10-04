@@ -15,6 +15,11 @@ namespace iRLeagueApiCore.Client.Endpoints.Reviews
             RouteBuilder.AddParameter(id);
         }
 
+        public IPostEndpoint<ReviewModel> MoveToSession(long sessionId)
+        {
+            return new MoveToSessionEndpoint(HttpClientWrapper, RouteBuilder, sessionId);
+        }
+
         public IPostEndpoint<ReviewCommentModel, PostReviewCommentModel> ReviewComments()
         {
             return new ReviewCommentsEndpoint(HttpClientWrapper, RouteBuilder);

@@ -40,7 +40,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all schedules from {LeagueName} by {UserName}", "Get", leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new GetSchedulesRequest(leagueId);
             var getSchedules = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} schedule entries from {LeagueName}", getSchedules.Count(),
@@ -54,7 +54,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Get",
-                id, leagueName, User.Identity.Name);
+                id, leagueName, GetUsername());
             var request = new GetScheduleRequest(leagueId, id);
             var getSchedule = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return entry for schedule {ScheduleId} from {LeagueName}", getSchedule.ScheduleId, leagueName);
@@ -67,7 +67,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all schedules from season {SeasonId} in {LeagueName} by {UserName}",
-                "Get", seasonId, leagueName, User.Identity.Name);
+                "Get", seasonId, leagueName, GetUsername());
             var request = new GetSchedulesFromSeasonRequest(leagueId, seasonId);
             var getSchedules = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for schedules from season {SeasonId} in {LeagueName}",
@@ -82,7 +82,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long seasonId, [FromBody] PostScheduleModel postSchedule, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] new schedule to {LeagueName} by {UserName}", "Post", leagueName,
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostScheduleRequest(leagueId, seasonId, leagueUser, postSchedule);
             var getSchedule = await mediator.Send(request, cancellationToken);
@@ -97,7 +97,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long id, [FromBody] PutScheduleModel putSchedule, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Put",
-                leagueName, id, User.Identity.Name);
+                leagueName, id, GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutScheduleRequest(leagueId, leagueUser, id, putSchedule);
             var getSchedule = await mediator.Send(request, cancellationToken);
@@ -114,7 +114,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger.LogInformation("[{Method}] schedule {ScheduleId} from {LeagueName} by {UserName}", "Delete",
                 id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new DeleteScheduleRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted schedule {ScheduleId} from {LeagueName}", id, leagueName);

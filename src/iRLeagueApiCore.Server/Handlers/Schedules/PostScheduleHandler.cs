@@ -29,7 +29,8 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules
             var postSchedule = await CreateScheduleEntityAsync(request.LeagueId, request.seasonId, request.User, cancellationToken);
             postSchedule = MapToScheduleEntity(request.User, request.Model, postSchedule);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getSchedule = await MapToGetScheduleModelAsync(request.LeagueId, postSchedule.ScheduleId, cancellationToken);
+            var getSchedule = await MapToGetScheduleModelAsync(request.LeagueId, postSchedule.ScheduleId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getSchedule;
         }
 

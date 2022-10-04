@@ -6,6 +6,7 @@ using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,7 +28,8 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             var postReview = await CreateReviewEntityOnSession(request.LeagueId, request.SessionId, request.User, cancellationToken);
             postReview = await MapToReviewEntity(request.User, request.Model, postReview, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getReview = await MapToReviewModel(postReview.LeagueId, postReview.ReviewId, cancellationToken);
+            var getReview = await MapToReviewModel(postReview.LeagueId, postReview.ReviewId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getReview;
         }
 

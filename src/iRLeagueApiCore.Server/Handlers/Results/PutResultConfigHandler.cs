@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +29,8 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 ?? throw new ResourceNotFoundException();
             putResultConfig = await MapToResultConfigEntityAsync(request.User, request.Model, putResultConfig, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getResultConfig = await MapToResultConfigModel(putResultConfig.LeagueId, putResultConfig.ResultConfigId, cancellationToken);
+            var getResultConfig = await MapToResultConfigModel(putResultConfig.LeagueId, putResultConfig.ResultConfigId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getResultConfig;
         }
     }

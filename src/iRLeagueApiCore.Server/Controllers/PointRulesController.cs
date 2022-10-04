@@ -34,7 +34,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] pointRule {PointRuleId} from {LeagueName} by {UserName}", "Get", id, leagueName,
-                    User.Identity.Name);
+                    GetUsername());
             var request = new GetPointRuleRequest(leagueId, id);
             var getPointRule = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Returning entry for pointRule {PointRuleId} from {LeagueName}", getPointRule.PointRuleId, leagueName);
@@ -48,7 +48,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] new pointRule to {LeagueName} by {UserName}", "Post", leagueName,
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostPointRuleRequest(leagueId, leagueUser, postPointRule);
             var getPointRule = await mediator.Send(request, cancellationToken);
@@ -63,7 +63,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromBody] PutPointRuleModel putPointRule, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] pointRule {PointRuleId} from {LeagueName} by {UserName}", "Put", id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutPointRuleRequest(leagueId, id, leagueUser, putPointRule);
             var getPointRule = await mediator.Send(request, cancellationToken);
@@ -79,7 +79,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger.LogInformation("[{Method}] pointRule {PointRuleId} from {LeagueName} by {UserName}", "Delete",
                 id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new DeletePointRuleRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted pointRule {PointRuleId} from {LeagueName}", id, leagueName);

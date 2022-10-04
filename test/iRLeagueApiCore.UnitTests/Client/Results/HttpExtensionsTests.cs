@@ -32,7 +32,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                 Content = content
             };
 
-            var result = await testMessage.ToClientActionResultAsync<TestContent>();
+            var result = await testMessage.ToClientActionResultAsync<TestContent>(default);
             Assert.True(result.Success);
             Assert.Equal("Success", result.Status);
             Assert.Equal(testString, result.Content.String);
@@ -48,7 +48,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                 Content = null
             };
 
-            var result = await testMessge.ToClientActionResultAsync<TestContent>();
+            var result = await testMessge.ToClientActionResultAsync<TestContent>(default);
             Assert.True(result.Success);
             Assert.Equal("Success", result.Status);
             Assert.Equal(HttpStatusCode.NoContent, result.HttpStatusCode);
@@ -70,7 +70,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                 Content = content
             };
 
-            var result = await testMessage.ToClientActionResultAsync<TestContent>();
+            var result = await testMessage.ToClientActionResultAsync<TestContent>(default);
             Assert.False(result.Success);
             Assert.Equal(HttpStatusCode.BadRequest, result.HttpStatusCode);
             Assert.Equal("Bad Request", result.Status);
@@ -90,7 +90,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                 Content = default
             };
 
-            var result = await testMessage.ToClientActionResultAsync<TestContent>();
+            var result = await testMessage.ToClientActionResultAsync<TestContent>(default);
             Assert.False(result.Success);
             Assert.Equal(HttpStatusCode.Forbidden, result.HttpStatusCode);
             Assert.Equal("Forbidden", result.Status);
@@ -106,7 +106,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                 Content = default,
             };
 
-            var result = await testMessage.ToClientActionResultAsync<TestContent>();
+            var result = await testMessage.ToClientActionResultAsync<TestContent>(default);
             Assert.False(result.Success);
             Assert.Equal(HttpStatusCode.InternalServerError, result.HttpStatusCode);
             Assert.Equal("Internal server Error", result.Status);
@@ -123,7 +123,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                 Content = content,
             };
 
-            var result = await testMessage.ToClientActionResultAsync<WrongContent>();
+            var result = await testMessage.ToClientActionResultAsync<WrongContent>(default);
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                 Content = content,
             });
 
-            var result = await request.AsClientActionResultAsync<TestContent>();
+            var result = await request.AsClientActionResultAsync<TestContent>(default);
             Assert.True(result.Success);
             Assert.Equal("Success", result.Status);
             Assert.Equal(testString, result.Content.String);

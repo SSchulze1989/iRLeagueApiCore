@@ -56,5 +56,10 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
         {
             return new ReviewCommentsEndpoint(HttpClientWrapper, RouteBuilder);
         }
+
+        ISessionsEndpoint ILeagueByNameEndpoint.Sessions()
+        {
+            return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
+        }
     }
 }
