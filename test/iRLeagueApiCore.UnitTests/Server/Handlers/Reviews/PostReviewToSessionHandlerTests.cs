@@ -33,6 +33,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
                 new MemberInfoModel() { MemberId = testMemberId},
                 new MemberInfoModel() { MemberId = testMemberId + 1},
             },
+            VoteResults = new VoteModel[0],
         };
 
         protected override PostReviewToSessionHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostReviewToSessionRequest> validator)

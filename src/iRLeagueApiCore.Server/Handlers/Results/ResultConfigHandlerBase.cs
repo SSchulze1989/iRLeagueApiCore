@@ -21,7 +21,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
         }
 
-        protected virtual async Task<ResultConfigurationEntity> GetResultConfigEntity(long leagueId, long resultConfigId, CancellationToken cancellationToken)
+        protected virtual async Task<ResultConfigurationEntity?> GetResultConfigEntity(long leagueId, long resultConfigId, CancellationToken cancellationToken)
         {
             return await dbContext.ResultConfigurations
                 .Where(x => x.LeagueId == leagueId)
@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return await MapToResultConfigEntityAsync(user, (PostResultConfigModel)putResultConfig, resultConfigEntity, cancellationToken);
         }
 
-        protected virtual async Task<ResultConfigModel> MapToResultConfigModel(long leagueId, long resultConfigId, CancellationToken cancellationToken)
+        protected virtual async Task<ResultConfigModel?> MapToResultConfigModel(long leagueId, long resultConfigId, CancellationToken cancellationToken)
         {
             return await dbContext.ResultConfigurations
                 .Where(x => x.LeagueId == leagueId)

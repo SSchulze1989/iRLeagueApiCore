@@ -34,7 +34,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review comment {CommentId} from {LeagueName} by {UserName}", "Get", id, leagueName,
-                    User.Identity.Name);
+                    GetUsername());
             var request = new GetReviewCommentRequest(leagueId, id);
             var getReviewComment = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Returning entry for review comment {CommentId} from {LeagueName}", getReviewComment.CommentId, leagueName);
@@ -56,7 +56,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromBody] PostReviewCommentModel postComment, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] new review comment to review {ReviewId} from {LeagueName} by {UserName}", "Post", reviewId, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostReviewCommentToReviewRequest(leagueId, reviewId, leagueUser, postComment);
             var getComment = await mediator.Send(request, cancellationToken);
@@ -71,7 +71,7 @@ namespace iRLeagueApiCore.Server.Controllers
             PutReviewCommentModel putReviewComment, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review comment {CommentId} from {LeagueName} by {UserName}", "Put", id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutReviewCommentRequest(leagueId, id, leagueUser, putReviewComment);
             var getReviewComment = await mediator.Send(request, cancellationToken);
@@ -86,7 +86,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger.LogInformation("[{Method}] review comment {CommentId} from {LeagueName} by {UserName}", "Delete",
                 id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new DeleteReviewCommentRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted review comment {CommentId} from {LeagueName}", id, leagueName);

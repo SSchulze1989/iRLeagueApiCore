@@ -110,8 +110,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             Assert.Equal(expected.Interval, test.Interval.Ticks);
             Assert.Equal(expected.LeadLaps, test.LeadLaps);
             Assert.Equal(expected.License, test.License);
-            Assert.Equal(expected.Member.Firstname, test.Firstname);
-            Assert.Equal(expected.Member.Lastname, test.Lastname);
+            Assert.Equal(expected.Member?.Firstname ?? string.Empty, test.Firstname);
+            Assert.Equal(expected.Member?.Lastname ?? string.Empty, test.Lastname);
             Assert.Equal(expected.MemberId, test.MemberId);
             Assert.Equal(expected.NewIRating, test.NewIrating);
             Assert.Equal(expected.NewLicenseLevel, test.NewLicenseLevel);
@@ -124,7 +124,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             Assert.Equal(expected.SeasonStartIRating, test.SeasonStartIrating);
             Assert.Equal(expected.StartPosition, test.StartPosition);
             Assert.Equal(expected.Status, test.Status);
-            Assert.Equal(expected.Team?.Name, test.TeamName);
+            Assert.Equal(expected.Team?.Name ?? string.Empty, test.TeamName);
             Assert.Equal(expected.TeamId, test.TeamId);
             Assert.Equal(expected.TotalPoints, test.TotalPoints);
         }

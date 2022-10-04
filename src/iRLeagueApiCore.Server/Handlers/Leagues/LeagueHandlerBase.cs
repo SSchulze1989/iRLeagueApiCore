@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues
             return leagueEntity;
         }
 
-        protected virtual async Task<LeagueModel> MapToGetLeagueModelAsync(long leagueId, CancellationToken cancellationToken)
+        protected virtual async Task<LeagueModel?> MapToGetLeagueModelAsync(long leagueId, CancellationToken cancellationToken)
         {
             return await dbContext.Leagues
                 .Where(x => x.Id == leagueId)

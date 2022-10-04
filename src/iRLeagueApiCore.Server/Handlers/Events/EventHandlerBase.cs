@@ -20,9 +20,10 @@ namespace iRLeagueApiCore.Server.Handlers.Events
         {
         }
 
-        protected virtual async Task<EventEntity> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+        protected virtual async Task<EventEntity?> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             return await dbContext.Events
+                .Include(x => x.Sessions)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
                 .FirstOrDefaultAsync();
@@ -77,10 +78,13 @@ namespace iRLeagueApiCore.Server.Handlers.Events
         {
             target.Name = putSession.Name;
             target.SessionType = putSession.SessionType;
+            target.SessionNr = putSession.SessionNr;
+            target.Laps = putSession.Laps;
+            target.Duration = putSession.Duration;
             return UpdateVersionEntity(user, target);
         }
 
-        protected virtual async Task<EventModel> MapToEventModelAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+        protected virtual async Task<EventModel?> MapToEventModelAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
             return await dbContext.Events
                 .Where(x => x.LeagueId == leagueId)
@@ -103,6 +107,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             Sessions = @event.Sessions.Select(session => new SessionModel()
             {
                 HasResult = session.SessionResult != null,
+                SessionNr = session.SessionNr,
                 LeagueId = session.LeagueId,
                 Name = session.Name,
                 Laps = session.Laps,

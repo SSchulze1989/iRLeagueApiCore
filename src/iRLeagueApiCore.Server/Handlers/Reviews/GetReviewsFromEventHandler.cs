@@ -25,7 +25,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getReviews = await MapToGetReviewsFromEventAsync(request.LeagueId, request.EventId, cancellationToken);
-            return getReviews;
+            return getReviews.OrderBy(x => x.SessionNr).ThenBy(x => x.IncidentNr);
         }
 
         private async Task<IEnumerable<ReviewModel>> MapToGetReviewsFromEventAsync(long leagueId, long EventId, CancellationToken cancellationToken)

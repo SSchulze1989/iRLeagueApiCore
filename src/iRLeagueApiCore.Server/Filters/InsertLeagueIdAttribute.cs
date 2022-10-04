@@ -39,7 +39,7 @@ namespace iRLeagueApiCore.Server.Filters
             {
                 throw new InvalidOperationException("Missing {leagueName} in action route");
             }
-            var leagueName = (string)leagueNameObject;
+            var leagueName = (string)leagueNameObject!;
 
             var league = await _dbContext.Leagues
                 .Select(x => new { x.Id, x.Name })

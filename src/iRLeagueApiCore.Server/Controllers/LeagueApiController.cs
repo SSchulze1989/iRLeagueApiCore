@@ -96,5 +96,10 @@ namespace iRLeagueApiCore.Server.Controllers
             var leagueRole = $"{leagueName.ToLower()}:{roleName}";
             return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);
         }
+
+        protected string GetUsername()
+        {
+            return User.Identity?.Name ?? "Anonymous";
+        }
     }
 }

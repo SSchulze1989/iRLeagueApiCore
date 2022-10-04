@@ -28,10 +28,11 @@ namespace iRLeagueApiCore.Server.Validation.Events
         public async Task<bool> SessionIdValid(SessionModel session, CancellationToken cancellationToken)
         {
             var sessionId = session.SessionId;
-            return sessionId == 0 ||
+            var result = sessionId == 0 ||
                 await dbContext.Sessions
                 .Where(x => x.SessionId == session.SessionId)
                 .AnyAsync();
+            return result;
         }
     }
 }

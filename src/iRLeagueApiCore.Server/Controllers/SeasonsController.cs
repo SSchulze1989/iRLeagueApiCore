@@ -40,7 +40,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all seasons from {LeagueName} by {UserName}", "Get", leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new GetSeasonsRequest(leagueId);
             var getSeasons = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} season entries from {LeagueName}", getSeasons.Count(),
@@ -54,7 +54,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Get",
-                id, leagueName, User.Identity.Name);
+                id, leagueName, GetUsername());
             var request = new GetSeasonRequest(leagueId, id);
             var getSeason = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
@@ -68,7 +68,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromBody] PostSeasonModel postSeason, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] new season to {LeagueName} by {UserName}", "Post", leagueName, 
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostSeasonRequest(leagueId, leagueUser, postSeason);
             var getSeason = await mediator.Send(request, cancellationToken);
@@ -83,7 +83,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long id, [FromBody] PutSeasonModel putSeason, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Put",
-                leagueName, id, User.Identity.Name);
+                leagueName, id, GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutSeasonRequest(leagueId, leagueUser, id, putSeason);
             var getSeason = await mediator.Send(request, cancellationToken);
@@ -100,7 +100,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Delete",
                 id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new DeleteSeasonRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted season {SeasonId} from {LeagueName}", id, leagueName);

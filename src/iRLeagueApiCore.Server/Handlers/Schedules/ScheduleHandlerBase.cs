@@ -30,7 +30,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules
             return target;
         }
 
-        protected virtual async Task<ScheduleModel> MapToGetScheduleModelAsync(long leagueId, long scheduleId, CancellationToken cancellationToken)
+        protected virtual async Task<ScheduleModel?> MapToGetScheduleModelAsync(long leagueId, long scheduleId, CancellationToken cancellationToken)
         {
             return await dbContext.Schedules
                 .Where(x => x.LeagueId == leagueId)

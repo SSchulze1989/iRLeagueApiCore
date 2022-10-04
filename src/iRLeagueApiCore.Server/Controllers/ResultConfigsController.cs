@@ -34,7 +34,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("")]
         public async Task<ActionResult<IEnumerable<ResultConfigModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[{Method}] all resultConfigs from {LeagueName} by {UserName}", "Get", leagueName, User.Identity.Name);
+            _logger.LogInformation("[{Method}] all resultConfigs from {LeagueName} by {UserName}", "Get", leagueName, GetUsername());
             var request = new GetResultConfigsFromLeagueRequest(leagueId);
             var getResultConfigs = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Returning {Count} entries for resultConfigs in {LeagueName}", getResultConfigs.Count(), leagueName);
@@ -47,7 +47,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] resultConfig {ResultConfigId} from {LeagueName} by {UserName}", "Get", id, leagueName,
-                    User.Identity.Name);
+                    GetUsername());
             var request = new GetResultConfigRequest(leagueId, id);
             var getResultConfig = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Returning entry for resultConfig {ResultConfigId} from {LeagueName}", getResultConfig.ResultConfigId, leagueName);
@@ -61,7 +61,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromBody] PostResultConfigModel postResultConfig, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] new resultConfig to {LeagueName} by {UserName}", "Post", leagueName, 
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostResultConfigRequest(leagueId, leagueUser, postResultConfig);
             var getResultConfig = await mediator.Send(request, cancellationToken);
@@ -76,7 +76,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromBody] PutResultConfigModel putResultConfig, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] resultConfig {ResultConfigId} from {LeagueName} by {UserName}", "Put", id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutResultConfigRequest(leagueId, id, leagueUser, putResultConfig);
             var getResultConfig = await mediator.Send(request, cancellationToken);
@@ -92,7 +92,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             _logger.LogInformation("[{Method}] resultConfig {ResultConfigId} from {LeagueName} by {UserName}", "Delete",
                 id, leagueName,
-                User.Identity.Name);
+                GetUsername());
             var request = new DeleteResultConfigRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Deleted resultConfig {ResultConfigId} from {LeagueName}", id, leagueName);

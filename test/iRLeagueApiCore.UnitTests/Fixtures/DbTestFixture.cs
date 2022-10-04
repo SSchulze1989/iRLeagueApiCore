@@ -285,19 +285,23 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             GenerateMembers(context, random);
 
             // assign members to league
-            foreach (var member in context.Members)
-            {
-                var leagueMember = new LeagueMemberEntity()
-                {
-                    Member = member,
-                    League = league1
-                };
-                context.Set<LeagueMemberEntity>().Add(leagueMember);
-            }
-
             var members = context.Members
                 .Local
                 .ToList();
+            var leagues = context.Leagues
+                .Local
+                .ToList();
+            foreach (var member in members)
+            {
+                foreach (var league in leagues)
+                {
+                    var leagueMember = new LeagueMemberEntity()
+                    {
+                        Member = member,
+                    };
+                    league.LeagueMembers.Add(leagueMember);
+                }
+            }
 
             // create results
             var resultConfig = new ResultConfigurationEntity()
@@ -369,6 +373,16 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             }
 
             // Create reviews
+            for (int i=0; i<3; i++)
+            {
+                var cat = new VoteCategoryEntity()
+                {
+                    Index = i,
+                    Text = $"Cat {i + 1}",
+                    DefaultPenalty = i + 1,
+                };
+                context.VoteCategories.Add(cat);
+            }
             foreach (var session in league1.Seasons
                 .SelectMany(x => x.Schedules)
                 .SelectMany(x => x.Events)
@@ -392,7 +406,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     OnLap = random.Next(1, 12).ToString(),
                     TimeStamp = TimeSpan.FromMinutes(1),
                     ResultLongText = "Long text for much more details on the result",
-                    Comments = new[] { RandomComment(random, users.Random(random), involvedMembers) }.ToList(),
+                    Comments = new[] { RandomComment(random, users.Random(random), involvedMembers), RandomComment(random, users.Random(random), involvedMembers) }.ToList(),
                     AcceptedReviewVotes = new[] {new AcceptedReviewVoteEntity() 
                     { 
                         MemberAtFault = involvedMembers.Random(random),

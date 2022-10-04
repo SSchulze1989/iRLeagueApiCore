@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 ?? throw new ResourceNotFoundException();
             putReview = await MapToReviewEntity(request.User, request.Model, putReview, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getReview = await MapToReviewModel(putReview.LeagueId, putReview.ReviewId, cancellationToken);
+            var getReview = await MapToReviewModel(putReview.LeagueId, putReview.ReviewId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getReview;
         }
     }

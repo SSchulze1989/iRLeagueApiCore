@@ -29,7 +29,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return getResult;
         }
 
-        private async Task<EventResultModel> MapToEventResultModelAsync(long leagueId, long resultId, CancellationToken cancellationToken)
+        private async Task<EventResultModel?> MapToEventResultModelAsync(long leagueId, long resultId, CancellationToken cancellationToken)
         {
             return await dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == leagueId)

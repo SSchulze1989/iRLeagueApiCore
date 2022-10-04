@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
                 ?? throw new ResourceNotFoundException();
             await MapToSeasonEntityAsync(request.LeagueId, request.User, request.Model, putSeason, cancellationToken);
             await dbContext.SaveChangesAsync();
-            var getSeason = await MapToGetSeasonModel(request.LeagueId, request.SeasonId, cancellationToken);
+            var getSeason = await MapToGetSeasonModel(request.LeagueId, request.SeasonId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getSeason;
         }
     }

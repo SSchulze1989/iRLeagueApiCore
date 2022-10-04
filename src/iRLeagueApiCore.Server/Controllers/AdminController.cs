@@ -42,7 +42,7 @@ namespace iRLeagueApiCore.Server.Controllers
         {
             try
             {
-                _logger.LogInformation("Get list of users for {LeagueName} by {UserName}", leagueName, User.Identity.Name);
+                _logger.LogInformation("Get list of users for {LeagueName} by {UserName}", leagueName, GetUsername());
                 var request = new ListUsersRequest(leagueName);
                 var getUsers = await _mediator.Send(request, cancellationToken);
                 if (getUsers.Count() == 0)
@@ -73,7 +73,7 @@ namespace iRLeagueApiCore.Server.Controllers
             try
             {
                 _logger.LogInformation("Give league role {LeagueRole} to user {RoleUser} for {LeagueName} by {UserName}",
-                    userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
+                    userRole.RoleName, userRole.UserName, leagueName, GetUsername());
                 var request = new GiveRoleRequest(leagueName, userRole);
                 await _mediator.Send(request, cancellationToken);
                 return OkMessage($"Role {userRole.RoleName} given to user {userRole.UserName}");
@@ -89,7 +89,7 @@ namespace iRLeagueApiCore.Server.Controllers
         //public async Task<IActionResult> RevokeRole([FromRoute] string leagueName, [FromBody] UserRoleModel userRole)
         //{
         //    _logger.LogInformation("Revoke league role {LeagueRole} from user {RoleUser} for {LeagueName} by {UserName}",
-        //        userRole.RoleName, userRole.UserName, leagueName, User.Identity.Name);
+        //        userRole.RoleName, userRole.UserName, leagueName, GetUsername());
 
         //    // find user in database
         //    var roleUser = await _userManager.FindByNameAsync(userRole.UserName);

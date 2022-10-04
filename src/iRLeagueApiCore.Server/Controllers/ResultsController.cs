@@ -45,7 +45,7 @@ namespace iRLeagueApiCore.Server.Controllers
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] result {ResultId} in {LeagueName} by {UserName}", 
-                "Get", resultId, leagueName, User.Identity.Name);
+                "Get", resultId, leagueName, GetUsername());
             var request = new GetResultRequest(leagueId, resultId);
             var getResult = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return entry for result {ResultId} from {LeagueName}", 
@@ -67,7 +67,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from season {SeasonId} in {LeagueName} by {UserName}",
-                "Get", seasonId, leagueName, User.Identity.Name);
+                "Get", seasonId, leagueName, GetUsername());
             var request = new GetResultsFromSeasonRequest(leagueId, seasonId);
             var getResults = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for result from season {SeasonId} in {LeagueName}",
@@ -89,7 +89,7 @@ namespace iRLeagueApiCore.Server.Controllers
             [FromRoute] long eventId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from event {EventId} in {LeagueName} by {UserName}",
-                "Get", eventId, leagueName, User.Identity.Name);
+                "Get", eventId, leagueName, GetUsername());
             var request = new GetResultsFromEventRequest(leagueId, eventId);
             var getResults = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for result from event {EventId} in {LeagueName}",

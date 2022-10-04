@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +29,8 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 ?? throw new ResourceNotFoundException();
             putPointRule = await MapToPointRuleEntityAsync(request.User, request.Model, putPointRule, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getPointRule = await MapToPointRuleModel(request.LeagueId, putPointRule.PointRuleId, cancellationToken);
+            var getPointRule = await MapToPointRuleModel(request.LeagueId, putPointRule.PointRuleId, cancellationToken)
+                ?? throw new InvalidOperationException("Created resource was not found");
             return getPointRule;
         }
     }

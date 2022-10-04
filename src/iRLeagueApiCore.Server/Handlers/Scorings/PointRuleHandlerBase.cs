@@ -22,7 +22,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
         {
         }
 
-        protected virtual async Task<PointRuleEntity> GetPointRuleEntityAsync(long leagueId, long pointRuleId, CancellationToken cancellationToken)
+        protected virtual async Task<PointRuleEntity?> GetPointRuleEntityAsync(long leagueId, long pointRuleId, CancellationToken cancellationToken)
         {
             return await dbContext.PointRules
                 .Where(x => x.LeagueId == leagueId)
@@ -44,7 +44,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             return await Task.FromResult(pointRuleEntity);
         }
 
-        protected virtual async Task<PointRuleModel> MapToPointRuleModel(long leagueId, long pointRuleId, CancellationToken cancellationToken)
+        protected virtual async Task<PointRuleModel?> MapToPointRuleModel(long leagueId, long pointRuleId, CancellationToken cancellationToken)
         {
             return await dbContext.PointRules
                 .Where(x => x.LeagueId == leagueId)
