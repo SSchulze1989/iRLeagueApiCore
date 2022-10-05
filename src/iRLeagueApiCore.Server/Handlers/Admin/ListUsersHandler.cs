@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -54,7 +55,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
 
         private static AdminUserModel MapToAdminUserModel(ApplicationUser user, IEnumerable<string> roles)
         {
-            var parts = user.FullName.Split(';');
+            var parts = user.FullName?.Split(';') ?? Array.Empty<string>();
             return new AdminUserModel()
             {
                 UserName = user.UserName,
