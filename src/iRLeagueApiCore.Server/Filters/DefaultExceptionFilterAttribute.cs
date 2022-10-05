@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace iRLeagueApiCore.Server.Filters
 {
-    public class DefaultExceptionFilterAttribute : IExceptionFilter
+    public sealed class DefaultExceptionFilterAttribute : IExceptionFilter
     {
         private readonly ILogger<DefaultExceptionFilterAttribute> _logger;
 

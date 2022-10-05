@@ -44,6 +44,11 @@ namespace iRLeagueApiCore.Server.Authentication
             return $"{leagueName.ToLower()}{RoleDelimiter}{roleName}";
         }
 
+        public static string? GetRoleName(string leagueRoleName)
+        {
+            return leagueRoleName.Split(RoleDelimiter).ElementAtOrDefault(1);
+        }
+
         /// <summary>
         /// Check wether a full league role name is a valid role name for the provided league
         /// </summary>

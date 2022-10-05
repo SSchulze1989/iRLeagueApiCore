@@ -134,15 +134,15 @@ namespace iRLeagueApiCore.Server
             });
 
             // try get connection string
-            services.AddDbContextFactory<ApplicationDbContext, ApplicationDbContextFactory>();
+            services.AddDbContextFactory<UserDbContext, UserDbContextFactory>();
             services.AddScoped(x =>
-                x.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+                x.GetRequiredService<IDbContextFactory<UserDbContext>>().CreateDbContext());
             services.AddDbContextFactory<LeagueDbContext, LeagueDbContextFactory>();
             services.AddScoped(x =>
                 x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<UserDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>

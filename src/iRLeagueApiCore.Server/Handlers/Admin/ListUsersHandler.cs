@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Admin
 {
-    public record ListUsersRequest(string LeagueName) : IRequest<IEnumerable<GetAdminUserModel>>;
+    public record ListUsersRequest(string LeagueName) : IRequest<IEnumerable<AdminUserModel>>;
 
-    public class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumerable<GetAdminUserModel>>
+    public class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumerable<AdminUserModel>>
     {
         private readonly ILogger<ListUsersHandler> _logger;
         private readonly IEnumerable<IValidator<ListUsersRequest>> _validators;
@@ -28,7 +28,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<GetAdminUserModel>> Handle(ListUsersRequest request, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AdminUserModel>> Handle(ListUsersRequest request, CancellationToken cancellationToken = default)
         {
             await _validators.ValidateAllAndThrowAsync(request, cancellationToken);
             // Get users that have a league role
@@ -52,13 +52,13 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             return users.GroupBy(x => x.user, x => x.role);
         }
 
-        private static GetAdminUserModel MapToAdminUserModel(ApplicationUser user, IEnumerable<string> roles)
+        private static AdminUserModel MapToAdminUserModel(ApplicationUser user, IEnumerable<string> roles)
         {
             var parts = user.FullName.Split(';');
-            return new GetAdminUserModel()
+            return new AdminUserModel()
             {
                 UserName = user.UserName,
-                Firsname = parts.ElementAtOrDefault(0) ?? string.Empty,
+                Firstname = parts.ElementAtOrDefault(0) ?? string.Empty,
                 Lastname = parts.ElementAtOrDefault(1) ?? string.Empty,
                 Email = user.Email,
                 Roles = roles,

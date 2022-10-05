@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.Server.Filters
     /// <para>If no league role is specified, the user is checked to be in at least one of any available league role</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class RequireLeagueRoleAttribute : Attribute
+    public sealed class RequireLeagueRoleAttribute : Attribute
     {
         /// <summary>
         /// Private field to prevent modifiying from outside

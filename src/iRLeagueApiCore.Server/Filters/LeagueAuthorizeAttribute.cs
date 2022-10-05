@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Filters
     /// <para><b>The decorated class or method must have {leagueName} as a route parameter.</b></para> 
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
-    public class LeagueAuthorizeAttribute : ActionFilterAttribute
+    public sealed class LeagueAuthorizeAttribute : ActionFilterAttribute
     {
         private readonly ILogger<LeagueAuthorizeAttribute> _logger;
 
@@ -51,7 +51,7 @@ namespace iRLeagueApiCore.Server.Filters
             var requireLeagueRoleAttribute = (RequireLeagueRoleAttribute?)context.ActionDescriptor.EndpointMetadata
                 .LastOrDefault(x => x.GetType() == typeof(RequireLeagueRoleAttribute));
 
-            if (requireLeagueRoleAttribute?.Roles.Count() > 0)
+            if (requireLeagueRoleAttribute?.Roles.Length > 0)
             {
                 var hasRole = requireLeagueRoleAttribute.Roles
                     .Any(x => HasLeagueRole(user, leagueName, x));
@@ -74,7 +74,7 @@ namespace iRLeagueApiCore.Server.Filters
             await base.OnActionExecutionAsync(context, next);
         }
 
-        private bool HasAnyLeagueRole(IPrincipal user, string leagueName)
+        private static bool HasAnyLeagueRole(IPrincipal user, string leagueName)
         {
             foreach (var roleName in LeagueRoles.RolesAvailable)
             {
@@ -87,7 +87,7 @@ namespace iRLeagueApiCore.Server.Filters
             return user.IsInRole(UserRoles.Admin);
         }
 
-        private bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)
+        private static bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)
         {
             var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
             return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);

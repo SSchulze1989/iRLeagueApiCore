@@ -39,7 +39,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet("ListUsers")]
-        public async Task<ActionResult<IEnumerable<GetAdminUserModel>>> ListUsers([FromRoute] string leagueName, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<IEnumerable<AdminUserModel>>> ListUsers([FromRoute] string leagueName, CancellationToken cancellationToken = default)
         {
             try
             {

@@ -49,23 +49,23 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         [Fact]
         public async void ListUsersRequestValid()
         {
-            var userList = new List<GetAdminUserModel>()
+            var userList = new List<AdminUserModel>()
             {
-                new GetAdminUserModel() { UserName = TestUserName, Roles = new string[] { "Role1", "Role2" } }
+                new AdminUserModel() { UserName = TestUserName, Roles = new string[] { "Role1", "Role2" } }
             };
-            var mediator = MockHelpers.TestMediator<ListUsersRequest, IEnumerable<GetAdminUserModel>>(result: userList);
+            var mediator = MockHelpers.TestMediator<ListUsersRequest, IEnumerable<AdminUserModel>>(result: userList);
             var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mediator));
             var result = await controller.ListUsers(TestLeagueName);
 
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var usersResult = Assert.IsAssignableFrom<IEnumerable<GetAdminUserModel>>(okResult.Value);
+            var usersResult = Assert.IsAssignableFrom<IEnumerable<AdminUserModel>>(okResult.Value);
             Assert.Equal(TestUserName, usersResult.First().UserName);
         }
 
         [Fact]
         public async void ListUsersValidationFailed()
         {
-            var mediator = MockHelpers.TestMediator<ListUsersRequest, IEnumerable<GetAdminUserModel>>(throws: ValdiationFailed());
+            var mediator = MockHelpers.TestMediator<ListUsersRequest, IEnumerable<AdminUserModel>>(throws: ValdiationFailed());
             var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mediator));
             var result = await controller.ListUsers(TestLeagueName);
 
