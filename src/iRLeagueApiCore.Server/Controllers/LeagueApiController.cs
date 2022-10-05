@@ -1,13 +1,27 @@
 ﻿using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Security.Principal;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    public abstract class LeagueApiController : Controller
+    [ApiController]
+    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
+    public abstract class LeagueApiController<TController> : Controller where TController : LeagueApiController<TController>
     {
+        protected readonly ILogger<TController> _logger;
+        protected readonly IMediator mediator;
+
+        protected LeagueApiController(ILogger<TController> logger, IMediator mediator)
+        {
+            _logger = logger;
+            this.mediator = mediator;
+        }
+
         /// <summary>
         /// Returns a generic "something went wrong" error message in case the error
         /// should not be forwarded to the user

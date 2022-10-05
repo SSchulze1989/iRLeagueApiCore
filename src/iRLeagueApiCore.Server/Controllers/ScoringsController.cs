@@ -15,21 +15,14 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class ScoringsController : LeagueApiController
+    public sealed class ScoringsController : LeagueApiController<ScoringsController>
     {
-        private readonly ILogger<ScoringsController> _logger;
-        private readonly IMediator mediator;
-
-        public ScoringsController(ILogger<ScoringsController> logger, IMediator mediator)
+        public ScoringsController(ILogger<ScoringsController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         /// <summary>

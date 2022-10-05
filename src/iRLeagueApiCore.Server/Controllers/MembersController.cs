@@ -16,22 +16,15 @@ namespace iRLeagueApiCore.Server.Controllers
     /// <summary>
     /// Endpoint for retrieving and managin member information
     /// </summary>
-    [ApiController]
     [Authorize]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class MembersController : LeagueApiController
+    public class MembersController : LeagueApiController<MembersController>
     {
-        private readonly ILogger<EventsController> _logger;
-        private readonly IMediator mediator;
-
-        public MembersController(ILogger<EventsController> logger, IMediator mediator)
+        public MembersController(ILogger<MembersController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]

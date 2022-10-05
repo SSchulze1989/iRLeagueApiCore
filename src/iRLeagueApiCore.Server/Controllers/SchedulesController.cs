@@ -17,21 +17,14 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class SchedulesController : LeagueApiController
+    public class SchedulesController : LeagueApiController<SchedulesController>
     {
-        private readonly ILogger<SchedulesController> _logger;
-        private readonly IMediator mediator;
-
-        public SchedulesController(ILogger<SchedulesController> logger, IMediator mediator)
+        public SchedulesController(ILogger<SchedulesController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]

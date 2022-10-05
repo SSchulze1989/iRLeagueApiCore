@@ -13,21 +13,14 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
     [Route("{leagueName}/[controller]")]
-    public class ReviewsController : LeagueApiController
+    public class ReviewsController : LeagueApiController<ReviewsController>
     {
-        private readonly ILogger<ReviewsController> _logger;
-        private readonly IMediator mediator;
-
-        public ReviewsController(ILogger<ReviewsController> logger, IMediator mediator)
+        public ReviewsController(ILogger<ReviewsController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]

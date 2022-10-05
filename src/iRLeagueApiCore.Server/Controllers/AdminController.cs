@@ -16,20 +16,13 @@ using iRLeagueApiCore.Common.Models.Users;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [RequireLeagueRole(LeagueRoles.Admin)]
     [Route("{leagueName}/[controller]")]
-    public class AdminController : LeagueApiController
+    public class AdminController : LeagueApiController<AdminController>
     {
-        private readonly ILogger<AdminController> _logger;
-        private readonly IMediator _mediator;
-
-
-        public AdminController(ILogger<AdminController> logger, IMediator mediator)
+        public AdminController(ILogger<AdminController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            _mediator = mediator;
         }
 
         /// <summary>
@@ -45,7 +38,7 @@ namespace iRLeagueApiCore.Server.Controllers
             {
                 _logger.LogInformation("Get list of users for {LeagueName} by {UserName}", leagueName, GetUsername());
                 var request = new ListUsersRequest(leagueName);
-                var getUsers = await _mediator.Send(request, cancellationToken);
+                var getUsers = await mediator.Send(request, cancellationToken);
                 if (getUsers.Count() == 0)
                 {
                     _logger.LogInformation("No users found in {LeagueName}", leagueName);
@@ -76,7 +69,7 @@ namespace iRLeagueApiCore.Server.Controllers
                 _logger.LogInformation("Give league role {LeagueRole} to user {RoleUser} for {LeagueName} by {UserName}",
                     userRole.RoleName, userRole.UserName, leagueName, GetUsername());
                 var request = new GiveRoleRequest(leagueName, userRole);
-                await _mediator.Send(request, cancellationToken);
+                await mediator.Send(request, cancellationToken);
                 return OkMessage($"Role {userRole.RoleName} given to user {userRole.UserName}");
             }
             catch (ValidationException ex)

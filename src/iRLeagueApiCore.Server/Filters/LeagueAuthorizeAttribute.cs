@@ -14,7 +14,7 @@ namespace iRLeagueApiCore.Server.Filters
     /// <para>The pattern for league roles is {leagueName}:{roleName} so for example an admin for testleague must be in the role: testleague:Admin</para>
     /// <para><b>The decorated class or method must have {leagueName} as a route parameter.</b></para> 
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public sealed class LeagueAuthorizeAttribute : ActionFilterAttribute
     {
         private readonly ILogger<LeagueAuthorizeAttribute> _logger;
@@ -48,18 +48,21 @@ namespace iRLeagueApiCore.Server.Filters
             }
 
             // check if specific league role required
-            var requireLeagueRoleAttribute = (RequireLeagueRoleAttribute?)context.ActionDescriptor.EndpointMetadata
-                .LastOrDefault(x => x.GetType() == typeof(RequireLeagueRoleAttribute));
+            var requireLeagueRoleAttribute = context.ActionDescriptor.EndpointMetadata
+                .OfType<RequireLeagueRoleAttribute>();
 
-            if (requireLeagueRoleAttribute?.Roles.Length > 0)
+            var requiredRoles = requireLeagueRoleAttribute
+                .SelectMany(x => x.Roles)
+                .ToList();
+            if (requiredRoles.Count > 0)
             {
-                var hasRole = requireLeagueRoleAttribute.Roles
+                var hasRole = requiredRoles
                     .Any(x => HasLeagueRole(user, leagueName, x));
 
                 if (hasRole == false)
                 {
                     _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any required role {Roles}",
-                        user.Identity.Name, leagueName, requireLeagueRoleAttribute.Roles);
+                        user.Identity.Name, leagueName, requiredRoles);
                     context.Result = new ForbidResult();
                     return;
                 }

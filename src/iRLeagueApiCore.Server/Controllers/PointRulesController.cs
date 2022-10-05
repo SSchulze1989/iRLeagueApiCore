@@ -11,21 +11,14 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class PointRulesController : LeagueApiController
+    public class PointRulesController : LeagueApiController<PointRulesController>
     {
-        private readonly ILogger<PointRulesController> _logger;
-        private readonly IMediator mediator;
-
-        public PointRulesController(ILogger<PointRulesController> logger, IMediator mediator)
+        public PointRulesController(ILogger<PointRulesController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]
