@@ -31,37 +31,27 @@ namespace iRLeagueApiCore.Server.Handlers.Members
 
         protected async Task<IEnumerable<MemberInfoModel>> GetMembersFromEvent(long leagueId, long eventId, CancellationToken cancellationToken)
         {
-            var @event = await dbContext.Events
+            var resultMembers = await dbContext.EventResults
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
-                .Select(x => new {
-                    x.LeagueId,
-                    x.EventId,
-                    EventResult = new
-                    {
-                        SessionResults = x.EventResult.SessionResults.Select(y => new
-                        {
-                            ResultRows = y.ResultRows.Select(z => new
-                            {
-                                MemberId = z.Member.Id
-                            })
-                        })
-                    },
-                })
-                .FirstOrDefaultAsync(cancellationToken)
+                .Select(x => x.SessionResults
+                        .SelectMany(y => y.ResultRows)
+                        .Select(y => y.MemberId))
+                .SelectMany(x => x!)
+                .ToListAsync(cancellationToken)
                 ?? throw new ResourceNotFoundException();
-            if (@event.EventResult == null)
-            {
-                return Array.Empty<MemberInfoModel>();
-            }
-            var memberIds = new List<long>();
-            foreach(var sessionResult in @event.EventResult.SessionResults)
-            {
-                foreach(var memberId in sessionResult.ResultRows.Select(x => x.MemberId))
-                {
-                    memberIds.Add(memberId);
-                }
-            }
+            var scoredResultMembers = await dbContext.ScoredEventResults
+                .Where(x => x.LeagueId == leagueId)
+                .Where(x => x.EventId == eventId)
+                .Select(x => x.ScoredSessionResults
+                    .SelectMany(y => y.ScoredResultRows)
+                    .Where(y => y.MemberId != null)
+                    .Select(y => y.MemberId.GetValueOrDefault()))
+                .SelectMany(x => x)
+                .ToListAsync(cancellationToken);
+            var memberIds = resultMembers
+                .Concat(scoredResultMembers)
+                .Distinct();
             
             return await MapToMemberInfoListAsync(memberIds, cancellationToken);
         }
