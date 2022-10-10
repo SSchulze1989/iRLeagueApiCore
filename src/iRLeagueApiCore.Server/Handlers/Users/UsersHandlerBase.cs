@@ -5,6 +5,7 @@ using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -69,9 +70,9 @@ namespace iRLeagueApiCore.Server.Handlers.Users
             return model;
         }
 
-        protected (string firstname, string lastname) GetUserFirstnameLastname(string Fullname)
+        protected (string firstname, string lastname) GetUserFirstnameLastname(string? Fullname)
         {
-            var parts = Fullname.Split(';');
+            var parts = Fullname?.Split(';') ?? Array.Empty<string>();
             return (parts.ElementAtOrDefault(0) ?? string.Empty, parts.ElementAtOrDefault(1) ?? string.Empty);
         }
 

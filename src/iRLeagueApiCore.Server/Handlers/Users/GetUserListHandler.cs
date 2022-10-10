@@ -34,11 +34,11 @@ namespace iRLeagueApiCore.Server.Handlers.Users
             var leagueRoles = LeagueRoles.RolesAvailable
                 .Select(x => LeagueRoles.GetLeagueRoleName(leagueName, x));
             var usersWithRole = new List<ApplicationUser>();
-            foreach(var leagueRole in leagueRoles)
+            foreach (var leagueRole in leagueRoles)
             {
                 usersWithRole.AddRange(await userManager.GetUsersInRoleAsync(leagueRole));
             }
-            return usersWithRole;
+            return usersWithRole.DistinctBy(x => x.Id);
         }
     }
 }
