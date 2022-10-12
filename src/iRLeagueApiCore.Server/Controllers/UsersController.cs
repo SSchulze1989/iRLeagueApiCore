@@ -1,9 +1,12 @@
-﻿using iRLeagueApiCore.Common.Models.Users;
+﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Users;
 using iRLeagueApiCore.Server.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -30,6 +33,72 @@ namespace iRLeagueApiCore.Server.Controllers
             var request = new GetUserListRequest(leagueName);
             var result = await mediator.Send(request);
             _logger.LogInformation("Return {Count} entries for users from {LeagueName}", result.Count(), leagueName);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("{id}")]
+        public async Task<ActionResult<UserModel>> GetUser([FromRoute] string id, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("[{Method}] user {UserId} by {Username}", "Get", id, User.Identity?.Name);
+            var currentUserId = User.GetUserId()!;
+            object result;
+            if (id == currentUserId)
+            {
+                // if the user requests its own info --> return private user data
+                var request = new GetPrivateUserRequest(id);
+                result = await mediator.Send(request);
+                _logger.LogInformation("Return private data for users {UserId}", id);
+            }
+            else
+            {
+                // else get public user data
+                var request = new GetUserRequest(id);
+                result = await mediator.Send(request);
+                _logger.LogInformation("Return public data for users {UserId}", id);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("Search")]
+        public async Task<ActionResult<IEnumerable<UserModel>>> SearchByName([FromBody] SearchModel model, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("[{Method}] search for users with names {SearchKeys} by {Username}", "Post",
+                model.SearchKeys, User.Identity?.Name);
+            var request = new SearchUsersByNameRequest(model.SearchKeys.ToArray());
+            var result = await mediator.Send(request);
+            _logger.LogInformation("Return {Count} entries for search", result.Count());
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+        [RequireLeagueRole(LeagueRoles.Admin)]
+        [Route("/{leagueName}/[controller]/{id}/AddRole")]
+        public async Task<ActionResult<LeagueUserModel>> AddUserRole([FromRoute] string leagueName, [FromRoute] string id, [FromBody] RoleModel role)
+        {
+            _logger.LogInformation("[{Method}] Add role {RoleName} to user {RoleUserId} from {LeagueName} by {UserName}", "Post",
+                role.RoleName, id, leagueName, User.Identity?.Name);
+            var request = new AddLeagueRoleRequest(leagueName, id, role.RoleName);
+            var result = await mediator.Send(request);
+            _logger.LogInformation("Return league user data for {UserId} from {LeagueName}", id, leagueName);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+        [RequireLeagueRole(LeagueRoles.Admin)]
+        [Route("/{leagueName}/[controller]/{id}/RemoveRole")]
+        public async Task<ActionResult<LeagueUserModel>> RemoveUserRole([FromRoute] string leagueName, [FromRoute] string id, [FromBody] RoleModel role)
+        {
+            _logger.LogInformation("[{Method}] Remove role {RoleName} to user {RoleUserId} from {LeagueName} by {UserName}", "Post",
+                role.RoleName, id, leagueName, User.Identity?.Name);
+            var request = new RemoveLeagueRoleRequest(leagueName, id, role.RoleName);
+            var result = await mediator.Send(request);
+            _logger.LogInformation("Return league user data for {UserId} from {LeagueName}", id, leagueName);
             return Ok(result);
         }
     }

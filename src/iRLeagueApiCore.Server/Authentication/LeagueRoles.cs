@@ -38,10 +38,15 @@ namespace iRLeagueApiCore.Server.Authentication
         /// <summary>
         /// Get the full league role name for a provided league name and role name
         /// </summary>
-        /// <returns></returns>
-        public static string GetLeagueRoleName(string leagueName, string roleName)
+        /// <returns><see langword="null"/> if <paramref name="roleName"/> is not valid</returns>
+        public static string? GetLeagueRoleName(string leagueName, string roleName)
         {
-            return $"{leagueName.ToLower()}{RoleDelimiter}{roleName}";
+            if (IsValidRole(roleName) == false)
+            {
+                return null;
+            }
+
+            return $"{leagueName.ToLower()}{RoleDelimiter}{CapitalizeRoleName(roleName)}";
         }
 
         public static string? GetRoleName(string leagueRoleName)
@@ -56,7 +61,17 @@ namespace iRLeagueApiCore.Server.Authentication
         public static bool IsLeagueRoleName(string leagueName, string roleName)
         {
             var pattern = $"({leagueName})({RoleDelimiter})({string.Join('|', RolesAvailable)})";   
-            return Regex.IsMatch(roleName, pattern);
+            return Regex.IsMatch(roleName, pattern, RegexOptions.IgnoreCase);
+        }
+
+        public static bool IsValidRole(string roleName)
+        {
+            return RolesAvailable.Any(x => x.Equals(roleName, System.StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string CapitalizeRoleName(string roleName)
+        {
+            return char.ToUpper(roleName[0]) + roleName[1..].ToLower();
         }
     }
 }
