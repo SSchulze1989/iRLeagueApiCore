@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Leagues;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
+using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
@@ -40,6 +41,11 @@ namespace iRLeagueApiCore.Client
         public ILeaguesEndpoint Leagues()
         {
             return new LeaguesEndpoint(httpClientWrapper, new RouteBuilder());
+        }
+
+        public IUsersEndpoint Users()
+        {
+            return new UsersEndpoint(httpClientWrapper, new RouteBuilder());
         }
 
         public async Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default)

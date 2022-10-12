@@ -4,6 +4,7 @@ using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
@@ -14,6 +15,8 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
     internal class LeagueByNameEndpoint : EndpointBase, ILeagueByNameEndpoint
     {
         public string Name { get; }
+
+        string ILeagueByNameEndpoint.Name => throw new System.NotImplementedException();
 
         public LeagueByNameEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, string leagueName) : 
             base (httpClientWrapper, routeBuilder)
@@ -60,6 +63,11 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
         ISessionsEndpoint ILeagueByNameEndpoint.Sessions()
         {
             return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
+        ILeagueUsersEndpoint ILeagueByNameEndpoint.Users()
+        {
+            return new UsersEndpoint(HttpClientWrapper, RouteBuilder);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
             _logger.LogInformation("[{Method}] members in event {EventId} from {LeagueName} by {UserName}", "Get", eventId, leagueName,
                 GetUsername());
             var request = new GetMembersFromEventRequest(leagueId, eventId);
-            var getMembers = await mediator.Send(request);
+            var getMembers = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Retur {Count} values for members in event {EventId} from {LeagueName}", getMembers.Count(), eventId, leagueName);
             return Ok(getMembers);
         }
