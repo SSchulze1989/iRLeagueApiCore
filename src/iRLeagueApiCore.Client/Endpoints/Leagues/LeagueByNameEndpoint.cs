@@ -16,8 +16,6 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
     {
         public string Name { get; }
 
-        string ILeagueByNameEndpoint.Name => throw new System.NotImplementedException();
-
         public LeagueByNameEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, string leagueName) : 
             base (httpClientWrapper, routeBuilder)
         {

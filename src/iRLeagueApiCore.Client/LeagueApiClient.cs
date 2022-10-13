@@ -48,7 +48,7 @@ namespace iRLeagueApiCore.Client
             return new UsersEndpoint(httpClientWrapper, new RouteBuilder());
         }
 
-        public async Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default)
+        public async Task<ClientActionResult<LoginResponse>> LogIn(string username, string password, CancellationToken cancellationToken = default)
         {
             // request to login endpoint
             await LogOut();
@@ -68,11 +68,11 @@ namespace iRLeagueApiCore.Client
                 // set authorization header
                 string token = result.Content.Token;
                 await tokenStore.SetTokenAsync(token);
-                return true;
+                return result;
             }
 
             logger.LogError("Login failed: {Status}", result.Status);
-            return false;
+            return result;
         }
 
         public async Task LogOut()
@@ -97,12 +97,6 @@ namespace iRLeagueApiCore.Client
         {
             SetCurrentLeague(leagueName);
             CurrentSeason = CurrentLeague.Seasons().WithId(seasonId);
-        }
-
-        private struct LoginResponse
-        {
-            public string Token { get; set; }
-            public DateTime Expires { get; set; }
         }
     }
 }
