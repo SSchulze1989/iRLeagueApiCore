@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;

@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Server.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -82,7 +83,7 @@ namespace iRLeagueApiCore.Server.Filters
             foreach (var roleName in LeagueRoles.RolesAvailable)
             {
                 var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
-                if (user.IsInRole(leagueRole))
+                if (leagueRole != null && user.IsInRole(leagueRole))
                 {
                     return true;
                 }
@@ -93,6 +94,10 @@ namespace iRLeagueApiCore.Server.Filters
         private static bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)
         {
             var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
+            if (leagueRole == null)
+            { 
+                return false; 
+            }
             return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);
         }
     }
