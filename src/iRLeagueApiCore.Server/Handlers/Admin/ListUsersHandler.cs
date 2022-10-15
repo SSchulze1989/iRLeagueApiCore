@@ -47,7 +47,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
                 var inRole = await _userManager.GetUsersInRoleAsync(leagueRoleName);
                 if (inRole != null)
                 {
-                    users.AddRange(inRole.Select(user => (user, role)));
+                    users.AddRange(inRole.Select(user => (user, (string)role)));
                 }
             }
             return users.GroupBy(x => x.user, x => x.role);

@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Validation.Users
             RuleFor(x => x.RoleName)
                 .Must(LeagueRoles.IsValidRole)
                 .WithMessage(request =>
-                    $"Invalid value. Valid roles: [{string.Join(", ", LeagueRoles.RolesAvailable)}]");
+                    $"Invalid value. Valid roles: [{string.Join<LeagueRoleValue>(", ", LeagueRoles.RolesAvailable)}]");
         }
     }
 }
