@@ -24,8 +24,8 @@ namespace iRLeagueApiCore.Server.Filters
     /// }
     /// </code>
     /// </example>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class InsertLeagueIdAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public sealed class InsertLeagueIdAttribute : ActionFilterAttribute
     {
         private readonly LeagueDbContext _dbContext;
         public InsertLeagueIdAttribute(LeagueDbContext dbContext)

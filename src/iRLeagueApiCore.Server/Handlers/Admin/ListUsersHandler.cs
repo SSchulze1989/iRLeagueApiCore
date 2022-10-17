@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Admin
 {
-    public record ListUsersRequest(string LeagueName) : IRequest<IEnumerable<GetAdminUserModel>>;
+    public record ListUsersRequest(string LeagueName) : IRequest<IEnumerable<AdminUserModel>>;
 
-    public class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumerable<GetAdminUserModel>>
+    public class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumerable<AdminUserModel>>
     {
         private readonly ILogger<ListUsersHandler> _logger;
         private readonly IEnumerable<IValidator<ListUsersRequest>> _validators;
@@ -27,7 +29,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<GetAdminUserModel>> Handle(ListUsersRequest request, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AdminUserModel>> Handle(ListUsersRequest request, CancellationToken cancellationToken = default)
         {
             await _validators.ValidateAllAndThrowAsync(request, cancellationToken);
             // Get users that have a league role
@@ -45,19 +47,20 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
                 var inRole = await _userManager.GetUsersInRoleAsync(leagueRoleName);
                 if (inRole != null)
                 {
-                    users.AddRange(inRole.Select(user => (user, role)));
+                    users.AddRange(inRole.Select(user => (user, (string)role)));
                 }
             }
             return users.GroupBy(x => x.user, x => x.role);
         }
 
-        private GetAdminUserModel MapToAdminUserModel(ApplicationUser user, IEnumerable<string> roles)
+        private static AdminUserModel MapToAdminUserModel(ApplicationUser user, IEnumerable<string> roles)
         {
-            return new GetAdminUserModel()
+            var parts = user.FullName?.Split(';') ?? Array.Empty<string>();
+            return new AdminUserModel()
             {
                 UserName = user.UserName,
-                Firsname = user.FullName?.Split(' ').First(),
-                Lastname = user.FullName?.Split(' ').Last(),
+                Firstname = parts.ElementAtOrDefault(0) ?? string.Empty,
+                Lastname = parts.ElementAtOrDefault(1) ?? string.Empty,
                 Email = user.Email,
                 Roles = roles,
             };

@@ -4,11 +4,13 @@ using iRLeagueApiCore.Server.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 
 namespace iRLeagueApiCore.Server.Filters
 {
-    public class DefaultExceptionFilterAttribute : IExceptionFilter
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public sealed class DefaultExceptionFilterAttribute : Attribute, IExceptionFilter
     {
         private readonly ILogger<DefaultExceptionFilterAttribute> _logger;
 

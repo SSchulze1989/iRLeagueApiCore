@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Server.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -14,8 +15,8 @@ namespace iRLeagueApiCore.Server.Filters
     /// <para>The pattern for league roles is {leagueName}:{roleName} so for example an admin for testleague must be in the role: testleague:Admin</para>
     /// <para><b>The decorated class or method must have {leagueName} as a route parameter.</b></para> 
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
-    public class LeagueAuthorizeAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public sealed class LeagueAuthorizeAttribute : ActionFilterAttribute
     {
         private readonly ILogger<LeagueAuthorizeAttribute> _logger;
 
@@ -48,18 +49,21 @@ namespace iRLeagueApiCore.Server.Filters
             }
 
             // check if specific league role required
-            var requireLeagueRoleAttribute = (RequireLeagueRoleAttribute?)context.ActionDescriptor.EndpointMetadata
-                .LastOrDefault(x => x.GetType() == typeof(RequireLeagueRoleAttribute));
+            var requireLeagueRoleAttribute = context.ActionDescriptor.EndpointMetadata
+                .OfType<RequireLeagueRoleAttribute>();
 
-            if (requireLeagueRoleAttribute?.Roles.Count() > 0)
+            var requiredRoles = requireLeagueRoleAttribute
+                .SelectMany(x => x.Roles)
+                .ToList();
+            if (requiredRoles.Count > 0)
             {
-                var hasRole = requireLeagueRoleAttribute.Roles
+                var hasRole = requiredRoles
                     .Any(x => HasLeagueRole(user, leagueName, x));
 
                 if (hasRole == false)
                 {
                     _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any required role {Roles}",
-                        user.Identity.Name, leagueName, requireLeagueRoleAttribute.Roles);
+                        user.Identity.Name, leagueName, requiredRoles);
                     context.Result = new ForbidResult();
                     return;
                 }
@@ -74,12 +78,12 @@ namespace iRLeagueApiCore.Server.Filters
             await base.OnActionExecutionAsync(context, next);
         }
 
-        private bool HasAnyLeagueRole(IPrincipal user, string leagueName)
+        private static bool HasAnyLeagueRole(IPrincipal user, string leagueName)
         {
             foreach (var roleName in LeagueRoles.RolesAvailable)
             {
                 var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
-                if (user.IsInRole(leagueRole))
+                if (leagueRole != null && user.IsInRole(leagueRole))
                 {
                     return true;
                 }
@@ -87,9 +91,13 @@ namespace iRLeagueApiCore.Server.Filters
             return user.IsInRole(UserRoles.Admin);
         }
 
-        private bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)
+        private static bool HasLeagueRole(IPrincipal user, string leagueName, string roleName)
         {
             var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
+            if (leagueRole == null)
+            { 
+                return false; 
+            }
             return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);
         }
     }

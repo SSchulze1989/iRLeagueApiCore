@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models.Reviews;
+﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Reviews;
@@ -11,21 +12,14 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
     [Route("{leagueName}/[controller]")]
-    public class ReviewCommentsController : LeagueApiController
+    public class ReviewCommentsController : LeagueApiController<ReviewCommentsController>
     {
-        private readonly ILogger<ReviewCommentsController> _logger;
-        private readonly IMediator mediator;
-
-        public ReviewCommentsController(ILogger<ReviewCommentsController> logger, IMediator mediator)
+        public ReviewCommentsController(ILogger<ReviewCommentsController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Server.Authentication
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class UserDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
         {
 
         }

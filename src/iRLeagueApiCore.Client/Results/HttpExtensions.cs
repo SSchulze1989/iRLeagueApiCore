@@ -90,7 +90,7 @@ namespace iRLeagueApiCore.Client.Results
             catch (Exception ex) when (ex is InvalidOperationException || ex is JsonException)
             {
                 var errors = new object[] { ex };
-                return new ClientActionResult<T>(false, "Error", ex.ToString(), default, 0, requestUrl, errors);
+                return new ClientActionResult<T>(false, "Error", ex.Message, default, 0, requestUrl, errors);
             }
         }
 

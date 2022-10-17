@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Seasons;
@@ -17,21 +18,14 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class SeasonsController : LeagueApiController
+    public sealed class SeasonsController : LeagueApiController<SeasonsController>
     {
-        private readonly ILogger<SeasonsController> _logger;
-        private readonly IMediator mediator;
-
-        public SeasonsController(ILogger<SeasonsController> logger, IMediator mediator)
+        public SeasonsController(ILogger<SeasonsController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]

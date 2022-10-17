@@ -3,22 +3,22 @@ using Microsoft.Extensions.Configuration;
 
 namespace iRLeagueApiCore.Server.Authentication
 {
-    public class ApplicationDbContextFactory : IDbContextFactory<ApplicationDbContext>
+    public class UserDbContextFactory : IDbContextFactory<UserDbContext>
     {
         private readonly IConfiguration _configuration;
 
-        public ApplicationDbContextFactory(IConfiguration configuration)
+        public UserDbContextFactory(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        public ApplicationDbContext CreateDbContext()
+        public UserDbContext CreateDbContext()
         {
             var dbConnectionString = _configuration.GetConnectionString("UserDb");
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<UserDbContext>();
             optionsBuilder.UseMySQL(dbConnectionString);
 
-            var dbContext = new ApplicationDbContext(optionsBuilder.Options);
+            var dbContext = new UserDbContext(optionsBuilder.Options);
             dbContext.Database.EnsureCreated();
             return dbContext;
         }

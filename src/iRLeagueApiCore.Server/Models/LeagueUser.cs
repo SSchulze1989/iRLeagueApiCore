@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace iRLeagueApiCore.Server.Models
 
         public LeagueUser(string leagueName, ClaimsPrincipal principal)
         {
-            Id = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            Id = principal.GetUserId() ?? string.Empty;
             Name = principal.Identity?.Name ?? string.Empty;
             Roles = principal.FindAll(ClaimTypes.Role)
                 .Select(x => x.Value)

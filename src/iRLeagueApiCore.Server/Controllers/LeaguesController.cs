@@ -19,18 +19,11 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
-    public class LeaguesController : LeagueApiController
+    public class LeaguesController : LeagueApiController<LeaguesController>
     {
-        private readonly ILogger<LeaguesController> _logger;
-        private readonly IMediator mediator;
-
-        public LeaguesController(ILogger<LeaguesController> logger, IMediator mediator)
+        public LeaguesController(ILogger<LeaguesController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]
