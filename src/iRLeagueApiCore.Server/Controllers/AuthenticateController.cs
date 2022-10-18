@@ -1,5 +1,9 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Handlers.Admin;
+using iRLeagueApiCore.Server.Models;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
@@ -23,13 +28,20 @@ namespace iRLeagueApiCore.Server.Controllers
         private readonly ILogger<AuthenticateController> _logger;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IMediator mediator;
         private readonly IConfiguration _configuration;
 
-        public AuthenticateController(ILogger<AuthenticateController> logger, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticateController(
+            ILogger<AuthenticateController> logger, 
+            UserManager<ApplicationUser> userManager, 
+            RoleManager<IdentityRole> roleManager,
+            IMediator mediator,
+            IConfiguration configuration)
         {
             _logger = logger;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.mediator = mediator;
             _configuration = configuration;
         }
 
@@ -117,44 +129,15 @@ namespace iRLeagueApiCore.Server.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
-        //[HttpPost]
-        //[Route("register-admin")]
-        //public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
-        //{
-        //    _logger.LogInformation("Registering new admin user {UserName}", model.Username);
-        //    var userExists = await userManager.FindByNameAsync(model.Username);
-        //    if (userExists != null)
-        //    {
-        //        _logger.LogInformation("User {UserName} already exists", model.Username);
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
-        //    }
-
-        //    ApplicationUser user = new ApplicationUser()
-        //    {
-        //        Email = model.Email,
-        //        SecurityStamp = Guid.NewGuid().ToString(),
-        //        UserName = model.Username
-        //    };
-        //    var result = await userManager.CreateAsync(user, model.Password);
-        //    if (!result.Succeeded)
-        //    {
-        //        _logger.LogError("Failed to add admin user {UserName} due to errors: {Errors}", model.Username, result.Errors
-        //            .Select(x => $"{x.Code}: {x.Description}"));
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
-        //    }
-
-        //    if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-        //        await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-        //    if (!await roleManager.RoleExistsAsync(UserRoles.User))
-        //        await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-
-        //    if (await roleManager.RoleExistsAsync(UserRoles.Admin))
-        //    {
-        //        await userManager.AddToRoleAsync(user, UserRoles.Admin);
-        //    }
-
-        //    _logger.LogInformation("Admin user {UserName} created succesfully", model.Username);
-        //    return Ok(new Response { Status = "Success", Message = "User created successfully!" });
-        //}
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Route("ResetPassword")]
+        public async Task<ActionResult> ResetPassword([FromBody] PasswordResetModel model, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] Resetting password for user {User} by {UserName}", "Post", model.UserName, User.Identity?.Name);
+            var request = new PasswordResetRequest(model);
+            await mediator.Send(request, cancellationToken);
+            return Ok();
+        }
     }
 }
