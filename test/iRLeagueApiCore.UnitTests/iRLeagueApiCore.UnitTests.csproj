@@ -33,11 +33,18 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Client\iRLeagueApiCore.Client.csproj" />
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj" />
+    <ProjectReference Include="..\..\src\iRLeagueApiCore.TrackImport\iRLeagueApiCore.TrackImport.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Client\Endpoints\Leagues\" />
     <Folder Include="Server\Validators\Scorings\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TrackImport\iracing_tracks.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
