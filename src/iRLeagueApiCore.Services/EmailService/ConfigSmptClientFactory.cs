@@ -20,6 +20,7 @@ namespace iRLeagueApiCore.Services.EmailService
             var port = mailConfig["Port"];
             var authUserName = mailConfig["UserName"];
             var password = mailConfig["Password"];
+            _ = bool.TryParse(mailConfig["EnableSsl"], out bool enableSsl);
 
             SmtpClient client;
             if (port != null)
@@ -34,7 +35,7 @@ namespace iRLeagueApiCore.Services.EmailService
             {
                 client.Credentials = new NetworkCredential(authUserName, password);
             }
-            client.EnableSsl = true;
+            client.EnableSsl = enableSsl;
 
             return client;
         }
