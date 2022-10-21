@@ -139,5 +139,19 @@ namespace iRLeagueApiCore.Server.Controllers
             await mediator.Send(request, cancellationToken);
             return Ok();
         }
+
+        [HttpPost]
+        [Route("ResetPassword/{userId}")]
+        public async Task<ActionResult<bool>> ResetPasswordWithToken([FromRoute] string userId, [FromBody] SetPasswordTokenModel model, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] Password reset with reset token for user {UserId}", "Post", userId);
+            var request = new SetPasswordWithTokenRequest(userId, model);
+            var result = await mediator.Send(request, cancellationToken);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest(result);
+        }
     }
 }
