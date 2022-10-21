@@ -19,13 +19,15 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
         private readonly ILogger<PasswordResetHandler> logger;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEnumerable<IValidator<PasswordResetRequest>> validators;
+        private readonly SmtpClient smtpClient;
 
         public PasswordResetHandler(ILogger<PasswordResetHandler> logger, UserManager<ApplicationUser> userManager, 
-            IEnumerable<IValidator<PasswordResetRequest>> validators)
+            IEnumerable<IValidator<PasswordResetRequest>> validators, SmtpClient smtpClient)
         {
             this.logger = logger;
             this.userManager = userManager;
             this.validators = validators;
+            this.smtpClient = smtpClient;
         }
 
         public async Task<Unit> Handle(PasswordResetRequest request, CancellationToken cancellationToken)
@@ -43,19 +45,14 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             return await userManager.GeneratePasswordResetTokenAsync(user);
         }
 
-        private static void SendResetMail(string email, string token)
-        {
-            SmtpClient smtp = new()
-            {
-                Host = "localhost"
-            };
-
+        private void SendResetMail(string email, string token)
+        { 
             MailMessage mail = new();
             mail.From = new MailAddress("noreply@irleaguemanager.net");
             mail.To.Add(email);
             mail.Subject = "Password Reset";
             mail.Body = $"Reset Token: {token}";
-            smtp.Send(mail);
+            smtpClient.Send(mail);
         }
     }
 }

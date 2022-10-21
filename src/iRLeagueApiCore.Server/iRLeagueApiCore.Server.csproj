@@ -42,6 +42,10 @@
     <Folder Include="Logs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\iRLeagueApiCore.Services\iRLeagueApiCore.Services.csproj" />
+  </ItemGroup>
+
 	<Target Name="CopyReferenceFiles" AfterTargets="AfterBuild">
 		<ItemGroup>
 			<XmlReferenceFiles Condition="%(PackageReference.CopyToOutputDirectory) != ''" Include="$(NugetPackageRoot)$([System.String]::Copy(%(PackageReference.Identity)).ToLower())/%(PackageReference.Version)/%(PackageReference.CopyToOutputDirectory)/*.xml">
