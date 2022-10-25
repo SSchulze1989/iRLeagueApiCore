@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace iRLeagueApiCore.Server.Handlers.Admin
+namespace iRLeagueApiCore.Server.Handlers.Authentication
 {
     public record SetPasswordWithTokenRequest(string UserId, SetPasswordTokenModel Model) : IRequest<bool>;
 

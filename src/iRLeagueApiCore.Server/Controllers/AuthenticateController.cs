@@ -1,6 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Handlers.Admin;
+using iRLeagueApiCore.Server.Handlers.Authentication;
 using iRLeagueApiCore.Server.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -134,23 +134,25 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("ResetPassword")]
         public async Task<ActionResult> ResetPassword([FromBody] PasswordResetModel model, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] Resetting password for user {User} by {UserName}", "Post", model.UserName, User.Identity?.Name);
+            _logger.LogInformation("[{Method}] Generate password reset token for user {User} by {UserName}", "Post", model.UserName, User.Identity?.Name);
             var request = new PasswordResetRequest(model);
             await mediator.Send(request, cancellationToken);
             return Ok();
         }
 
         [HttpPost]
-        [Route("ResetPassword/{userId}")]
+        [Route("SetPassword/{userId}")]
         public async Task<ActionResult<bool>> ResetPasswordWithToken([FromRoute] string userId, [FromBody] SetPasswordTokenModel model, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] Password reset with reset token for user {UserId}", "Post", userId);
+            _logger.LogInformation("[{Method}] Set Password with reset token for user {UserId}", "Post", userId);
             var request = new SetPasswordWithTokenRequest(userId, model);
             var result = await mediator.Send(request, cancellationToken);
             if (result)
             {
+                _logger.LogInformation("Password was set successfully");
                 return Ok();
             }
+            _logger.LogInformation("Set password failed");
             return BadRequest(result);
         }
     }

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Services.EmailService
 {
-    public interface ISmtpClientFactory
+    public interface IEmailClientFactory
     {
-        public SmtpClient GetSmtpClient();
+        public IEmailClient CreateEmailClient();
     }
 }

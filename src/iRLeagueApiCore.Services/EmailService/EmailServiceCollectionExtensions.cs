@@ -10,8 +10,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
 
-            services.TryAddScoped<ISmtpClientFactory, ConfigSmptClientFactory>();
-            services.TryAddScoped(sp => sp.GetRequiredService<ISmtpClientFactory>().GetSmtpClient());
+            services.TryAddScoped<IEmailClientFactory, ConfigEmailClientFactory>();
+            services.TryAddTransient(sp => sp.GetRequiredService<IEmailClientFactory>().CreateEmailClient());
 
             return services;
         }
