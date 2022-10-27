@@ -41,6 +41,7 @@ namespace iRLeagueApiCore.Server.Handlers.Standings
         protected Expression<Func<StandingEntity, StandingsModel>> MapToStandingModelExpression => standing => new StandingsModel()
         {
             Name = standing.Name,
+            IsTeamStanding = standing.IsTeamStanding,
             StandingId = standing.StandingId,
             StandingRows = standing.StandingRows.Select(standingRow => new StandingRowModel()
             {
