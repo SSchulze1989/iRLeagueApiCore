@@ -1,10 +1,12 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Seasons;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,24 +19,18 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
-    [ApiController]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class SeasonsController : LeagueApiController
+    public sealed class SeasonsController : LeagueApiController<SeasonsController>
     {
-        private readonly ILogger<SeasonsController> _logger;
-        private readonly IMediator mediator;
-
-        public SeasonsController(ILogger<SeasonsController> logger, IMediator mediator)
+        public SeasonsController(ILogger<SeasonsController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("")]
         public async Task<ActionResult<IEnumerable<SeasonModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
             CancellationToken cancellationToken = default)
@@ -49,6 +45,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("{id:long}")]
         public async Task<ActionResult<SeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long id, CancellationToken cancellationToken = default)

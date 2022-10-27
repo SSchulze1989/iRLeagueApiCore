@@ -1,5 +1,7 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Leagues;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
+using iRLeagueApiCore.Client.Endpoints.Tracks;
+using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
@@ -42,7 +44,17 @@ namespace iRLeagueApiCore.Client
             return new LeaguesEndpoint(httpClientWrapper, new RouteBuilder());
         }
 
-        public async Task<bool> LogIn(string username, string password, CancellationToken cancellationToken = default)
+        public IUsersEndpoint Users()
+        {
+            return new UsersEndpoint(httpClientWrapper, new RouteBuilder());
+        }
+
+        public ITracksEndpoint Tracks()
+        {
+            return new TracksEndpoint(httpClientWrapper, new RouteBuilder());
+        }
+
+        public async Task<ClientActionResult<LoginResponse>> LogIn(string username, string password, CancellationToken cancellationToken = default)
         {
             // request to login endpoint
             await LogOut();
@@ -62,11 +74,11 @@ namespace iRLeagueApiCore.Client
                 // set authorization header
                 string token = result.Content.Token;
                 await tokenStore.SetTokenAsync(token);
-                return true;
+                return result;
             }
 
             logger.LogError("Login failed: {Status}", result.Status);
-            return false;
+            return result;
         }
 
         public async Task LogOut()
@@ -91,12 +103,6 @@ namespace iRLeagueApiCore.Client
         {
             SetCurrentLeague(leagueName);
             CurrentSeason = CurrentLeague.Seasons().WithId(seasonId);
-        }
-
-        private struct LoginResponse
-        {
-            public string Token { get; set; }
-            public DateTime Expires { get; set; }
         }
     }
 }

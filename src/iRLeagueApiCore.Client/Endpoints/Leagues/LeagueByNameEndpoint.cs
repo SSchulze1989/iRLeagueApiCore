@@ -4,6 +4,7 @@ using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
@@ -60,6 +61,11 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
         ISessionsEndpoint ILeagueByNameEndpoint.Sessions()
         {
             return new SessionsEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
+        ILeagueUsersEndpoint ILeagueByNameEndpoint.Users()
+        {
+            return new UsersEndpoint(HttpClientWrapper, RouteBuilder);
         }
     }
 }

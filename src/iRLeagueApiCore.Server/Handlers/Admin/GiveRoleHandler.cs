@@ -49,6 +49,11 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
             var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
             var user = request.User;
 
+            if (leagueRoleName == null)
+            {
+                return Unit.Value;
+            }
+
             // check if role needs to be created
             if (await _roleManager.RoleExistsAsync(leagueRoleName) == false)
             {

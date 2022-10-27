@@ -57,7 +57,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             using (var dbContext = CreateStaticDbContext())
             {
                 dbContext.Database.EnsureDeleted();
-                dbContext.Database.EnsureCreated();
+                dbContext.Database.Migrate();
 
                 Populate(dbContext, random);
                 dbContext.SaveChanges();
@@ -111,11 +111,10 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     var config = new TrackConfigEntity()
                     {
                         ConfigName = $"Config{i}",
-                        ConfigType = ConfigType.RoadCourse,
+                        ConfigType = ConfigType.Road,
                         Turns = j * 3,
                         LengthKm = j * 1.0,
-                        MapImageSrc = null,
-                        HasNigtLigthing = false
+                        HasNightLighting = false
                     };
                     group.TrackConfigs.Add(config);
                 }

@@ -8,8 +8,8 @@ namespace iRLeagueApiCore.Server.Filters
     /// Only works in combination with <see cref="LeagueAuthorizeAttribute"/>
     /// <para>If no league role is specified, the user is checked to be in at least one of any available league role</para>
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class RequireLeagueRoleAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+    public sealed class RequireLeagueRoleAttribute : Attribute
     {
         /// <summary>
         /// Private field to prevent modifiying from outside

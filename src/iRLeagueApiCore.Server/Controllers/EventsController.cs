@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Events;
@@ -22,25 +23,19 @@ namespace iRLeagueApiCore.Server.Controllers
     /// <summary>
     /// Endpoint for managing session entries
     /// </summary>
-    [ApiController]
     [Authorize]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
-    [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
     [RequireLeagueRole]
     [Route("{leagueName}/[controller]")]
-    public class EventsController : LeagueApiController
+    public class EventsController : LeagueApiController<EventsController>
     {
-        private readonly ILogger<EventsController> _logger;
-        private readonly IMediator mediator;
-
-        public EventsController(ILogger<EventsController> logger, IMediator mediator)
+        public EventsController(ILogger<EventsController> logger, IMediator mediator) : base(logger, mediator)
         {
-            _logger = logger;
-            this.mediator = mediator;
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("{id:long}")]
         public async Task<ActionResult<EventModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, CancellationToken cancellationToken = default)
@@ -54,6 +49,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Schedules/{scheduleId:long}/Events")]
         public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long scheduleId, CancellationToken cancellationToken = default)
@@ -68,6 +64,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Seasons/{seasonId:long}/Events")]
         public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long seasonId, CancellationToken cancellationToken)

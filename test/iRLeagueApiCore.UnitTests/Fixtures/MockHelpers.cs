@@ -35,7 +35,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         public static Mock<RoleManager<TRole>> MockRoleManager<TRole>(IRoleStore<TRole> store = null) where TRole : class
         {
-            store = store ?? new Mock<IRoleStore<TRole>>().Object;
+            store ??= new Mock<IRoleStore<TRole>>().Object;
             var roles = new List<IRoleValidator<TRole>>();
             roles.Add(new RoleValidator<TRole>());
             return new Mock<RoleManager<TRole>>(store, roles, MockLookupNormalizer(),
@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser> store = null) where TUser : class
         {
-            store = store ?? new Mock<IUserStore<TUser>>().Object;
+            store ??= new Mock<IUserStore<TUser>>().Object;
             var options = new Mock<IOptions<IdentityOptions>>();
             var idOptions = new IdentityOptions();
             idOptions.Lockout.AllowedForNewUsers = false;
@@ -52,8 +52,10 @@ namespace Microsoft.AspNetCore.Identity.Test
             var userValidators = new List<IUserValidator<TUser>>();
             var validator = new Mock<IUserValidator<TUser>>();
             userValidators.Add(validator.Object);
-            var pwdValidators = new List<PasswordValidator<TUser>>();
-            pwdValidators.Add(new PasswordValidator<TUser>());
+            var pwdValidators = new List<PasswordValidator<TUser>>
+            {
+                new PasswordValidator<TUser>()
+            };
             var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
                 userValidators, pwdValidators, MockLookupNormalizer(),
                 new IdentityErrorDescriber(), null,
@@ -65,9 +67,11 @@ namespace Microsoft.AspNetCore.Identity.Test
 
         public static RoleManager<TRole> TestRoleManager<TRole>(IRoleStore<TRole> store = null) where TRole : class
         {
-            store = store ?? new Mock<IRoleStore<TRole>>().Object;
-            var roles = new List<IRoleValidator<TRole>>();
-            roles.Add(new RoleValidator<TRole>());
+            store ??= new Mock<IRoleStore<TRole>>().Object;
+            var roles = new List<IRoleValidator<TRole>>
+            {
+                new RoleValidator<TRole>()
+            };
             return new RoleManager<TRole>(store, roles,
                 MockLookupNormalizer(),
                 new IdentityErrorDescriber(),
