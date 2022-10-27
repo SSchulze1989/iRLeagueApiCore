@@ -24,6 +24,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
         {
             return await dbContext.Events
                 .Include(x => x.Sessions)
+                .Include(x => x.Track)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
                 .FirstOrDefaultAsync();
@@ -90,7 +91,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
                 .Select(MapToEventModelExpression)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         protected virtual Expression<Func<EventEntity, EventModel>> MapToEventModelExpression => @event => new EventModel()
@@ -104,6 +105,8 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             ScheduleId = @event.ScheduleId,
             SeasonId = @event.Schedule.SeasonId,
             HasResult = @event.ScoredEventResults.Any(),
+            TrackName = @event.Track.TrackGroup.TrackName,
+            ConfigName = @event.Track.ConfigName,
             Sessions = @event.Sessions.Select(session => new SessionModel()
             {
                 HasResult = session.SessionResult != null,

@@ -167,6 +167,8 @@ namespace iRLeagueApiCore.Server
                  };
              });
 
+            services.AddTrackImporter();
+
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         }
