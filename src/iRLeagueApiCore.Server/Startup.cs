@@ -171,6 +171,8 @@ namespace iRLeagueApiCore.Server
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            services.AddEmailService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
