@@ -28,6 +28,7 @@ namespace iRLeagueApiCore.Services.EmailService
             {
                 Subject = subject,
                 Body = body,
+                IsBodyHtml = true,
             };
 
             logger.LogInformation("Sending Email To:\"{Recipient}\" through Host: \"{Host}\"", email, smtpClient.Host);
@@ -45,6 +46,7 @@ namespace iRLeagueApiCore.Services.EmailService
                 Host = configuration.Host,
                 Port = configuration.Port,
                 Credentials = configuration.Credentials,
+                EnableSsl = configuration.EnableSsl,
             };
         }
     }

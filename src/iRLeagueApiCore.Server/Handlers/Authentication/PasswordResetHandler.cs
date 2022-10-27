@@ -59,16 +59,12 @@ namespace iRLeagueApiCore.Server.Handlers.Authentication
             var resetUrl = GeneratePasswordResetUrl(user.Id, token);
             StringBuilder sb = new();
             sb.Append($@"
-<html>
-<body>
-    <p>Dear User,</p>
-    <p>For your account with the username ""{ user.UserName}"" a password reset was requested.
+<p>Dear User,</p>
+<p>For your account with the username ""{ user.UserName}"" a password reset was requested.
 If you posted this request pleas use the following link to complete the process and set a new password:</p>
-    <a href=""{resetUrl}"">{resetUrl}</a>
-    <p>If you did not post this request you can ignore this mail.</p>
-    <p>Please do not reply to this mail. Messages send to the sender of this mail will not be processed</p>
-</body>
-</html>");
+<a href=""{resetUrl}"">{resetUrl}</a>
+<p>If you did not post this request you can ignore this mail.</p>
+<p>Please do not reply to this mail. Messages send to the sender of this mail will not be processed</p>");
             return sb.ToString();
         }
 

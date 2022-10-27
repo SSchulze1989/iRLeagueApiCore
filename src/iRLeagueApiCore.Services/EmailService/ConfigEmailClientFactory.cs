@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Mail;
 
@@ -7,10 +8,12 @@ namespace iRLeagueApiCore.Services.EmailService
     public class ConfigEmailClientFactory : IEmailClientFactory
     {
         private readonly EmailClientConfiguration clientConfiguration;
+        private readonly ILoggerFactory loggerFactory;
 
-        public ConfigEmailClientFactory(IConfiguration configuration)
+        public ConfigEmailClientFactory(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             clientConfiguration = ReadEmailConfig(configuration);
+            this.loggerFactory = loggerFactory;
         }
 
         public IEmailClient CreateEmailClient()
@@ -19,8 +22,10 @@ namespace iRLeagueApiCore.Services.EmailService
             if (clientConfiguration.Equals(EmailClientConfiguration.Default))
             {
                 // return mock client
-                new IEmailClient()
+                return new MockEmailClient();
             }
+
+            return new EmailClient(clientConfiguration, loggerFactory.CreateLogger<EmailClient>());
         }
 
         private static EmailClientConfiguration ReadEmailConfig(IConfiguration configuration)

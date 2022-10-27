@@ -130,7 +130,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         [Route("ResetPassword")]
         public async Task<ActionResult> ResetPassword([FromBody] PasswordResetModel model, CancellationToken cancellationToken = default)
         {
@@ -142,6 +142,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpPost]
         [Route("SetPassword/{userId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<bool>> ResetPasswordWithToken([FromRoute] string userId, [FromBody] SetPasswordTokenModel model, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] Set Password with reset token for user {UserId}", "Post", userId);
