@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Standings;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,5 +15,6 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
         IPostGetAllEndpoint<ScoringModel, PostScoringModel> Scorings();
         IGetAllEndpoint<EventResultModel> Results();
         IGetAllEndpoint<EventModel> Events();
+        IGetAllEndpoint<StandingsModel> Standings();
     }
 }

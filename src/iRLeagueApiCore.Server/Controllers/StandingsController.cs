@@ -25,7 +25,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("{seasonId:long}")]
+        [Route("/{leagueName/Seasons/{seasonId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<StandingsModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long seasonId,
             CancellationToken cancellationToken = default)
         {
