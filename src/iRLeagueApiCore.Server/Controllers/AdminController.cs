@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace iRLeagueApiCore.Server.Controllers
 {

@@ -45,7 +45,6 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             Finished = x.Finished,
             HideComments = x.HideCommentsBeforeVoted,
             LeagueId = x.LeagueId,
-            MainScoringId = x.MainScoringScoringId,
             ScheduleIds = x.Schedules.Select(x => x.ScheduleId).ToList(),
             SeasonEnd = x.Schedules
                 .SelectMany(x => x.Events)
