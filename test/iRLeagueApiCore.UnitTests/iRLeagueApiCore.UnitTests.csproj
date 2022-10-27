@@ -41,10 +41,4 @@
     <Folder Include="Server\Validators\Scorings\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="TrackImport\iracing_tracks.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
