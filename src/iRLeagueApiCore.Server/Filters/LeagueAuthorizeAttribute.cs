@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Server.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -41,16 +42,25 @@ namespace iRLeagueApiCore.Server.Filters
 
             _logger.LogInformation("Authorizing request for {UserName} on {leagueName}", userName, leagueName);
 
+            // check if specific league role required
+            var requireLeagueRoleAttribute = context.ActionDescriptor.EndpointMetadata
+                .OfType<RequireLeagueRoleAttribute>();
+            var allowAnonymousAttribute = context.ActionDescriptor.EndpointMetadata
+                .OfType<AllowAnonymousAttribute>()
+                .FirstOrDefault();
+            if (allowAnonymousAttribute != null || requireLeagueRoleAttribute.Any() == false)
+            {
+                // Allow public access
+                await AccessGranted(context, next);
+                return;
+            }
+
             if (user == null || user.Identity == null || user.Identity.IsAuthenticated == false)
             {
                 _logger.LogInformation("Permission denied for Anonymous user on {LeagueName}. League is not public", leagueName);
                 context.Result = new UnauthorizedResult();
                 return;
             }
-
-            // check if specific league role required
-            var requireLeagueRoleAttribute = context.ActionDescriptor.EndpointMetadata
-                .OfType<RequireLeagueRoleAttribute>();
 
             var requiredRoles = requireLeagueRoleAttribute
                 .SelectMany(x => x.Roles)
@@ -64,18 +74,18 @@ namespace iRLeagueApiCore.Server.Filters
                 {
                     _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any required role {Roles}",
                         user.Identity.Name, leagueName, requiredRoles);
-                    context.Result = new ForbidResult();
+                    AccessDenied(context, next);
                     return;
                 }
             }
             else if (HasAnyLeagueRole(user, leagueName) == false)
             {
                 _logger.LogInformation("Permission denied for {User} on {LeagueName}. User is not in any league role", user.Identity.Name, leagueName);
-                context.Result = new ForbidResult();
+                AccessDenied(context, next);
                 return;
             }
 
-            await base.OnActionExecutionAsync(context, next);
+            await AccessGranted(context, next);
         }
 
         private static bool HasAnyLeagueRole(IPrincipal user, string leagueName)
@@ -99,6 +109,16 @@ namespace iRLeagueApiCore.Server.Filters
                 return false; 
             }
             return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);
+        }
+
+        private void AccessDenied(ActionExecutingContext context, ActionExecutionDelegate next)
+        {
+            context.Result = new ForbidResult();
+        }
+
+        private async Task AccessGranted(ActionExecutingContext context, ActionExecutionDelegate next)
+        {
+            await base.OnActionExecutionAsync(context, next);
         }
     }
 }

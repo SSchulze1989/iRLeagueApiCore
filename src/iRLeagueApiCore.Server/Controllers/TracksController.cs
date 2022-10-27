@@ -22,7 +22,6 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("")]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<TrackGroupModel>>> Get(CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] Track list by {UserName}", "Get", GetUsername());
