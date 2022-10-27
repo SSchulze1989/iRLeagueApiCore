@@ -3,6 +3,7 @@ using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [Route("/{leagueName}/[controller]")]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [TypeFilter(typeof(InsertLeagueIdAttribute))]
+    [RequireLeagueRole]
     public class ResultsController : LeagueApiController<ResultsController>
     {
         public ResultsController(ILogger<ResultsController> logger, IMediator mediator) : base(logger, mediator)
@@ -33,6 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Route("{id:long}")]
         public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long resultId, 
             CancellationToken cancellationToken)
@@ -55,6 +58,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
@@ -77,6 +81,7 @@ namespace iRLeagueApiCore.Server.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long eventId, CancellationToken cancellationToken = default)

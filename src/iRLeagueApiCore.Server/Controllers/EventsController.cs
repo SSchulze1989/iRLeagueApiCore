@@ -35,6 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("{id:long}")]
         public async Task<ActionResult<EventModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, CancellationToken cancellationToken = default)
@@ -48,6 +49,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Schedules/{scheduleId:long}/Events")]
         public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long scheduleId, CancellationToken cancellationToken = default)
@@ -62,6 +64,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Seasons/{seasonId:long}/Events")]
         public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long seasonId, CancellationToken cancellationToken)

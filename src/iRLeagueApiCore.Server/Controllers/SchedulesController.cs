@@ -6,6 +6,7 @@ using iRLeagueApiCore.Server.Handlers.Schedules;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("{id:long}")]
         public async Task<ActionResult<ScheduleModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, CancellationToken cancellationToken = default)
@@ -56,6 +58,7 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
         public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
