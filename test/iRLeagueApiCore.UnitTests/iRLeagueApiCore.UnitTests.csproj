@@ -10,8 +10,8 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.6-dev.12" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.3" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.6-dev.15" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.4-dev.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.9">
       <PrivateAssets>all</PrivateAssets>
@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Client\iRLeagueApiCore.Client.csproj" />
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj" />
+    <ProjectReference Include="..\..\src\iRLeagueApiCore.TrackImport\iRLeagueApiCore.TrackImport.csproj" />
   </ItemGroup>
 
   <ItemGroup>

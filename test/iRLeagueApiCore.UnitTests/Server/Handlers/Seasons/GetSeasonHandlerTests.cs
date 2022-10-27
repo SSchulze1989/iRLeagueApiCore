@@ -45,7 +45,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
             result.SeasonId.Should().Be(request.SeasonId);
             result.Finished.Should().Be(testSeason.Finished);
             result.HideComments.Should().Be(testSeason.HideCommentsBeforeVoted);
-            result.MainScoringId.Should().Be(testSeason.MainScoringScoringId);
             result.ScheduleIds.Should().BeEquivalentTo(testSeason.Schedules.Select(x => x.ScheduleId));
             result.SeasonEnd.Should().Be(testSeason.SeasonEnd);
             result.SeasonStart.Should().Be(testSeason.SeasonStart);

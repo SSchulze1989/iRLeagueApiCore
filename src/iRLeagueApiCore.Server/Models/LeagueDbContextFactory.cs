@@ -20,7 +20,7 @@ namespace iRLeagueApiCore.Server.Models
             optionsBuilder.UseMySQL(dbConnectionString);
 
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
-            dbContext.Database.EnsureCreated();
+            dbContext.Database.Migrate();
             return dbContext;
         }
     }
