@@ -2,9 +2,11 @@
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Endpoints.Standings;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Standings;
 using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
@@ -38,6 +40,11 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
         IPostGetAllEndpoint<ScoringModel, PostScoringModel> ISeasonByIdEndpoint.Scorings()
         {
             return new ScoringsEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
+        IGetAllEndpoint<StandingsModel> ISeasonByIdEndpoint.Standings()
+        {
+            return new StandingsEndpoint(HttpClientWrapper, RouteBuilder);
         }
     }
 }
