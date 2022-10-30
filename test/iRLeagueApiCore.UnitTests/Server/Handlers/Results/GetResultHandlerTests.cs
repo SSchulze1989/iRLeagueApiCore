@@ -94,7 +94,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             Assert.Equal(expected.FinalPositionChange, test.FinalPositionChange);
             Assert.Equal(expected.PenaltyPoints, test.PenaltyPoints);
             Assert.Equal(expected.RacePoints, test.RacePoints);
-            Assert.Equal(expected.AvgLapTime, test.AvgLapTime.Ticks);
+            Assert.Equal(expected.AvgLapTime, test.AvgLapTime);
             Assert.Equal(expected.Car, test.Car);
             Assert.Equal(expected.CarClass, test.CarClass);
             Assert.Equal(expected.CarId, test.CarId);
@@ -103,11 +103,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             Assert.Equal(expected.CompletedLaps, test.CompletedLaps);
             Assert.Equal(expected.CompletedPct, test.CompletedPct);
             Assert.Equal(expected.Division, test.Division);
-            Assert.Equal(expected.FastestLapTime, test.FastestLapTime.Ticks);
+            Assert.Equal(expected.FastestLapTime, test.FastestLapTime);
             Assert.Equal(expected.FastLapNr, test.FastLapNr);
             Assert.Equal(expected.FinishPosition, test.FinishPosition);
             Assert.Equal(expected.Incidents, test.Incidents);
-            Assert.Equal(expected.Interval, test.Interval.Ticks);
+            Assert.Equal(expected.Interval, test.Interval);
             Assert.Equal(expected.LeadLaps, test.LeadLaps);
             Assert.Equal(expected.License, test.License);
             Assert.Equal(expected.Member?.Firstname ?? string.Empty, test.Firstname);
@@ -120,7 +120,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             Assert.Equal(expected.OldLicenseLevel, test.OldLicenseLevel);
             Assert.Equal(expected.OldSafetyRating, test.OldSafetyRating);
             Assert.Equal(expected.PositionChange, test.PositionChange);
-            Assert.Equal(expected.QualifyingTime, test.QualifyingTime.Ticks);
+            Assert.Equal(expected.QualifyingTime, test.QualifyingTime);
             Assert.Equal(expected.SeasonStartIRating, test.SeasonStartIrating);
             Assert.Equal(expected.StartPosition, test.StartPosition);
             Assert.Equal(expected.Status, test.Status);

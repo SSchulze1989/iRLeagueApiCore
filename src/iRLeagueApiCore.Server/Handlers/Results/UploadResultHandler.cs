@@ -133,7 +133,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             details.RaceRubber = data.track_state.race_rubber;
             details.DamageModel = data.damage_model;
             details.EndTime = data.end_time;
-            details.EventAverageLap = data.event_average_lap;
+            details.EventAverageLap = ParseTime(data.event_average_lap);
             details.EventLapsComplete = data.event_laps_complete;
             details.EventStrengthOfField = data.event_strength_of_field;
             details.Fog = data.weather.fog;
@@ -154,7 +154,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             details.RaceRubber = data.track_state.race_rubber;
             details.RelHumidity = data.weather.rel_humidity;
             details.SessionName = data.session_name;
-            details.SimStartUtcOffset = data.weather.simulated_start_utc_offset;
+            details.SimStartUtcOffset = ParseTime(data.weather.simulated_start_utc_offset);
             details.SimStartUtcTime = data.weather.simulated_start_utc_time;
             details.Skies = data.weather.skies;
             details.StartTime = data.start_time;
@@ -170,7 +170,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
             var row = new ResultRowEntity();
 
-            row.AvgLapTime = data.average_lap;
+            row.AvgLapTime = ParseTime(data.average_lap);
             row.Car = "";
             row.CarClass = "";
             row.CarId = data.car_id;
@@ -182,11 +182,11 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.CompletedPct = data.laps_complete / laps;
             row.ContactLaps = "";
             row.Division = data.division;
-            row.FastestLapTime = data.best_lap_time;
+            row.FastestLapTime = ParseTime(data.best_lap_time);
             row.FastLapNr = data.best_lap_num;
             row.FinishPosition = data.position;
             row.Incidents = data.incidents;
-            row.Interval = data.interval;
+            row.Interval = ParseInterval(data.interval);
             row.IRacingId = data.cust_id.ToString();
             row.LeadLaps = data.laps_lead;
             row.License = sessionData.license_category;
@@ -206,7 +206,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.PittedLaps = "";
             row.PointsEligible = true;
             row.PositionChange = data.position - data.starting_position;
-            row.QualifyingTime = data.qual_lap_time;
+            row.QualifyingTime = ParseTime(data.qual_lap_time);
             row.QualifyingTimeAt = data.best_qual_lap_at;
             row.SimSessionType = -1;
             row.StartPosition = data.starting_position;
@@ -235,5 +235,11 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             }
             return mappedResults;
         }
+
+        private static TimeSpan ParseTime(int value) => TimeSpan.FromSeconds(value / 10000D);
+
+        private static TimeSpan ParseTime(long value) => TimeSpan.FromSeconds(value / 10000D);
+
+        private static TimeSpan ParseInterval(int value) => TimeSpan.FromSeconds(value / 10000D);
     }
 }
