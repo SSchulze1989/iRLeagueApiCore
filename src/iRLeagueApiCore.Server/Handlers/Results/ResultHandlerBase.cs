@@ -36,9 +36,9 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowModel()
                 {
                     MemberId = row.MemberId,
-                    Interval = new TimeSpan(row.Interval),
-                    FastestLapTime = new TimeSpan(row.FastestLapTime),
-                    AvgLapTime = new TimeSpan(row.AvgLapTime),
+                    Interval = row.Interval,
+                    FastestLapTime = row.FastestLapTime,
+                    AvgLapTime = row.AvgLapTime,
                     Firstname = (row.Member != null) ? row.Member.Firstname : string.Empty,
                     Lastname = (row.Member != null) ? row.Member.Lastname : string.Empty,
                     TeamName = (row.Team != null) ? row.Team.Name : string.Empty,
@@ -69,7 +69,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                     OldLicenseLevel = row.OldLicenseLevel,
                     OldSafetyRating = row.OldSafetyRating,
                     PositionChange = row.PositionChange,
-                    QualifyingTime = new TimeSpan(row.QualifyingTime),
+                    QualifyingTime = row.QualifyingTime,
                     SeasonStartIrating = row.SeasonStartIRating,
                     Status = row.Status,
                     TeamId = row.TeamId,
