@@ -66,6 +66,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             configuration.EventId = eventEntity.EventId;
             configuration.LeagueId = eventEntity.LeagueId;
             configuration.ResultConfigId = configEntity?.ResultConfigId;
+            configuration.DisplayName = configEntity?.DisplayName ?? string.Empty;
             configuration.SessionResultConfigurations = await sessionConfigurationProvider.GetConfigurations(eventEntity, configEntity, cancellationToken);
             return configuration;
         }
