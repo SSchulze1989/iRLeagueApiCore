@@ -16,6 +16,11 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
 
     public class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutReviewRequest>, IRequestHandler<PutReviewRequest, ReviewModel>
     {
+        /// <summary>
+        /// Always include comments because this can only be called by an authorized user
+        /// </summary>
+        private const bool includeComments = true;
+
         public PutReviewHandler(ILogger<PutReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewRequest>> validators) : 
             base(logger, dbContext, validators)
         {
@@ -28,7 +33,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 ?? throw new ResourceNotFoundException();
             putReview = await MapToReviewEntity(request.User, request.Model, putReview, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getReview = await MapToReviewModel(putReview.LeagueId, putReview.ReviewId, cancellationToken)
+            var getReview = await MapToReviewModel(putReview.LeagueId, putReview.ReviewId, includeComments, cancellationToken)
                 ?? throw new InvalidOperationException("Created resource was not found");
             return getReview;
         }
