@@ -37,5 +37,20 @@ namespace iRLeagueApiCore.Server.Controllers
                 getStandings.Count(), seasonId, leagueName);
             return Ok(getStandings);
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
+        public async Task<ActionResult<IEnumerable<StandingsModel>>> GetFromEvent([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+            CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] all standings from event {EventId} in {LeagueName} by {UserName}",
+                "Get", eventId, leagueName, GetUsername());
+            var request = new GetStandingsFromEventRequest(leagueId, eventId);
+            var getStandings = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return {Count} entries for standings from event {EventId} in {LeagueName}",
+                getStandings.Count(), eventId, leagueName);
+            return Ok(getStandings);
+        }
     }
 }
