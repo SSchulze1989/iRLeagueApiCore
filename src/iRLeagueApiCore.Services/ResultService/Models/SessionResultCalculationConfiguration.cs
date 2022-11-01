@@ -13,6 +13,6 @@ namespace iRLeagueApiCore.Services.ResultService.Models
         public bool UseResultSetTeam { get; set; }
         public bool UpdateTeamOnRecalculation { get; set; }
 
-        public PointRule<ResultRowCalculationData> PointRule { get; set; } = PointRule<ResultRowCalculationData>.Default();
+        public PointRule<ResultRowCalculationResult> PointRule { get; set; } = PointRule<ResultRowCalculationResult>.Default();
     }
 }

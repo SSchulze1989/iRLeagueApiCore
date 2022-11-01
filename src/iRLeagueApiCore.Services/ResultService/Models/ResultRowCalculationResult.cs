@@ -1,51 +1,53 @@
 ﻿namespace iRLeagueApiCore.Services.ResultService.Models
 {
-    internal sealed class ResultRowCalculationResult
+    internal sealed class ResultRowCalculationResult : ResultRowCalculationData
     {
-        public long? MemberId { get; set; }
-        public string Firstname { get; set; } = string.Empty;
-        public string Lastname { get; set; } = string.Empty;
-        public long? TeamId { get; set; }
-        public string TeamName { get; set; } = string.Empty;
-        public string TeamColor { get; set; } = string.Empty;
-        public double StartPosition { get; set; }
-        public double FinishPosition { get; set; }
-        public int CarNumber { get; set; }
-        public int ClassId { get; set; }
-        public int ClubId { get; set; }
-        public string ClubName { get; set; } = string.Empty;
-        public string Car { get; set; } = string.Empty;
-        public string CarClass { get; set; } = string.Empty;
-        public double CompletedLaps { get; set; }
-        public double LeadLaps { get; set; }
-        public int FastLapNr { get; set; }
-        public double Incidents { get; set; }
-        public int Status { get; set; }
-        public TimeSpan QualifyingTime { get; set; }
-        public TimeSpan Interval { get; set; }
-        public TimeSpan AvgLapTime { get; set; }
-        public TimeSpan FastestLapTime { get; set; }
-        public double PositionChange { get; set; }
-        public int OldIrating { get; set; }
-        public int NewIrating { get; set; }
-        public int SeasonStartIrating { get; set; }
-        public string License { get; set; } = string.Empty;
-        public int NewCpi { get; set; }
-        public int OldCpi { get; set; }
-        public double OldSafetyRating { get; set; }
-        public double NewSafetyRating { get; set; }
-        public int CarId { get; set; }
-        public double? CompletedPct { get; set; }
-        public int Division { get; set; }
-        public int OldLicenseLevel { get; set; }
-        public int NewLicenseLevel { get; set; }
-        public double RacePoints { get; set; }
-        public double BonusPoints { get; set; }
-        public double PenaltyPoints { get; set; }
-        public double TotalPoints { get; set; }
-        public int FinalPosition { get; set; }
-        public double FinalPositionChange { get; set; }
-        public AddPenaltyCalculationResult? AddPenalty { get; set; }
+        public ResultRowCalculationResult(ResultRowCalculationData data)
+        {
+            MemberId = data.MemberId;
+            Firstname = data.Firstname;
+            Lastname = data.Lastname;
+            TeamId = data.TeamId;
+            TeamName = data.TeamName;
+            TeamColor = data.TeamColor;
+            StartPosition = data.StartPosition;
+            FinishPosition = data.FinishPosition;
+            CarNumber = data.CarNumber;
+            ClassId = data.ClassId;
+            ClubId = data.ClubId;
+            ClubName = data.ClubName;
+            Car = data.Car;
+            CarClass = data.CarClass;
+            CompletedLaps = data.CompletedLaps;
+            LeadLaps = data.LeadLaps;
+            FastLapNr = data.FastLapNr;
+            Incidents = data.Incidents;
+            Status = data.Status;
+            QualifyingTime = data.QualifyingTime;
+            Interval = data.Interval;
+            AvgLapTime = data.AvgLapTime;
+            FastestLapTime = data.FastestLapTime;
+            PositionChange = data.PositionChange;
+            OldIrating = data.OldIrating;
+            NewIrating = data.NewIrating;
+            SeasonStartIrating = data.SeasonStartIrating;
+            License = data.License;
+            NewCpi = data.NewCpi;
+            OldCpi = data.OldCpi;
+            OldSafetyRating = data.OldSafetyRating;
+            NewSafetyRating = data.NewSafetyRating;
+            CarId = data.CarId;
+            CompletedPct = data.CompletedPct;
+            Division = data.Division;
+            OldLicenseLevel = data.OldLicenseLevel;
+            NewLicenseLevel = data.NewLicenseLevel;
+            RacePoints = data.RacePoints;
+            BonusPoints = data.BonusPoints;
+            PenaltyPoints = data.PenaltyPoints;
+            TotalPoints = data.TotalPoints;
+            FinalPosition = data.FinalPosition;
+            FinalPositionChange = data.FinalPositionChange;
+        }
         public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = Array.Empty<ReviewPenaltyCalculationResult>();
     }
 }

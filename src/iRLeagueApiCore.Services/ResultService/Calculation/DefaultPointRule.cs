@@ -7,30 +7,30 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
-    internal class DefaultPointRule<TRow> : PointRule<TRow>
+    internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, IPenaltyRow
     {
         private readonly IEnumerable<RowFilter<TRow>> filters = Array.Empty<RowFilter<TRow>>();
 
         public override IEnumerable<RowFilter<TRow>> PointFilters => filters;
         public override IEnumerable<RowFilter<TRow>> FinalFilters => filters;
 
-        public override IReadOnlyList<TRow> ApplyPoints(IReadOnlyList<TRow> rows)
+        public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
         {
+            foreach(var row in rows)
+            {
+                row.PenaltyPoints = row.AddPenalty?.PenaltyPoints ?? 0;
+                row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;
+            }
             return rows;
         }
 
-        public override IReadOnlyList<TRow> SortFinal(IEnumerable<TRow> rows)
-        {
-            if (rows is IReadOnlyList<TRow> list)
-            {
-                return list;
-            }
-            return rows.ToList();
-        }
+        public override IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
 
-        public override IReadOnlyList<TRow> SortForPoints(IEnumerable<TRow> rows)
+        public override IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
+
+        private static IReadOnlyList<T> DefaultSort<T>(IEnumerable<T> rows) where T : TRow
         {
-            if (rows is IReadOnlyList<TRow> list)
+            if (rows is IReadOnlyList<T> list)
             {
                 return list;
             }

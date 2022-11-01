@@ -2,7 +2,7 @@
 {
     internal sealed class DefaultRowFilter<TRow> : RowFilter<TRow>
     {
-        public override IEnumerable<TRow> FilterRows(IEnumerable<TRow> rows)
+        public override IEnumerable<T> FilterRows<T>(IEnumerable<T> rows)
         {
             return rows;
         }

@@ -2,17 +2,20 @@
 
 namespace iRLeagueApiCore.Services.ResultService.Models
 {
-    internal sealed class ResultRowCalculationData
+    internal class ResultRowCalculationData : IPointRow, IPenaltyRow
     {
         public long? MemberId { get; set; }
         public string Firstname { get; set; } = string.Empty;
         public string Lastname { get; set; } = string.Empty;
         public long? TeamId { get; set; }
         public string TeamName { get; set; } = string.Empty;
+        public string TeamColor { get; set; } = string.Empty;
         public double StartPosition { get; set; }
         public double FinishPosition { get; set; }
         public int CarNumber { get; set; }
         public int ClassId { get; set; }
+        public int ClubId { get; set; }
+        public string ClubName { get; set; } = string.Empty;
         public string Car { get; set; } = string.Empty;
         public string CarClass { get; set; } = string.Empty;
         public double CompletedLaps { get; set; }
@@ -29,6 +32,8 @@ namespace iRLeagueApiCore.Services.ResultService.Models
         public int NewIrating { get; set; }
         public int SeasonStartIrating { get; set; }
         public string License { get; set; } = string.Empty;
+        public int NewCpi { get; set; }
+        public int OldCpi { get; set; }
         public double OldSafetyRating { get; set; }
         public double NewSafetyRating { get; set; }
         public int CarId { get; set; }

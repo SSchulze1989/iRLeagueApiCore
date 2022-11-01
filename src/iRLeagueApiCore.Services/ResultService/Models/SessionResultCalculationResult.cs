@@ -2,14 +2,21 @@
 {
     internal sealed class SessionResultCalculationResult
     {
+        public SessionResultCalculationResult(SessionResultCalculationData data)
+        {
+            LeagueId = data.LeagueId;
+            SessionId = data.SessionId;
+            SessionResultId = data.SessionResultId;
+        }
+
         public long LeagueId { get; set; }
         public long? SessionId { get; set; }
         public long? SessionResultId { get; set; }
         public long? ScoringId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public long FastestLap { get; set; }
-        public long FastestQualyLap { get; set; }
-        public long FastestAvgLap { get; set; }
+        public TimeSpan FastestLap { get; set; }
+        public TimeSpan FastestQualyLap { get; set; }
+        public TimeSpan FastestAvgLap { get; set; }
         public long? FastestAvgLapDriverMemberId { get; set; }
         public long? FastestLapDriverMemberId { get; set; }
         public long? FastestQualyLapDriverMemberId { get; set; }
