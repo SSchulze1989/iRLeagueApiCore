@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Reviews;
 using iRLeagueApiCore.Server.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -24,14 +25,21 @@ namespace iRLeagueApiCore.Server.Controllers
         {
         }
 
+        private static bool IncludeComments(LeagueUser user)
+        {
+            return user.IsInRole(LeagueRoles.Admin, LeagueRoles.Steward);
+        }
+
         [HttpGet]
+        [AllowAnonymous]
         [Route("{id:long}")]
         public async Task<ActionResult<ReviewModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id, 
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review {ReviewId} from {LeagueName} by {UserName}", "Get", id, leagueName,
                     GetUsername());
-            var request = new GetReviewRequest(leagueId, id);
+            var includeComments = IncludeComments(new LeagueUser(leagueName, User));
+            var request = new GetReviewRequest(leagueId, id, includeComments);
             var getReview = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Returning entry for review {ReviewId} from {LeagueName}", getReview.ReviewId, leagueName);
             return Ok(getReview);
@@ -80,13 +88,15 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Sessions/{sessionId:long}/Reviews")]
         public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId, 
             [FromRoute] long sessionId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] all reviews on session {SessionId} from {LeagueName} by {UserName}", "Get",
                 sessionId, leagueName, GetUsername());
-            var request = new GetReviewsFromSessionRequest(leagueId, sessionId);
+            var includeComments = IncludeComments(new LeagueUser(leagueName, User));
+            var request = new GetReviewsFromSessionRequest(leagueId, sessionId, includeComments);
             var getReviews = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for reviews on session {SessionId} from {LeagueName}",
                 getReviews.Count(), sessionId, leagueName);
@@ -94,13 +104,15 @@ namespace iRLeagueApiCore.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("/{leagueName}/Events/{eventId:long}/Reviews")]
         public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromEvent([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long eventId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] all reviews on event {EventId} from {LeagueName} by {UserName}", "Get",
                 eventId, leagueName, GetUsername());
-            var request = new GetReviewsFromEventRequest(leagueId, eventId);
+            var includeComments = IncludeComments(new LeagueUser(leagueName, User));
+            var request = new GetReviewsFromEventRequest(leagueId, eventId, includeComments);
             var getReviews = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for reviews on event {EventId} from {LeagueName}",
                 getReviews.Count(), eventId, leagueName);

@@ -82,16 +82,16 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             return voteEntity;
         }
 
-        protected virtual async Task<ReviewModel?> MapToReviewModel(long leagueId, long reviewId, CancellationToken cancellationToken)
+        protected virtual async Task<ReviewModel?> MapToReviewModel(long leagueId, long reviewId, bool includeComments, CancellationToken cancellationToken)
         {
             var query = dbContext.IncidentReviews
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.ReviewId == reviewId)
-                .Select(MapToReviewModelExpression);
+                .Select(MapToReviewModelExpression(includeComments));
             return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-        protected Expression<Func<IncidentReviewEntity, ReviewModel>> MapToReviewModelExpression => review => new ReviewModel()
+        protected Expression<Func<IncidentReviewEntity, ReviewModel>> MapToReviewModelExpression(bool includeComments) => review => new ReviewModel()
         {
             LeagueId = review.LeagueId,
             ReviewId = review.ReviewId,
@@ -107,7 +107,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             IncidentKind = review.IncidentKind,
             IncidentNr = review.IncidentNr,
             OnLap = review.OnLap,
-            ReviewComments = review.Comments.Select(comment => new ReviewCommentModel()
+            ReviewComments = includeComments ?  review.Comments.Select(comment => new ReviewCommentModel()
             {
                 CommentId = comment.CommentId,
                 AuthorName = comment.AuthorName,
@@ -135,7 +135,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 LastModifiedByUserId = comment.LastModifiedByUserId,
                 LastModifiedByUserName = comment.LastModifiedByUserName,
                 LastModifiedOn = comment.LastModifiedOn,
-            }),
+            }) : Array.Empty<ReviewCommentModel>(),
             InvolvedMembers = review.InvolvedMembers.Select(member => new MemberInfoModel()
             {
                 MemberId = member.Id,

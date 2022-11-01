@@ -18,6 +18,11 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
     public class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler, MoveReviewToSessionRequest>, 
         IRequestHandler<MoveReviewToSessionRequest, ReviewModel>
     {
+        /// <summary>
+        /// Always include comments because this can only be called by an authorized user
+        /// </summary>
+        private const bool includeComments = true;
+
         public MoveReviewToSessionHandler(ILogger<MoveReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<MoveReviewToSessionRequest>> validators) : 
             base(logger, dbContext, validators)
         {
@@ -32,7 +37,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 ?? throw new ResourceNotFoundException();
             moveReview = await MoveToSessionAsync(request.User, moveReview, toSession, cancellationToken);
             await dbContext.SaveChangesAsync();
-            var getReview = await MapToReviewModel(request.LeagueId, moveReview.ReviewId, cancellationToken)
+            var getReview = await MapToReviewModel(request.LeagueId, moveReview.ReviewId, includeComments, cancellationToken)
                 ?? throw new InvalidOperationException("Created resource was not found");
             return getReview;
         }
