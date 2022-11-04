@@ -5,12 +5,11 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
     internal sealed class EventResultCalculationService : ICalculationService<EventResultCalculationData, EventResultCalculationResult>
     {
         private readonly EventResultCalculationConfiguration config;
-        private readonly ICalculationServiceProvider<SessionResultCalculationConfiguration,
-            MemberSessionResultCalculationService, SessionResultCalculationData, SessionResultCalculationResult> sessionCalculationServiceProvider;
+        private readonly ICalculationServiceProvider< SessionResultCalculationConfiguration, SessionResultCalculationData, SessionResultCalculationResult> 
+            sessionCalculationServiceProvider;
 
-        public EventResultCalculationService(EventResultCalculationConfiguration config, 
-            ICalculationServiceProvider<SessionResultCalculationConfiguration, MemberSessionResultCalculationService, 
-            SessionResultCalculationData, SessionResultCalculationResult> sessionCalculationServiceProvider)
+        public EventResultCalculationService(EventResultCalculationConfiguration config,
+            ICalculationServiceProvider<SessionResultCalculationConfiguration, SessionResultCalculationData, SessionResultCalculationResult> sessionCalculationServiceProvider)
         {
             this.config = config;
             this.sessionCalculationServiceProvider = sessionCalculationServiceProvider;
@@ -29,7 +28,6 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             result.ResultConfigId = config.ResultConfigId;
             result.Name = config.DisplayName;
             List<SessionResultCalculationResult> sessionResults = new();
-            result.SessionResults = sessionResults;
             foreach(var sessionConfig in config.SessionResultConfigurations)
             {
                 var sessionData = data.SessionResults
@@ -41,6 +39,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
                 var sessionCalculationService = sessionCalculationServiceProvider.GetCalculationService(sessionConfig);
                 sessionResults.Add(await sessionCalculationService.Calculate(sessionData));
             }
+            result.SessionResults = sessionResults;
 
             return result;
         }

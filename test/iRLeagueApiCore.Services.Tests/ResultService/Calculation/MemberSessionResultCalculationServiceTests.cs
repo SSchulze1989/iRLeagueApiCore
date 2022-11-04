@@ -1,9 +1,11 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Services.ResultService.Calculation;
+using AutoFixture.Dsl;
+using iRLeagueApiCore.Services.Tests.Extensions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 {
-    public class MemberSessionResultCalculationServiceTests
+    public sealed class MemberSessionResultCalculationServiceTests
     {
         private readonly Fixture fixture = new();
 
@@ -66,6 +68,113 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             test.ResultRows.Should().BeInAscendingOrder(x => x.FinalPosition);
         }
 
+        [Fact]
+        public async Task Calculate_ShouldSetFinalPositionAndChange()
+        {
+            var data = GetCalculationData();
+            data.ResultRows = GetTestRows();
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionResultCalculationService>();
+
+            var test = await sut.Calculate(data);
+
+            var expectedFinalPositions = Enumerable.Range(1, data.ResultRows.Count());
+            var expectedFinalPositionChanges = data.ResultRows.Select((x, i) => (int)(x.StartPosition - (i + 1)));
+            test.ResultRows.Select(x => x.FinalPosition).Should().BeEquivalentTo(expectedFinalPositions);
+            test.ResultRows.Select(x => x.FinalPositionChange).Should().BeEquivalentTo(expectedFinalPositionChanges);
+        }
+
+        [Fact]
+        public async Task Calculate_ShouldSetFastestLap()
+        {
+            var data = GetCalculationData();
+            var rows = data.ResultRows = GetTestRows();
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionResultCalculationService>();
+
+            var test = await sut.Calculate(data);
+
+            var expectedLapRow = rows.MinBy(x => x.FastestLapTime)!;
+            test.FastestLap.Should().Be(expectedLapRow.FastestLapTime);
+            test.FastestLapDriverMemberId.Should().Be(expectedLapRow.MemberId);
+        }
+
+        [Fact]
+        public async Task Calculate_ShouldSetFastestAvgLap()
+        {
+            var data = GetCalculationData();
+            var rows = data.ResultRows = GetTestRows();
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionResultCalculationService>();
+
+            var test = await sut.Calculate(data);
+
+            var expectedLapRow = rows.MinBy(x => x.AvgLapTime)!;
+            test.FastestAvgLap.Should().Be(expectedLapRow.AvgLapTime);
+            test.FastestAvgLapDriverMemberId.Should().Be(expectedLapRow.MemberId);
+        }
+
+        [Fact]
+        public async Task Calculate_ShouldSetFastestQualyLap()
+        {
+            var data = GetCalculationData();
+            var rows = data.ResultRows = GetTestRows();
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionResultCalculationService>();
+
+            var test = await sut.Calculate(data);
+
+            var expectedLapRow = rows.MinBy(x => x.QualifyingTime)!;
+            test.FastestQualyLap.Should().Be(expectedLapRow.QualifyingTime);
+            test.FastestQualyLapDriverMemberId.Should().Be(expectedLapRow.MemberId);
+        }
+
+        [Fact]
+        public async Task Calculate_ShouldSetHardChargers()
+        {
+            const int rowCount = 3;
+            var startPositions = new[] { 3, 2, 5 }.AsEnumerable().GetEnumerator();
+            var finishPositions = new[] { 1, 2, 3 }.AsEnumerable().GetEnumerator();
+            var data = GetCalculationData();
+            var rows = data.ResultRows = TestRowBuilder()
+                .With(x => x.StartPosition,() => startPositions.Next())
+                .With(x => x.FinishPosition,() => finishPositions.Next())
+                .CreateMany(rowCount);
+            var pointRule = MockPointRule(
+                sortFinal: rows => rows.OrderBy(x => x.FinishPosition).ToList());
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionResultCalculationService>();
+
+            var test = await sut.Calculate(data);
+
+            var expectedHardChargers = new[] { rows.ElementAt(0), rows.ElementAt(2) }.Select(x => x.MemberId);
+            test.HardChargers.Should().BeEquivalentTo(expectedHardChargers);
+        }
+
+        [Fact]
+        public async Task Calculate_ShouldSetCleanestDrivers()
+        {
+            const int rowCount = 3;
+            var incidents = new[] { 1, 2, 1 }.AsEnumerable().GetEnumerator();
+            var data = GetCalculationData();
+            var rows = data.ResultRows = TestRowBuilder()
+                .With(x => x.Incidents, () => incidents.Next())
+                .CreateMany(rowCount);
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionResultCalculationService>();
+
+            var test = await sut.Calculate(data);
+
+            var expectedCleanestDrivers = new[] { rows.ElementAt(0), rows.ElementAt(2) }.Select(x => x.MemberId);
+            test.CleanestDrivers.Should().BeEquivalentTo(expectedCleanestDrivers);
+        }
+
         private SessionResultCalculationData GetCalculationData()
         {
             return fixture.Create<SessionResultCalculationData>();
@@ -80,14 +189,18 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
                 .Create();
         }
 
-        private IEnumerable<ResultRowCalculationData> GetTestRows()
+        private IPostprocessComposer<ResultRowCalculationData> TestRowBuilder()
         {
             return fixture.Build<ResultRowCalculationData>()
                 .Without(x => x.RacePoints)
                 .Without(x => x.BonusPoints)
                 .Without(x => x.PenaltyPoints)
-                .Without(x => x.AddPenalty)
-                .CreateMany();
+                .Without(x => x.AddPenalty);
+        }
+
+        private IEnumerable<ResultRowCalculationData> GetTestRows()
+        {
+            return TestRowBuilder().CreateMany();
         }
 
         private static PointRule<ResultRowCalculationResult> MockPointRule(

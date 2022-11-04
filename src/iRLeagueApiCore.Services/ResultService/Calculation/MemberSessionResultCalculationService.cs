@@ -42,6 +42,12 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
                 finalRows = filter.FilterRows(finalRows);
             }
             finalRows = pointRule.SortFinal(finalRows);
+            // Set final position
+            foreach((var row, var position) in finalRows.Select((x, i) => (x, i+1)))
+            {
+                row.FinalPosition = position;
+                row.FinalPositionChange = row.StartPosition - row.FinalPosition;
+            }
 
             var sessionResult = new SessionResultCalculationResult(data);
             sessionResult.ResultRows = finalRows;
@@ -52,7 +58,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
                 .Select(x => x.id)
                 .NotNull()
                 .ToList();
-            sessionResult.HardChargers = GetBestValues(rows.Where(HardChargerEligible), x => x.PositionChange, x => x.MemberId, x => x.Max())
+            sessionResult.HardChargers = GetBestValues(rows.Where(HardChargerEligible), x => x.FinalPositionChange, x => x.MemberId, x => x.Max())
                 .Select(x => x.id)
                 .NotNull()
                 .ToList();
@@ -65,7 +71,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             return rows
                 .Select(row =>((long? id, TimeSpan lap))(idSelector.Invoke(row), valueSelector.Invoke(row)))
                 .Where(row => LapIsValid(row.lap))
-                .MaxBy(row => row.lap);
+                .MinBy(row => row.lap);
         }
 
         private static IEnumerable<(long? id, TValue value)> GetBestValues<T, TValue>(IEnumerable<T> rows, Func<T, TValue> valueSelector, Func<T, long?> idSelector,
