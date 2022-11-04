@@ -14,6 +14,11 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 
         public Task<SessionResultCalculationResult> Calculate(SessionResultCalculationData data)
         {
+            if (data.LeagueId != config.LeagueId) 
+                throw new InvalidOperationException("LeagueId does not match");
+            if (config.SessionId != null && data.SessionId != config.SessionId) 
+                throw new InvalidOperationException("SessionId does not match");
+
             var rows = data.ResultRows
                 .Select(row => new ResultRowCalculationResult(row))
                 .Where(row => row.MemberId != null)
@@ -39,6 +44,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             finalRows = pointRule.SortFinal(finalRows);
 
             var sessionResult = new SessionResultCalculationResult(data);
+            sessionResult.ResultRows = finalRows;
             (sessionResult.FastestAvgLapDriverMemberId, sessionResult.FastestAvgLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.AvgLapTime);
             (sessionResult.FastestLapDriverMemberId, sessionResult.FastestLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.FastestLapTime);
             (sessionResult.FastestQualyLapDriverMemberId, sessionResult.FastestQualyLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.QualifyingTime);

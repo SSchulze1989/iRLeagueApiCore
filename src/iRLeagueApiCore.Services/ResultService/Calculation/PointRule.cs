@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
-    internal abstract class PointRule<TRow>
+    internal abstract class PointRule<TRow> where TRow : IPointRow, IPenaltyRow
     {
         public abstract IEnumerable<RowFilter<TRow>> PointFilters { get; }
         public abstract IEnumerable<RowFilter<TRow>> FinalFilters { get; }
