@@ -3,9 +3,9 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal interface ISessionResultCalculationConfigurationProvider
+    internal interface ISessionCalculationConfigurationProvider
     {
-        public Task<IEnumerable<SessionResultCalculationConfiguration>> GetConfigurations(EventEntity eventEntity,
+        public Task<IEnumerable<SessionCalculationConfiguration>> GetConfigurations(EventEntity eventEntity,
             ResultConfigurationEntity? configurationEntity, CancellationToken cancellationToken);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Services.ResultService.Models
 {
-    internal sealed class SessionResultCalculationData
+    internal sealed class SessionCalculationData
     {
         public long LeagueId { get; set; }
         public long? SessionId { get; set; }

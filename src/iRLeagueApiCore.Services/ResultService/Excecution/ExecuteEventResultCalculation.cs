@@ -7,16 +7,16 @@ namespace iRLeagueApiCore.Services.ResultService.Excecution
     internal sealed class ExecuteEventResultCalculation
     {
         private readonly ILogger<ExecuteEventResultCalculation> logger;
-        private readonly IEventResultCalculationDataProvider dataProvider;
+        private readonly IEventCalculationDataProvider dataProvider;
         private readonly IEventCalculationConfigurationProvider configProvider;
-        private readonly IEventResultCalculationResultStore dataStore;
-        private readonly ICalculationServiceProvider<EventResultCalculationConfiguration, EventResultCalculationData, EventResultCalculationResult> calculationServiceProvider;
+        private readonly IEventCalculationResultStore dataStore;
+        private readonly ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider;
 
         public ExecuteEventResultCalculation(ILogger<ExecuteEventResultCalculation> logger,
-            IEventResultCalculationDataProvider dataProvider, 
+            IEventCalculationDataProvider dataProvider, 
             IEventCalculationConfigurationProvider configProvider, 
-            IEventResultCalculationResultStore dataStore, 
-            ICalculationServiceProvider<EventResultCalculationConfiguration, EventResultCalculationData, EventResultCalculationResult> calculationServiceProvider)
+            IEventCalculationResultStore dataStore, 
+            ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider)
         {
             this.logger = logger;
             this.dataProvider = dataProvider;

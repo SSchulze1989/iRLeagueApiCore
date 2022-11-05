@@ -1,8 +1,8 @@
 ﻿namespace iRLeagueApiCore.Services.ResultService.Models
 {
-    internal sealed class SessionResultCalculationResult
+    internal sealed class SessionCalculationResult
     {
-        public SessionResultCalculationResult(SessionResultCalculationData data)
+        public SessionCalculationResult(SessionCalculationData data)
         {
             LeagueId = data.LeagueId;
             SessionId = data.SessionId;

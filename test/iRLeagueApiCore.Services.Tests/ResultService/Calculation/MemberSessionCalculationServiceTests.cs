@@ -5,7 +5,7 @@ using iRLeagueApiCore.Services.Tests.Extensions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 {
-    public sealed class MemberSessionResultCalculationServiceTests
+    public sealed class MemberSessionCalculationServiceTests
     {
         private readonly Fixture fixture = new();
 
@@ -17,7 +17,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
             config.PointRule = MockPointRule(getRacePoints: (row, pos) => pos);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -39,7 +39,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
                 sortForPoints: rows => rows.OrderBy(x => x.FinishPosition).ToList(),
                 getRacePoints: (row, pos) => pos);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -61,7 +61,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             config.PointRule = MockPointRule(
                 sortFinal: rows => rows.OrderBy(x => x.FinalPosition).ToList());
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -75,7 +75,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             data.ResultRows = GetTestRows();
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -92,7 +92,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             var rows = data.ResultRows = GetTestRows();
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -108,7 +108,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             var rows = data.ResultRows = GetTestRows();
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -124,7 +124,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             var rows = data.ResultRows = GetTestRows();
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -148,7 +148,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
                 sortFinal: rows => rows.OrderBy(x => x.FinishPosition).ToList());
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -167,7 +167,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
                 .CreateMany(rowCount);
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
             fixture.Register(() => config);
-            var sut = fixture.Create<MemberSessionResultCalculationService>();
+            var sut = fixture.Create<MemberSessionCalculationService>();
 
             var test = await sut.Calculate(data);
 
@@ -175,15 +175,15 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             test.CleanestDrivers.Should().BeEquivalentTo(expectedCleanestDrivers);
         }
 
-        private SessionResultCalculationData GetCalculationData()
+        private SessionCalculationData GetCalculationData()
         {
-            return fixture.Create<SessionResultCalculationData>();
+            return fixture.Create<SessionCalculationData>();
         }
 
-        private SessionResultCalculationConfiguration GetCalculationConfiguration(long leagueId, long? sessionId)
+        private SessionCalculationConfiguration GetCalculationConfiguration(long leagueId, long? sessionId)
         {
             return fixture
-                .Build<SessionResultCalculationConfiguration>()
+                .Build<SessionCalculationConfiguration>()
                 .With(x => x.LeagueId, leagueId)
                 .With(x => x.SessionId, sessionId)
                 .Create();

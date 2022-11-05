@@ -2,32 +2,32 @@
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
-    internal sealed class EventResultCalculationService : ICalculationService<EventResultCalculationData, EventResultCalculationResult>
+    internal sealed class EventCalculationService : ICalculationService<EventCalculationData, EventCalculationResult>
     {
-        private readonly EventResultCalculationConfiguration config;
-        private readonly ICalculationServiceProvider< SessionResultCalculationConfiguration, SessionResultCalculationData, SessionResultCalculationResult> 
+        private readonly EventCalculationConfiguration config;
+        private readonly ICalculationServiceProvider< SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult> 
             sessionCalculationServiceProvider;
 
-        public EventResultCalculationService(EventResultCalculationConfiguration config,
-            ICalculationServiceProvider<SessionResultCalculationConfiguration, SessionResultCalculationData, SessionResultCalculationResult> sessionCalculationServiceProvider)
+        public EventCalculationService(EventCalculationConfiguration config,
+            ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult> sessionCalculationServiceProvider)
         {
             this.config = config;
             this.sessionCalculationServiceProvider = sessionCalculationServiceProvider;
         }
 
-        public async Task<EventResultCalculationResult> Calculate(EventResultCalculationData data)
+        public async Task<EventCalculationResult> Calculate(EventCalculationData data)
         {
             if (config.EventId != data.EventId)
             {
                 throw new InvalidOperationException($"EventId in configuration and provided data set does not match -> config:{config.EventId} | data:{data.EventId}");
             }
 
-            EventResultCalculationResult result = new();
+            EventCalculationResult result = new();
             result.LeagueId = config.LeagueId;
             result.EventId = config.EventId;
             result.ResultConfigId = config.ResultConfigId;
             result.Name = config.DisplayName;
-            List<SessionResultCalculationResult> sessionResults = new();
+            List<SessionCalculationResult> sessionResults = new();
             foreach(var sessionConfig in config.SessionResultConfigurations)
             {
                 var sessionData = data.SessionResults

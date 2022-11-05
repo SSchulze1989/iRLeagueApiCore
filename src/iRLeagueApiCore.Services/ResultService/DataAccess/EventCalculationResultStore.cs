@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class EventResultCalculationResultStore : DatabaseAccessBase, IEventResultCalculationResultStore
+    internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCalculationResultStore
     {
-        public EventResultCalculationResultStore(ILeagueDbContext dbContext) : 
+        public EventCalculationResultStore(ILeagueDbContext dbContext) : 
             base(dbContext)
         {
         }
 
-        public async Task StoreCalculationResult(EventResultCalculationResult result, CancellationToken cancellationToken = default)
+        public async Task StoreCalculationResult(EventCalculationResult result, CancellationToken cancellationToken = default)
         {
             var eventResultEntity = await GetScoredEventResultEntity(result.EventId, result.ResultConfigId, cancellationToken)
                 ?? await CreateScoredResultEntity(result.EventId, result.ResultConfigId, cancellationToken);
@@ -21,7 +21,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             return;
         }
 
-        private async Task<ScoredEventResultEntity> MapToEventResultEntity(EventResultCalculationResult result, ScoredEventResultEntity entity,
+        private async Task<ScoredEventResultEntity> MapToEventResultEntity(EventCalculationResult result, ScoredEventResultEntity entity,
             RequiredEntities requiredEntities, CancellationToken cancellationToken)
         {
             var members = await GetMemberEntities(result.SessionResults
@@ -39,7 +39,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             return entity;
         }
 
-        private async Task<ICollection<ScoredSessionResultEntity>> MapToScoredSessionResults(IEnumerable<SessionResultCalculationResult> sessionResults, 
+        private async Task<ICollection<ScoredSessionResultEntity>> MapToScoredSessionResults(IEnumerable<SessionCalculationResult> sessionResults, 
             ICollection<ScoredSessionResultEntity> sessionResultEntites, RequiredEntities requiredEntities, CancellationToken cancellationToken)
         {
             var keepResults = new List<ScoredSessionResultEntity>();
@@ -53,7 +53,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             return sessionResultEntites;
         }
 
-        private ScoredSessionResultEntity MapToScoredSessionResultEntity(SessionResultCalculationResult result, ScoredSessionResultEntity entity,
+        private ScoredSessionResultEntity MapToScoredSessionResultEntity(SessionCalculationResult result, ScoredSessionResultEntity entity,
             RequiredEntities requiredEntities)
         {
             entity.CleanestDrivers = requiredEntities.Members.Where(x => result.CleanestDrivers.Contains(x.Id)).ToList();
@@ -178,7 +178,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        private async Task<RequiredEntities> GetRequiredEntities(EventResultCalculationResult result, CancellationToken cancellationToken)
+        private async Task<RequiredEntities> GetRequiredEntities(EventCalculationResult result, CancellationToken cancellationToken)
         {
             RequiredEntities requiredEntities = new();
             requiredEntities.Members = await GetMemberEntities(result.SessionResults

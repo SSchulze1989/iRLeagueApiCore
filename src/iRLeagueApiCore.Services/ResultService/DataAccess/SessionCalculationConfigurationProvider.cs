@@ -3,13 +3,13 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class SessionResultCalculationConfigurationProvider : DatabaseAccessBase, ISessionResultCalculationConfigurationProvider
+    internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBase, ISessionCalculationConfigurationProvider
     {
-        public SessionResultCalculationConfigurationProvider(ILeagueDbContext dbContext) : base(dbContext)
+        public SessionCalculationConfigurationProvider(ILeagueDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<IEnumerable<SessionResultCalculationConfiguration>> GetConfigurations(EventEntity eventEntity,
+        public async Task<IEnumerable<SessionCalculationConfiguration>> GetConfigurations(EventEntity eventEntity,
             ResultConfigurationEntity? configurationEntity, CancellationToken cancellationToken)
         {
             if (configurationEntity == null)
@@ -21,10 +21,10 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             throw new NotImplementedException();
         }
 
-        private static IEnumerable<SessionResultCalculationConfiguration> DefaultSessionResultCalculationConfigurations(EventEntity eventEntity)
+        private static IEnumerable<SessionCalculationConfiguration> DefaultSessionResultCalculationConfigurations(EventEntity eventEntity)
         {
             var configurations = eventEntity.Sessions
-                .Select(x => new SessionResultCalculationConfiguration()
+                .Select(x => new SessionCalculationConfiguration()
                 {
                     LeagueId = x.LeagueId,
                     ScoringKind = default,

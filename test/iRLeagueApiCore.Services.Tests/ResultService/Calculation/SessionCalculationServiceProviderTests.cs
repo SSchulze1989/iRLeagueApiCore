@@ -3,11 +3,11 @@ using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 {
-    public sealed class SessionResultCalculationServiceProviderTests
+    public sealed class SessionCalculationServiceProviderTests
     {
         private readonly Fixture fixture;
 
-        public SessionResultCalculationServiceProviderTests()
+        public SessionCalculationServiceProviderTests()
         {
             fixture = new();
         }
@@ -21,7 +21,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             
             var test = sut.GetCalculationService(config);
 
-            test.Should().BeOfType<MemberSessionResultCalculationService>();
+            test.Should().BeOfType<MemberSessionCalculationService>();
         }
 
         [Fact]
@@ -36,14 +36,14 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             test.Should().Throw<NotImplementedException>();
         }
 
-        private SessionResultCalculationServiceProvider CreateSut()
+        private SessionCalculationServiceProvider CreateSut()
         {
-            return fixture.Create<SessionResultCalculationServiceProvider>();
+            return fixture.Create<SessionCalculationServiceProvider>();
         }
 
-        private SessionResultCalculationConfiguration GetCalculationConfiguration()
+        private SessionCalculationConfiguration GetCalculationConfiguration()
         {
-            return fixture.Create<SessionResultCalculationConfiguration>();
+            return fixture.Create<SessionCalculationConfiguration>();
         }
     }
 }

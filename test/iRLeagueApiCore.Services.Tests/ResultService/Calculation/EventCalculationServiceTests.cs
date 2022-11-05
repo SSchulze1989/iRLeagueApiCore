@@ -4,23 +4,23 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 {
-    public sealed class EventResultCalculationServiceTests
+    public sealed class EventCalculationServiceTests
     {
         private readonly Fixture fixture;
-        private readonly Mock<ICalculationService<SessionResultCalculationData, SessionResultCalculationResult>> mockService;
-        private readonly Mock<ICalculationServiceProvider<SessionResultCalculationConfiguration, SessionResultCalculationData, SessionResultCalculationResult>> 
+        private readonly Mock<ICalculationService<SessionCalculationData, SessionCalculationResult>> mockService;
+        private readonly Mock<ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>> 
             mockServiceProvider;
 
-        public EventResultCalculationServiceTests()
+        public EventCalculationServiceTests()
         {
             fixture = new();
-            mockService = new Mock<ICalculationService<SessionResultCalculationData, SessionResultCalculationResult>>();
-            mockService.Setup(x => x.Calculate(It.IsAny<SessionResultCalculationData>()))
-                .ReturnsAsync(() => fixture.Create<SessionResultCalculationResult>())
+            mockService = new Mock<ICalculationService<SessionCalculationData, SessionCalculationResult>>();
+            mockService.Setup(x => x.Calculate(It.IsAny<SessionCalculationData>()))
+                .ReturnsAsync(() => fixture.Create<SessionCalculationResult>())
                 .Verifiable();
-            mockServiceProvider = new Mock<ICalculationServiceProvider< SessionResultCalculationConfiguration, SessionResultCalculationData, SessionResultCalculationResult>>();
+            mockServiceProvider = new Mock<ICalculationServiceProvider< SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>>();
             mockServiceProvider
-                .Setup(x => x.GetCalculationService(It.IsAny<SessionResultCalculationConfiguration>()))
+                .Setup(x => x.GetCalculationService(It.IsAny<SessionCalculationConfiguration>()))
                 .Returns(() => mockService.Object)
                 .Verifiable();
             fixture.Register(() => mockServiceProvider.Object);
@@ -74,7 +74,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
         {
             var data = GetCalculationData();
             var config = GetCalculationConfiguration(data);
-            var addData = fixture.Create<SessionResultCalculationData>();
+            var addData = fixture.Create<SessionCalculationData>();
             data.SessionResults = data.SessionResults.Append(addData);
             var sut = CreateSut(config);
 
@@ -89,7 +89,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
         {
             var data = GetCalculationData();
             var config = GetCalculationConfiguration(data);
-            var addConfig = fixture.Create<SessionResultCalculationConfiguration>();
+            var addConfig = fixture.Create<SessionCalculationConfiguration>();
             config.SessionResultConfigurations = config.SessionResultConfigurations.Append(addConfig);
             var sut = CreateSut(config);
 
@@ -98,26 +98,26 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             test.SessionResults.Should().HaveCount(config.SessionResultConfigurations.Count() - 1);
         }
 
-        private EventResultCalculationService CreateSut(EventResultCalculationConfiguration config)
+        private EventCalculationService CreateSut(EventCalculationConfiguration config)
         {
             fixture.Register(() => config);
-            return fixture.Create<EventResultCalculationService>();
+            return fixture.Create<EventCalculationService>();
         }
 
-        private EventResultCalculationData GetCalculationData()
+        private EventCalculationData GetCalculationData()
         {
-            return fixture.Create<EventResultCalculationData>();
+            return fixture.Create<EventCalculationData>();
         }
 
-        private EventResultCalculationConfiguration GetCalculationConfiguration(EventResultCalculationData data)
+        private EventCalculationConfiguration GetCalculationConfiguration(EventCalculationData data)
         {
             return GetCalculationConfiguration(data.LeagueId, data.EventId, data.SessionResults.Select(x => x.SessionId).NotNull());
         }
 
-        private EventResultCalculationConfiguration GetCalculationConfiguration(long leagueId, long eventId, IEnumerable<long>? sessionIds = default)
+        private EventCalculationConfiguration GetCalculationConfiguration(long leagueId, long eventId, IEnumerable<long>? sessionIds = default)
         {
             sessionIds ??= Array.Empty<long>();
-            var config = fixture.Build<EventResultCalculationConfiguration>()
+            var config = fixture.Build<EventCalculationConfiguration>()
                 .With(x => x.LeagueId, leagueId)
                 .With(x => x.EventId, eventId)
                 .Create();

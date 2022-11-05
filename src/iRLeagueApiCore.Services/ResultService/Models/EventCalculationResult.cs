@@ -1,11 +1,11 @@
 ﻿namespace iRLeagueApiCore.Services.ResultService.Models
 {
-    internal sealed class EventResultCalculationResult
+    internal sealed class EventCalculationResult
     {
         public long LeagueId { get; set; }
         public long EventId { get; set; }
         public long? ResultConfigId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public IEnumerable<SessionResultCalculationResult> SessionResults { get; set; } = Array.Empty<SessionResultCalculationResult>();
+        public IEnumerable<SessionCalculationResult> SessionResults { get; set; } = Array.Empty<SessionCalculationResult>();
     }
 }

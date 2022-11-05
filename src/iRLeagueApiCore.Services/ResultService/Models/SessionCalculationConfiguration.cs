@@ -3,7 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Calculation;
 
 namespace iRLeagueApiCore.Services.ResultService.Models
 {
-    internal sealed class SessionResultCalculationConfiguration
+    internal sealed class SessionCalculationConfiguration
     {
         public long LeagueId { get; set; }
         public long? SessionId { get; set; }

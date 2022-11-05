@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class EventResultCalculationConfigurationProvider : DatabaseAccessBase, IEventCalculationConfigurationProvider
+    internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase, IEventCalculationConfigurationProvider
     {
-        private readonly SessionResultCalculationConfigurationProvider sessionConfigurationProvider;
-        public EventResultCalculationConfigurationProvider(ILeagueDbContext dbContext, SessionResultCalculationConfigurationProvider sessionConfigurationProvider) : 
+        private readonly SessionCalculationConfigurationProvider sessionConfigurationProvider;
+        public EventCalculationConfigurationProvider(ILeagueDbContext dbContext, SessionCalculationConfigurationProvider sessionConfigurationProvider) : 
             base(dbContext)
         {
             this.sessionConfigurationProvider = sessionConfigurationProvider;
@@ -23,7 +23,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             throw new NotImplementedException();
         }
 
-        public async Task<EventResultCalculationConfiguration> GetConfiguration(long eventId, long? resultConfigId, CancellationToken cancellationToken = default)
+        public async Task<EventCalculationConfiguration> GetConfiguration(long eventId, long? resultConfigId, CancellationToken cancellationToken = default)
         {
             var configEntity = await GetResultConfigurationEntity(resultConfigId, cancellationToken);
             var eventEntity = await GetEventEntity(eventId, resultConfigId, cancellationToken);
@@ -64,10 +64,10 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 ?? throw new InvalidOperationException($"No event id:{eventId} registered with result configuration id:{resultConfigId}");
         }
 
-        private async Task<EventResultCalculationConfiguration> GetEventResultCalculationConfiguration(EventEntity eventEntity, ResultConfigurationEntity? configEntity,
+        private async Task<EventCalculationConfiguration> GetEventResultCalculationConfiguration(EventEntity eventEntity, ResultConfigurationEntity? configEntity,
             CancellationToken cancellationToken)
         {
-            EventResultCalculationConfiguration configuration = new();
+            EventCalculationConfiguration configuration = new();
             configuration.EventId = eventEntity.EventId;
             configuration.LeagueId = eventEntity.LeagueId;
             configuration.ResultConfigId = configEntity?.ResultConfigId;

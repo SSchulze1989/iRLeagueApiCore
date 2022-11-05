@@ -13,10 +13,10 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
         private readonly Fixture fixture;
         private readonly ILogger<ExecuteEventResultCalculation> logger;
         private readonly Mock<IEventCalculationConfigurationProvider> mockConfigurationProvider;
-        private readonly Mock<IEventResultCalculationDataProvider> mockDataProvider;
-        private readonly Mock<IEventResultCalculationResultStore> mockResultStore;
-        private readonly Mock<ICalculationServiceProvider<EventResultCalculationConfiguration,
-            EventResultCalculationData, EventResultCalculationResult>> mockCalculationServiceProvider;
+        private readonly Mock<IEventCalculationDataProvider> mockDataProvider;
+        private readonly Mock<IEventCalculationResultStore> mockResultStore;
+        private readonly Mock<ICalculationServiceProvider<EventCalculationConfiguration,
+            EventCalculationData, EventCalculationResult>> mockCalculationServiceProvider;
 
         public ExecuteEventResultCalculationTests(ITestOutputHelper testOutputHelper)
         {
@@ -76,21 +76,21 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
         public async Task Execute_ShouldSkipResult_WhenDataProviderReturnsNull()
         {
             long eventId = fixture.Create<long>();
-            mockDataProvider.Setup(x => x.GetData(It.IsAny<EventResultCalculationConfiguration>(), It.IsAny<CancellationToken>()))
+            mockDataProvider.Setup(x => x.GetData(It.IsAny<EventCalculationConfiguration>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null)
                 .Verifiable();
-            var mockCalculationService = new Mock<ICalculationService<EventResultCalculationData, EventResultCalculationResult>>();
-            mockCalculationService.Setup(x => x.Calculate(It.IsAny<EventResultCalculationData>()))
-                .ReturnsAsync(() => fixture.Create<EventResultCalculationResult>())
+            var mockCalculationService = new Mock<ICalculationService<EventCalculationData, EventCalculationResult>>();
+            mockCalculationService.Setup(x => x.Calculate(It.IsAny<EventCalculationData>()))
+                .ReturnsAsync(() => fixture.Create<EventCalculationResult>())
                 .Verifiable();
-            mockCalculationServiceProvider.Setup(x => x.GetCalculationService(It.IsAny<EventResultCalculationConfiguration>()))
+            mockCalculationServiceProvider.Setup(x => x.GetCalculationService(It.IsAny<EventCalculationConfiguration>()))
                 .Returns(mockCalculationService.Object);
             var sut = CreateSut();
 
             await sut.Execute(eventId);
 
-            mockDataProvider.Verify(x => x.GetData(It.IsAny<EventResultCalculationConfiguration>(), It.IsAny<CancellationToken>()));
-            mockCalculationService.Verify(x => x.Calculate(It.IsAny<EventResultCalculationData>()), Times.Never);
+            mockDataProvider.Verify(x => x.GetData(It.IsAny<EventCalculationConfiguration>(), It.IsAny<CancellationToken>()));
+            mockCalculationService.Verify(x => x.Calculate(It.IsAny<EventCalculationData>()), Times.Never);
         }
 
         [Fact]
@@ -101,9 +101,9 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
             var resultConfigIds = fixture.CreateMany<long>(resultConfigCount);
             mockConfigurationProvider.Setup(x => x.GetResultConfigIds(It.IsAny<long>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => resultConfigIds);
-            var storedResults = new List<EventResultCalculationResult>();
-            mockResultStore.Setup(x => x.StoreCalculationResult(It.IsAny<EventResultCalculationResult>(), It.IsAny<CancellationToken>()))
-                .Callback((EventResultCalculationResult result, CancellationToken cancellationToken) => storedResults.Add(result));
+            var storedResults = new List<EventCalculationResult>();
+            mockResultStore.Setup(x => x.StoreCalculationResult(It.IsAny<EventCalculationResult>(), It.IsAny<CancellationToken>()))
+                .Callback((EventCalculationResult result, CancellationToken cancellationToken) => storedResults.Add(result));
             var sut = CreateSut();
 
             await sut.Execute(eventId);
@@ -132,74 +132,74 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
             return mockProvider;
         }
 
-        private static EventResultCalculationConfiguration CreateConfiguration(Fixture fixture, long eventId, long? resultConfigurationId)
+        private static EventCalculationConfiguration CreateConfiguration(Fixture fixture, long eventId, long? resultConfigurationId)
         {
-            return fixture.Build<EventResultCalculationConfiguration>()
+            return fixture.Build<EventCalculationConfiguration>()
                 .With(x => x.EventId, eventId)
                 .With(x => x.ResultConfigId, resultConfigurationId)
                 .Create();
         }
 
-        private static Mock<IEventResultCalculationDataProvider> MockDataProvider(Fixture fixture)
+        private static Mock<IEventCalculationDataProvider> MockDataProvider(Fixture fixture)
         {
-            var mockProvider = new Mock<IEventResultCalculationDataProvider>();
-            mockProvider.Setup(x => x.GetData(It.IsAny<EventResultCalculationConfiguration>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((EventResultCalculationConfiguration config, CancellationToken cancellationToken) => CreateData(fixture, config))
+            var mockProvider = new Mock<IEventCalculationDataProvider>();
+            mockProvider.Setup(x => x.GetData(It.IsAny<EventCalculationConfiguration>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((EventCalculationConfiguration config, CancellationToken cancellationToken) => CreateData(fixture, config))
                 .Verifiable();
 
             return mockProvider;
         }
 
-        private static EventResultCalculationData CreateData(Fixture fixture, EventResultCalculationConfiguration config)
+        private static EventCalculationData CreateData(Fixture fixture, EventCalculationConfiguration config)
         {
-            var data = fixture.Build<EventResultCalculationData>()
+            var data = fixture.Build<EventCalculationData>()
                 .With(x => x.EventId, config.EventId)
                 .Without(x => x.SessionResults)
                 .Create();
-            data.SessionResults = fixture.Build<SessionResultCalculationData>()
+            data.SessionResults = fixture.Build<SessionCalculationData>()
                 .WithSequence(x => x.SessionId, config.SessionResultConfigurations.Select(x => x.SessionId))
                 .CreateMany(config.SessionResultConfigurations.Count());
             return data;
         }
 
-        private static Mock<IEventResultCalculationResultStore> MockResultStore()
+        private static Mock<IEventCalculationResultStore> MockResultStore()
         {
-            var mockStore = new Mock<IEventResultCalculationResultStore>();
-            mockStore.Setup(x => x.StoreCalculationResult(It.IsAny<EventResultCalculationResult>(), It.IsAny<CancellationToken>()))
+            var mockStore = new Mock<IEventCalculationResultStore>();
+            mockStore.Setup(x => x.StoreCalculationResult(It.IsAny<EventCalculationResult>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
 
             return mockStore;
         }
 
-        private static Mock<ICalculationServiceProvider<EventResultCalculationConfiguration, EventResultCalculationData, EventResultCalculationResult>> MockCalculationServiceProvider(Fixture fixture)
+        private static Mock<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>> MockCalculationServiceProvider(Fixture fixture)
         {
-            var mockServiceProvider = new Mock<ICalculationServiceProvider<EventResultCalculationConfiguration, EventResultCalculationData, EventResultCalculationResult>>();
-            mockServiceProvider.Setup(x => x.GetCalculationService(It.IsAny<EventResultCalculationConfiguration>()))
-                .Returns((EventResultCalculationConfiguration config) => MockCalculationService(fixture, config).Object)
+            var mockServiceProvider = new Mock<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>();
+            mockServiceProvider.Setup(x => x.GetCalculationService(It.IsAny<EventCalculationConfiguration>()))
+                .Returns((EventCalculationConfiguration config) => MockCalculationService(fixture, config).Object)
                 .Verifiable();
 
             return mockServiceProvider;
         }
 
-        private static Mock<ICalculationService<EventResultCalculationData, EventResultCalculationResult>> MockCalculationService(Fixture fixture, EventResultCalculationConfiguration config)
+        private static Mock<ICalculationService<EventCalculationData, EventCalculationResult>> MockCalculationService(Fixture fixture, EventCalculationConfiguration config)
         {
-            var mockService = new Mock<ICalculationService<EventResultCalculationData, EventResultCalculationResult>>();
-            mockService.Setup(x => x.Calculate(It.IsAny<EventResultCalculationData>()))
-                .ReturnsAsync((EventResultCalculationData data) => CreateEventCalculationResult(fixture, config, data))
+            var mockService = new Mock<ICalculationService<EventCalculationData, EventCalculationResult>>();
+            mockService.Setup(x => x.Calculate(It.IsAny<EventCalculationData>()))
+                .ReturnsAsync((EventCalculationData data) => CreateEventCalculationResult(fixture, config, data))
                 .Verifiable();
 
             return mockService;
         }
 
-        private static EventResultCalculationResult CreateEventCalculationResult(Fixture fixture, EventResultCalculationConfiguration config, EventResultCalculationData data)
+        private static EventCalculationResult CreateEventCalculationResult(Fixture fixture, EventCalculationConfiguration config, EventCalculationData data)
         {
-            return new EventResultCalculationResult()
+            return new EventCalculationResult()
             {
                 EventId = data.EventId,
                 LeagueId = data.LeagueId,
                 ResultConfigId = config.ResultConfigId,
                 Name = config.DisplayName,
-                SessionResults = data.SessionResults.Select(x => new SessionResultCalculationResult(x)),
+                SessionResults = data.SessionResults.Select(x => new SessionCalculationResult(x)),
             };
         }
     }

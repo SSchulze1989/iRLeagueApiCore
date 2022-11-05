@@ -4,25 +4,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class EventResultCalculationDataProvider : DatabaseAccessBase, IEventResultCalculationDataProvider
+    internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventCalculationDataProvider
     {
-        public EventResultCalculationDataProvider(ILeagueDbContext dbContext) : 
+        public EventCalculationDataProvider(ILeagueDbContext dbContext) : 
             base(dbContext)
         {
         }
 
-        public async Task<EventResultCalculationData?> GetData(EventResultCalculationConfiguration config, CancellationToken cancellationToken)
+        public async Task<EventCalculationData?> GetData(EventCalculationConfiguration config, CancellationToken cancellationToken)
         {
             return await dbContext.EventResults
                 .Select(MapToEventResultCalculationDataExpression)
                 .FirstOrDefaultAsync(x => x.EventId == config.EventId, cancellationToken);
         }
 
-        private static Expression<Func<EventResultEntity, EventResultCalculationData>> MapToEventResultCalculationDataExpression => eventResult => new EventResultCalculationData()
+        private static Expression<Func<EventResultEntity, EventCalculationData>> MapToEventResultCalculationDataExpression => eventResult => new EventCalculationData()
         {
             LeagueId = eventResult.LeagueId,
             EventId = eventResult.EventId,
-            SessionResults = eventResult.SessionResults.Select(sessionResult => new SessionResultCalculationData()
+            SessionResults = eventResult.SessionResults.Select(sessionResult => new SessionCalculationData()
             {
                 LeagueId = sessionResult.LeagueId,
                 SessionId = sessionResult.SessionId,

@@ -3,16 +3,16 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
-    internal sealed class MemberSessionResultCalculationService : ICalculationService<SessionResultCalculationData, SessionResultCalculationResult>
+    internal sealed class MemberSessionCalculationService : ICalculationService<SessionCalculationData, SessionCalculationResult>
     {
-        private readonly SessionResultCalculationConfiguration config;
+        private readonly SessionCalculationConfiguration config;
 
-        public MemberSessionResultCalculationService(SessionResultCalculationConfiguration config)
+        public MemberSessionCalculationService(SessionCalculationConfiguration config)
         {
             this.config = config;
         }
 
-        public Task<SessionResultCalculationResult> Calculate(SessionResultCalculationData data)
+        public Task<SessionCalculationResult> Calculate(SessionCalculationData data)
         {
             if (data.LeagueId != config.LeagueId) 
                 throw new InvalidOperationException("LeagueId does not match");
@@ -49,7 +49,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
                 row.FinalPositionChange = row.StartPosition - row.FinalPosition;
             }
 
-            var sessionResult = new SessionResultCalculationResult(data);
+            var sessionResult = new SessionCalculationResult(data);
             sessionResult.ResultRows = finalRows;
             (sessionResult.FastestAvgLapDriverMemberId, sessionResult.FastestAvgLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.AvgLapTime);
             (sessionResult.FastestLapDriverMemberId, sessionResult.FastestLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.FastestLapTime);
