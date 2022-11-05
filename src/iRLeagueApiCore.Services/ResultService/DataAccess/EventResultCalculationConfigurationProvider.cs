@@ -9,13 +9,18 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class EventResultCalculationConfigurationProvider : DatabaseAccessBase
+    internal sealed class EventResultCalculationConfigurationProvider : DatabaseAccessBase, IEventCalculationConfigurationProvider
     {
         private readonly SessionResultCalculationConfigurationProvider sessionConfigurationProvider;
         public EventResultCalculationConfigurationProvider(ILeagueDbContext dbContext, SessionResultCalculationConfigurationProvider sessionConfigurationProvider) : 
             base(dbContext)
         {
             this.sessionConfigurationProvider = sessionConfigurationProvider;
+        }
+
+        public Task<IEnumerable<long>> GetResultConfigIds(long eventId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<EventResultCalculationConfiguration> GetConfiguration(long eventId, long? resultConfigId, CancellationToken cancellationToken = default)

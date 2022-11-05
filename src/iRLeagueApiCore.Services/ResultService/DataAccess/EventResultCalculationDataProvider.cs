@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class EventResultCalculationDataProvider : DatabaseAccessBase
+    internal sealed class EventResultCalculationDataProvider : DatabaseAccessBase, IEventResultCalculationDataProvider
     {
         public EventResultCalculationDataProvider(ILeagueDbContext dbContext) : 
             base(dbContext)
         {
         }
 
-        public async Task<EventResultCalculationData?> GetEventResultCalculationData(long eventId, CancellationToken cancellationToken)
+        public async Task<EventResultCalculationData?> GetData(EventResultCalculationConfiguration config, CancellationToken cancellationToken)
         {
             return await dbContext.EventResults
                 .Select(MapToEventResultCalculationDataExpression)
-                .FirstOrDefaultAsync(x => x.EventId == eventId, cancellationToken);
+                .FirstOrDefaultAsync(x => x.EventId == config.EventId, cancellationToken);
         }
 
         private static Expression<Func<EventResultEntity, EventResultCalculationData>> MapToEventResultCalculationDataExpression => eventResult => new EventResultCalculationData()

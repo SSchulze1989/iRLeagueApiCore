@@ -3,7 +3,7 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class SessionResultCalculationConfigurationProvider : DatabaseAccessBase
+    internal sealed class SessionResultCalculationConfigurationProvider : DatabaseAccessBase, ISessionResultCalculationConfigurationProvider
     {
         public SessionResultCalculationConfigurationProvider(ILeagueDbContext dbContext) : base(dbContext)
         {

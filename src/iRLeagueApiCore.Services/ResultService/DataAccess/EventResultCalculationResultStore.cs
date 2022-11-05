@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
-    internal sealed class EventResultCalculationResultStore : DatabaseAccessBase
+    internal sealed class EventResultCalculationResultStore : DatabaseAccessBase, IEventResultCalculationResultStore
     {
         public EventResultCalculationResultStore(ILeagueDbContext dbContext) : 
             base(dbContext)
