@@ -35,6 +35,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 .ToListAsync(cancellationToken);
                 
             var configurations = eventEntity.Sessions
+                .OrderBy(x => x.SessionNr)
                 .Select((x, i) => new SessionCalculationConfiguration()
                 {
                     LeagueId = x.LeagueId,
@@ -56,13 +57,16 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             var sessionResultIds = await dbContext.ScoredSessionResults
                 .Where(x => x.ScoredEventResult.EventId == eventEntity.EventId)
                 .Where(x => x.ScoredEventResult.ResultConfigId == configurationEntity.ResultConfigId)
+                .OrderBy(x => x.SessionNr)
                 .Select(x => x.SessionResultId)
                 .ToListAsync(cancellationToken);
 
             var scorings = configurationEntity.Scorings.OrderBy(x => x.Index);
             var raceIndex = 0;
             var sessionConfigurations = new List<SessionCalculationConfiguration>();
-            foreach (var session in eventEntity.Sessions)
+            foreach ((var session, var index) in eventEntity.Sessions
+                .OrderBy(x => x.SessionNr)
+                .Select((x, i) => (x, i)))
             {
                 var sessionConfiguration = new SessionCalculationConfiguration()
                 {
@@ -71,6 +75,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     SessionId = session.SessionId,
                 };
                 var scoring = session.SessionType != SessionType.Race ? null : scorings.ElementAtOrDefault(raceIndex++);
+                sessionConfiguration.SessionResultId = sessionResultIds.ElementAtOrDefault(index);
                 sessionConfiguration = MapFromScoringEntity(scoring, sessionConfiguration);
                 sessionConfigurations.Add(sessionConfiguration);
             }
@@ -93,12 +98,18 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             return sessionConfiguration;
         }
 
-        private static PointRule<ResultRowCalculationResult> GetPointRuleFromEntity(PointRuleEntity pointsRuleEntity)
+        private static PointRule<ResultRowCalculationResult> GetPointRuleFromEntity(PointRuleEntity? pointsRuleEntity)
         {
+            if (pointsRuleEntity == null)
+            {
+                return CalculationPointRuleBase.Default();
+            }
+
             CalculationPointRuleBase pointRule;
             if (pointsRuleEntity.PointsPerPlace.Any())
             {
-                throw new NotImplementedException();
+                pointRule = new PerPlacePointRule(PointsPerPlaceToDictionary<double>(pointsRuleEntity.PointsPerPlace
+                    .Select(x => (double)x)));
             }
             else
             {
@@ -109,6 +120,13 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             pointRule.FinalSortOptions = pointsRuleEntity.FinalSortOptions;
 
             return pointRule;
+        }
+
+        private static IReadOnlyDictionary<int, T> PointsPerPlaceToDictionary<T>(IEnumerable<T> points)
+        {
+            return points
+                .Select((x, i) => new { pos = i + 1, value = x})
+                .ToDictionary(k => k.pos, v => v.value);
         }
     }
 }

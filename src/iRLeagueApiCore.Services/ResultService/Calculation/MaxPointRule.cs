@@ -8,8 +8,8 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
     internal sealed class MaxPointRule : CalculationPointRuleBase
     {
-        private int MaxPoints { get; }
-        private int DropOff { get; }
+        public int MaxPoints { get; private set; }
+        public int DropOff { get; private set; }
 
         public MaxPointRule(int maxPoints, int dropOff)
         {

@@ -1,4 +1,5 @@
-﻿using iRLeagueDatabaseCore.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
@@ -71,6 +72,41 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .ToListAsync();
 
             leagueMembers.Where(x => x.Team != null).Should().HaveCountGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task ShouldAddPointRule_WithoutDeletingScoring()
+        {
+            long configId;
+            long pointRuleId;
+            int scoringCount;
+
+            using (var dbContext = accessMockHelper.CreateMockDbContext())
+            {
+                await accessMockHelper.PopulateBasicTestSet(dbContext);
+
+                var @event = await dbContext.Events
+                    .Include(x => x.Schedule.Season.League)
+                    .FirstAsync();
+                var config = accessMockHelper.CreateConfiguration(@event);
+                var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+                configId = config.ResultConfigId;
+                pointRuleId = pointRule.PointRuleId;
+                scoringCount = config.Scorings.Count();
+                dbContext.ResultConfigurations.Add(config);
+                dbContext.PointRules.Add(pointRule);
+                config.Scorings.ForEeach(x => x.PointsRule = pointRule);
+                await dbContext.SaveChangesAsync();
+            }
+
+            using (var dbContext = accessMockHelper.CreateMockDbContext())
+            {
+                var config = await dbContext.ResultConfigurations
+                    .Include(x => x.Scorings)
+                    .FirstAsync(x => x.ResultConfigId == configId);
+
+                config.Scorings.Should().HaveCount(scoringCount);
+            }
         }
     }
 }

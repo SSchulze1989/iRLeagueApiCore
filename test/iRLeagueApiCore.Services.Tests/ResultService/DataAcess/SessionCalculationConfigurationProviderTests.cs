@@ -1,5 +1,8 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
+using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +21,6 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             dbContext = accessMockHelper.CreateMockDbContext();
             fixture = new();
             fixture.Register(() => dbContext);
-            fixture.Register<ILeagueDbContext>(() => dbContext);
         }
 
         public async Task InitializeAsync()
@@ -29,16 +31,14 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         [Fact]
         public async Task GetConfigurations_ShouldProvideDefaultConfiguration_WhenConfigIsNull()
         {
-            var @event = await dbContext.Events
-                .Include(x => x.Sessions)
-                .FirstAsync();
+            var @event = await GetFirstEventEntity();
             var config = (ResultConfigurationEntity?)null;
             var sut = fixture.Create<SessionCalculationConfigurationProvider>();
 
             var test = await sut.GetConfigurations(@event, config);
 
             test.Should().HaveSameCount(@event.Sessions);
-            foreach((var sessionConfig, var session) in test.Zip(@event.Sessions))
+            foreach((var sessionConfig, var session) in test.Zip(@event.Sessions.OrderBy(x => x.SessionNr)))
             {
                 sessionConfig.LeagueId.Should().Be(@event.LeagueId);
                 sessionConfig.SessionId.Should().Be(session.SessionId);
@@ -52,30 +52,9 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         [Fact]
         public async Task GetConfigurations_ShouldProvideDefaultSessionResultId_WhenCalculatedResultExistsAndConfigIsNull()
         {
-            var @event = await dbContext.Events
-                .Include(x => x.Sessions)
-                .FirstAsync();
+            var @event = await GetFirstEventEntity();
             var config = (ResultConfigurationEntity?)null;
-            var scoredEventResult = fixture.Build<ScoredEventResultEntity>()
-                .With(x => x.LeagueId, @event.LeagueId)
-                .With(x => x.Event, @event)
-                .With(x => x.ScoredSessionResults, @event.Sessions.Select(session => fixture.Build<ScoredSessionResultEntity>()
-                    .With(x => x.LeagueId, session.LeagueId)
-                    .With(x => x.Name, session.Name)
-                    .With(x => x.SessionNr, session.SessionNr)
-                    .Without(x => x.Scoring)
-                    .Without(x => x.ScoredEventResult)
-                    .Without(x => x.ScoredResultRows)
-                    .Without(x => x.CleanestDrivers)
-                    .Without(x => x.FastestAvgLapDriver)
-                    .Without(x => x.FastestLapDriver)
-                    .Without(x => x.FastestQualyLapDriver)
-                    .Without(x => x.HardChargers)
-                    .Create())
-                    .ToList())
-                .Without(x => x.ResultConfig)
-                .Without(x => x.ResultConfigId)
-                .Create();
+            var scoredEventResult = accessMockHelper.CreateScoredResult(@event, config);
             dbContext.ScoredEventResults.Add(scoredEventResult);
             await dbContext.SaveChangesAsync();
             var sut = CreateSut();
@@ -89,9 +68,179 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             }
         }
 
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideConfigurationFromEntity_WhenConfigIsNotNull()
+        {
+            var @event = await GetFirstEventEntity();
+            var config = accessMockHelper.CreateConfiguration(@event);
+            dbContext.ResultConfigurations.Add(config);
+            await dbContext.SaveChangesAsync();
+            var sut = fixture.Create<SessionCalculationConfigurationProvider>();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            test.Should().HaveSameCount(@event.Sessions);
+            test.Should().HaveSameCount(config.Scorings);
+            foreach((var sessionConfig, var session, var scoring) in test.Zip(@event.Sessions.OrderBy(x => x.SessionNr), config.Scorings.OrderBy(x => x.Index)))
+            {
+                sessionConfig.LeagueId.Should().Be(@event.LeagueId);
+                sessionConfig.SessionId.Should().Be(session.SessionId);
+                sessionConfig.ScoringId.Should().Be(scoring.ScoringId);
+                sessionConfig.ScoringKind.Should().Be(scoring.ScoringKind);
+                sessionConfig.MaxResultsPerGroup.Should().Be(scoring.MaxResultsPerGroup);
+                sessionConfig.UpdateTeamOnRecalculation.Should().Be(scoring.UpdateTeamOnRecalculation);
+                sessionConfig.UseResultSetTeam.Should().Be(scoring.UseResultSetTeam);
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideConfigurationSessionResultId_WhenCalculatedResultExistsAndConfigIsNotNull()
+        {
+            var @event = await GetFirstEventEntity();
+            var config = accessMockHelper.CreateConfiguration(@event);
+            ScoredEventResultEntity scoredEventResult = accessMockHelper.CreateScoredResult(@event, config);
+            dbContext.ScoredEventResults.Add(scoredEventResult);
+            await dbContext.SaveChangesAsync();
+            var sut = CreateSut();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            test.Should().HaveSameCount(scoredEventResult.ScoredSessionResults);
+            foreach ((var sessionConfig, var sessionResult) in test.Zip(scoredEventResult.ScoredSessionResults.OrderBy(x => x.SessionNr)))
+            {
+                sessionConfig.SessionResultId.Should().Be(sessionResult.SessionResultId);
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideDefaultPointRule_WhenScoringOrPointRuleEntityIsNull()
+        {
+            var @event = await GetFirstEventEntity();
+            // creates default config with null point rule
+            var config = accessMockHelper.CreateConfiguration(@event);
+            // for testing null scoring
+            config.Scorings.Remove(config.Scorings.Last());
+            dbContext.ResultConfigurations.Add(config);
+            await dbContext.SaveChangesAsync();
+            var sut = CreateSut();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            foreach(var sessionConfig in test)
+            {
+                sessionConfig.PointRule.Should().BeOfType(CalculationPointRuleBase.Default().GetType());
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideDefaultConfiguration_WhenSessionIsPracticeOrQualifying()
+        {
+            var @event = await GetFirstEventEntity();
+            var practice = accessMockHelper.CreateSession(@event, SessionType.Practice);
+            var qualy = accessMockHelper.CreateSession(@event, SessionType.Qualifying);
+            var sessionNr = 1;
+            practice.SessionNr = sessionNr++;
+            qualy.SessionNr = sessionNr++;
+            @event.Sessions.ForEeach(x => x.SessionNr = sessionNr++);
+            var config = accessMockHelper.CreateConfiguration(@event);
+            @event.Sessions.Add(practice);
+            @event.Sessions.Add(qualy);
+            dbContext.Sessions.Add(practice);
+            dbContext.Sessions.Add(qualy);
+            await dbContext.SaveChangesAsync();
+            var sut = CreateSut();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            test.Should().HaveSameCount(@event.Sessions);
+            var scoringIndex = 0;
+            foreach((var sessionConfig, var session) in test.Zip(@event.Sessions))
+            {
+                if (session == practice || session == qualy)
+                {
+                    sessionConfig.ScoringId.Should().BeNull();
+                    sessionConfig.ScoringKind.Should().Be(ScoringKind.Member);
+                    sessionConfig.PointRule.Should().BeOfType(CalculationPointRuleBase.Default().GetType());
+                }
+                else
+                {
+                    sessionConfig.ScoringId.Should().Be(config.Scorings.ElementAt(scoringIndex++).ScoringId);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideMaxPointRule_WhenNoPointsPerPlaceConfigured()
+        {
+            var @event = await GetFirstEventEntity();
+            var config = accessMockHelper.CreateConfiguration(@event);
+            var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+            pointRule.PointsPerPlace = new List<int>();
+            dbContext.PointRules.Add(pointRule);
+            dbContext.ResultConfigurations.Add(config);
+            config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+            await dbContext.SaveChangesAsync();
+            config = await dbContext.ResultConfigurations
+                .Include(x => x.Scorings)
+                    .ThenInclude(x => x.PointsRule)
+                .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            var scorings = await dbContext.Scorings
+                .Include(x => x.ResultConfiguration)
+                .ToListAsync();
+            var sut = CreateSut();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            foreach(var sessionConfig in test)
+            {
+                sessionConfig.PointRule.Should().BeOfType(typeof(MaxPointRule));
+                var sessionConfigPointRule = (MaxPointRule)sessionConfig.PointRule;
+                sessionConfigPointRule.MaxPoints.Should().Be(pointRule.MaxPoints);
+                sessionConfigPointRule.DropOff.Should().Be(pointRule.PointDropOff);
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvidePerPlacePointRule_WhenPointsPerPlaceConfigured()
+        {
+            var @event = await GetFirstEventEntity();
+            var config = accessMockHelper.CreateConfiguration(@event);
+            var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+            pointRule.PointsPerPlace = new[] { 3, 2, 1 }.ToList();
+            dbContext.PointRules.Add(pointRule);
+            dbContext.ResultConfigurations.Add(config);
+            config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+            await dbContext.SaveChangesAsync();
+            config = await dbContext.ResultConfigurations
+                .Include(x => x.Scorings)
+                    .ThenInclude(x => x.PointsRule)
+                .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            var scorings = await dbContext.Scorings
+                .Include(x => x.ResultConfiguration)
+                .ToListAsync();
+            var sut = CreateSut();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            foreach (var sessionConfig in test)
+            {
+                sessionConfig.PointRule.Should().BeOfType(typeof(PerPlacePointRule));
+                var sessionConfigPointRule = (PerPlacePointRule)sessionConfig.PointRule;
+                sessionConfigPointRule.PointsPerPlace.Values.Should().BeEquivalentTo(pointRule.PointsPerPlace);
+            }
+        }
+
         private SessionCalculationConfigurationProvider CreateSut()
         {
             return fixture.Create<SessionCalculationConfigurationProvider>();
+        }
+
+        private async Task<EventEntity> GetFirstEventEntity()
+        {
+            return await dbContext.Events
+                .Include(x => x.Schedule.Season.League)
+                .Include(x => x.Sessions)
+                .FirstAsync();
         }
 
         public async Task DisposeAsync()

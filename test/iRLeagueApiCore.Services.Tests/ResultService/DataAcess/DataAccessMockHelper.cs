@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Enums;
+﻿using AutoFixture.Dsl;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,7 +58,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             await dbContext.SaveChangesAsync();
         }
 
-        private LeagueEntity CreateLeague()
+        public LeagueEntity CreateLeague()
         {
             return fixture.Build<LeagueEntity>()
                 .Without(x => x.LeagueMembers)
@@ -69,7 +70,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Create();
         }
 
-        private SeasonEntity CreateSeason(LeagueEntity league)
+        public SeasonEntity CreateSeason(LeagueEntity league)
         {
             return fixture.Build<SeasonEntity>()
                 .With(x => x.League, league)
@@ -81,7 +82,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Create();
         }
 
-        private IEnumerable<MemberEntity> CreateMembers(int count = 10)
+        public IEnumerable<MemberEntity> CreateMembers(int count = 10)
         {
             return fixture.Build<MemberEntity>()
                 .Without(x => x.AcceptedReviewVotes)
@@ -99,7 +100,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .ToList();
         }
 
-        private IEnumerable<LeagueMemberEntity> CreateLeagueMembers(LeagueEntity league, IEnumerable<MemberEntity> members)
+        public IEnumerable<LeagueMemberEntity> CreateLeagueMembers(LeagueEntity league, IEnumerable<MemberEntity> members)
         {
             return members.Select(member => fixture.Build<LeagueMemberEntity>()
                 .With(x => x.League, league)
@@ -110,7 +111,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .ToList();
         }
 
-        private IEnumerable<TeamEntity> CreateTeams(LeagueEntity league, IEnumerable<LeagueMemberEntity> leagueMembers)
+        public IEnumerable<TeamEntity> CreateTeams(LeagueEntity league, IEnumerable<LeagueMemberEntity> leagueMembers)
         {
             var memberChunks = leagueMembers.Chunk(3);
             var teams = memberChunks
@@ -123,7 +124,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             return teams;
         }
 
-        private ScheduleEntity CreateSchedule(SeasonEntity season)
+        public ScheduleEntity CreateSchedule(SeasonEntity season)
         {
             return fixture.Build<ScheduleEntity>()
                 .With(x => x.Season, season)
@@ -132,7 +133,18 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Create();
         }
 
-        private IEnumerable<EventEntity> CreateSessions(ScheduleEntity schedule)
+        public SessionEntity CreateSession(EventEntity @event, SessionType sessionType = SessionType.Race)
+        {
+            return fixture.Build<SessionEntity>()
+                .With(x => x.LeagueId, @event.LeagueId)
+                .With(x => x.Event, @event)
+                .With(x => x.SessionType, sessionType)
+                .Without(x => x.IncidentReviews)
+                .Without(x => x.SessionResult)
+                .Create();
+        }
+
+        public IEnumerable<EventEntity> CreateSessions(ScheduleEntity schedule)
         {
             var sessions = () => fixture.Build<SessionEntity>()
                 .Without(x => x.Event)
@@ -151,7 +163,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .ToList();
         }
 
-        private EventResultEntity CreateResult(EventEntity @event, IEnumerable<LeagueMemberEntity> members)
+        public EventResultEntity CreateResult(EventEntity @event, IEnumerable<LeagueMemberEntity> members)
         {
             return fixture.Build<EventResultEntity>()
                 .With(x => x.Event, @event)
@@ -160,7 +172,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Create();
         }
 
-        private IEnumerable<SessionResultEntity> CreateSessionResults(EventEntity @event, IEnumerable<LeagueMemberEntity> members)
+        public IEnumerable<SessionResultEntity> CreateSessionResults(EventEntity @event, IEnumerable<LeagueMemberEntity> members)
         {
             return @event.Sessions.Select(session => fixture.Build<SessionResultEntity>()
                 .With(x => x.Session, session)
@@ -174,6 +186,66 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Without(x => x.Result)
                 .Create())
                 .ToList();
+        }
+
+        public IPostprocessComposer<ResultConfigurationEntity> ConfigurationBuilder(EventEntity @event)
+        {
+            return fixture.Build<ResultConfigurationEntity>()
+                .With(x => x.LeagueId, @event.LeagueId)
+                .With(x => x.Events, new[] { @event })
+                .With(x => x.Scorings, @event.Sessions
+                    .Where(x => x.SessionType == SessionType.Race)
+                    .Select(session => fixture.Build<ScoringEntity>()
+                        .With(x => x.LeagueId, @event.LeagueId)
+                        .With(x => x.Index, session.SessionNr)
+                        .Without(x => x.PointsRule)
+                        .Without(x => x.DependendScorings)
+                        .Without(x => x.ExtScoringSource)
+                        .Without(x => x.ResultConfiguration)
+                        .Without(x => x.ResultsFilterOptions)
+                        .Create())
+                    .ToList())
+                .Without(x => x.League);
+        }
+
+        public ResultConfigurationEntity CreateConfiguration(EventEntity @event)
+        {
+            return ConfigurationBuilder(@event)
+                .Create();
+        }
+
+        public ScoredEventResultEntity CreateScoredResult(EventEntity @event, ResultConfigurationEntity? config)
+        {
+            return fixture.Build<ScoredEventResultEntity>()
+                .With(x => x.LeagueId, @event.LeagueId)
+                .With(x => x.Event, @event)
+                .With(x => x.ScoredSessionResults, @event.Sessions.Select(session => fixture.Build<ScoredSessionResultEntity>()
+                    .With(x => x.LeagueId, session.LeagueId)
+                    .With(x => x.Name, session.Name)
+                    .With(x => x.SessionNr, session.SessionNr)
+                    .Without(x => x.Scoring)
+                    .Without(x => x.ScoredEventResult)
+                    .Without(x => x.ScoredResultRows)
+                    .Without(x => x.CleanestDrivers)
+                    .Without(x => x.FastestAvgLapDriver)
+                    .Without(x => x.FastestLapDriver)
+                    .Without(x => x.FastestQualyLapDriver)
+                    .Without(x => x.HardChargers)
+                    .Create())
+                    .ToList())
+                .With(x => x.ResultConfig, config)
+                .With(x => x.ResultConfigId, config?.ResultConfigId)
+                .Create();
+        }
+
+        public PointRuleEntity CreatePointRule(LeagueEntity league)
+        {
+            return fixture.Build<PointRuleEntity>()
+                .With(x => x.League, league)
+                .With(x => x.LeagueId, league.Id)
+                .Without(x => x.ResultsFilters)
+                .Without(x => x.Scorings)
+                .Create();
         }
     }
 }

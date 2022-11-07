@@ -10,6 +10,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
         public abstract IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows) where T : TRow;
         public abstract IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows) where T : TRow;
 
-        public static PointRule<TRow> Default() => new DefaultPointRule<TRow>();
+        private readonly static DefaultPointRule<TRow> defaultPointRule = new DefaultPointRule<TRow>();
+        public static PointRule<TRow> Default() => defaultPointRule;
     }
 }

@@ -6,9 +6,6 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
     internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculationResult>
     {
-        private readonly int MaxPoints;
-        private readonly int DropOff;
-
         public IEnumerable<RowFilter<ResultRowCalculationResult>> PointFilters { get; set; } = Array.Empty<RowFilter<ResultRowCalculationResult>>();
         public IEnumerable<RowFilter<ResultRowCalculationResult>> FinalFilters { get; set; } = Array.Empty<RowFilter<ResultRowCalculationResult>>();
         public IEnumerable<SortOptions> PointSortOptions { get; set; } = Array.Empty<SortOptions>();
