@@ -75,6 +75,47 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         }
 
         [Fact]
+        public async Task PopulateBasicTestSet_ResultShouldHaveSessionResults()
+        {
+            using var dbContext = accessMockHelper.CreateMockDbContext();
+            await accessMockHelper.PopulateBasicTestSet(dbContext);
+
+            var result = await dbContext.EventResults
+                .Include(x => x.SessionResults)
+                .FirstAsync();
+
+            result.SessionResults.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task PopulateBasicTestSet_SessionsShouldHaveAtLeastOneReview()
+        {
+            using var dbContext = accessMockHelper.CreateMockDbContext();
+            await accessMockHelper.PopulateBasicTestSet(dbContext);
+
+            var sessions = await dbContext.Sessions
+                .Include(x => x.IncidentReviews)
+                .ToListAsync();
+
+            foreach(var session in sessions)
+            {
+                session.IncidentReviews.Should().NotBeEmpty();
+            }
+        }
+
+        [Fact]
+        public async Task PopulateBasicTestSet_ShouldHaveVoteCategories()
+        {
+            using var dbContext = accessMockHelper.CreateMockDbContext();
+            await accessMockHelper.PopulateBasicTestSet(dbContext);
+
+            var voteCategories = await dbContext.VoteCategories
+                .ToListAsync();
+
+            voteCategories.Should().NotBeEmpty();
+        }
+
+        [Fact]
         public async Task ShouldAddPointRule_WithoutDeletingScoring()
         {
             long configId;

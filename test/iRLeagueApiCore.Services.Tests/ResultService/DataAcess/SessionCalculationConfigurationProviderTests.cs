@@ -154,7 +154,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
 
             test.Should().HaveSameCount(@event.Sessions);
             var scoringIndex = 0;
-            foreach((var sessionConfig, var session) in test.Zip(@event.Sessions))
+            foreach((var sessionConfig, var session) in test.Zip(@event.Sessions.OrderBy(x => x.SessionNr)))
             {
                 if (session == practice || session == qualy)
                 {

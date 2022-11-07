@@ -11,7 +11,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
         {
         }
 
-        public async Task<EventCalculationData?> GetData(EventCalculationConfiguration config, CancellationToken cancellationToken)
+        public async Task<EventCalculationData?> GetData(EventCalculationConfiguration config, CancellationToken cancellationToken = default)
         {
             return await dbContext.EventResults
                 .Select(MapToEventResultCalculationDataExpression)
