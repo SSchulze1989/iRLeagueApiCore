@@ -22,9 +22,8 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
                 throw new InvalidOperationException($"EventId in configuration and provided data set does not match -> config:{config.EventId} | data:{data.EventId}");
             }
 
-            EventCalculationResult result = new();
-            result.LeagueId = config.LeagueId;
-            result.EventId = config.EventId;
+            EventCalculationResult result = new(data);
+            result.ResultId = config.ResultId;
             result.ResultConfigId = config.ResultConfigId;
             result.Name = config.DisplayName;
             List<SessionCalculationResult> sessionResults = new();

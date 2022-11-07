@@ -7,6 +7,11 @@ namespace iRLeagueApiCore.Services.ResultService.Models
     {
         public long LeagueId { get; set; }
         public long? SessionId { get; set; }
+        public long? ScoringId { get; set; }
+        /// <summary>
+        /// Id of existing session result data (if result has been calculated before)
+        /// </summary>
+        public long? SessionResultId { get; set; }
         public ScoringKind ScoringKind { get; set; }
         public string Name { get; set; } = string.Empty;
         public int MaxResultsPerGroup { get; set; }

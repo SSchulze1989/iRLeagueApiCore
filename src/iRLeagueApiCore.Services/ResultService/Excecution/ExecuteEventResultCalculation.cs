@@ -4,7 +4,7 @@ using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Excecution
 {
-    internal sealed class ExecuteEventResultCalculation
+    public sealed class ExecuteEventResultCalculation
     {
         private readonly ILogger<ExecuteEventResultCalculation> logger;
         private readonly IEventCalculationDataProvider dataProvider;
@@ -12,7 +12,7 @@ namespace iRLeagueApiCore.Services.ResultService.Excecution
         private readonly IEventCalculationResultStore dataStore;
         private readonly ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider;
 
-        public ExecuteEventResultCalculation(ILogger<ExecuteEventResultCalculation> logger,
+        internal ExecuteEventResultCalculation(ILogger<ExecuteEventResultCalculation> logger,
             IEventCalculationDataProvider dataProvider, 
             IEventCalculationConfigurationProvider configProvider, 
             IEventCalculationResultStore dataStore, 
@@ -56,7 +56,7 @@ namespace iRLeagueApiCore.Services.ResultService.Excecution
                         var result = await calculationService.Calculate(data);
                         logger.LogInformation("Result calculated for event: {EventId} | config: {ConfigId}\n" +
                             " - SessionResults: {SessionResultCount}\n" +
-                            " - ResultRows: {ResultRowCount}", eventId, configId, data.SessionResults.Count(), data.SessionResults.SelectMany(x => x.ResultRows).Count());
+                            " - ResultRows: {ResultRowCount}", eventId, configId, result.SessionResults.Count(), result.SessionResults.SelectMany(x => x.ResultRows).Count());
                         await dataStore.StoreCalculationResult(result, cancellationToken);
                         eventResultCount++;
                         logger.LogInformation("Results stored");

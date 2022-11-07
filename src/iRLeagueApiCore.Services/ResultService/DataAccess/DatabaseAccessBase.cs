@@ -4,9 +4,9 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
     internal abstract class DatabaseAccessBase
     {
-        protected readonly ILeagueDbContext dbContext;
+        protected readonly LeagueDbContext dbContext;
 
-        public DatabaseAccessBase(ILeagueDbContext dbContext)
+        public DatabaseAccessBase(LeagueDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

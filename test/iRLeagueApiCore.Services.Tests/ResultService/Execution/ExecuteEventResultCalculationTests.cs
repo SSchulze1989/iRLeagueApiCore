@@ -117,7 +117,12 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
 
         private ExecuteEventResultCalculation CreateSut()
         {
-            return fixture.Create<ExecuteEventResultCalculation>();
+            return new ExecuteEventResultCalculation(
+                fixture.Create<ILogger<ExecuteEventResultCalculation>>(),
+                fixture.Create<IEventCalculationDataProvider>(),
+                fixture.Create<IEventCalculationConfigurationProvider>(),
+                fixture.Create<IEventCalculationResultStore>(),
+                fixture.Create<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>());
         }
 
         private static Mock<IEventCalculationConfigurationProvider> MockConfigurationProvider(Fixture fixture)
@@ -193,10 +198,8 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
 
         private static EventCalculationResult CreateEventCalculationResult(Fixture fixture, EventCalculationConfiguration config, EventCalculationData data)
         {
-            return new EventCalculationResult()
+            return new EventCalculationResult(data)
             {
-                EventId = data.EventId,
-                LeagueId = data.LeagueId,
                 ResultConfigId = config.ResultConfigId,
                 Name = config.DisplayName,
                 SessionResults = data.SessionResults.Select(x => new SessionCalculationResult(x)),

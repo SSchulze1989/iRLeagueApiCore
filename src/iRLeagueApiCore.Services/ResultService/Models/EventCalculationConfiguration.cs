@@ -4,6 +4,10 @@
     {
         public long LeagueId { get; set; }
         public long EventId { get; set; }
+        /// <summary>
+        /// Id of existing result data (if result has been calculated before)
+        /// </summary>
+        public long? ResultId { get; set; }
         public long? ResultConfigId { get; set; }
 
         public string DisplayName { get; set; } = string.Empty;

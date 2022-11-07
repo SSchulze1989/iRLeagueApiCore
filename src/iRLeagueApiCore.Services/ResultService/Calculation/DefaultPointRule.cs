@@ -11,8 +11,8 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
     {
         private readonly IEnumerable<RowFilter<TRow>> filters = Array.Empty<RowFilter<TRow>>();
 
-        public override IEnumerable<RowFilter<TRow>> PointFilters => filters;
-        public override IEnumerable<RowFilter<TRow>> FinalFilters => filters;
+        public override IEnumerable<RowFilter<TRow>> GetPointFilters() => filters;
+        public override IEnumerable<RowFilter<TRow>> GetFinalFilters() => filters;
 
         public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
         {

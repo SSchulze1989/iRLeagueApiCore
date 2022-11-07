@@ -49,6 +49,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 
             test.LeagueId.Should().Be(config.LeagueId);
             test.EventId.Should().Be(config.EventId);
+            test.ResultId.Should().Be(config.ResultId);
             test.ResultConfigId.Should().Be(config.ResultConfigId);
             test.Name.Should().Be(config.DisplayName);
             test.SessionResults.Should().HaveSameCount(config.SessionResultConfigurations);

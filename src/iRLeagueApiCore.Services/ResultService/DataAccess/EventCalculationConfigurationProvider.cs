@@ -11,16 +11,19 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
     internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase, IEventCalculationConfigurationProvider
     {
-        private readonly SessionCalculationConfigurationProvider sessionConfigurationProvider;
-        public EventCalculationConfigurationProvider(ILeagueDbContext dbContext, SessionCalculationConfigurationProvider sessionConfigurationProvider) : 
+        private readonly ISessionCalculationConfigurationProvider sessionConfigurationProvider;
+        public EventCalculationConfigurationProvider(LeagueDbContext dbContext, ISessionCalculationConfigurationProvider sessionConfigurationProvider) : 
             base(dbContext)
         {
             this.sessionConfigurationProvider = sessionConfigurationProvider;
         }
 
-        public Task<IEnumerable<long>> GetResultConfigIds(long eventId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<long>> GetResultConfigIds(long eventId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await dbContext.Events
+                .Where(x => x.EventId == eventId)
+                .SelectMany(x => x.ResultConfigs.Select(y => y.ResultConfigId))
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<EventCalculationConfiguration> GetConfiguration(long eventId, long? resultConfigId, CancellationToken cancellationToken = default)
@@ -52,12 +55,14 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             if (resultConfigId == null)
             {
                 return await dbContext.Events
+                    .Include(x => x.Sessions)
                     .Where(x => x.EventId == eventId)
                     .FirstOrDefaultAsync(cancellationToken)
                     ?? throw new InvalidOperationException($"No event id:{eventId} found in database");
             }
 
             return await dbContext.Events
+                .Include(x => x.Sessions)
                 .Where(x => x.EventId == eventId)
                 .Where(x => x.ResultConfigs.Any(y => y.ResultConfigId == resultConfigId))
                 .FirstOrDefaultAsync(cancellationToken)
@@ -68,9 +73,15 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             CancellationToken cancellationToken)
         {
             EventCalculationConfiguration configuration = new();
+            var configId = configEntity?.ResultConfigId;
             configuration.EventId = eventEntity.EventId;
             configuration.LeagueId = eventEntity.LeagueId;
-            configuration.ResultConfigId = configEntity?.ResultConfigId;
+            configuration.ResultId = await dbContext.ScoredEventResults
+                .Where(x => x.ResultConfigId == configId)
+                .Where(x => x.EventId == eventEntity.EventId)
+                .Select(x => x.ResultId)
+                .FirstOrDefaultAsync(cancellationToken);
+            configuration.ResultConfigId = configId;
             configuration.DisplayName = configEntity?.DisplayName ?? string.Empty;
             configuration.SessionResultConfigurations = await sessionConfigurationProvider.GetConfigurations(eventEntity, configEntity, cancellationToken);
             return configuration;

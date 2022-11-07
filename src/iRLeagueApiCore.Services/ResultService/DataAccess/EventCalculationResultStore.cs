@@ -7,17 +7,18 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
     internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCalculationResultStore
     {
-        public EventCalculationResultStore(ILeagueDbContext dbContext) : 
+        public EventCalculationResultStore(LeagueDbContext dbContext) : 
             base(dbContext)
         {
         }
 
         public async Task StoreCalculationResult(EventCalculationResult result, CancellationToken cancellationToken = default)
         {
-            var eventResultEntity = await GetScoredEventResultEntity(result.EventId, result.ResultConfigId, cancellationToken)
-                ?? await CreateScoredResultEntity(result.EventId, result.ResultConfigId, cancellationToken);
+            var eventResultEntity = await GetScoredEventResultEntity(result.EventId, result.ResultConfigId, cancellationToken);
+            eventResultEntity ??= await CreateScoredResultEntity(result.EventId, result.ResultConfigId, cancellationToken);
             var requiredEntities = await GetRequiredEntities(result, cancellationToken);
             await MapToEventResultEntity(result, eventResultEntity, requiredEntities, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
             return;
         }
 
@@ -46,8 +47,8 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             foreach(var sessionResult in sessionResults)
             {
                 var sessionResultEntity = sessionResultEntites
-                    .FirstOrDefault(x => x.SessionResultId == sessionResult.SessionResultId)
-                    ?? await CreateScoredSessionResultEntity(sessionResult.ScoringId, cancellationToken);
+                    .FirstOrDefault(x => x.SessionResultId == sessionResult.SessionResultId);
+                sessionResultEntity ??= await CreateScoredSessionResultEntity(sessionResult.ScoringId, cancellationToken);
                 sessionResultEntity = MapToScoredSessionResultEntity(sessionResult, sessionResultEntity, requiredEntities);
             }
             return sessionResultEntites;

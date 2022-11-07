@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
 {
     internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventCalculationDataProvider
     {
-        public EventCalculationDataProvider(ILeagueDbContext dbContext) : 
+        public EventCalculationDataProvider(LeagueDbContext dbContext) : 
             base(dbContext)
         {
         }

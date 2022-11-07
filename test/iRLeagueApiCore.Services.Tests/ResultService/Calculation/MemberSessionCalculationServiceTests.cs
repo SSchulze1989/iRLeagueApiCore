@@ -10,6 +10,21 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
         private readonly Fixture fixture = new();
 
         [Fact]
+        public async Task Calculate_ShouldSetResultData()
+        {
+            var data = GetCalculationData();
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionCalculationService>();
+
+            var test = await sut.Calculate(data);
+
+            test.LeagueId.Should().Be(config.LeagueId);
+            test.SessionId.Should().Be(config.SessionId);
+            test.SessionResultId.Should().Be(config.SessionResultId);
+        }
+
+        [Fact]
         public async Task Calculate_ShouldApplyPoints_BasedOnOriginalPosition()
         {
             var data = GetCalculationData();
@@ -243,8 +258,8 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             Func<T, int, double> getTotalPoints) where T : IPointRow, IPenaltyRow
         {
             var mockRule = new Mock<PointRule<T>>();
-            mockRule.SetupGet(x => x.PointFilters).Returns(pointFilters);
-            mockRule.SetupGet(x => x.FinalFilters).Returns(finalFilters);
+            mockRule.Setup(x => x.GetPointFilters()).Returns(pointFilters);
+            mockRule.Setup(x => x.GetFinalFilters()).Returns(finalFilters);
             mockRule
                 .Setup(x => x.SortForPoints(It.IsAny<IEnumerable<T>>()))
                 .Returns((IEnumerable<T> rows) => sortForPoints(rows).ToList());

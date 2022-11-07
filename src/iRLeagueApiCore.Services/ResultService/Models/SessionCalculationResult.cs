@@ -6,7 +6,6 @@
         {
             LeagueId = data.LeagueId;
             SessionId = data.SessionId;
-            SessionResultId = data.SessionResultId;
         }
 
         public long LeagueId { get; set; }

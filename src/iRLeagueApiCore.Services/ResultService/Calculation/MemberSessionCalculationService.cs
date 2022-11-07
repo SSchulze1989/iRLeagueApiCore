@@ -27,7 +27,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             var pointRule = config.PointRule;
             
             // Filter for points only
-            foreach(var filter in pointRule.PointFilters)
+            foreach(var filter in pointRule.GetPointFilters())
             {
                 pointRows = filter.FilterRows(pointRows);
             }
@@ -37,7 +37,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             pointRule.ApplyPoints(calcRows);
 
             var finalRows = rows.AsEnumerable();
-            foreach(var filter in pointRule.FinalFilters)
+            foreach(var filter in pointRule.GetFinalFilters())
             {
                 finalRows = filter.FilterRows(finalRows);
             }
@@ -50,6 +50,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             }
 
             var sessionResult = new SessionCalculationResult(data);
+            sessionResult.SessionResultId = config.SessionResultId;
             sessionResult.ResultRows = finalRows;
             (sessionResult.FastestAvgLapDriverMemberId, sessionResult.FastestAvgLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.AvgLapTime);
             (sessionResult.FastestLapDriverMemberId, sessionResult.FastestLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.FastestLapTime);
