@@ -13,10 +13,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
 {
-    [Collection("HandlerTests")]
-    public class PostReviewCommentToReviewHandlerTests : HandlersTestsBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
+    [Collection("DbTestFixture")]
+    public class PostReviewCommentToReviewDbTestFixture : HandlersTestsBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
     {
-        public PostReviewCommentToReviewHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PostReviewCommentToReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

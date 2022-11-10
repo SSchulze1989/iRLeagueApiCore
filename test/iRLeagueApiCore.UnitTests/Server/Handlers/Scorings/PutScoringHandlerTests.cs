@@ -14,12 +14,12 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
-    [Collection("HandlerTests")]
-    public class PutScoringHandlerTests : HandlersTestsBase<PutScoringHandler, PutScoringRequest, ScoringModel>
+    [Collection("DbTestFixture")]
+    public class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandler, PutScoringRequest, ScoringModel>
     {
         private const string NewScoringName = "New scoring Name";
 
-        public PutScoringHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutScoringDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

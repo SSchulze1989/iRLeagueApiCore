@@ -12,10 +12,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
-    [Collection("HandlerTests")]
-    public class PutPointRuleHandlerTests : HandlersTestsBase<PutPointRuleHandler, PutPointRuleRequest, PointRuleModel>
+    [Collection("DbTestFixture")]
+    public class PutPointRuleDbTestFixture : HandlersTestsBase<PutPointRuleHandler, PutPointRuleRequest, PointRuleModel>
     {
-        public PutPointRuleHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutPointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

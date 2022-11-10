@@ -11,10 +11,10 @@ using iRLeagueApiCore.Server.Exceptions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class PutResultConfigHandlerTests : HandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
+    [Collection("DbTestFixture")]
+    public class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
     {
-        public PutResultConfigHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace iRLeagueApiCore.UnitTests.Services.ResultService
 {
+    [Collection("DbTestFixture")]
     public class AcceptanceTests : IClassFixture<DbTestFixture>
     {
         private readonly ILogger<ExecuteEventResultCalculation> logger;

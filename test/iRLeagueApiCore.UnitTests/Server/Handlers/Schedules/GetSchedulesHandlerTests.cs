@@ -12,10 +12,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
-    [Collection("HandlerTests")]
-    public class GetSchedulesHandlerTests : HandlersTestsBase<GetSchedulesHandler, GetSchedulesRequest, IEnumerable<ScheduleModel>>
+    [Collection("DbTestFixture")]
+    public class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHandler, GetSchedulesRequest, IEnumerable<ScheduleModel>>
     {
-        public GetSchedulesHandlerTests(DbTestFixture fixture) : base(fixture)
+        public GetSchedulesDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

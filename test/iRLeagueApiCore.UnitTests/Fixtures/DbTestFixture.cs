@@ -51,18 +51,16 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 .AddUserSecrets<DbTestFixture>()
                 .Build(); ;
 
-            var random = new Random(Seed);
-
             // set up test database
-            using (var dbContext = CreateStaticDbContext())
-            {
-                dbContext.Database.EnsureDeleted();
-                dbContext.Database.Migrate();
+            //using (var dbContext = CreateStaticDbContext())
+            //{
+            //    dbContext.Database.EnsureDeleted();
+            //    dbContext.Database.EnsureCreated();
 
-                Populate(dbContext, random);
-                dbContext.SaveChanges();
-                _leagues = dbContext.Leagues.ToList();
-            }
+            //    Populate(dbContext, random);
+            //    dbContext.SaveChanges();
+            //    _leagues = dbContext.Leagues.ToList();
+            //}
         }
 
         public DbTestFixture()
@@ -75,8 +73,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             var connectionString = Configuration["ConnectionStrings:ModelDb"];
 
             // use in memory database when no connection string present
-            optionsBuilder.UseMySQL(connectionString);
-            //optionsBuilder.UseInMemoryDatabase("TestDatabase");
+            //optionsBuilder.UseMySQL(connectionString);
+            optionsBuilder.UseInMemoryDatabase("TestDatabase");
 
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
             return dbContext;
@@ -84,7 +82,14 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
 
         public LeagueDbContext CreateDbContext()
         {
-            return CreateStaticDbContext();
+            var dbContext = CreateStaticDbContext();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+
+            var random = new Random(Seed);
+            Populate(dbContext, random);
+            dbContext.SaveChanges();
+            return dbContext;
         }
 
         public static void Populate(LeagueDbContext context, Random random)

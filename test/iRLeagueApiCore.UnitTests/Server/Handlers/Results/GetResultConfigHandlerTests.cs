@@ -12,10 +12,10 @@ using System.Linq;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class GetResultConfigHandlerTests : HandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
+    [Collection("DbTestFixture")]
+    public class GetResultConfigDbTestFixture : HandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
     {
-        public GetResultConfigHandlerTests(DbTestFixture fixture) : base(fixture)
+        public GetResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

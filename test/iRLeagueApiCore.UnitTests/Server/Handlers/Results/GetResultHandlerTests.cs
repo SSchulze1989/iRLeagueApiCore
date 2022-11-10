@@ -13,10 +13,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class GetResultHandlerTests : HandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
+    [Collection("DbTestFixture")]
+    public class GetResultDbTestFixture : HandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
     {
-        public GetResultHandlerTests(DbTestFixture fixture) : base(fixture)
+        public GetResultDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

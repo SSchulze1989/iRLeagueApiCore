@@ -9,10 +9,10 @@ using FluentAssertions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class PostResultConfigHandlerTests : HandlersTestsBase<PostResultConfigHandler, PostResultConfigRequest, ResultConfigModel>
+    [Collection("DbTestFixture")]
+    public class PostResultConfigDbTestFixture : HandlersTestsBase<PostResultConfigHandler, PostResultConfigRequest, ResultConfigModel>
     {
-        public PostResultConfigHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PostResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

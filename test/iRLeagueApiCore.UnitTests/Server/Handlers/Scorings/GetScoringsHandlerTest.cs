@@ -13,7 +13,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
-    [Collection("HandlerTests")]
+    [Collection("DbTestFixture")]
     public class GetScoringsHandlerTest : HandlersTestsBase<GetScoringsHandler, GetScoringsRequest, IEnumerable<ScoringModel>>
     {
         public GetScoringsHandlerTest(DbTestFixture fixture) : base(fixture)

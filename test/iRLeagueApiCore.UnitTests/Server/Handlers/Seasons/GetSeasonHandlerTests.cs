@@ -14,10 +14,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
 {
-    [Collection("HandlerTests")]
-    public class GetSeasonHandlerTests : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, SeasonModel>
+    [Collection("DbTestFixture")]
+    public class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, SeasonModel>
     {
-        public GetSeasonHandlerTests(DbTestFixture fixture) : base(fixture)
+        public GetSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

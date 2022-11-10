@@ -10,10 +10,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
-    [Collection("HandlerTests")]
-    public class DeletePointRuleHandlerTests : HandlersTestsBase<DeletePointRuleHandler, DeletePointRuleRequest, MediatR.Unit>
+    [Collection("DbTestFixture")]
+    public class DeletePointRuleDbTestFixture : HandlersTestsBase<DeletePointRuleHandler, DeletePointRuleRequest, MediatR.Unit>
     {
-        public DeletePointRuleHandlerTests(DbTestFixture fixture) : base(fixture)
+        public DeletePointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 
