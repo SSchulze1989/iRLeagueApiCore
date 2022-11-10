@@ -15,7 +15,11 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
         public async Task StoreCalculationResult(EventCalculationResult result, CancellationToken cancellationToken = default)
         {
             var eventResultEntity = await GetScoredEventResultEntity(result.EventId, result.ResultConfigId, cancellationToken);
-            eventResultEntity ??= await CreateScoredResultEntity(result.EventId, result.ResultConfigId, cancellationToken);
+            if (eventResultEntity == null)
+            {
+                eventResultEntity = await CreateScoredResultEntity(result.EventId, result.ResultConfigId, cancellationToken);
+                dbContext.ScoredEventResults.Add(eventResultEntity);
+            }
             var requiredEntities = await GetRequiredEntities(result, cancellationToken);
             await MapToEventResultEntity(result, eventResultEntity, requiredEntities, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);

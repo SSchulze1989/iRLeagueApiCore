@@ -46,10 +46,10 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             var config = GetConfiguration(@event);
             var sut = CreateSut();
 
-            var test = await sut.GetData(config);
+            var test = (await sut.GetData(config))!;
 
             test.Should().NotBeNull();
-            test!.LeagueId = @event.LeagueId;
+            test.LeagueId = @event.LeagueId;
             test.EventId = @event.EventId;
             test.SessionResults.Should().HaveSameCount(@event.Sessions);
             test.SessionResults.Should().HaveSameCount(rawResult.SessionResults);
@@ -84,9 +84,9 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             var config = GetConfiguration(@event);
             var sut = CreateSut();
 
-            var test = await sut.GetData(config);
+            var test = (await sut.GetData(config))!;
 
-            test!.SessionResults.First().AcceptedReviewVotes.First().ReviewVoteId.Should().Be(vote.ReviewVoteId);
+            test.SessionResults.First().AcceptedReviewVotes.First().ReviewVoteId.Should().Be(vote.ReviewVoteId);
         }
 
         private EventCalculationDataProvider CreateSut()
