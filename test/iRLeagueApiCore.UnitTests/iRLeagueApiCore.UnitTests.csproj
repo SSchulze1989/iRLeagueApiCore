@@ -43,4 +43,10 @@
     <Folder Include="Server\Validators\Scorings\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\iracing-result.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

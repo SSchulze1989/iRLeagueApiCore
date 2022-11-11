@@ -83,7 +83,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 .SingleOrDefaultAsync();
             if (member == null)
             {
-                var (firstname, Lastname) = GetFirstnameLastname(row.cust_id.ToString());
+                var (firstname, Lastname) = GetFirstnameLastname(row.display_name.ToString());
                 member = new MemberEntity()
                 {
                     Firstname = firstname,
@@ -95,9 +95,10 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return member;
         }
 
-        private (string, string) GetFirstnameLastname(string name)
+        private static (string, string) GetFirstnameLastname(string name)
         {
-            return name.Split(' ') switch { var a => (a[0], a[1]) };
+            var parts = name.Split(' ', 2);
+            return (parts[0], parts.ElementAt(1) ?? string.Empty);
         }
 
         private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(ParseSimSessionResult sessionData, ParseSessionResult data, IRSimSessionDetailsEntity details,
@@ -191,7 +192,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.LeadLaps = data.laps_lead;
             row.License = sessionData.license_category;
             row.Member = await GetOrCreateMemberAsync(data, cancellationToken);
-            row.NewCpi = data.new_cpi;
+            row.NewCpi = (int)data.new_cpi;
             row.NewIRating = data.newi_rating;
             row.NewLicenseLevel = data.new_license_level;
             row.NewSafetyRating = data.new_sub_level;
@@ -199,7 +200,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.NumOfftrackLaps = -1;
             row.NumPitStops = -1;
             row.OfftrackLaps = "";
-            row.OldCpi = data.old_cpi;
+            row.OldCpi = (int)data.old_cpi;
             row.OldIRating = data.oldi_rating;
             row.OldLicenseLevel = data.old_license_level;
             row.OldSafetyRating = data.old_sub_level;

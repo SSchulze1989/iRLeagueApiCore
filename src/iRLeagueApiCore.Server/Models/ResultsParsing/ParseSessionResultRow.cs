@@ -36,12 +36,12 @@ namespace iRLeagueApiCore.Server.Models.ResultsParsing
 		public int division { get; set; }
 		public int old_license_level { get; set; }
 		public int old_sub_level { get; set; }
-		public int old_cpi { get; set; }
+		public double old_cpi { get; set; }
 		public int oldi_rating { get; set; }
 		public int old_ttrating { get; set; }
 		public int new_license_level { get; set; }
 		public int new_sub_level { get; set; }
-		public int new_cpi { get; set; }
+		public double new_cpi { get; set; }
 		public int newi_rating { get; set; }
 		public int new_ttrating { get; set; }
 		public int multiplier { get; set; }
