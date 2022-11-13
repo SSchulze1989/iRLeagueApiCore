@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Models.ResultsParsing;
 using iRLeagueDatabaseCore.Models;
@@ -13,10 +14,11 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
-    public record UploadResultRequest(long leagueId, long EventId, Stream dataStream, IDictionary<int, int> Map) : IRequest<bool>;
+    public record UploadResultRequest(long leagueId, long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
 
     public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
         IRequestHandler<UploadResultRequest, bool>
@@ -28,15 +30,20 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         public async Task<bool> Handle(UploadResultRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            // decode file
-            var data = await ParseDataStream(request.dataStream, cancellationToken);
-            
+
             // add to database
+            using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             var @event = await GetEventEntityAsync(request.leagueId, request.EventId, cancellationToken) 
                 ?? throw new ResourceNotFoundException();
-            var result = await ReadResultsAsync(data, @event, request.Map, cancellationToken);
+            if (@event.EventResult is not null)
+            {
+                dbContext.Remove(@event.EventResult);
+            }
+            await dbContext.SaveChangesAsync(cancellationToken);
+            var result = await ReadResultsAsync(request.ResultData, @event, cancellationToken);
             @event.EventResult = result;
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(cancellationToken);
+            tx.Complete();
 
             return true;
         }
@@ -53,19 +60,21 @@ namespace iRLeagueApiCore.Server.Handlers.Results
 
         private async Task<ParseSimSessionResult> ParseDataStream(Stream dataStream, CancellationToken cancellationToken)
         {
-            return await JsonSerializer.DeserializeAsync<ParseSimSessionResult>(dataStream, cancellationToken: cancellationToken);
+            return await JsonSerializer.DeserializeAsync<ParseSimSessionResult>(dataStream, cancellationToken: cancellationToken)
+                ?? throw new InvalidOperationException("Failed to parse results from json");
         }
 
-        private async Task<EventResultEntity> ReadResultsAsync(ParseSimSessionResult data, EventEntity @event, IDictionary<int, int> map,
+        private async Task<EventResultEntity> ReadResultsAsync(ParseSimSessionResult data, EventEntity @event,
             CancellationToken cancellationToken)
         {
+            var map = CreateSessionMapping(data.session_results, @event);
             // create entities
             var result = new EventResultEntity();
             var details = ReadDetails(data);
             IDictionary<int, SessionResultEntity> sessionResults = new Dictionary<int, SessionResultEntity>();
             foreach (var sessionResultData in data.session_results)
             {
-                var sessionResult = await ReadSessionResultsAsync(data, sessionResultData, details, cancellationToken);
+                var sessionResult = await ReadSessionResultsAsync(@event.LeagueId, data, sessionResultData, details, cancellationToken);
                 sessionResults.Add(sessionResult);
             }
             var mappedSessionResults = MapToSubSessions(sessionResults, @event, map);
@@ -76,6 +85,44 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return result;
         }
 
+        private ICollection<(int resultNr, int sessionNr)> CreateSessionMapping(IEnumerable<ParseSessionResult> sessionResults, EventEntity @event)
+        {
+            var map = new List<(int resultNr, int sessionNr)>();
+
+            var practiceSessionTypes = new[] { SimSessionType.OpenPractice }.Cast<int>();
+            var practiceSession = @event.Sessions
+                .FirstOrDefault(x => x.SessionType == SessionType.Practice);
+            var practiceResult = sessionResults
+                .FirstOrDefault(x => practiceSessionTypes.Contains(x.simsession_type));
+            if (practiceSession is not null && practiceResult is not null)
+            {
+                map.Add((practiceResult.simsession_number, practiceSession.SessionNr));
+            }
+
+            var qualySessionTypes = new[] { SimSessionType.LoneQualifying, SimSessionType.OpenQualifying }.Cast<int>();
+            var qualySession = @event.Sessions
+                .FirstOrDefault(x => x.SessionType == SessionType.Qualifying);
+            var qualyResult = sessionResults
+                .FirstOrDefault(x => qualySessionTypes.Contains(x.simsession_type));
+            if (qualySession is not null && qualyResult is not null)
+            {
+                map.Add((qualyResult.simsession_number, qualySession.SessionNr));
+            }
+
+            var raceSessionTypes = new[] { SessionType.Race }.Cast<int>();
+            var raceSessions = @event.Sessions.Where(x => x.SessionType == SessionType.Race);
+            var raceResults = sessionResults.Where(x => raceSessionTypes.Contains(x.simsession_type)).Reverse();
+            foreach((var session, var result) in raceSessions.Zip(raceResults))
+            {
+                if (session is not null && result is not null)
+                {
+                    map.Add((result.simsession_number, session.SessionNr));
+                }
+            }
+
+            return map;
+        }
+
         private async Task<MemberEntity> GetOrCreateMemberAsync(ParseSessionResultRow row, CancellationToken cancellationToken)
         {
             var member = await dbContext.Members
@@ -83,7 +130,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 .SingleOrDefaultAsync();
             if (member == null)
             {
-                var (firstname, Lastname) = GetFirstnameLastname(row.display_name.ToString());
+                var (firstname, Lastname) = GetFirstnameLastname(row.display_name?.ToString() ?? string.Empty);
                 member = new MemberEntity()
                 {
                     Firstname = firstname,
@@ -101,16 +148,18 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return (parts[0], parts.ElementAt(1) ?? string.Empty);
         }
 
-        private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(ParseSimSessionResult sessionData, ParseSessionResult data, IRSimSessionDetailsEntity details,
-            CancellationToken cancellationToken)
+        private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(long leagueId, ParseSimSessionResult sessionData, ParseSessionResult data, 
+            IRSimSessionDetailsEntity details, CancellationToken cancellationToken)
         {
             var sessionResult = new SessionResultEntity();
+            sessionResult.LeagueId = leagueId;
             sessionResult.IRSimSessionDetails = details;
+            sessionResult.SimSessionType = (SimSessionType)data.simsession_type;
             var laps = data.results.Max(x => x.laps_complete);
             var resultRows = new List<ResultRowEntity>();
             foreach (var row in data.results)
             {
-                resultRows.Add(await ReadResultRowAsync(sessionData, row, laps, cancellationToken));
+                resultRows.Add(await ReadResultRowAsync(leagueId, sessionData, row, laps, cancellationToken));
             }
             sessionResult.ResultRows = resultRows;
             var sessionResultNr = data.simsession_number;
@@ -166,11 +215,12 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return details;
         }
 
-        private async Task<ResultRowEntity> ReadResultRowAsync(ParseSimSessionResult sessionData, ParseSessionResultRow data, int laps,
-            CancellationToken cancellationToken)
+        private async Task<ResultRowEntity> ReadResultRowAsync(long leagueId, ParseSimSessionResult sessionData, ParseSessionResultRow data, 
+            int laps, CancellationToken cancellationToken)
         {
             var row = new ResultRowEntity();
 
+            row.LeagueId = leagueId;
             row.AvgLapTime = ParseTime(data.average_lap);
             row.Car = "";
             row.CarClass = "";
@@ -216,22 +266,21 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return row;
         }
 
-        private IEnumerable<SessionResultEntity> MapToSubSessions(IDictionary<int, SessionResultEntity> subResults, EventEntity @event, IDictionary<int, int> map)
+        private IEnumerable<SessionResultEntity> MapToSubSessions(IDictionary<int, SessionResultEntity> subResults, EventEntity @event, ICollection<(int resultNr, int sessionNr)> map)
         { 
             var mappedResults = new List<SessionResultEntity>();
-            foreach(var pair in map)
+            foreach((var resultNr, var sessionNr) in map)
             {
-                var sessionResultNr = pair.Key;
-                var sessionNr = pair.Value;
-                if (subResults.ContainsKey(sessionResultNr) == false)
+                if (subResults.ContainsKey(resultNr) == false)
                 {
-                    throw new InvalidOperationException($"Error while trying to map subResult Nr.{sessionResultNr} to subSession Nr.{sessionNr}: no result with this subResultNr exists");
+                    throw new InvalidOperationException($"Error while trying to map subResult Nr.{resultNr} to subSession Nr.{sessionNr}: no result with this subResultNr exists");
                 }
-                var sessionResult = subResults[sessionResultNr];
+                var sessionResult = subResults[resultNr];
                 var session = @event.Sessions
                     .SingleOrDefault(x => x.SessionNr == sessionNr)
-                    ?? throw new InvalidOperationException($"Error while trying to map subResult Nr.{sessionResultNr} to subSession Nr.{sessionNr}: no subSession with this subSessionNr exists");
+                    ?? throw new InvalidOperationException($"Error while trying to map subResult Nr.{resultNr} to subSession Nr.{sessionNr}: no subSession with this subSessionNr exists");
                 sessionResult.Session = session;
+                session.SessionResult = sessionResult;
                 mappedResults.Add(sessionResult);
             }
             return mappedResults;

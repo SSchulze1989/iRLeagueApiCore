@@ -2,10 +2,10 @@
 
 namespace iRLeagueApiCore.Server.Models.ResultsParsing
 {
-    public struct ParseSessionResultRow
+    public class ParseSessionResultRow
 	{
 		public long cust_id { get; set; }
-		public string display_name { get; set; }
+		public string? display_name { get; set; }
 		public int finish_position { get; set; }
 		public int finish_position_in_class { get; set; }
 		public int laps_lead { get; set; }
@@ -22,7 +22,7 @@ namespace iRLeagueApiCore.Server.Models.ResultsParsing
 		public int best_qual_lap_num { get; set; }
 		public long best_qual_lap_time { get; set; }
 		public int reason_out_id { get; set; }
-		public string reason_out { get; set; }
+		public string? reason_out { get; set; }
 		public int champ_points { get; set; }
 		public bool drop_race { get; set; }
 		public int club_points { get; set; }
@@ -31,8 +31,8 @@ namespace iRLeagueApiCore.Server.Models.ResultsParsing
 		public int starting_position { get; set; }
 		public int car_class_id { get; set; }
 		public int club_id { get; set; }
-		public string club_name { get; set; }
-		public string club_shortname { get; set; }
+		public string? club_name { get; set; }
+		public string? club_shortname { get; set; }
 		public int division { get; set; }
 		public int old_license_level { get; set; }
 		public int old_sub_level { get; set; }
@@ -54,7 +54,7 @@ namespace iRLeagueApiCore.Server.Models.ResultsParsing
 		public int league_agg_points { get; set; }
 		public int car_id { get; set; }
 		public int aggregate_champ_points { get; set; }
-		public ParseLivery livery { get; set; }
+		public ParseLivery livery { get; set; } = new();
 		public bool watched { get; set; }
 		public bool friend { get; set; }
 		public bool ai { get; set; }

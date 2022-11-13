@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Models.ResultsParsing
 {
-    public struct ParseWeather
+    public class ParseWeather
     {
         public int type { get; set; }
         public int temp_units { get; set; }

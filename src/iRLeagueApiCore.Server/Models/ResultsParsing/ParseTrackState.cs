@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Models.ResultsParsing
 {
-    public struct ParseTrackState
+    public class ParseTrackState
     {
         public bool leave_marbles { get; set; }
         public int practice_rubber { get; set; }
