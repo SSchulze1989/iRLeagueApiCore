@@ -2,7 +2,8 @@
 using FluentValidation;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueApiCore.Server.Models.ResultsParsing;
+using iRLeagueApiCore.Client.ResultsParsing;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.UnitTests.Extensions;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
@@ -18,6 +19,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         private readonly Fixture fixture;
         private readonly DbTestFixture dbFixture;
         private readonly LeagueDbContext dbContext;
+        private readonly IResultCalculationQueue calculationQueue;
         private readonly ILogger<UploadResultHandler> logger;
 
         public UploadResultHandlerTests(DbTestFixture dbFixture)
@@ -25,6 +27,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             this.dbFixture = dbFixture;
             fixture = new();
             dbContext = dbFixture.CreateDbContext();
+            calculationQueue = Mock.Of<IResultCalculationQueue>();
             logger = Mock.Of<ILogger<UploadResultHandler>>();
         }
 
@@ -272,7 +275,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 
         private UploadResultHandler CreateSut()
         {
-            return new UploadResultHandler(logger, dbContext, Array.Empty<IValidator<UploadResultRequest>>());
+            return new UploadResultHandler(logger, dbContext, Array.Empty<IValidator<UploadResultRequest>>(), calculationQueue);
         }
 
         private UploadResultRequest CreateRequest(long leagueId, long eventId, ParseSimSessionResult data)

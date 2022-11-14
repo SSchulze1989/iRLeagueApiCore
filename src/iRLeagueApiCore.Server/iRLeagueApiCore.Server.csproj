@@ -44,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\iRLeagueApiCore.Client\iRLeagueApiCore.Client.csproj" />
     <ProjectReference Include="..\iRLeagueApiCore.TrackImport\iRLeagueApiCore.TrackImport.csproj" />
 	<ProjectReference Include="..\iRLeagueApiCore.Services\iRLeagueApiCore.Services.csproj" />
   </ItemGroup>

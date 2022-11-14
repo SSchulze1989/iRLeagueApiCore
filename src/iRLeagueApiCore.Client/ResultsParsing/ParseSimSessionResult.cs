@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace iRLeagueApiCore.Server.Models.ResultsParsing
+namespace iRLeagueApiCore.Client.ResultsParsing
 {
-    public class ParseSimSessionResult
+    public sealed class ParseSimSessionResult
 	{
         public long subsession_id { get; set; }
         public long season_id { get; set; }

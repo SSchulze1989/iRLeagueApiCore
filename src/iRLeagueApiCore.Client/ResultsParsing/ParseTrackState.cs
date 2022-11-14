@@ -1,6 +1,6 @@
-﻿namespace iRLeagueApiCore.Server.Models.ResultsParsing
+﻿namespace iRLeagueApiCore.Client.ResultsParsing
 {
-    public class ParseTrackState
+    public sealed class ParseTrackState
     {
         public bool leave_marbles { get; set; }
         public int practice_rubber { get; set; }

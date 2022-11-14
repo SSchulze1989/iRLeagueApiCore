@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueApiCore.Server.Models.ResultsParsing;
+using iRLeagueApiCore.Client.ResultsParsing;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +24,12 @@ namespace iRLeagueApiCore.Server.Handlers.Results
     public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
         IRequestHandler<UploadResultRequest, bool>
     {
-        public UploadResultHandler(ILogger<UploadResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<UploadResultRequest>> validators) : base(logger, dbContext, validators)
+        private readonly IResultCalculationQueue calculationQueue;
+        public UploadResultHandler(ILogger<UploadResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<UploadResultRequest>> validators,
+            IResultCalculationQueue calculationQueue) :
+            base(logger, dbContext, validators)
         {
+            this.calculationQueue = calculationQueue;
         }
 
         public async Task<bool> Handle(UploadResultRequest request, CancellationToken cancellationToken)
@@ -44,6 +49,9 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             @event.EventResult = result;
             await dbContext.SaveChangesAsync(cancellationToken);
             tx.Complete();
+
+            // Queue result calculation for this event
+            await calculationQueue.QueueEventResultAsync(@event.EventId);
 
             return true;
         }

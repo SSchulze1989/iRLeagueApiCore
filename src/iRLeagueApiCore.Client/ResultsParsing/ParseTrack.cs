@@ -1,6 +1,6 @@
-﻿namespace iRLeagueApiCore.Server.Models.ResultsParsing
+﻿namespace iRLeagueApiCore.Client.ResultsParsing
 {
-    public class ParseTrack
+    public sealed class ParseTrack
     {
         public int track_id { get; set; }
         public string? track_name { get; set; }

@@ -1,7 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueApiCore.Server.Models.ResultsParsing;
+using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

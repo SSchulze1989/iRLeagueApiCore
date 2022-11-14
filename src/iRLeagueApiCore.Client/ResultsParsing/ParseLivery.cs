@@ -1,6 +1,6 @@
-﻿namespace iRLeagueApiCore.Server.Models.ResultsParsing
+﻿namespace iRLeagueApiCore.Client.ResultsParsing
 {
-    public class ParseLivery
+    public sealed class ParseLivery
 	{
         public int car_id { get; set; }
 		public int pattern { get; set; }

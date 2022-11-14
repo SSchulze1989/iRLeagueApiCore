@@ -173,6 +173,8 @@ namespace iRLeagueApiCore.Server
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             services.AddEmailService();
+            services.AddResultService();
+            services.AddBackgroundQueue();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

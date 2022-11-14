@@ -4,7 +4,7 @@ using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Excecution
 {
-    public sealed class ExecuteEventResultCalculation
+    internal sealed class ExecuteEventResultCalculation
     {
         private readonly ILogger<ExecuteEventResultCalculation> logger;
         private readonly IEventCalculationDataProvider dataProvider;

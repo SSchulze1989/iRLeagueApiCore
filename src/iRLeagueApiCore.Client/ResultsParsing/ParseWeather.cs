@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace iRLeagueApiCore.Server.Models.ResultsParsing
+namespace iRLeagueApiCore.Client.ResultsParsing
 {
-    public class ParseWeather
+    public sealed class ParseWeather
     {
         public int type { get; set; }
         public int temp_units { get; set; }

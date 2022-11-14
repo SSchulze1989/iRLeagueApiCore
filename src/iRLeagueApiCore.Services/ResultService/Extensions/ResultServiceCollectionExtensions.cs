@@ -33,6 +33,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 x.GetRequiredService<IEventCalculationConfigurationProvider>(),
                 x.GetRequiredService<IEventCalculationResultStore>(),
                 x.GetRequiredService<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>()));
+            services.TryAddScoped<IResultCalculationQueue>(x => new ResultCalculationQueue(
+                x.GetRequiredService<ExecuteEventResultCalculation>(),
+                x.GetRequiredService<IBackgroundTaskQueue>()));
 
             return services;
         }
