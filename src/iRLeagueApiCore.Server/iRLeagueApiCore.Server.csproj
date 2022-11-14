@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>f8b50589-89e6-49b7-9dca-793830174a9e</UserSecretsId>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -21,7 +22,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
 	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.6" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.7-dev.8" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.7-dev.10" />
 	<PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />

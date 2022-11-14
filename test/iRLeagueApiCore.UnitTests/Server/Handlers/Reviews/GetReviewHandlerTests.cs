@@ -24,9 +24,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             return new GetReviewHandler(logger, dbContext, new[] { validator });
         }
 
-        protected virtual GetReviewRequest DefaultRequest(long leagueId, long reviewId)
+        protected virtual GetReviewRequest DefaultRequest(long leagueId, long reviewId, bool includeComments = true)
         {
-            return new GetReviewRequest(leagueId, reviewId);
+            return new GetReviewRequest(leagueId, reviewId, includeComments);
         }
 
         protected override GetReviewRequest DefaultRequest()
@@ -98,9 +98,9 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
         [InlineData(testLeagueId, 0)]
         [InlineData(42, testReviewId)]
         [InlineData(testLeagueId, 42)]
-        public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+        public async Task ShouldHandleNotFoundAsync(long leagueId, long reviewId)
         {
-            var request = DefaultRequest(leagueId, resultConfigId);
+            var request = DefaultRequest(leagueId, reviewId);
             await HandleNotFoundRequestAsync(request);
         }
 
@@ -108,6 +108,18 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
         public override async Task ShouldHandleValidationFailed()
         {
             await base.ShouldHandleValidationFailed();
+        }
+
+        [Fact]
+        public async Task ShouldNotIncludeCommentsWhenFalse()
+        {
+            var request = DefaultRequest(testLeagueId, testReviewId, false);
+            await HandleSpecialAsync(request, (request, model, context) =>
+            {
+                model.ReviewId.Should().Be(testReviewId);
+                model.VoteResults.Should().NotBeEmpty();
+                model.ReviewComments.Should().BeEmpty();
+            });
         }
     }
 }

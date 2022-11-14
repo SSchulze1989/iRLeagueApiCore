@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Extensions;
+﻿using iRLeagueApiCore.Server.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,19 @@ namespace iRLeagueApiCore.Server.Models
             Name = principal.Identity?.Name ?? string.Empty;
             Roles = principal.FindAll(ClaimTypes.Role)
                 .Select(x => x.Value)
-                .Where(role => LeagueRoles.IsLeagueRoleName(leagueName, role));
+                .Where(role => LeagueRoles.IsLeagueRoleName(leagueName, role) || role == "Admin")
+                .Select(role => role == "Admin" ? role : LeagueRoles.GetRoleName(role))
+                .OfType<string>();
+        }
+
+        /// <summary>
+        /// Returns true when the user is in at least one of the provided roles
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        public bool IsInRole(params string[] roles)
+        {
+            return Roles.Intersect(roles).Any();
         }
 
         public static LeagueUser Empty => new LeagueUser("", new ClaimsPrincipal());
