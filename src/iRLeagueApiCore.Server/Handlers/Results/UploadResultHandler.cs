@@ -85,7 +85,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return result;
         }
 
-        private ICollection<(int resultNr, int sessionNr)> CreateSessionMapping(IEnumerable<ParseSessionResult> sessionResults, EventEntity @event)
+        private static ICollection<(int resultNr, int sessionNr)> CreateSessionMapping(IEnumerable<ParseSessionResult> sessionResults, EventEntity @event)
         {
             var map = new List<(int resultNr, int sessionNr)>();
 
@@ -93,7 +93,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             var practiceSession = @event.Sessions
                 .FirstOrDefault(x => x.SessionType == SessionType.Practice);
             var practiceResult = sessionResults
-                .FirstOrDefault(x => practiceSessionTypes.Contains(x.simsession_type));
+                .FirstOrDefault(x => practiceSessionTypes.Contains(x.simsession_type) && x.simsession_name == "PRACTICE");
             if (practiceSession is not null && practiceResult is not null)
             {
                 map.Add((practiceResult.simsession_number, practiceSession.SessionNr));
@@ -109,9 +109,12 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 map.Add((qualyResult.simsession_number, qualySession.SessionNr));
             }
 
-            var raceSessionTypes = new[] { SessionType.Race }.Cast<int>();
-            var raceSessions = @event.Sessions.Where(x => x.SessionType == SessionType.Race);
-            var raceResults = sessionResults.Where(x => raceSessionTypes.Contains(x.simsession_type)).Reverse();
+            var raceSessionTypes = new[] { SimSessionType.Race }.Cast<int>();
+            var raceSessions = @event.Sessions
+                .OrderBy(x => x.SessionNr)
+                .Where(x => x.SessionType == SessionType.Race);
+            var raceResults = sessionResults
+                .Where(x => raceSessionTypes.Contains(x.simsession_type)).Reverse();
             foreach((var session, var result) in raceSessions.Zip(raceResults))
             {
                 if (session is not null && result is not null)
@@ -127,7 +130,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
             var member = await dbContext.Members
                 .Where(x => x.IRacingId == row.cust_id.ToString())
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(cancellationToken);
             if (member == null)
             {
                 var (firstname, Lastname) = GetFirstnameLastname(row.display_name?.ToString() ?? string.Empty);

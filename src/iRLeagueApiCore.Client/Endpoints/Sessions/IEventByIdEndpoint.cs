@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Sessions
 {
     public interface IEventByIdEndpoint : IUpdateEndpoint<EventModel, PutEventModel>
     {
-        IGetAllEndpoint<EventResultModel> Results();
+        IEventResultsEndpoint Results();
         IGetAllEndpoint<ReviewModel> Reviews();
         IGetAllEndpoint<MemberInfoModel> Members();
     }

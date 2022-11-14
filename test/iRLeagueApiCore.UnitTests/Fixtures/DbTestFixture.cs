@@ -22,29 +22,6 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
         public static string ClientUserName => "TestClient";
         public static string ClientGuid => "6a6a6e09-f4b7-4ccb-a8ae-f2fc85d897dd";
 
-
-        private static IEnumerable<LeagueEntity> _leagues;
-        /// <summary>
-        /// Static list of leagues on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<LeagueEntity> Leagues => _leagues;
-        /// <summary>
-        /// Static list of members on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<MemberEntity> Members { get; private set; }
-        /// <summary>
-        /// Static list of seasons on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<SeasonEntity> Seasons { get; private set; }
-        /// <summary>
-        /// Static list of schedules on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<ScheduleEntity> Schedules { get; private set; }
-        /// <summary>
-        /// Static list of sessions on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<SessionEntity> Sessions { get; private set; }
-
         static DbTestFixture()
         {
             Configuration = ((IConfigurationBuilder)(new ConfigurationBuilder()))

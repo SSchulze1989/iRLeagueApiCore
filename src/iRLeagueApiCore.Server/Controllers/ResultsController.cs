@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
+using iRLeagueApiCore.Server.Models.ResultsParsing;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -93,6 +94,35 @@ namespace iRLeagueApiCore.Server.Controllers
             _logger.LogInformation("Return {Count} entries for result from event {EventId} in {LeagueName}",
                 getResults.Count(), eventId, leagueName);
             return Ok(getResults);
+        }
+
+        /// <summary>
+        /// Upload a result json (must be exported from the iRacing GUI)
+        /// </summary>
+        /// <param name="leagueName"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="eventId"></param>
+        /// <param name="result">complete json data exported from iRacing GUI</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("/{leagueName}/Events/{eventId:long}/[controller]/Upload")]
+        public async Task<ActionResult> UploadResult([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+            [FromBody] ParseSimSessionResult result, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] raw results for event {EventId} in {LeagueName} by {UserName}", "Post", 
+                eventId, leagueName, GetUsername());
+            var request = new UploadResultRequest(leagueId, eventId, result);
+            var success = await mediator.Send(request, cancellationToken);
+            if (success)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("Oops, something went wrong with the result upload!");
+            }
         }
     }
 }
