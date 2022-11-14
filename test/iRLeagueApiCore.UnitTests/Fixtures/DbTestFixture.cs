@@ -352,10 +352,10 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                             StartPosition = i + 1,
                             FinishPosition = i + 1,
                             Member = members.ElementAt(i),
-                            QualifyingTime = GetTimeSpan(random).Ticks,
-                            FastestLapTime = GetTimeSpan(random).Ticks,
-                            AvgLapTime = GetTimeSpan(random).Ticks,
-                            Interval = GetTimeSpan(random).Ticks
+                            QualifyingTime = GetTimeSpan(random),
+                            FastestLapTime = GetTimeSpan(random),
+                            AvgLapTime = GetTimeSpan(random),
+                            Interval = GetTimeSpan(random),
                         };
                         sessionResult.ResultRows.Add(resultRow);
                         var scoredResultRow = new ScoredResultRowEntity(resultRow)
@@ -380,7 +380,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     Text = $"Cat {i + 1}",
                     DefaultPenalty = i + 1,
                 };
-                context.VoteCategories.Add(cat);
+                league1.VoteCategories.Add(cat);
             }
             foreach (var session in league1.Seasons
                 .SelectMany(x => x.Schedules)
