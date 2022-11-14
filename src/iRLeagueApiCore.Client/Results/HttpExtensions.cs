@@ -18,9 +18,9 @@ namespace iRLeagueApiCore.Client.Results
 {
     public static class HttpExtensions
     {
-        public static async Task<ClientActionResult<T>> ToClientActionResultAsync<T>(this HttpResponseMessage httpResponse, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<T>> ToClientActionResultAsync<T>(this HttpResponseMessage httpResponse, JsonSerializerOptions? jsonOptions, CancellationToken cancellationToken = default)
         {
-            string requestUrl = httpResponse.RequestMessage?.RequestUri?.AbsoluteUri;
+            string requestUrl = httpResponse.RequestMessage?.RequestUri?.AbsoluteUri ?? string.Empty;
             try
             {
                 if (httpResponse.IsSuccessStatusCode)
@@ -63,7 +63,7 @@ namespace iRLeagueApiCore.Client.Results
                     case HttpStatusCode.MethodNotAllowed:
                         {
                             status = "Method Not Allowed";
-                            message = $"Method {httpResponse.RequestMessage.Method.Method} not allowed on {httpResponse.RequestMessage.RequestUri}";
+                            message = $"Method {httpResponse.RequestMessage?.Method.Method} not allowed on {httpResponse.RequestMessage?.RequestUri}";
                             errors = new object[0];
                             break;
                         }
@@ -94,13 +94,13 @@ namespace iRLeagueApiCore.Client.Results
             }
         }
 
-        public static async Task<ClientActionResult<T>> AsClientActionResultAsync<T>(this Task<HttpResponseMessage> request, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<T>> AsClientActionResultAsync<T>(this Task<HttpResponseMessage> request, JsonSerializerOptions? jsonOptions, CancellationToken cancellationToken = default)
         {
             string requestUrl = "";
             try
             {
                 var result = await request;
-                requestUrl = result.RequestMessage?.RequestUri?.AbsoluteUri;
+                requestUrl = result.RequestMessage?.RequestUri?.AbsoluteUri ?? string.Empty;
                 return await result.ToClientActionResultAsync<T>(jsonOptions, cancellationToken);
             }
             catch (Exception ex) when (ex is InvalidOperationException || ex is HttpRequestException)
