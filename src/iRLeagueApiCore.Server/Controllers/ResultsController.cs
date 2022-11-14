@@ -108,7 +108,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("/{leagueName}/Events/{eventId:long}/[controller]/Upload")]
-        public async Task<ActionResult> UploadResult([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+        public async Task<ActionResult<bool>> UploadResult([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
             [FromBody] ParseSimSessionResult result, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] raw results for event {EventId} in {LeagueName} by {UserName}", "Post", 
@@ -117,7 +117,7 @@ namespace iRLeagueApiCore.Server.Controllers
             var success = await mediator.Send(request, cancellationToken);
             if (success)
             {
-                return Ok();
+                return Ok(true);
             }
             else
             {

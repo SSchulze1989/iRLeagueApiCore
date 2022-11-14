@@ -1,9 +1,10 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Client.ResultsParsing;
+using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results
 {
     public interface IEventResultsEndpoint : IGetAllEndpoint<EventResultModel>
     {
-        IPostEndpoint<string> Upload();
+        IPostEndpoint<bool, ParseSimSessionResult> Upload();
     }
 }

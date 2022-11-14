@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
+using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results
@@ -13,7 +14,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Results
             RouteBuilder.AddEndpoint("Results");
         }
 
-        public IPostEndpoint<string> Upload()
+        public IPostEndpoint<bool, ParseSimSessionResult> Upload()
         {
             return new UploadResultEndpoint(HttpClientWrapper, RouteBuilder);
         }
