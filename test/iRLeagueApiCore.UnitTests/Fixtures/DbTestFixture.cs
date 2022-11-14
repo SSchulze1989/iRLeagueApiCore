@@ -380,7 +380,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     Text = $"Cat {i + 1}",
                     DefaultPenalty = i + 1,
                 };
-                context.VoteCategories.Add(cat);
+                league1.VoteCategories.Add(cat);
             }
             foreach (var session in league1.Seasons
                 .SelectMany(x => x.Schedules)
