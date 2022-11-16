@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
         private readonly Fixture fixture = new();
 
         [Fact]
-        public async Task Calculate_ShouldSetResultData()
+        public async Task Calculate_ShouldSetResultMetaData()
         {
             var data = GetCalculationData();
             var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
@@ -20,6 +20,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             var test = await sut.Calculate(data);
 
             test.LeagueId.Should().Be(config.LeagueId);
+            test.Name.Should().Be(config.Name);
             test.SessionId.Should().Be(config.SessionId);
             test.SessionResultId.Should().Be(config.SessionResultId);
         }
@@ -188,6 +189,26 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 
             var expectedCleanestDrivers = new[] { rows.ElementAt(0), rows.ElementAt(2) }.Select(x => x.MemberId);
             test.CleanestDrivers.Should().BeEquivalentTo(expectedCleanestDrivers);
+        }
+
+        [Fact]
+        public async Task Calculate_ShoulNotThrow_WhenColumnsHaveDefaultValues()
+        {
+            const int rowCount = 3;
+            var data = GetCalculationData();
+            var rows = data.ResultRows = TestRowBuilder()
+                .OmitAutoProperties()
+                .With(x => x.MemberId)
+                .With(x => x.Firstname)
+                .With(x => x.Lastname)
+                .CreateMany(rowCount);
+            var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+            fixture.Register(() => config);
+            var sut = fixture.Create<MemberSessionCalculationService>();
+
+            var test = async () => await sut.Calculate(data);
+
+            await test.Should().NotThrowAsync();
         }
 
         private SessionCalculationData GetCalculationData()

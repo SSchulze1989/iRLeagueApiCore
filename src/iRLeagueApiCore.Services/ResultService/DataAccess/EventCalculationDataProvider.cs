@@ -26,6 +26,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             {
                 LeagueId = sessionResult.LeagueId,
                 SessionId = sessionResult.SessionId,
+                SessionNr = sessionResult.Session.SessionNr,
                 AcceptedReviewVotes = sessionResult.Session.IncidentReviews
                     .SelectMany(review => review.AcceptedReviewVotes)
                     .Select(vote => new AcceptedReviewVoteCalculationData()

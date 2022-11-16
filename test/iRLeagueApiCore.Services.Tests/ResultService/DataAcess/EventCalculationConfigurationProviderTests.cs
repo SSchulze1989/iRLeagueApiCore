@@ -66,7 +66,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
 
             test.LeagueId.Should().Be(@event.LeagueId);
             test.EventId.Should().Be(@event.EventId);
-            test.DisplayName.Should().BeEmpty();
+            test.DisplayName.Should().Be("Default");
             test.ResultConfigId.Should().BeNull();
             test.SessionResultConfigurations.Should().HaveSameCount(@event.Sessions);
         }

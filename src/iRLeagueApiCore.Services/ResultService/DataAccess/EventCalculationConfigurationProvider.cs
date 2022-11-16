@@ -82,7 +82,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 .Select(x => x.ResultId)
                 .FirstOrDefaultAsync(cancellationToken);
             configuration.ResultConfigId = configId;
-            configuration.DisplayName = configEntity?.DisplayName ?? string.Empty;
+            configuration.DisplayName = configEntity?.DisplayName ?? "Default";
             configuration.SessionResultConfigurations = await sessionConfigurationProvider.GetConfigurations(eventEntity, configEntity, cancellationToken);
             return configuration;
         }

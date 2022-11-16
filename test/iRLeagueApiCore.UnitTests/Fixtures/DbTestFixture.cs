@@ -17,6 +17,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
     public class DbTestFixture : IDisposable
     {
         private static IConfiguration Configuration { get; }
+        private readonly Fixture fixture;
 
         private static readonly int Seed = 12345;
         public static string ClientUserName => "TestClient";
@@ -42,6 +43,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
 
         public DbTestFixture()
         {
+            fixture = new();
         }
 
         public static LeagueDbContext CreateStaticDbContext()
@@ -69,7 +71,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             return dbContext;
         }
 
-        public static void Populate(LeagueDbContext context, Random random)
+        public void Populate(LeagueDbContext context, Random random)
         {
             // Create random users
             var users = new List<LeagueUser>();
@@ -402,7 +404,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
         {
             return new TimeSpan(0, 1, 2, 34, 567);
         }
-        private static void GenerateMembers(LeagueDbContext context, Random random)
+        private void GenerateMembers(LeagueDbContext context, Random random)
         {
             var minMemberCount = 50;
             var maxMemberCount = 100;
@@ -437,15 +439,9 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             return new string(name);
         }
 
-        private static string GetRandomIracingId(Random random)
+        private string GetRandomIracingId(Random random)
         {
-            var len = 6;
-            char[] id = new char[len];
-            for (int i = 0; i < len; i++)
-            {
-                id[i] = (char)('0' + random.Next(10));
-            }
-            return new string(id);
+            return fixture.Create<long>().ToString();
         }
 
         private static ReviewCommentEntity RandomComment(Random random, LeagueUser user, IEnumerable<MemberEntity> involvedMembers)

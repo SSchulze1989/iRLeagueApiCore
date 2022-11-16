@@ -59,7 +59,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             }
 
             var voteCategories = CreateVoteCategories(league);
-            dbContext.VoteCategories.AddRange(voteCategories);
+            league.VoteCategories = voteCategories.ToList();
 
             await dbContext.SaveChangesAsync();
         }
@@ -67,6 +67,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         public LeagueEntity CreateLeague()
         {
             return fixture.Build<LeagueEntity>()
+                .Without(x => x.VoteCategories)
                 .Without(x => x.LeagueMembers)
                 .Without(x => x.PointRules)
                 .Without(x => x.ResultConfigs)
@@ -310,6 +311,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         private IEnumerable<VoteCategoryEntity> CreateVoteCategories(LeagueEntity league)
         {
             return fixture.Build<VoteCategoryEntity>()
+                .With(x => x.League, league)
                 .Without(x => x.AcceptedReviewVotes)
                 .Without(x => x.CommentReviewVotes)
                 .CreateMany();

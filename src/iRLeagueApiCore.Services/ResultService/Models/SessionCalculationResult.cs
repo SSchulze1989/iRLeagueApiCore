@@ -10,6 +10,7 @@
 
         public long LeagueId { get; set; }
         public long? SessionId { get; set; }
+        public int? SessionNr { get; set; }
         public long? SessionResultId { get; set; }
         public long? ScoringId { get; set; }
         public string Name { get; set; } = string.Empty;

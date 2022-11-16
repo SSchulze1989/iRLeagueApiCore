@@ -37,19 +37,20 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
 
             // add to database
-            using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             var @event = await GetEventEntityAsync(request.leagueId, request.EventId, cancellationToken) 
                 ?? throw new ResourceNotFoundException();
-            if (@event.EventResult is not null)
+            using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                dbContext.Remove(@event.EventResult);
+                if (@event.EventResult is not null)
+                {
+                    dbContext.Remove(@event.EventResult);
+                }
+                await dbContext.SaveChangesAsync(cancellationToken);
+                var result = await ReadResultsAsync(request.ResultData, @event, cancellationToken);
+                @event.EventResult = result;
+                await dbContext.SaveChangesAsync(cancellationToken);
+                tx.Complete();
             }
-            await dbContext.SaveChangesAsync(cancellationToken);
-            var result = await ReadResultsAsync(request.ResultData, @event, cancellationToken);
-            @event.EventResult = result;
-            await dbContext.SaveChangesAsync(cancellationToken);
-            tx.Complete();
-
             // Queue result calculation for this event
             await calculationQueue.QueueEventResultAsync(@event.EventId);
 
@@ -63,6 +64,9 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
                 .Include(x => x.Sessions)
+                .Include(x => x.EventResult)
+                    .ThenInclude(x => x.SessionResults)
+                        .ThenInclude(x => x.IRSimSessionDetails)
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
@@ -77,8 +81,9 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
             var map = CreateSessionMapping(data.session_results, @event);
             // create entities
-            var result = new EventResultEntity();
+            var result = @event.EventResult ?? new EventResultEntity();
             var details = ReadDetails(data);
+            details.Event = @event;
             IDictionary<int, SessionResultEntity> sessionResults = new Dictionary<int, SessionResultEntity>();
             foreach (var sessionResultData in data.session_results)
             {
@@ -134,29 +139,42 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return map;
         }
 
-        private async Task<MemberEntity> GetOrCreateMemberAsync(ParseSessionResultRow row, CancellationToken cancellationToken)
+        private async Task<LeagueMemberEntity> GetOrCreateMemberAsync(long leagueId, ParseSessionResultRow row, CancellationToken cancellationToken)
         {
-            var member = await dbContext.Members
-                .Where(x => x.IRacingId == row.cust_id.ToString())
-                .SingleOrDefaultAsync(cancellationToken);
-            if (member == null)
+            var leagueMember = await dbContext.LeagueMembers
+                .Include(x => x.Team)
+                .Include(x => x.Member)
+                .Where(x => x.LeagueId == leagueId)
+                .Where(x => x.Member.IRacingId == row.cust_id.ToString())
+                .SingleOrDefaultAsync(cancellationToken)
+                ?? dbContext.LeagueMembers.Local
+                .SingleOrDefault(x => x.Member.IRacingId == row.cust_id.ToString());
+            if (leagueMember == null)
             {
-                var (firstname, Lastname) = GetFirstnameLastname(row.display_name?.ToString() ?? string.Empty);
-                member = new MemberEntity()
+                var league = await dbContext.Leagues
+                    .FirstAsync(x => x.Id == leagueId);
+                var (firstname, lastname) = GetFirstnameLastname(row.display_name ?? string.Empty);
+                var member = new MemberEntity()
                 {
                     Firstname = firstname,
-                    Lastname = Lastname,
+                    Lastname = lastname,
                     IRacingId = row.cust_id.ToString(),
                 };
-                dbContext.Members.Add(member);
+                leagueMember = new LeagueMemberEntity()
+                {
+                    Member = member,
+                    League = league,
+                };
+                dbContext.LeagueMembers.Add(leagueMember);
             }
-            return member;
+            return leagueMember;
         }
 
         private static (string, string) GetFirstnameLastname(string name)
         {
             var parts = name.Split(' ', 2);
-            return (parts[0], parts.ElementAt(1) ?? string.Empty);
+            var fullName = (parts[0], parts.ElementAt(1) ?? string.Empty);
+            return fullName;
         }
 
         private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(long leagueId, ParseSimSessionResult sessionData, ParseSessionResult data, 
@@ -230,7 +248,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             int laps, CancellationToken cancellationToken)
         {
             var row = new ResultRowEntity();
-
+            var leagueMember = await GetOrCreateMemberAsync(leagueId, data, cancellationToken);
             row.LeagueId = leagueId;
             row.AvgLapTime = ParseTime(data.average_lap);
             row.Car = "";
@@ -241,7 +259,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.ClubId = data.club_id;
             row.ClubName = data.club_name;
             row.CompletedLaps = data.laps_complete;
-            row.CompletedPct = data.laps_complete / laps;
+            row.CompletedPct = laps != 0 ? data.laps_complete / laps : 0;
             row.ContactLaps = "";
             row.Division = data.division;
             row.FastestLapTime = ParseTime(data.best_lap_time);
@@ -252,7 +270,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.IRacingId = data.cust_id.ToString();
             row.LeadLaps = data.laps_lead;
             row.License = sessionData.license_category;
-            row.Member = await GetOrCreateMemberAsync(data, cancellationToken);
+            row.Member = leagueMember.Member;
             row.NewCpi = (int)data.new_cpi;
             row.NewIRating = data.newi_rating;
             row.NewLicenseLevel = data.new_license_level;
@@ -271,8 +289,10 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.QualifyingTime = ParseTime(data.qual_lap_time);
             row.QualifyingTimeAt = data.best_qual_lap_at;
             row.SimSessionType = -1;
-            row.StartPosition = data.starting_position;
+            row.StartPosition = data.starting_position + 1;
             row.Status = data.reason_out_id;
+            row.Team = leagueMember.Team;
+            row.RacePoints = data.champ_points;
             
             return row;
         }

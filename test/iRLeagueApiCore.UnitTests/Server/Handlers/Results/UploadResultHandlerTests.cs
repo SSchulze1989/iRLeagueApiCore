@@ -57,24 +57,32 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         }
 
         [Fact]
-        public async Task Handle_ShouldCreateMember_WhenMemberDoesNotExist()
+        public async Task Handle_ShouldCreateMembers_WhenMemberDoesNotExist()
         {
-            (var firstName, var lastName) = (fixture.Create<string>(), fixture.Create<string>());
-            var newMemberRow = fixture.Build<ParseSessionResultRow>()
-                .With(x => x.display_name, $"{firstName} {lastName}")
-                .Create();
+            var rowCount = 10;
+            var names = Enumerable.Range(0, rowCount).Select(x => 
+                new { Firstname = fixture.Create<string>(), Lastname = fixture.Create<string>() })
+                .ToArray();
+            var newMemberRows = names.Select((x, i) => fixture.Build<ParseSessionResultRow>()
+                .With(x => x.cust_id, dbContext.Members.Select(x => Convert.ToInt64(x.IRacingId)).Max() + 1 + i)
+                .With(x => x.display_name, $"{x.Firstname} {x.Lastname}")
+                .Create())
+                .ToArray();
             var result = await CreateFakeResult(false, false, 1);
-            result.session_results.First().results = result.session_results.First().results.Append(newMemberRow).ToArray();
+            result.session_results.First().results = result.session_results.First().results.Concat(newMemberRows).ToArray();
             var sut = CreateSut();
             var request = CreateRequest(1, 1, result);
 
             await sut.Handle(request, default);
 
-            var newMember = await dbContext.Members
+            foreach ((var newMemberRow, var name) in newMemberRows.Zip(names))
+            {
+                var newMember = await dbContext.Members
                 .FirstOrDefaultAsync(x => x.IRacingId == newMemberRow.cust_id.ToString());
-            newMember.Should().NotBeNull();
-            newMember.Firstname.Should().Be(firstName);
-            newMember.Lastname.Should().Be(lastName);
+                newMember.Should().NotBeNull();
+                newMember.Firstname.Should().Be(name.Firstname);
+                newMember.Lastname.Should().Be(name.Lastname);
+            }
         }
 
         [Fact]
@@ -246,7 +254,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
                 testRow.PositionChange.Should().Be(resultRow.position - resultRow.starting_position);
                 testRow.QualifyingTime.Should().Be(TimeSpan.FromSeconds(resultRow.qual_lap_time / 10000D));
                 testRow.QualifyingTimeAt.Should().Be(resultRow.best_qual_lap_at);
-                testRow.StartPosition.Should().Be(resultRow.starting_position);
+                testRow.StartPosition.Should().Be(resultRow.starting_position + 1);
                 testRow.Status.Should().Be(resultRow.reason_out_id);
             }
         }
@@ -254,7 +262,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         private IPostprocessComposer<EventEntity> EventBuilder()
         {
             return fixture.Build<EventEntity>()
-                .With(x => x.LeagueId, dbContext.Leagues.Select(x => x.Id).Max() + 1)
+                .With(x => x.LeagueId, dbContext.Leagues.Select(x => x.Id).Max())
                 .With(x => x.EventId, () => dbContext.Events.Select(x => x.EventId).Max() + 1)
                 .Without(x => x.EventResult)
                 .Without(x => x.ResultConfigs)

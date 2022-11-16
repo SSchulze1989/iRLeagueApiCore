@@ -33,6 +33,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 LeagueId = sessionResult.LeagueId,
                 ScoringId = sessionResult.ScoringId,
                 SessionName = sessionResult.Name,
+                SessionNr = sessionResult.SessionNr,
                 ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowModel()
                 {
                     MemberId = row.MemberId,

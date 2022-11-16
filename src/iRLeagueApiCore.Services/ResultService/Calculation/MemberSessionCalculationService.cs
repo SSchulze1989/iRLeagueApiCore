@@ -50,8 +50,10 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             }
 
             var sessionResult = new SessionCalculationResult(data);
+            sessionResult.Name = config.Name;
             sessionResult.SessionResultId = config.SessionResultId;
             sessionResult.ResultRows = finalRows;
+            sessionResult.SessionNr = data.SessionNr;
             (sessionResult.FastestAvgLapDriverMemberId, sessionResult.FastestAvgLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.AvgLapTime);
             (sessionResult.FastestLapDriverMemberId, sessionResult.FastestLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.FastestLapTime);
             (sessionResult.FastestQualyLapDriverMemberId, sessionResult.FastestQualyLap) = GetBestLapValue(finalRows, x => x.MemberId, x => x.QualifyingTime);
@@ -72,6 +74,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             return rows
                 .Select(row =>((long? id, TimeSpan lap))(idSelector.Invoke(row), valueSelector.Invoke(row)))
                 .Where(row => LapIsValid(row.lap))
+                .DefaultIfEmpty()
                 .MinBy(row => row.lap);
         }
 

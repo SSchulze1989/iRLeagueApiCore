@@ -45,22 +45,29 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
         }
 
         private async Task<ICollection<ScoredSessionResultEntity>> MapToScoredSessionResults(IEnumerable<SessionCalculationResult> sessionResults, 
-            ICollection<ScoredSessionResultEntity> sessionResultEntites, RequiredEntities requiredEntities, CancellationToken cancellationToken)
+            ICollection<ScoredSessionResultEntity> sessionResultEntities, RequiredEntities requiredEntities, CancellationToken cancellationToken)
         {
             var keepResults = new List<ScoredSessionResultEntity>();
             foreach(var sessionResult in sessionResults)
             {
-                var sessionResultEntity = sessionResultEntites
+                var sessionResultEntity = sessionResultEntities
+                    .Where(x => x.SessionResultId != 0)
                     .FirstOrDefault(x => x.SessionResultId == sessionResult.SessionResultId);
-                sessionResultEntity ??= await CreateScoredSessionResultEntity(sessionResult.ScoringId, cancellationToken);
+                if (sessionResultEntity == null)
+                {
+                    sessionResultEntity = await CreateScoredSessionResultEntity(sessionResult.ScoringId, cancellationToken);
+                    sessionResultEntities.Add(sessionResultEntity);
+                }
                 sessionResultEntity = MapToScoredSessionResultEntity(sessionResult, sessionResultEntity, requiredEntities);
             }
-            return sessionResultEntites;
+            return sessionResultEntities;
         }
 
         private ScoredSessionResultEntity MapToScoredSessionResultEntity(SessionCalculationResult result, ScoredSessionResultEntity entity,
             RequiredEntities requiredEntities)
         {
+            entity.Name = result.Name;
+            entity.SessionNr = result.SessionNr ?? 0;
             entity.CleanestDrivers = requiredEntities.Members.Where(x => result.CleanestDrivers.Contains(x.Id)).ToList();
             entity.FastestAvgLap = result.FastestAvgLap.Ticks;
             entity.FastestAvgLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestQualyLapDriverMemberId);
@@ -178,6 +185,11 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             return await dbContext.ScoredEventResults
                 .Include(x => x.ScoredSessionResults)
                     .ThenInclude(x => x.ScoredResultRows)
+                        .ThenInclude(x => x.Member)
+                .Include(x => x.ScoredSessionResults)
+                    .ThenInclude(x => x.HardChargers)
+                .Include(x => x.ScoredSessionResults)
+                    .ThenInclude(x => x.CleanestDrivers)
                 .Where(x => x.EventId == eventId)
                 .Where(x => x.ResultConfigId == resultConfigId)
                 .FirstOrDefaultAsync(cancellationToken);

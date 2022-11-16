@@ -45,7 +45,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     SessionId = x.SessionId,
                     UseResultSetTeam = false,
                     MaxResultsPerGroup = 1,
-                    Name = "Default",
+                    Name = x.Name,
                     UpdateTeamOnRecalculation = false,
                 });
             return configurations;
