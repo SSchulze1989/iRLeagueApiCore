@@ -17,6 +17,11 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
     public record PostReviewToSessionRequest(long LeagueId, long SessionId, LeagueUser User, PostReviewModel Model) : IRequest<ReviewModel>;
     public class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewToSessionHandler, PostReviewToSessionRequest>, IRequestHandler<PostReviewToSessionRequest, ReviewModel>
     {
+        /// <summary>
+        /// Always include comments because this can only be called by an authorized user
+        /// </summary>
+        private const bool includeComments = true;
+
         public PostReviewToSessionHandler(ILogger<PostReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewToSessionRequest>> validators) : 
             base(logger, dbContext, validators)
         {
@@ -28,7 +33,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             var postReview = await CreateReviewEntityOnSession(request.LeagueId, request.SessionId, request.User, cancellationToken);
             postReview = await MapToReviewEntity(request.User, request.Model, postReview, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            var getReview = await MapToReviewModel(postReview.LeagueId, postReview.ReviewId, cancellationToken)
+            var getReview = await MapToReviewModel(postReview.LeagueId, postReview.ReviewId, includeComments, cancellationToken)
                 ?? throw new InvalidOperationException("Created resource was not found");
             return getReview;
         }
