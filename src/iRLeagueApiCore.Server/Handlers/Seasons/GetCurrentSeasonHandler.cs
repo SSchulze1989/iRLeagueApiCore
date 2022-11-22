@@ -16,6 +16,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getSeasonId = await dbContext.Events
+                .Where(x => x.LeagueId == request.LeagueId)
                 .Where(x => x.Date < DateTime.UtcNow)
                 .OrderByDescending(x => x.Date)
                 .Select(x => (long?)x.Schedule.SeasonId)
