@@ -43,7 +43,6 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             result.LeagueId.Should().Be(request.LeagueId);
             result.Id.Should().Be(request.ScoringId);
             result.Name.Should().Be(testScoring.Name);
-            result.ScoringKind.Should().Be(testScoring.ScoringKind);
             result.ExtScoringSourceId.Should().Be(testScoring.ExtScoringSourceId);
             result.MaxResultsPerGroup.Should().Be(testScoring.MaxResultsPerGroup);
             result.ResultConfigId.Should().Be(testScoring.ResultConfigId);

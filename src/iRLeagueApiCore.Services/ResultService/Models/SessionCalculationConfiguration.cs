@@ -12,11 +12,11 @@ namespace iRLeagueApiCore.Services.ResultService.Models
         /// Id of existing session result data (if result has been calculated before)
         /// </summary>
         public long? SessionResultId { get; set; }
-        public ScoringKind ScoringKind { get; set; }
         public string Name { get; set; } = string.Empty;
         public int MaxResultsPerGroup { get; set; }
         public bool UseResultSetTeam { get; set; }
         public bool UpdateTeamOnRecalculation { get; set; }
+        public ResultKind ResultKind { get; set; }
 
         public PointRule<ResultRowCalculationResult> PointRule { get; set; } = PointRule<ResultRowCalculationResult>.Default();
     }

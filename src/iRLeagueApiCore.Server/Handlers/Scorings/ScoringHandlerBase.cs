@@ -72,7 +72,6 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             LeagueId = scoring.LeagueId,
             ResultConfigId = scoring.ResultConfigId,
             ExtScoringSourceId = scoring.ExtScoringSourceId,
-            ScoringKind = scoring.ScoringKind,
             MaxResultsPerGroup = scoring.MaxResultsPerGroup,
             Name = scoring.Name,
             ShowResults = scoring.ShowResults,

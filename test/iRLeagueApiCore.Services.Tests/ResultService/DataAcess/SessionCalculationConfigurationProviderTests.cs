@@ -45,7 +45,6 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 sessionConfig.ScoringId.Should().BeNull();
                 sessionConfig.UpdateTeamOnRecalculation.Should().BeFalse();
                 sessionConfig.UseResultSetTeam.Should().BeFalse();
-                sessionConfig.ScoringKind.Should().Be(ScoringKind.Member);
             }
         }
 
@@ -86,10 +85,45 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 sessionConfig.LeagueId.Should().Be(@event.LeagueId);
                 sessionConfig.SessionId.Should().Be(session.SessionId);
                 sessionConfig.ScoringId.Should().Be(scoring.ScoringId);
-                sessionConfig.ScoringKind.Should().Be(scoring.ScoringKind);
                 sessionConfig.MaxResultsPerGroup.Should().Be(scoring.MaxResultsPerGroup);
                 sessionConfig.UpdateTeamOnRecalculation.Should().Be(scoring.UpdateTeamOnRecalculation);
                 sessionConfig.UseResultSetTeam.Should().Be(scoring.UseResultSetTeam);
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideMemberKindConfig_WhenResultConfigIsMemberKind()
+        {
+            var @event = await GetFirstEventEntity();
+            var config = accessMockHelper.CreateConfiguration(@event);
+            config.ResultKind = ResultKind.Member;
+            dbContext.ResultConfigurations.Add(config);
+            await dbContext.SaveChangesAsync();
+            var sut = fixture.Create<SessionCalculationConfigurationProvider>();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            foreach (var sessionConfig in test)
+            {
+                sessionConfig.ResultKind.Should().Be(ResultKind.Member);
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideTeamKindConfig_WhenResultConfigIsTeamKind()
+        {
+            var @event = await GetFirstEventEntity();
+            var config = accessMockHelper.CreateConfiguration(@event);
+            config.ResultKind = ResultKind.Team;
+            dbContext.ResultConfigurations.Add(config);
+            await dbContext.SaveChangesAsync();
+            var sut = fixture.Create<SessionCalculationConfigurationProvider>();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            foreach (var sessionConfig in test)
+            {
+                sessionConfig.ResultKind.Should().Be(ResultKind.Team);
             }
         }
 
@@ -159,7 +193,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 if (session == practice || session == qualy)
                 {
                     sessionConfig.ScoringId.Should().BeNull();
-                    sessionConfig.ScoringKind.Should().Be(ScoringKind.Member);
+                    sessionConfig.ResultKind.Should().Be(ResultKind.Member);
                     sessionConfig.PointRule.Should().BeOfType(CalculationPointRuleBase.Default().GetType());
                 }
                 else

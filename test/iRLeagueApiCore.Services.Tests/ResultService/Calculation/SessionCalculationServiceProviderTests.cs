@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Calculation;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
@@ -16,24 +17,12 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
         public void GetCalculationService_ShouldProvideMemberCalculationService_WhenScoringKindIsMember()
         {
             var config = GetCalculationConfiguration();
-            config.ScoringKind = Common.Enums.ScoringKind.Member;
+            config.ResultKind = ResultKind.Member;
             var sut = CreateSut();
             
             var test = sut.GetCalculationService(config);
 
             test.Should().BeOfType<MemberSessionCalculationService>();
-        }
-
-        [Fact]
-        public void GetCalculationService_ShouldThrowNotImplementedException_WhenScoringKindIsCustom()
-        {
-            var config = GetCalculationConfiguration();
-            config.ScoringKind = Common.Enums.ScoringKind.Custom;
-            var sut = CreateSut();
-
-            var test = () => sut.GetCalculationService(config);
-
-            test.Should().Throw<NotImplementedException>();
         }
 
         private SessionCalculationServiceProvider CreateSut()

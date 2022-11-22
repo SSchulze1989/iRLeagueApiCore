@@ -41,12 +41,12 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     LeagueId = x.LeagueId,
                     ScoringId = null,
                     SessionResultId = sessionResultIds.ElementAtOrDefault(i),
-                    ScoringKind = default,
                     SessionId = x.SessionId,
                     UseResultSetTeam = false,
                     MaxResultsPerGroup = 1,
                     Name = x.Name,
                     UpdateTeamOnRecalculation = false,
+                    ResultKind = ResultKind.Member,
                 });
             return configurations;
         }
@@ -73,6 +73,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     LeagueId = session.LeagueId,
                     Name = session.Name,
                     SessionId = session.SessionId,
+                    ResultKind = configurationEntity.ResultKind,
                 };
                 var scoring = session.SessionType != SessionType.Race ? null : scorings.ElementAtOrDefault(raceIndex++);
                 sessionConfiguration.SessionResultId = sessionResultIds.ElementAtOrDefault(index);
@@ -93,7 +94,6 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             sessionConfiguration.UseResultSetTeam = scoring.UseResultSetTeam;
             sessionConfiguration.UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation;
             sessionConfiguration.ScoringId = scoring.ScoringId;
-            sessionConfiguration.ScoringKind = scoring.ScoringKind;
 
             return sessionConfiguration;
         }
