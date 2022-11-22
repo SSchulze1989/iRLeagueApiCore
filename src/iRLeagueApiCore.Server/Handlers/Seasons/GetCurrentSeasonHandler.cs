@@ -17,7 +17,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var getSeasonId = await dbContext.Events
                 .Where(x => x.Date < DateTime.UtcNow)
-                .OrderBy(x => x.Date)
+                .OrderByDescending(x => x.Date)
                 .Select(x => (long?)x.Schedule.SeasonId)
                 .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new ResourceNotFoundException();
