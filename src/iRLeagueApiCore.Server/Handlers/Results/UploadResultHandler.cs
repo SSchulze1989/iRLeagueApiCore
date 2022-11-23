@@ -266,7 +266,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             row.FastLapNr = data.best_lap_num;
             row.FinishPosition = data.position;
             row.Incidents = data.incidents;
-            row.Interval = ParseInterval(data.interval);
+            row.Interval = ParseInterval(data.interval, data.laps_complete, laps);
             row.IRacingId = data.cust_id.ToString();
             row.LeadLaps = data.laps_lead;
             row.License = sessionData.license_category;
@@ -321,6 +321,14 @@ namespace iRLeagueApiCore.Server.Handlers.Results
 
         private static TimeSpan ParseTime(long value) => TimeSpan.FromSeconds(value / 10000D);
 
-        private static TimeSpan ParseInterval(int value) => TimeSpan.FromSeconds(value / 10000D);
+        private static TimeSpan ParseInterval(int value, int completedLaps, int sessionLaps)
+        {
+            if (value >= 0)
+            {
+                return TimeSpan.FromSeconds(value / 10000D);
+            }
+
+            return TimeSpan.FromDays(sessionLaps - completedLaps);
+        }
     }
 }

@@ -219,12 +219,12 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 
             await sut.Handle(request, default);
 
-            var session = await dbContext.SessionResults
+            var sessionResult = await dbContext.SessionResults
                 .Include(x => x.ResultRows)
                     .ThenInclude(x => x.Member)
                 .FirstAsync(x => x.EventId == @event.EventId);
             var laps = result.session_results.First().results.Select(y => y.laps_complete).Max();
-            foreach((var testRow, var resultRow) in session.ResultRows.Zip(result.session_results.First().results))
+            foreach((var testRow, var resultRow) in sessionResult.ResultRows.Zip(result.session_results.First().results))
             {
                 testRow.AvgLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.average_lap / 10000D));
                 testRow.CarId.Should().Be(resultRow.car_id);
@@ -257,6 +257,35 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
                 testRow.StartPosition.Should().Be(resultRow.starting_position + 1);
                 testRow.Status.Should().Be(resultRow.reason_out_id);
             }
+        }
+
+        [Fact]
+        public async Task Handle_ShouldGetIntervalLaps_WhenIntervalIsNegative()
+        {
+            var @event = EventBuilder().Create();
+            @event.Sessions.Add(SessionBuilder()
+                .With(x => x.SessionType, SessionType.Race)
+                .Create());
+            dbContext.Events.Add(@event);
+            await dbContext.SaveChangesAsync();
+            var result = await CreateFakeResult(false, false, 1);
+            var maxLaps = result.session_results[0].results.Max(x => x.laps_complete);
+            result.session_results[0].results.First().laps_complete = maxLaps;
+            var lapsDown = 3;
+            var setupRow = result.session_results[0].results.Last();
+            setupRow.interval = -1;
+            setupRow.laps_complete = maxLaps - lapsDown;
+            var request = CreateRequest(@event.LeagueId, @event.EventId, result);
+            var sut = CreateSut();
+
+            await sut.Handle(request, default);
+
+            var session = await dbContext.SessionResults
+                .Include(x => x.ResultRows)
+                    .ThenInclude(x => x.Member)
+                .FirstAsync(x => x.EventId == @event.EventId);
+            var testRow = session.ResultRows.Last();
+            testRow.Interval.Should().Be(TimeSpan.FromDays(lapsDown));
         }
 
         private IPostprocessComposer<EventEntity> EventBuilder()

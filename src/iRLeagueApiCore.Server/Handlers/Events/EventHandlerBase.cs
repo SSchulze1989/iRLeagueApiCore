@@ -25,6 +25,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             return await dbContext.Events
                 .Include(x => x.Sessions)
                 .Include(x => x.Track)
+                .Include(x => x.ResultConfigs)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
                 .FirstOrDefaultAsync();
@@ -38,6 +39,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             target.Name = postEvent.Name;
             MapToSessionEntityCollection(user, postEvent.Sessions, target.Sessions);
             target.Track = await GetTrackConfigEntityAsync(postEvent.TrackId, cancellationToken);
+            target.ResultConfigs = await GetResultConfigEntities(postEvent.ResultConfigs, cancellationToken);
             return UpdateVersionEntity(user, target);
         }
 
@@ -75,6 +77,13 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             }
         }
 
+        protected async Task<ICollection<ResultConfigurationEntity>> GetResultConfigEntities(IEnumerable<ResultConfigInfoModel> resultConfigModels, CancellationToken cancellationToken)
+        {
+            var resultConfigIds = resultConfigModels.Select(x => x.ResultConfigId);
+            return await dbContext.ResultConfigurations
+                .Where(x => resultConfigIds.Contains(x.ResultConfigId))
+                .ToListAsync(cancellationToken);
+        }
         protected virtual SessionEntity MapToSessionEntity(LeagueUser user, PutSessionModel putSession, SessionEntity target)
         {
             target.Name = putSession.Name;
@@ -125,6 +134,13 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 LastModifiedByUserName = session.LastModifiedByUserName
             }).ToList(),
             TrackId = @event.TrackId,
+            ResultConfigs = @event.ResultConfigs.Select(config => new ResultConfigInfoModel()
+            {
+                LeagueId = config.LeagueId,
+                ResultConfigId = config.ResultConfigId,
+                Name = config.Name,
+                DisplayName = config.DisplayName,
+            }).ToList(),
         };
     }
 }

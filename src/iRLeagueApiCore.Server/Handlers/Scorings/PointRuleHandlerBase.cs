@@ -62,7 +62,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             Name = pointRule.Name,
             PointDropOff = pointRule.PointDropOff,
             PointRuleId = pointRule.PointRuleId,
-            PointsPerPlace = pointRule.PointsPerPlace,
+            PointsPerPlace = pointRule.PointsPerPlace.ToList(),
             PointsSortOptions = pointRule.PointsSortOptions,
         };
     }

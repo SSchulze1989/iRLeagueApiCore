@@ -126,7 +126,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                     MaxPoints = scoring.PointsRule.MaxPoints,
                     PointDropOff = scoring.PointsRule.PointDropOff,
                     PointRuleId = scoring.PointsRule.PointRuleId,
-                    PointsPerPlace = scoring.PointsRule.PointsPerPlace,
+                    PointsPerPlace = scoring.PointsRule.PointsPerPlace.ToList(),
                     PointsSortOptions = scoring.PointsRule.PointsSortOptions,
                     Name = scoring.PointsRule.Name,
                     
