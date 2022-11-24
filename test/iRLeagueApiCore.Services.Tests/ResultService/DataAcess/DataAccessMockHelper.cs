@@ -228,10 +228,11 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                         .Without(x => x.DependendScorings)
                         .Without(x => x.ExtScoringSource)
                         .Without(x => x.ResultConfiguration)
-                        .Without(x => x.ResultsFilterOptions)
                         .Create())
                     .ToList())
-                .Without(x => x.League);
+                .Without(x => x.League)
+                .Without(x => x.PointFilters)
+                .Without(x => x.ResultFilters);
         }
 
         public ResultConfigurationEntity CreateConfiguration(EventEntity @event)
@@ -281,7 +282,6 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             return fixture.Build<PointRuleEntity>()
                 .With(x => x.League, league)
                 .With(x => x.LeagueId, league.Id)
-                .Without(x => x.ResultsFilters)
                 .Without(x => x.Scorings)
                 .Create();
         }

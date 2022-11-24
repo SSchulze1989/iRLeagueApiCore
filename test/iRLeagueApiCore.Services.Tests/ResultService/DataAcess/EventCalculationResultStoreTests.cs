@@ -72,6 +72,61 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             testRowEntity.RacePoints.Should().Be(testRow.RacePoints);
         }
 
+        [Fact]
+        public async Task StoreCalculationResult_ShouldDeleteSessionResult_WhenNotInCalculationResult()
+        {
+            var @event = await GetFirstEventEntity();
+            var configEntity = accessMockHelper.CreateConfiguration(@event);
+            var resultEntity = accessMockHelper.CreateScoredResult(@event, configEntity);
+            var removeScoring = configEntity.Scorings.OrderBy(x => x.Index).Last();
+            var removeSessionResult = resultEntity.ScoredSessionResults.ElementAt(1);
+            dbContext.ResultConfigurations.Add(configEntity);
+            dbContext.ScoredEventResults.Add(resultEntity);
+            await dbContext.SaveChangesAsync();
+            var config = GetConfiguration(@event, resultEntity);
+            config.SessionResultConfigurations = config.SessionResultConfigurations
+                .Where(x => x.SessionResultId != removeSessionResult.SessionResultId);
+            var result = GetCalculationResult(@event, config);
+            var sut = CreateSut();
+
+            await sut.StoreCalculationResult(result);
+
+            var test = await dbContext.ScoredSessionResults
+                .Where(x => x.SessionResultId == removeSessionResult.SessionResultId)
+                .SingleOrDefaultAsync();
+            test.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task StoreCalculationResult_ShouldDeleteResultRow_WhenNotInSessionResult()
+        {
+            var @event = await GetFirstEventEntity();
+            var configEntity = accessMockHelper.CreateConfiguration(@event);
+            var resultEntity = accessMockHelper.CreateScoredResult(@event, configEntity);
+            var removeScoring = configEntity.Scorings.OrderBy(x => x.Index).Last();
+            var removeRow = resultEntity.ScoredSessionResults
+                .OrderBy(x => x.SessionNr)
+                .Last()
+                .ScoredResultRows.OrderBy(x => x.FinishPosition)
+                .ElementAt(1);
+            dbContext.ResultConfigurations.Add(configEntity);
+            dbContext.ScoredEventResults.Add(resultEntity);
+            await dbContext.SaveChangesAsync();
+            var config = GetConfiguration(@event, resultEntity);
+            var result = GetCalculationResult(@event, config, resultEntity);
+            var removeRowFromSessionResult = result.SessionResults.Single(x => x.SessionResultId == removeRow.SessionResultId);
+            removeRowFromSessionResult.ResultRows = removeRowFromSessionResult.ResultRows
+                .Where(x => x.MemberId != removeRow.MemberId);
+            var sut = CreateSut();
+
+            await sut.StoreCalculationResult(result);
+
+            var testResult = await dbContext.ScoredSessionResults
+                .SingleAsync(x => x.SessionResultId == removeRow.SessionResultId);
+            testResult.ScoredResultRows.Should().HaveSameCount(removeRowFromSessionResult.ResultRows);
+            testResult.ScoredResultRows.Should().NotContain(x => x.ScoredResultRowId == removeRow.ScoredResultRowId);
+        }
+
         private EventCalculationResultStore CreateSut()
         {
             return fixture.Create<EventCalculationResultStore>();

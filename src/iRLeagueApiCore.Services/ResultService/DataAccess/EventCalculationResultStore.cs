@@ -59,6 +59,11 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     sessionResultEntities.Add(sessionResultEntity);
                 }
                 sessionResultEntity = MapToScoredSessionResultEntity(sessionResult, sessionResultEntity, requiredEntities);
+                keepResults.Add(sessionResultEntity);
+            }
+            foreach (var removeResult in sessionResultEntities.Except(keepResults).ToList())
+            {
+                sessionResultEntities.Remove(removeResult);
             }
             return sessionResultEntities;
         }
@@ -84,6 +89,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
         private ICollection<ScoredResultRowEntity> MapToScoredResultRows(IEnumerable<ResultRowCalculationResult> resultRows, 
             ICollection<ScoredResultRowEntity> rowEntities, RequiredEntities requiredEntities)
         {
+            var keepRows = new List<ScoredResultRowEntity>();
             foreach(var row in resultRows)
             {
                 ScoredResultRowEntity? rowEntity = default;
@@ -103,6 +109,11 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     rowEntities.Add(rowEntity);
                 }
                 rowEntity = MaptoScoredResultRow(row, rowEntity, requiredEntities);
+                keepRows.Add(rowEntity);
+            }
+            foreach(var removeRows in rowEntities.Except(keepRows).ToList())
+            {
+                rowEntities.Remove(removeRows);
             }
             return rowEntities;
         }

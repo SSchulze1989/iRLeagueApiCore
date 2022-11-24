@@ -17,7 +17,6 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return await dbContext.ResultConfigurations
                 .Include(x => x.Scorings)
                     .ThenInclude(x => x.PointsRule)
-                        .ThenInclude(x => x.ResultsFilters)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.ResultConfigId == resultConfigId)
                 .FirstOrDefaultAsync(cancellationToken);
