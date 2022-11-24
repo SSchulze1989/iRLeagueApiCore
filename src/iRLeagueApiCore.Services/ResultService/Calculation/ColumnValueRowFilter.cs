@@ -9,9 +9,27 @@ internal class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
 {
     public ColumnValueRowFilter(string propertyName, ComparatorType comparator, IEnumerable<string> values, MatchedValueAction action)
     {
-        ColumnProperty = GetColumnPropertyInfo(propertyName);
+        try
+        {
+            ColumnProperty = GetColumnPropertyInfo(propertyName);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new ArgumentException($"Parameter value {propertyName} did not target a valid column property on type {typeof(ResultRowCalculationResult)}",
+                nameof(propertyName), ex);
+        }
         CompareFunc = GetCompareFunction(comparator);
-        FilterValues = GetFilterValuesOfType(ColumnProperty.PropertyType, values);
+        try
+        {
+            FilterValues = GetFilterValuesOfType(ColumnProperty.PropertyType, values).ToList();
+        }
+        catch (Exception ex) when (ex is InvalidCastException || 
+                                   ex is FormatException ||
+                                   ex is OverflowException ||
+                                   ex is ArgumentNullException)
+        {
+            throw new ArgumentException($"Parameter was not of type {ColumnProperty.PropertyType} of column property {ColumnProperty.Name}", nameof(values), ex);
+        }
         Action = action;
     }
 
