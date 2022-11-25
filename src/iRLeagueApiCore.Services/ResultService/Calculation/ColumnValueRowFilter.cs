@@ -18,6 +18,7 @@ internal class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
             throw new ArgumentException($"Parameter value {propertyName} did not target a valid column property on type {typeof(ResultRowCalculationResult)}",
                 nameof(propertyName), ex);
         }
+        Comparator = comparator;
         CompareFunc = GetCompareFunction(comparator);
         try
         {
@@ -33,10 +34,11 @@ internal class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
         Action = action;
     }
 
-    private PropertyInfo ColumnProperty { get; set; }
-    private Func<IComparable?, IEnumerable<IComparable>, bool> CompareFunc { get; set; }
-    private IEnumerable<IComparable> FilterValues { get; set; } = Array.Empty<IComparable>();
-    private MatchedValueAction Action { get; set; }
+    public PropertyInfo ColumnProperty { get; }
+    public ComparatorType Comparator { get; }
+    private Func<IComparable?, IEnumerable<IComparable>, bool> CompareFunc { get; }
+    public IEnumerable<IComparable> FilterValues { get; }
+    public MatchedValueAction Action { get; }
 
     public override IEnumerable<T> FilterRows<T>(IEnumerable<T> rows)
     {

@@ -20,5 +20,16 @@
                 .Select(x => x.item);
                 
         }
+
+        /// <summary>
+        /// returns subset of values that are not null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> enumerable) where T : notnull
+        {
+            return enumerable.Where(x => x is not null).OfType<T>();
+        }
     }
 }

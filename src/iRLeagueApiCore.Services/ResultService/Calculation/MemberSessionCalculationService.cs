@@ -37,7 +37,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             pointRule.ApplyPoints(calcRows);
 
             var finalRows = rows.AsEnumerable();
-            foreach(var filter in pointRule.GetFinalFilters())
+            foreach(var filter in pointRule.GetResultFilters())
             {
                 finalRows = filter.FilterRows(finalRows);
             }

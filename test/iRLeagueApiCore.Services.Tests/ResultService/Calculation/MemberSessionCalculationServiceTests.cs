@@ -280,7 +280,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
         {
             var mockRule = new Mock<PointRule<T>>();
             mockRule.Setup(x => x.GetPointFilters()).Returns(pointFilters);
-            mockRule.Setup(x => x.GetFinalFilters()).Returns(finalFilters);
+            mockRule.Setup(x => x.GetResultFilters()).Returns(finalFilters);
             mockRule
                 .Setup(x => x.SortForPoints(It.IsAny<IEnumerable<T>>()))
                 .Returns((IEnumerable<T> rows) => sortForPoints(rows).ToList());

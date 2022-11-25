@@ -7,11 +7,11 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
     internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculationResult>
     {
         public IEnumerable<RowFilter<ResultRowCalculationResult>> PointFilters { get; set; } = Array.Empty<RowFilter<ResultRowCalculationResult>>();
-        public IEnumerable<RowFilter<ResultRowCalculationResult>> FinalFilters { get; set; } = Array.Empty<RowFilter<ResultRowCalculationResult>>();
+        public IEnumerable<RowFilter<ResultRowCalculationResult>> ResultFilters { get; set; } = Array.Empty<RowFilter<ResultRowCalculationResult>>();
         public IEnumerable<SortOptions> PointSortOptions { get; set; } = Array.Empty<SortOptions>();
         public IEnumerable<SortOptions> FinalSortOptions { get; set; } = Array.Empty<SortOptions>();
 
-        public override IEnumerable<RowFilter<ResultRowCalculationResult>> GetFinalFilters() => FinalFilters;
+        public override IEnumerable<RowFilter<ResultRowCalculationResult>> GetResultFilters() => ResultFilters;
 
         public override IEnumerable<RowFilter<ResultRowCalculationResult>> GetPointFilters() => PointFilters;
 

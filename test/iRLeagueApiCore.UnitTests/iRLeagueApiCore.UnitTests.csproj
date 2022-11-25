@@ -12,7 +12,7 @@
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
     <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.8-dev.19" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.8-dev.4" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.8-dev.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.9">
       <PrivateAssets>all</PrivateAssets>
