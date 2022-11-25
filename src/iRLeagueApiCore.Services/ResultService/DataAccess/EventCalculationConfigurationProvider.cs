@@ -90,8 +90,9 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             return configuration;
         }
 
-        private IReadOnlyList<long> SortInOrderOfDependency(IEnumerable<(long id, long? sourceId)> configs)
+        private static IReadOnlyList<long> SortInOrderOfDependency(IEnumerable<(long id, long? sourceId)> configs)
         {
+            // Implementation of Kahn's algorithm --> see https://en.wikipedia.org/wiki/Topological_sorting
             var sortList = new List<long>();
             if (configs.Any() == false)
             {
