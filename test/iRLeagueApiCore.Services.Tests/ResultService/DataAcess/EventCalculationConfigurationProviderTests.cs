@@ -11,6 +11,11 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         private readonly DataAccessMockHelper accessMockHelper;
         private readonly LeagueDbContext dbContext;
 
+        private static IEnumerable<object[]> TestOrderConfigsData => new[]
+        {
+            new object[] { new int?[] { 2, 0, 4, null, 3 }, new [] { 3, 4, 2, 0, 1} },
+        };
+
         public EventCalculationConfigurationProviderTests()
         {
             fixture = new Fixture();
@@ -55,6 +60,53 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         }
 
         [Fact]
+        public async Task GetResultConfigIds_ShouldReturnInOrderOfDependency_WhenSourceResultConfigIsConfigured()
+        {
+            var @event = await dbContext.Events.FirstAsync();
+            int resultConfigCount = 5;
+            var resultConfigs = accessMockHelper.ConfigurationBuilder(@event).CreateMany(resultConfigCount).ToList();
+            // add dependencies
+            resultConfigs[0].SourceResultConfigId = resultConfigs[2].ResultConfigId;
+            resultConfigs[1].SourceResultConfigId = resultConfigs[0].ResultConfigId;
+            resultConfigs[2].SourceResultConfigId = resultConfigs[4].ResultConfigId;
+            resultConfigs[3].SourceResultConfigId = null;
+            resultConfigs[4].SourceResultConfigId = resultConfigs[3].ResultConfigId;
+            dbContext.ResultConfigurations.AddRange(resultConfigs);
+            await dbContext.SaveChangesAsync();
+            var expectedOrder = new[] { 3, 4, 2, 0, 1 };
+            var sut = CreateSut();
+
+            var test = await sut.GetResultConfigIds(@event.EventId);
+
+            foreach ((var configId, var expIndex) in test.Zip(expectedOrder))
+            {
+                configId.Should().Be(resultConfigs[expIndex].ResultConfigId);
+            }
+        }
+
+        [Fact]
+        public async Task GetResultConfigIds_ShouldThrow_WhenSourceResultConfigContainsCyclicDependency()
+        {
+            var @event = await dbContext.Events.FirstAsync();
+            int resultConfigCount = 5;
+            var resultConfigs = accessMockHelper.ConfigurationBuilder(@event).CreateMany(resultConfigCount).ToList();
+            // add dependencies
+            resultConfigs[0].SourceResultConfigId = resultConfigs[1].ResultConfigId;
+            resultConfigs[1].SourceResultConfigId = resultConfigs[0].ResultConfigId;
+            resultConfigs[2].SourceResultConfigId = resultConfigs[4].ResultConfigId;
+            resultConfigs[3].SourceResultConfigId = null;
+            resultConfigs[4].SourceResultConfigId = resultConfigs[3].ResultConfigId;
+            dbContext.ResultConfigurations.AddRange(resultConfigs);
+            await dbContext.SaveChangesAsync();
+            var expectedOrder = new[] { 3, 4, 2, 0, 1 };
+            var sut = CreateSut();
+
+            var test = async () => await sut.GetResultConfigIds(@event.EventId);
+
+            await test.Should().ThrowAsync<InvalidOperationException>();
+        }
+
+        [Fact]
         public async Task GetConfiguration_ShouldReturnDefaultConfiguration_WhenResultConfigIsNull()
         {
             var @event = await dbContext.Events
@@ -84,7 +136,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
 
             var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
 
-            test.ResultConfigId = config.ResultConfigId;
+            test.ResultConfigId.Should().Be(config.ResultConfigId);
         }
 
         [Fact]
@@ -119,8 +171,28 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
 
             var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
 
-            test.ResultConfigId = config.ResultConfigId;
+            test.ResultConfigId.Should().Be(config.ResultConfigId);
             test.ResultId.Should().Be(eventResult.ResultId);
+        }
+
+        [Fact]
+        public async Task GetConfiguration_ShouldProvideSourceConfigId_WhenSourceConfigIsConfigured()
+        {
+            var @event = await dbContext.Events
+                .Include(x => x.Sessions)
+                .FirstAsync();
+            var sourceConfig = accessMockHelper.CreateConfiguration(@event);
+            var config = accessMockHelper.CreateConfiguration(@event);
+            config.SourceResultConfig = sourceConfig;
+            dbContext.ResultConfigurations.Add(sourceConfig);
+            dbContext.ResultConfigurations.Add(config);
+            await dbContext.SaveChangesAsync();
+            var sut = CreateSut();
+
+            var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
+
+            test.ResultConfigId.Should().Be(config.ResultConfigId);
+            test.SourceResultConfigId.Should().Be(sourceConfig.ResultConfigId);
         }
 
         private EventCalculationConfigurationProvider CreateSut()

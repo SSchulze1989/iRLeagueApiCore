@@ -9,6 +9,7 @@
         /// </summary>
         public long? ResultId { get; set; }
         public long? ResultConfigId { get; set; }
+        public long? SourceResultConfigId { get; set; }
 
         public string DisplayName { get; set; } = string.Empty;
         public IEnumerable<SessionCalculationConfiguration> SessionResultConfigurations { get; set; } = Array.Empty<SessionCalculationConfiguration>();

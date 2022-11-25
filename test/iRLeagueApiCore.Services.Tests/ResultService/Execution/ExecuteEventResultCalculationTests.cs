@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Services.Tests.Extensions;
 using Microsoft.Extensions.Logging;
@@ -100,7 +101,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
             int resultConfigCount = 3;
             var resultConfigIds = fixture.CreateMany<long>(resultConfigCount);
             mockConfigurationProvider.Setup(x => x.GetResultConfigIds(It.IsAny<long>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => resultConfigIds);
+                .ReturnsAsync(() => resultConfigIds.ToList());
             var storedResults = new List<EventCalculationResult>();
             mockResultStore.Setup(x => x.StoreCalculationResult(It.IsAny<EventCalculationResult>(), It.IsAny<CancellationToken>()))
                 .Callback((EventCalculationResult result, CancellationToken cancellationToken) => storedResults.Add(result));
@@ -129,7 +130,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
         {
             var mockProvider = new Mock<IEventCalculationConfigurationProvider>();
             mockProvider.Setup(x => x.GetResultConfigIds(It.IsAny<long>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => fixture.CreateMany<long>())
+                .ReturnsAsync(() => fixture.CreateMany<long>().ToList())
                 .Verifiable();
             mockProvider.Setup(x => x.GetConfiguration(It.IsAny<long>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((long eventId, long? resultConfigId, CancellationToken cancellationToken) => CreateConfiguration(fixture, eventId, resultConfigId))

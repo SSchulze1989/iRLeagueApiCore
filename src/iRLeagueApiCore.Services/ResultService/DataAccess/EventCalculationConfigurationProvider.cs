@@ -12,18 +12,20 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
     internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase, IEventCalculationConfigurationProvider
     {
         private readonly ISessionCalculationConfigurationProvider sessionConfigurationProvider;
-        public EventCalculationConfigurationProvider(LeagueDbContext dbContext, ISessionCalculationConfigurationProvider sessionConfigurationProvider) : 
+        public EventCalculationConfigurationProvider(LeagueDbContext dbContext, 
+            ISessionCalculationConfigurationProvider sessionConfigurationProvider) : 
             base(dbContext)
         {
             this.sessionConfigurationProvider = sessionConfigurationProvider;
         }
 
-        public async Task<IEnumerable<long>> GetResultConfigIds(long eventId, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<long>> GetResultConfigIds(long eventId, CancellationToken cancellationToken = default)
         {
-            return await dbContext.Events
+            var configs = await dbContext.Events
                 .Where(x => x.EventId == eventId)
-                .SelectMany(x => x.ResultConfigs.Select(y => y.ResultConfigId))
+                .SelectMany(x => x.ResultConfigs.Select(y => new { y.ResultConfigId, y.SourceResultConfigId }))
                 .ToListAsync(cancellationToken);
+            return SortInOrderOfDependency(configs.Select(x => (x.ResultConfigId, x.SourceResultConfigId)));
         }
 
         public async Task<EventCalculationConfiguration> GetConfiguration(long eventId, long? resultConfigId, CancellationToken cancellationToken = default)
@@ -82,9 +84,46 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 .Select(x => x.ResultId)
                 .FirstOrDefaultAsync(cancellationToken);
             configuration.ResultConfigId = configId;
+            configuration.SourceResultConfigId = configEntity?.SourceResultConfigId;
             configuration.DisplayName = configEntity?.DisplayName ?? "Default";
             configuration.SessionResultConfigurations = await sessionConfigurationProvider.GetConfigurations(eventEntity, configEntity, cancellationToken);
             return configuration;
+        }
+
+        private IReadOnlyList<long> SortInOrderOfDependency(IEnumerable<(long id, long? sourceId)> configs)
+        {
+            var sortList = new List<long>();
+            if (configs.Any() == false)
+            {
+                return sortList;
+            }
+
+            var source = configs.ToDictionary(k => k.id, v => v.sourceId);
+            var startNodes = configs.Where(x => x.sourceId is null).ToList();
+            if (startNodes.Any() == false || startNodes.Any(x => x.id == x.sourceId))
+            {
+                throw new InvalidOperationException("ResultConfiguration list contains cyclic dependencies");
+            }
+
+            while(startNodes.Any())
+            {
+                var node = startNodes.First();
+                startNodes.Remove(node);
+
+                sortList.Add(node.id);
+                foreach(var (id, sourceId) in source.Where(x => x.Value == node.id))
+                {
+                    source[id] = null;
+                    startNodes.Add((id, null));
+                }
+            }
+
+            if (source.Values.Any(x => x is not null))
+            {
+                throw new InvalidOperationException("ResultConfiguration list contains cyclic dependencies, or dependencies outside of this event scope");
+            }
+
+            return sortList;
         }
     }
 }

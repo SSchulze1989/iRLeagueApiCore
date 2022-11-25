@@ -232,7 +232,9 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                     .ToList())
                 .Without(x => x.League)
                 .Without(x => x.PointFilters)
-                .Without(x => x.ResultFilters);
+                .Without(x => x.ResultFilters)
+                .Without(x => x.SourceResultConfigId)
+                .Without(x => x.SourceResultConfig);
         }
 
         public ResultConfigurationEntity CreateConfiguration(EventEntity @event)

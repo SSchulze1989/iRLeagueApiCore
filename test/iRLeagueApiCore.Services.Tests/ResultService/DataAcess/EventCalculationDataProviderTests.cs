@@ -89,6 +89,33 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             test.SessionResults.First().AcceptedReviewVotes.First().ReviewVoteId.Should().Be(vote.ReviewVoteId);
         }
 
+        [Fact]
+        public async Task GetData_ShouldProvideResultFromSoure_WhenSourceConfigIsConfigured()
+        {
+            var @event = await GetFirstEventEntity();
+            var sourceConfig = accessMockHelper.CreateConfiguration(@event);
+            var sourceResult = accessMockHelper.CreateScoredResult(@event, sourceConfig);
+            dbContext.ResultConfigurations.Add(sourceConfig);
+            dbContext.ScoredEventResults.Add(sourceResult);
+            await dbContext.SaveChangesAsync();
+            var config = GetConfiguration(@event);
+            config.SourceResultConfigId = sourceConfig.ResultConfigId;
+            var sut = CreateSut();
+
+            var test = await sut.GetData(config);
+
+            test.Should().NotBeNull();
+            test!.SessionResults.Should().HaveSameCount(sourceResult.ScoredSessionResults);
+            foreach((var testSession, var sourceSession) in test.SessionResults.OrderBy(x => x.SessionNr).Zip(sourceResult.ScoredSessionResults.OrderBy(x => x.SessionNr)))
+            {
+                foreach((var testRow, var sourceRow) in testSession.ResultRows.OrderBy(x => x.MemberId).Zip(sourceSession.ScoredResultRows.OrderBy(x => x.MemberId)))
+                {
+                    testRow.RacePoints.Should().Be(sourceRow.RacePoints);
+                    testRow.Car.Should().Be(sourceRow.Car);
+                }
+            }
+        }
+
         private EventCalculationDataProvider CreateSut()
         {
             return fixture.Create<EventCalculationDataProvider>();
@@ -111,6 +138,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
             return fixture.Build<EventCalculationConfiguration>()
                 .With(x => x.LeagueId, @event.LeagueId)
                 .With(x => x.EventId, @event.EventId)
+                .Without(x => x.SourceResultConfigId)
                 .Create();
         }
 
