@@ -252,19 +252,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                     .With(x => x.LeagueId, session.LeagueId)
                     .With(x => x.Name, session.Name)
                     .With(x => x.SessionNr, session.SessionNr)
-                    .With(x => x.ScoredResultRows, session.SessionResult.ResultRows.Select(row => fixture.Build<ScoredResultRowEntity>()
-                        .With(x => x.LeagueId, row.LeagueId)
-                        .With(x => x.Member, row.Member)
-                        .With(x => x.MemberId, row.MemberId)
-                        .With(x => x.Team, row.Team)
-                        .With(x => x.TeamId, row.TeamId)
-                        .Without(x => x.AddPenalty)
-                        .Without(x => x.ReviewPenalties)
-                        .Without(x => x.ScoredSessionResult)
-                        .Without(x => x.TeamResultRows)
-                        .Without(x => x.TeamParentRows)
-                        .Without(x => x.StandingRows)
-                        .Create()).ToList())
+                    .With(x => x.ScoredResultRows, CreateScoredResultRows(session))
                     .Without(x => x.Scoring)
                     .Without(x => x.ScoredEventResult)
                     .Without(x => x.CleanestDrivers)
@@ -277,6 +265,23 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .With(x => x.ResultConfig, config)
                 .With(x => x.ResultConfigId, config?.ResultConfigId)
                 .Create();
+        }
+
+        public IEnumerable<ScoredResultRowEntity> CreateScoredResultRows(SessionEntity session)
+        {
+            return session.SessionResult.ResultRows.Select(row => fixture.Build<ScoredResultRowEntity>()
+                .With(x => x.LeagueId, row.LeagueId)
+                .With(x => x.Member, row.Member)
+                .With(x => x.MemberId, row.MemberId)
+                .With(x => x.Team, row.Team)
+                .With(x => x.TeamId, row.TeamId)
+                .Without(x => x.AddPenalty)
+                .Without(x => x.ReviewPenalties)
+                .Without(x => x.ScoredSessionResult)
+                .Without(x => x.TeamResultRows)
+                .Without(x => x.TeamParentRows)
+                .Without(x => x.StandingRows)
+                .Create()).ToList();
         }
 
         public PointRuleEntity CreatePointRule(LeagueEntity league)

@@ -162,6 +162,8 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             rowEntity.StartPosition = row.StartPosition;
             rowEntity.Status = row.Status;
             rowEntity.TotalPoints = row.TotalPoints;
+            rowEntity.TeamResultRows = requiredEntities.ScoredResultRows
+                .Where(x => row.ScoredMemberResultRowIds.Contains(x.ScoredResultRowId)).ToList();
             return rowEntity;
         }
 
@@ -212,11 +214,14 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             requiredEntities.Members = await GetMemberEntities(result.SessionResults
                 .SelectMany(x => x.ResultRows)
                 .Select(x => x.MemberId)
-                .OfType<long>(), cancellationToken);
+                .NotNull(), cancellationToken);
             requiredEntities.Teams = await GetTeamEntities(result.SessionResults
                 .SelectMany(x => x.ResultRows)
                 .Select(x => x.TeamId)
-                .OfType<long>(), cancellationToken);
+                .NotNull(), cancellationToken);
+            requiredEntities.ScoredResultRows = await GetScoredResultRowEntities(result.SessionResults
+                .SelectMany(x => x.ResultRows)
+                .SelectMany(x => x.ScoredMemberResultRowIds), cancellationToken);
             return requiredEntities;
         }
 
@@ -231,6 +236,13 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
         {
             return await dbContext.Teams
                 .Where(x => teamIds.Contains(x.TeamId))
+                .ToListAsync(cancellationToken);
+        }
+
+        private async Task<ICollection<ScoredResultRowEntity>> GetScoredResultRowEntities(IEnumerable<long> ids, CancellationToken cancellationToken)
+        {
+            return await dbContext.ScoredResultRows
+                .Where(x => ids.Contains(x.ScoredResultRowId))
                 .ToListAsync(cancellationToken);
         }
     }
