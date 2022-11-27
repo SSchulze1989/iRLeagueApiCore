@@ -94,7 +94,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 return sessionConfiguration;
             }
             sessionConfiguration.PointRule = GetPointRuleFromEntity(scoring.PointsRule, configurationEntity);
-            sessionConfiguration.MaxResultsPerGroup = scoring.MaxResultsPerGroup;
+            sessionConfiguration.MaxResultsPerGroup = configurationEntity.ResultsPerTeam;
             sessionConfiguration.UseResultSetTeam = scoring.UseResultSetTeam;
             sessionConfiguration.UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation;
             sessionConfiguration.ScoringId = scoring.ScoringId;
@@ -104,20 +104,19 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
 
         private static PointRule<ResultRowCalculationResult> GetPointRuleFromEntity(PointRuleEntity? pointsRuleEntity, ResultConfigurationEntity configurationEntity)
         {
-            if (pointsRuleEntity == null)
-            {
-                return CalculationPointRuleBase.Default();
-            }
-
             CalculationPointRuleBase pointRule;
-            if (pointsRuleEntity.PointsPerPlace.Any())
+            if (pointsRuleEntity?.PointsPerPlace.Any() == true)
             {
                 pointRule = new PerPlacePointRule(PointsPerPlaceToDictionary<double>(pointsRuleEntity.PointsPerPlace
                     .Select(x => (double)x)));
             }
-            else
+            else if (pointsRuleEntity?.MaxPoints > 0)
             {
                 pointRule = new MaxPointRule(pointsRuleEntity.MaxPoints, pointsRuleEntity.PointDropOff);
+            }
+            else
+            {
+                return CalculationPointRuleBase.Default();
             }
 
             pointRule.PointSortOptions = pointsRuleEntity.PointsSortOptions;

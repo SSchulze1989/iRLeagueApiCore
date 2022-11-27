@@ -33,6 +33,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 : null;
             resultConfigEntity.Name = postResultConfig.Name;
             resultConfigEntity.ResultKind = postResultConfig.ResultKind;
+            resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
             resultConfigEntity.Scorings = await MapToScoringList(resultConfigEntity.LeagueId, user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
             UpdateVersionEntity(user, resultConfigEntity);
             return await Task.FromResult(resultConfigEntity);
@@ -123,6 +124,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             Name = resultConfig.Name,
             DisplayName = resultConfig.DisplayName,
             ResultKind = resultConfig.ResultKind,
+            ResultsPerTeam = resultConfig.ResultsPerTeam,
             Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()
             {
                 Id = scoring.ScoringId,

@@ -30,6 +30,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             {
                 Name = "TestresultConfig",
                 DisplayName = "TestResultConfig DisplayName",
+                ResultsPerTeam = 10,
             };
             return new PutResultConfigRequest(leagueId, resultConfigId, DefaultUser(), PutResultConfig);
         }
@@ -46,6 +47,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             result.ResultConfigId.Should().Be(request.ResultConfigId);
             result.Name.Should().Be(expected.Name);
             result.DisplayName.Should().Be(expected.DisplayName);
+            result.ResultsPerTeam.Should().Be(expected.ResultsPerTeam);
             base.DefaultAssertions(request, result, dbContext);
         }
 

@@ -44,6 +44,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             result.ResultConfigId.Should().Be(request.ResultConfigId);
             result.Name.Should().Be(resultConfigEntity.Name);
             result.DisplayName.Should().Be(resultConfigEntity.DisplayName);
+            result.ResultsPerTeam.Should().Be(resultConfigEntity.ResultsPerTeam);
             base.DefaultAssertions(request, result, dbContext);
         }
 

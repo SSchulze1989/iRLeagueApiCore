@@ -85,7 +85,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 sessionConfig.LeagueId.Should().Be(@event.LeagueId);
                 sessionConfig.SessionId.Should().Be(session.SessionId);
                 sessionConfig.ScoringId.Should().Be(scoring.ScoringId);
-                sessionConfig.MaxResultsPerGroup.Should().Be(scoring.MaxResultsPerGroup);
+                sessionConfig.MaxResultsPerGroup.Should().Be(config.ResultsPerTeam);
                 sessionConfig.UpdateTeamOnRecalculation.Should().Be(scoring.UpdateTeamOnRecalculation);
                 sessionConfig.UseResultSetTeam.Should().Be(scoring.UseResultSetTeam);
             }
@@ -204,7 +204,37 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         }
 
         [Fact]
-        public async Task GetConfigurations_ShouldProvideMaxPointRule_WhenNoPointsPerPlaceConfigured()
+        public async Task GetConfigurations_ShouldProvideDefaultPointRule_WhenResultPointRuleHasNoPoints()
+        {
+            var @event = await GetFirstEventEntity();
+            var config = accessMockHelper.CreateConfiguration(@event);
+            var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+            pointRule.PointsPerPlace = new List<int>();
+            pointRule.MaxPoints = 0;
+            pointRule.PointDropOff = 0;
+            dbContext.PointRules.Add(pointRule);
+            dbContext.ResultConfigurations.Add(config);
+            config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+            await dbContext.SaveChangesAsync();
+            config = await dbContext.ResultConfigurations
+                .Include(x => x.Scorings)
+                    .ThenInclude(x => x.PointsRule)
+                .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            var scorings = await dbContext.Scorings
+                .Include(x => x.ResultConfiguration)
+                .ToListAsync();
+            var sut = CreateSut();
+
+            var test = await sut.GetConfigurations(@event, config);
+
+            foreach (var sessionConfig in test)
+            {
+                sessionConfig.PointRule.Should().BeOfType(CalculationPointRuleBase.Default().GetType());
+            }
+        }
+
+        [Fact]
+        public async Task GetConfigurations_ShouldProvideMaxPointRule_WhenNoPointsPerNotPlaceConfigured()
         {
             var @event = await GetFirstEventEntity();
             var config = accessMockHelper.CreateConfiguration(@event);

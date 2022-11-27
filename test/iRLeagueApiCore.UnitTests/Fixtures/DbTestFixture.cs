@@ -290,7 +290,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             var resultConfig = new ResultConfigurationEntity()
             {
                 Name = "Resultconfig 1",
-                DisplayName = "Overall"
+                DisplayName = "Overall",
+                ResultsPerTeam = random.Next(1, 10),
             };
             var scoring = new ScoringEntity()
             {
