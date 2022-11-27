@@ -4,6 +4,7 @@
     {
         public ResultRowCalculationResult(ResultRowCalculationData data)
         {
+            ScoredResultRowId = data.ScoredResultRowId;
             MemberId = data.MemberId;
             Firstname = data.Firstname;
             Lastname = data.Lastname;
@@ -49,5 +50,6 @@
             FinalPositionChange = data.FinalPositionChange;
         }
         public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = Array.Empty<ReviewPenaltyCalculationResult>();
+        public ICollection<long> ScoredMemberResultRowIds { get; set;} = Array.Empty<long>();
     }
 }

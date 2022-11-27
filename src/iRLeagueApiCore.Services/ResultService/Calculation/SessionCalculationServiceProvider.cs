@@ -11,7 +11,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             return config.ResultKind switch
             {
                 ResultKind.Member => new MemberSessionCalculationService(config),
-                ResultKind.Team => throw new NotImplementedException("Team scoring is not implemented"),
+                ResultKind.Team => new TeamSessionCalculationService(config),
                 _ => throw new InvalidOperationException($"Unknown Scoring Kind: {config.ResultKind}"),
             };
         }

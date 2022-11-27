@@ -1,9 +1,14 @@
 ﻿using iRLeagueDatabaseCore.Models;
+using System.Diagnostics;
 
 namespace iRLeagueApiCore.Services.ResultService.Models
 {
+    [DebuggerDisplay("RowId = {ScoredResultRowId}, MemberId = {MemberId}, " +
+        "TeamId = {TeamId}, RacePoints = {RacePoints}, BonusPoints = {BonusPoints}, " +
+        "PenaltyPoints = {PenaltyPoints}, TotalPoints = {TotalPoints}")]
     internal class ResultRowCalculationData : IPointRow, IPenaltyRow
     {
+        public long? ScoredResultRowId { get; set; }
         public long? MemberId { get; set; }
         public string Firstname { get; set; } = string.Empty;
         public string Lastname { get; set; } = string.Empty;

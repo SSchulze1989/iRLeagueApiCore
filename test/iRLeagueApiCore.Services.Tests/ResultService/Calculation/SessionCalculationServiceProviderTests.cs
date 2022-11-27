@@ -25,6 +25,18 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             test.Should().BeOfType<MemberSessionCalculationService>();
         }
 
+        [Fact]
+        public void GetCalculationService_ShouldProvideTeamCalculationService_WhenScoringKindIsTeam()
+        {
+            var config = GetCalculationConfiguration();
+            config.ResultKind = ResultKind.Team;
+            var sut = CreateSut();
+
+            var test = sut.GetCalculationService(config);
+
+            test.Should().BeOfType<TeamSessionCalculationService>();
+        }
+
         private SessionCalculationServiceProvider CreateSut()
         {
             return fixture.Create<SessionCalculationServiceProvider>();

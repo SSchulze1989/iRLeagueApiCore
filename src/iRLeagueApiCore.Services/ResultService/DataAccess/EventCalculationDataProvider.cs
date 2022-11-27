@@ -47,6 +47,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     }),
                 ResultRows = sessionResult.ResultRows.Select(row => new ResultRowCalculationData()
                 {
+                    ScoredResultRowId = null,
                     MemberId = row.MemberId,
                     Firstname = row.Member == null ? string.Empty : row.Member.Firstname,
                     Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
@@ -96,6 +97,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 SessionNr = sessionResult.SessionNr,
                 ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowCalculationData()
                 {
+                    ScoredResultRowId = row.ScoredResultRowId,
                     MemberId = row.MemberId,
                     Firstname = row.Member == null ? string.Empty : row.Member.Firstname,
                     Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
