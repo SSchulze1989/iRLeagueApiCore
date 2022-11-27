@@ -30,7 +30,8 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
         {
             LeagueId = eventResult.LeagueId,
             EventId = eventResult.EventId,
-            SessionResults = eventResult.SessionResults.Select(sessionResult => new SessionCalculationData()
+            SessionResults = eventResult.SessionResults
+                .Select(sessionResult => new SessionCalculationData()
             {
                 LeagueId = sessionResult.LeagueId,
                 SessionId = sessionResult.SessionId,

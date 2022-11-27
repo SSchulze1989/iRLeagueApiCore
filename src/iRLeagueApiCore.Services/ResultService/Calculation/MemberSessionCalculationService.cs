@@ -14,11 +14,6 @@ internal sealed class MemberSessionCalculationService : CalculationServiceBase
 
     public override Task<SessionCalculationResult> Calculate(SessionCalculationData data)
     {
-        if (data.LeagueId != config.LeagueId)
-            throw new InvalidOperationException("LeagueId does not match");
-        if (config.SessionId != null && data.SessionId != config.SessionId)
-            throw new InvalidOperationException("SessionId does not match");
-
         var rows = data.ResultRows
             .Select(row => new ResultRowCalculationResult(row))
             .Where(row => row.MemberId != null)

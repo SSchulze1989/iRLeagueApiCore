@@ -17,6 +17,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             return await dbContext.ResultConfigurations
                 .Include(x => x.Scorings)
                     .ThenInclude(x => x.PointsRule)
+                .Include(x => x.SourceResultConfig)
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.ResultConfigId == resultConfigId)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -26,8 +27,10 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
         {
             resultConfigEntity.DisplayName = postResultConfig.DisplayName;
-            resultConfigEntity.SourceResultConfig = await dbContext.ResultConfigurations
-                .FirstOrDefaultAsync(x => x.ResultConfigId == postResultConfig.SourceResultConfig.ResultConfigId, cancellationToken);
+            resultConfigEntity.SourceResultConfig = postResultConfig.SourceResultConfig != null 
+                ? await dbContext.ResultConfigurations
+                    .FirstOrDefaultAsync(x => x.ResultConfigId == postResultConfig.SourceResultConfig.ResultConfigId, cancellationToken)
+                : null;
             resultConfigEntity.Name = postResultConfig.Name;
             resultConfigEntity.ResultKind = postResultConfig.ResultKind;
             resultConfigEntity.Scorings = await MapToScoringList(resultConfigEntity.LeagueId, user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
@@ -108,13 +111,15 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
             LeagueId = resultConfig.LeagueId,
             ResultConfigId = resultConfig.ResultConfigId,
-            SourceResultConfig = new ResultConfigInfoModel()
-            {
-                ResultConfigId = resultConfig.SourceResultConfig.ResultConfigId,
-                DisplayName = resultConfig.SourceResultConfig.DisplayName,
-                LeagueId = resultConfig.SourceResultConfig.LeagueId,
-                Name = resultConfig.SourceResultConfig.Name,
-            },
+            SourceResultConfig = resultConfig.SourceResultConfig != null 
+                ? new ResultConfigInfoModel()
+                {
+                    ResultConfigId = resultConfig.SourceResultConfig.ResultConfigId,
+                    DisplayName = resultConfig.SourceResultConfig.DisplayName,
+                    LeagueId = resultConfig.SourceResultConfig.LeagueId,
+                    Name = resultConfig.SourceResultConfig.Name,
+                }
+                : null,
             Name = resultConfig.Name,
             DisplayName = resultConfig.DisplayName,
             ResultKind = resultConfig.ResultKind,

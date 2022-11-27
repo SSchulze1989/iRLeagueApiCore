@@ -112,12 +112,13 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 
         private EventCalculationConfiguration GetCalculationConfiguration(EventCalculationData data)
         {
-            return GetCalculationConfiguration(data.LeagueId, data.EventId, data.SessionResults.Select(x => x.SessionId).NotNull());
+            return GetCalculationConfiguration(data.LeagueId, data.EventId, data.SessionResults);
         }
 
-        private EventCalculationConfiguration GetCalculationConfiguration(long leagueId, long eventId, IEnumerable<long>? sessionIds = default)
+        private EventCalculationConfiguration GetCalculationConfiguration(long leagueId, long eventId, IEnumerable<SessionCalculationData>? sessionData = default)
         {
-            sessionIds ??= Array.Empty<long>();
+            var sessionIds = sessionData?.Select(x => x.SessionId).NotNull() ?? Array.Empty<long>();
+            var sessionNrs = sessionData?.Select(x => x.SessionNr).NotNull() ?? Array.Empty<int>();
             var config = fixture.Build<EventCalculationConfiguration>()
                 .With(x => x.LeagueId, leagueId)
                 .With(x => x.EventId, eventId)
@@ -125,6 +126,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             foreach((var sessionConfig, var index) in config.SessionResultConfigurations.Select((x, i) => (x, i)))
             {
                 sessionConfig.SessionId = sessionIds.ElementAtOrDefault(index);
+                sessionConfig.SessionNr = sessionNrs.ElementAtOrDefault(index);
             }
             return config;
         }

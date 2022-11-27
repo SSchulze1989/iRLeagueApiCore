@@ -34,7 +34,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 .OrderBy(x => x.SessionNr)
                 .Select(x => x.SessionResultId)
                 .ToListAsync(cancellationToken);
-                
+
             var configurations = eventEntity.Sessions
                 .OrderBy(x => x.SessionNr)
                 .Select((x, i) => new SessionCalculationConfiguration()
@@ -43,6 +43,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     ScoringId = null,
                     SessionResultId = sessionResultIds.ElementAtOrDefault(i),
                     SessionId = x.SessionId,
+                    SessionNr = x.SessionNr,
                     UseResultSetTeam = false,
                     MaxResultsPerGroup = 1,
                     Name = x.Name,
@@ -74,6 +75,7 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     LeagueId = session.LeagueId,
                     Name = session.Name,
                     SessionId = session.SessionId,
+                    SessionNr = session.SessionNr,
                     ResultKind = configurationEntity.ResultKind,
                 };
                 var scoring = session.SessionType != SessionType.Race ? null : scorings.ElementAtOrDefault(raceIndex++);

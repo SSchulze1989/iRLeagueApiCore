@@ -30,7 +30,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             foreach(var sessionConfig in config.SessionResultConfigurations)
             {
                 var sessionData = data.SessionResults
-                    .FirstOrDefault(x => x.SessionId == sessionConfig.SessionId);
+                    .FirstOrDefault(x => x.SessionNr == sessionConfig.SessionNr);
                 if (sessionData == null)
                 {
                     continue;

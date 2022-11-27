@@ -7,6 +7,7 @@ namespace iRLeagueApiCore.Services.ResultService.Models
     {
         public long LeagueId { get; set; }
         public long? SessionId { get; set; }
+        public int? SessionNr { get; set; }
         public long? ScoringId { get; set; }
         /// <summary>
         /// Id of existing session result data (if result has been calculated before)
