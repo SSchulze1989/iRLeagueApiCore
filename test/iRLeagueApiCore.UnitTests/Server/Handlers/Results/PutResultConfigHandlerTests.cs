@@ -62,7 +62,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         [InlineData(testLeagueId, 42)]
         public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
         {
-            using var dbContext = fixture.CreateDbContext();
+            using var dbContext = dbFixture.CreateDbContext();
             var handler = CreateTestHandler(dbContext);
             var request = DefaultRequest(leagueId, resultConfigId);
             var act = () => handler.Handle(request, default);

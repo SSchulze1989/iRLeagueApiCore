@@ -30,7 +30,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         where THandler : IRequestHandler<TRequest, TResult> 
         where TRequest : class, IRequest<TResult>
     {
-        protected readonly DbTestFixture fixture;
+        protected readonly Fixture fixture;
+        protected readonly DbTestFixture dbFixture;
         protected readonly ILogger<THandler> logger;
 
         protected const long testLeagueId = 1;
@@ -49,9 +50,10 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
         protected static IEnumerable<string> testLeagueRoles = new string[] { LeagueRoles.Member };
 
-        public HandlersTestsBase(DbTestFixture fixture)
+        public HandlersTestsBase(DbTestFixture dbFixture)
         {
-            this.fixture = fixture;
+            fixture = new();
+            this.dbFixture = dbFixture;
             logger = Mock.Of<ILogger<THandler>>();
         }
 
@@ -130,7 +132,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <returns><typeparamref name="TResult"/> Result of the handle method</returns>
         public virtual async Task<TResult> ShouldHandleDefault()
         {
-            using var dbContext = fixture.CreateDbContext();
+            using var dbContext = dbFixture.CreateDbContext();
 
             var request = DefaultRequest();
             var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
@@ -163,7 +165,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext> assertions, 
             Action<TRequest, LeagueDbContext> preTestAssertions = default)
         {
-            using var dbContext = fixture.CreateDbContext();
+            using var dbContext = dbFixture.CreateDbContext();
 
             var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
 
@@ -179,7 +181,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// </summary
         public virtual async Task ShouldHandleValidationFailed()
         {
-            using var dbContext = fixture.CreateDbContext();
+            using var dbContext = dbFixture.CreateDbContext();
             var mockValidator = MockHelpers.MockValidator<TRequest>();
             mockValidator.Setup(x => x.Validate(It.IsAny<TRequest>()))
                 .Returns(ValidationFailed());

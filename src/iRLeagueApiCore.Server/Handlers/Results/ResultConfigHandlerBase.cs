@@ -26,6 +26,8 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
         {
             resultConfigEntity.DisplayName = postResultConfig.DisplayName;
+            resultConfigEntity.SourceResultConfig = await dbContext.ResultConfigurations
+                .FirstOrDefaultAsync(x => x.ResultConfigId == postResultConfig.SourceResultConfig.ResultConfigId, cancellationToken);
             resultConfigEntity.Name = postResultConfig.Name;
             resultConfigEntity.ResultKind = postResultConfig.ResultKind;
             resultConfigEntity.Scorings = await MapToScoringList(resultConfigEntity.LeagueId, user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
@@ -106,6 +108,13 @@ namespace iRLeagueApiCore.Server.Handlers.Results
         {
             LeagueId = resultConfig.LeagueId,
             ResultConfigId = resultConfig.ResultConfigId,
+            SourceResultConfig = new ResultConfigInfoModel()
+            {
+                ResultConfigId = resultConfig.SourceResultConfig.ResultConfigId,
+                DisplayName = resultConfig.SourceResultConfig.DisplayName,
+                LeagueId = resultConfig.SourceResultConfig.LeagueId,
+                Name = resultConfig.SourceResultConfig.Name,
+            },
             Name = resultConfig.Name,
             DisplayName = resultConfig.DisplayName,
             ResultKind = resultConfig.ResultKind,

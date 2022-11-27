@@ -6,6 +6,7 @@ using iRLeagueDatabaseCore.Models;
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
@@ -51,6 +52,21 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         public override async Task ShouldHandleValidationFailed()
         {
             await base.ShouldHandleValidationFailed();
+        }
+
+        [Fact]
+        public async Task Handle_ShouldSetSourceResultConfig_WhenIdIsNotNull()
+        {
+            var request = DefaultRequest();
+            request.Model.SourceResultConfig = new() { ResultConfigId = testResultConfigId };
+            await HandleSpecialAsync(request, async (request, model, dbContext) =>
+            {
+                model.SourceResultConfig.ResultConfigId.Should().Be(testResultConfigId);
+                var sourceConfig = await dbContext.ResultConfigurations.FirstAsync(x => x.ResultConfigId == model.SourceResultConfig.ResultConfigId);
+                model.SourceResultConfig.DisplayName.Should().Be(sourceConfig.DisplayName);
+                model.SourceResultConfig.Name.Should().Be(sourceConfig.Name);
+                model.SourceResultConfig.LeagueId.Should().Be(sourceConfig.LeagueId);
+            });
         }
     }
 }
