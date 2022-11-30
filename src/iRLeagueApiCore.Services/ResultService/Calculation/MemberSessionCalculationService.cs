@@ -18,6 +18,10 @@ internal sealed class MemberSessionCalculationService : CalculationServiceBase
             .Select(row => new ResultRowCalculationResult(row))
             .Where(row => row.MemberId != null)
             .ToList();
+        if (config.IsCombinedResult)
+        {
+            rows = CombineResults(rows, x => x.MemberId).ToList();
+        }
         var pointRule = config.PointRule;
         var finalRows = ApplyPointRule(rows, pointRule);
 

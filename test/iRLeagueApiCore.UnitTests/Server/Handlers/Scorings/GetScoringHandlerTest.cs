@@ -47,6 +47,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             result.MaxResultsPerGroup.Should().Be(testScoring.MaxResultsPerGroup);
             result.ResultConfigId.Should().Be(testScoring.ResultConfigId);
             result.ShowResults.Should().Be(testScoring.ShowResults);
+            result.IsCombinedResult.Should().Be(testScoring.IsCombinedResult);
             result.UpdateTeamOnRecalculation.Should().Be(testScoring.UpdateTeamOnRecalculation);
             result.UseResultSetTeam.Should().Be(testScoring.UseResultSetTeam);
             base.DefaultAssertions(request, result, dbContext);

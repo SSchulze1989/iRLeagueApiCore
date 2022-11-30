@@ -45,10 +45,10 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     SessionId = x.SessionId,
                     SessionNr = x.SessionNr,
                     UseResultSetTeam = false,
-                    MaxResultsPerGroup = 1,
+                    MaxResultsPerGroup = configurationEntity?.ResultsPerTeam ?? 1,
                     Name = x.Name,
                     UpdateTeamOnRecalculation = false,
-                    ResultKind = ResultKind.Member,
+                    ResultKind = configurationEntity?.ResultKind ?? ResultKind.Member,
                 });
             return configurations;
         }
@@ -63,7 +63,9 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                 .Select(x => x.SessionResultId)
                 .ToListAsync(cancellationToken);
 
-            var scorings = configurationEntity.Scorings.OrderBy(x => x.Index);
+            var scorings = configurationEntity.Scorings
+                .Where(x => x.IsCombinedResult == false)
+                .OrderBy(x => x.Index);
             var raceIndex = 0;
             var sessionConfigurations = new List<SessionCalculationConfiguration>();
             foreach ((var session, var index) in eventEntity.Sessions
@@ -79,8 +81,26 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
                     ResultKind = configurationEntity.ResultKind,
                 };
                 var scoring = session.SessionType != SessionType.Race ? null : scorings.ElementAtOrDefault(raceIndex++);
+                sessionConfiguration.SessionType = session.SessionType;
                 sessionConfiguration.SessionResultId = sessionResultIds.ElementAtOrDefault(index);
                 sessionConfiguration = MapFromScoringEntity(scoring, configurationEntity, sessionConfiguration);
+                sessionConfigurations.Add(sessionConfiguration);
+            }
+            var combinedScoring = configurationEntity.Scorings.FirstOrDefault(x => x.IsCombinedResult);
+            if (combinedScoring != null)
+            {
+                var sessionConfiguration = new SessionCalculationConfiguration()
+                {
+                    LeagueId = configurationEntity.LeagueId,
+                    Name = combinedScoring.Name,
+                    SessionId = null,
+                    SessionNr = 999,
+                    ResultKind = configurationEntity.ResultKind,
+                    IsCombinedResult = true,
+                };
+                sessionConfiguration.SessionType = SessionType.Race;
+                sessionConfiguration.SessionResultId = null;
+                sessionConfiguration = MapFromScoringEntity(combinedScoring, configurationEntity, sessionConfiguration);
                 sessionConfigurations.Add(sessionConfiguration);
             }
             return sessionConfigurations;
@@ -104,19 +124,24 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
 
         private static PointRule<ResultRowCalculationResult> GetPointRuleFromEntity(PointRuleEntity? pointsRuleEntity, ResultConfigurationEntity configurationEntity)
         {
+            if (pointsRuleEntity is null)
+            {
+                return CalculationPointRuleBase.Default();
+            }
+
             CalculationPointRuleBase pointRule;
-            if (pointsRuleEntity?.PointsPerPlace.Any() == true)
+            if (pointsRuleEntity.PointsPerPlace.Any() == true)
             {
                 pointRule = new PerPlacePointRule(PointsPerPlaceToDictionary<double>(pointsRuleEntity.PointsPerPlace
                     .Select(x => (double)x)));
             }
-            else if (pointsRuleEntity?.MaxPoints > 0)
+            else if (pointsRuleEntity.MaxPoints > 0)
             {
                 pointRule = new MaxPointRule(pointsRuleEntity.MaxPoints, pointsRuleEntity.PointDropOff);
             }
             else
             {
-                return CalculationPointRuleBase.Default();
+                pointRule = new UseResultPointsPointRule();
             }
 
             pointRule.PointSortOptions = pointsRuleEntity.PointsSortOptions;

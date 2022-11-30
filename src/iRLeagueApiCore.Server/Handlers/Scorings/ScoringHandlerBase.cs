@@ -52,6 +52,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             target.MaxResultsPerGroup = source.MaxResultsPerGroup;
             target.Name = source.Name;
             target.ShowResults = source.ShowResults;
+            target.IsCombinedResult = source.IsCombinedResult;
             target.UpdateTeamOnRecalculation = source.UpdateTeamOnRecalculation;
             target.UseResultSetTeam = source.UseResultSetTeam;
             return UpdateVersionEntity(user, target);
@@ -75,6 +76,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             MaxResultsPerGroup = scoring.MaxResultsPerGroup,
             Name = scoring.Name,
             ShowResults = scoring.ShowResults,
+            IsCombinedResult = scoring.IsCombinedResult,
             UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation,
             UseResultSetTeam = scoring.UseResultSetTeam,
             CreatedByUserId = scoring.CreatedByUserId,

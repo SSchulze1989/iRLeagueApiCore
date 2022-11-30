@@ -77,4 +77,43 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     {
         return true;
     }
+
+    /// <summary>
+    /// Group and combine result rows using the given groupBy key selector
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="rows">rows to combine</param>
+    /// <param name="groupBy">selector for the key by which to group the rows</param>
+    /// <returns></returns>
+    protected static IEnumerable<ResultRowCalculationResult> CombineResults<T>(IEnumerable<ResultRowCalculationResult> rows, Func<ResultRowCalculationResult, T> groupBy)
+    {
+        var groupedRows = rows.GroupBy(groupBy);
+        var combined = new List<ResultRowCalculationResult>();
+
+        foreach(var group in groupedRows.Where(x => x.Any()))
+        {
+            var row = new ResultRowCalculationResult(group.First());
+            foreach (var groupRow in group.Skip(1))
+            {
+                row.BonusPoints += groupRow.BonusPoints;
+                row.CompletedLaps += groupRow.CompletedLaps;
+                row.Incidents += groupRow.Incidents;
+                row.LeadLaps += groupRow.LeadLaps;
+                row.PenaltyPoints += groupRow.PenaltyPoints;
+                row.RacePoints += groupRow.RacePoints;
+            }
+            row.AvgLapTime = GetAverageLapValue(group, x => x.AvgLapTime, x => x.CompletedLaps);
+            (_, row.FastestLapTime) = GetBestLapValue(group, x => x.MemberId, x => x.FastestLapTime);
+            (_, row.QualifyingTime) = GetBestLapValue(group, x => x.MemberId, x => x.QualifyingTime);
+            row.FastLapNr = 0;
+            var last = group.Last();
+            row.NewCpi = last.NewCpi;
+            row.NewIrating = last.NewIrating;
+            row.NewLicenseLevel = last.NewLicenseLevel;
+            row.NewSafetyRating = last.NewSafetyRating;
+            combined.Add(row);
+        }
+
+        return combined;
+    }
 }

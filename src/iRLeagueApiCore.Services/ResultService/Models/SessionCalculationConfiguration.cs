@@ -18,6 +18,8 @@ namespace iRLeagueApiCore.Services.ResultService.Models
         public bool UseResultSetTeam { get; set; }
         public bool UpdateTeamOnRecalculation { get; set; }
         public ResultKind ResultKind { get; set; }
+        public bool IsCombinedResult { get; set; }
+        public SessionType SessionType { get; set; }
 
         public PointRule<ResultRowCalculationResult> PointRule { get; set; } = PointRule<ResultRowCalculationResult>.Default();
     }

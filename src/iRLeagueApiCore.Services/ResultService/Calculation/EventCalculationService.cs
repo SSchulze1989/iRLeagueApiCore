@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
@@ -27,7 +28,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             result.ResultConfigId = config.ResultConfigId;
             result.Name = config.DisplayName;
             List<SessionCalculationResult> sessionResults = new();
-            foreach(var sessionConfig in config.SessionResultConfigurations)
+            foreach(var sessionConfig in config.SessionResultConfigurations.Where(x => x.IsCombinedResult == false).OrderBy(x => x.SessionNr))
             {
                 var sessionData = data.SessionResults
                     .FirstOrDefault(x => x.SessionNr == sessionConfig.SessionNr);
@@ -37,6 +38,32 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
                 }
                 var sessionCalculationService = sessionCalculationServiceProvider.GetCalculationService(sessionConfig);
                 sessionResults.Add(await sessionCalculationService.Calculate(sessionData));
+            }
+            if (config.SessionResultConfigurations.Any(x => x.IsCombinedResult))
+            {
+                var combinedConfig = config.SessionResultConfigurations.First(x => x.IsCombinedResult);
+                if (combinedConfig.IsCombinedResult)
+                {
+                    var combinedSessionNrs = config.SessionResultConfigurations
+                        .Where(x => x.IsCombinedResult == false)
+                        .Where(x => x.SessionType == SessionType.Race)
+                        .Select(x => x.SessionNr);
+                    var combinedRows = sessionResults
+                        .Where(x => combinedSessionNrs.Contains(x.SessionNr))
+                        .SelectMany(x => x.ResultRows);
+                    if (combinedRows.Any())
+                    {
+                        var combinedData = new SessionCalculationData()
+                        {
+                            LeagueId = combinedConfig.LeagueId,
+                            SessionId = null,
+                            SessionNr = 999,
+                            ResultRows = combinedRows,
+                        };
+                        var combinedCalculationService = sessionCalculationServiceProvider.GetCalculationService(combinedConfig);
+                        sessionResults.Add(await combinedCalculationService.Calculate(combinedData));
+                    }
+                }
             }
             result.SessionResults = sessionResults;
 

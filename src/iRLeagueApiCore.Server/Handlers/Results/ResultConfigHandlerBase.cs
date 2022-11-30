@@ -72,6 +72,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             scoringEntity.MaxResultsPerGroup = scoringModel.MaxResultsPerGroup;
             scoringEntity.Name = scoringModel.Name;
             scoringEntity.ShowResults = scoringModel.ShowResults;
+            scoringEntity.IsCombinedResult = scoringModel.IsCombinedResult;
             scoringEntity.UseResultSetTeam = scoringModel.UseResultSetTeam;
             scoringEntity.UpdateTeamOnRecalculation = scoringModel.UpdateTeamOnRecalculation;
             scoringEntity.PointsRule = scoringModel.PointRule is not null ? await MapToPointRuleEntityAsync(user, scoringModel.PointRule,
@@ -131,6 +132,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                 MaxResultsPerGroup = scoring.MaxResultsPerGroup,
                 Name = scoring.Name,
                 ShowResults = scoring.ShowResults,
+                IsCombinedResult = scoring.IsCombinedResult,
                 UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation,
                 UseResultSetTeam = scoring.UseResultSetTeam,
                 PointRule = scoring.PointsRule != null ? new PointRuleModel()

@@ -1,4 +1,5 @@
-﻿using iRLeagueDatabaseCore.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Models
 {
