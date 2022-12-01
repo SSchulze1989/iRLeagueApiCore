@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+
+namespace iRLeagueApiCore.Services.ResultService.Models;
 
 internal sealed class StandingCalculationConfiguration
 {
@@ -9,4 +11,6 @@ internal sealed class StandingCalculationConfiguration
     public string Name { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public int WeeksCounted { get; set; }
+    public bool UseCombinedResult { get; set; }
+    public ResultKind ResultKind { get; set; }
 }
