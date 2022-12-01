@@ -8,25 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
 
 [Collection("DataAccessTests")]
-public class EventCalculationResultStoreTests : IAsyncLifetime
+public class EventCalculationResultStoreTests : DataAccessTestsBase
 {
-    private readonly Fixture fixture;
-    private readonly DataAccessMockHelper accessMockHelper;
-    private readonly LeagueDbContext dbContext;
-
-    public EventCalculationResultStoreTests()
-    {
-        fixture = new();
-        accessMockHelper = new();
-        dbContext = accessMockHelper.CreateMockDbContext();
-        fixture.Register(() => dbContext);
-    }
-
-    public async Task InitializeAsync()
-    {
-        await accessMockHelper.PopulateBasicTestSet(dbContext);
-    }
-
     [Fact]
     public async Task StoreCalculationResult_ShouldStoreNewResult_WhenResultNotExists()
     {
@@ -240,10 +223,5 @@ public class EventCalculationResultStoreTests : IAsyncLifetime
                     ?? fixture.CreateMany<ResultRowCalculationResult>()).ToList())
                 .Create()).ToList())
             .Create();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await dbContext.DisposeAsync();
     }
 }

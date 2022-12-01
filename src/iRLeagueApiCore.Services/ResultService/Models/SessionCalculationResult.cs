@@ -2,6 +2,10 @@
 {
     internal sealed class SessionCalculationResult
     {
+        public SessionCalculationResult()
+        {
+        }
+
         public SessionCalculationResult(SessionCalculationData data)
         {
             LeagueId = data.LeagueId;

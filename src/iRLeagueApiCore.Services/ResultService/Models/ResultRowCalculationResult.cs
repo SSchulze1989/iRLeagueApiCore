@@ -2,6 +2,10 @@
 {
     internal sealed class ResultRowCalculationResult : ResultRowCalculationData
     {
+        public ResultRowCalculationResult()
+        {
+        }
+
         public ResultRowCalculationResult(ResultRowCalculationData data)
         {
             ScoredResultRowId = data.ScoredResultRowId;

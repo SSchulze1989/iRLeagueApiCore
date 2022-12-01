@@ -74,11 +74,11 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess
             entity.Name = result.Name;
             entity.SessionNr = result.SessionNr ?? 0;
             entity.CleanestDrivers = requiredEntities.Members.Where(x => result.CleanestDrivers.Contains(x.Id)).ToList();
-            entity.FastestAvgLap = result.FastestAvgLap.Ticks;
+            entity.FastestAvgLap = result.FastestAvgLap;
             entity.FastestAvgLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestQualyLapDriverMemberId);
-            entity.FastestLap = result.FastestLap.Ticks;
+            entity.FastestLap = result.FastestLap;
             entity.FastestAvgLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestAvgLapDriverMemberId);
-            entity.FastestQualyLap = result.FastestQualyLap.Ticks;
+            entity.FastestQualyLap = result.FastestQualyLap;
             entity.FastestQualyLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestQualyLapDriverMemberId);
             entity.HardChargers = requiredEntities.Members.Where(x => result.HardChargers.Contains(x.Id)).ToList();
             entity.ScoredResultRows = MapToScoredResultRows(result.ResultRows, entity.ScoredResultRows, requiredEntities);

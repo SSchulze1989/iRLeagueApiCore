@@ -1,9 +1,8 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Models;
 
-namespace iRLeagueApiCore.Services.ResultService.DataAccess
+namespace iRLeagueApiCore.Services.ResultService.DataAccess;
+
+internal interface IEventCalculationDataProvider
 {
-    internal interface IEventCalculationDataProvider
-    {
-        public Task<EventCalculationData?> GetData(EventCalculationConfiguration config, CancellationToken cancellationToken);
-    }
+    public Task<EventCalculationData?> GetData(EventCalculationConfiguration config, CancellationToken cancellationToken);
 }

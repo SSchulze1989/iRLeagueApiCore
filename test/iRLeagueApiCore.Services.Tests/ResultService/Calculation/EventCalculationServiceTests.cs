@@ -127,6 +127,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             {
                 sessionConfig.SessionId = sessionIds.ElementAtOrDefault(index);
                 sessionConfig.SessionNr = sessionNrs.ElementAtOrDefault(index);
+                sessionConfig.IsCombinedResult = false;
             }
             return config;
         }
