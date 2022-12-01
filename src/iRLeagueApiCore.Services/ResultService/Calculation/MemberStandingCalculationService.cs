@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -26,19 +27,27 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
         IEnumerable<SessionCalculationResult> previousSessionResults;
         if (config.UseCombinedResult)
         {
-            data.PreviousEventResults.Select(x =>
-                x.SessionResults.OrderBy(x => x.SessionNr).LastOrDefault())
+            previousSessionResults = data.PreviousEventResults
+                .Select(x => x.SessionResults.OrderBy(x => x.SessionNr).LastOrDefault())
                 .NotNull();
         }
-        var groupedMemberResultRows = data.PreviousEventResults.SelectMany() .SessionResults
+        else
+        {
+            previousSessionResults = data.PreviousEventResults
+                .SelectMany(x => x.SessionResults)
+                .Where(x => x.Name != "Practice" && x.Name != "Qualifying");
+        }
+        var groupedMemberResultRows = previousSessionResults
             .SelectMany(result => result.ResultRows.Select(row => (result, row)))
             .OrderBy(x => x.row.RacePoints)
             .GroupBy(x => x.row.MemberId);
         foreach(var memberRows in groupedMemberResultRows)
         {
             var countedRows = memberRows.Take(config.WeeksCounted);
-            var memberStandingRow = 
+            var memberStandingRow = CalculateMemberStanding(countedRows);
         }
+
+        throw new NotImplementedException();
     }
 
     private static StandingRowCalculationResult CalculateMemberStanding(
