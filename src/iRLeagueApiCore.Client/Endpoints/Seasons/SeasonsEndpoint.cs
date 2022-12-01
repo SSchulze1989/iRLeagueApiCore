@@ -22,6 +22,11 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
             RouteBuilder.AddEndpoint("Seasons");
         }
 
+        IGetEndpoint<SeasonModel> ISeasonsEndpoint.Current()
+        {
+            return new CurrentSeasonEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
         ISeasonByIdEndpoint IWithIdEndpoint<ISeasonByIdEndpoint>.WithId(long id)
         { 
             return new SeasonByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
