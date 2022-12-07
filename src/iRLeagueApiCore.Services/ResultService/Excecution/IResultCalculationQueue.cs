@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Excecution
+﻿namespace iRLeagueApiCore.Services.ResultService.Excecution;
+
+public interface IResultCalculationQueue
 {
-    public interface IResultCalculationQueue
-    {
-        public Task QueueEventResultAsync(long eventId);
-    }
+    public Task QueueEventResultAsync(long eventId);
 }

@@ -2,6 +2,43 @@
 
 internal sealed class StandingRowCalculationResult
 {
+    public StandingRowCalculationResult() { }
+    public StandingRowCalculationResult(StandingRowCalculationResult data)
+    {
+        MemberId = data.MemberId;
+        TeamId = data.TeamId;
+        Position = data.Position;
+        LastPosition = data.LastPosition;
+        ClassId = data.ClassId;
+        CarClass = data.CarClass;
+        RacePoints = data.RacePoints;
+        RacePointsChange = data.RacePointsChange;
+        PenaltyPoints = data.PenaltyPoints;
+        PenaltyPointsChange = data.PenaltyPointsChange;
+        TotalPoints = data.TotalPoints;
+        TotalPointsChange = data.TotalPointsChange;
+        Races = data.Races;
+        RacesCounted = data.RacesCounted;
+        DroppedResultCount = data.DroppedResultCount;
+        CompletedLaps = data.CompletedLaps;
+        CompletedLapsChange = data.CompletedLapsChange;
+        LeadLaps = data.LeadLaps;
+        LeadLapsChange = data.LeadLapsChange;
+        FastestLaps = data.FastestLaps;
+        FastestLapsChange = data.FastestLapsChange;
+        PolePositions = data.PolePositions;
+        PolePositionsChange = data.PolePositionsChange;
+        Wins = data.Wins;
+        WinsChange = data.WinsChange;
+        Top3 = data.Top3;
+        Top5 = data.Top5;
+        Top10 = data.Top10;
+        Incidents = data.Incidents;
+        IncidentsChange = data.IncidentsChange;
+        PositionChange = data.PositionChange;
+        ResultRows = data.ResultRows;
+    }
+
     public long? MemberId { get; set; }
     public long? TeamId { get; set; }
     public int Position { get; set; }
@@ -34,5 +71,5 @@ internal sealed class StandingRowCalculationResult
     public int IncidentsChange { get; set; }
     public int PositionChange { get; set; }
 
-    IList<ResultRowCalculationResult> ResultRows { get; set; } = new List<ResultRowCalculationResult>();
+    public IList<ResultRowCalculationResult> ResultRows { get; set; } = new List<ResultRowCalculationResult>();
 }

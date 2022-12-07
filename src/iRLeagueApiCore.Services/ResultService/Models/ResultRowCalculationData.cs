@@ -42,7 +42,7 @@ namespace iRLeagueApiCore.Services.ResultService.Models
         public double OldSafetyRating { get; set; }
         public double NewSafetyRating { get; set; }
         public int CarId { get; set; }
-        public double? CompletedPct { get; set; }
+        public double CompletedPct { get; set; }
         public int Division { get; set; }
         public int OldLicenseLevel { get; set; }
         public int NewLicenseLevel { get; set; }

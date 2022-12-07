@@ -10,6 +10,27 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
     {
     }
 
+    public async Task<long?> GetSeasonId(long eventId, CancellationToken cancellationToken)
+    {
+        return await dbContext.Events
+            .Where(x => x.EventId == eventId)
+            .Select(x => x.Schedule.SeasonId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<long>> GetResultConfigIds(long seasonId, CancellationToken cancellationToken = default)
+    {
+        var configIds = await dbContext.Seasons
+            .Where(x => x.SeasonId == seasonId)
+            .SelectMany(x => x.Schedules)
+            .SelectMany(x => x.Events)
+            .SelectMany(x => x.ResultConfigs)
+            .Select(x => x.ResultConfigId)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+        return configIds;
+    }
+
     public async Task<StandingCalculationConfiguration> GetConfiguration(long seasonId, long? eventId, long? resultConfigId, CancellationToken cancellationToken = default)
     {
         var season = await GetSeasonEntityAsync(seasonId, cancellationToken)
@@ -27,6 +48,9 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             config.ResultConfigId = resultConfig.ResultConfigId;
             config.Name = resultConfig.Name;
             config.DisplayName = resultConfig.DisplayName;
+            config.UseCombinedResult = resultConfig.Scorings.Any(x => x.IsCombinedResult);
+            config.ResultKind = resultConfig.ResultKind;
+            config.WeeksCounted = 3;
         }
         return config;
     }
@@ -40,7 +64,8 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
     private async Task<ResultConfigurationEntity?> GetConfigurationEntityAsync(long? resultConfigId, CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
-            .FirstOrDefaultAsync(x => x.ResultConfigId == resultConfigId);
+            .Include(x => x.Scorings)
+            .FirstOrDefaultAsync(x => x.ResultConfigId == resultConfigId, cancellationToken: cancellationToken);
     }
 
     private async Task<EventEntity?> GetEventEntityAsync(long seasonId, long? eventId, CancellationToken cancellationToken)

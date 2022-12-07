@@ -18,6 +18,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
         private readonly Mock<IEventCalculationResultStore> mockResultStore;
         private readonly Mock<ICalculationServiceProvider<EventCalculationConfiguration,
             EventCalculationData, EventCalculationResult>> mockCalculationServiceProvider;
+        private readonly Mock<IStandingCalculationQueue> mockStandingQueue;
 
         public ExecuteEventResultCalculationTests(ITestOutputHelper testOutputHelper)
         {
@@ -49,6 +50,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
             mockDataProvider = MockDataProvider(fixture);
             mockResultStore = MockResultStore();
             mockCalculationServiceProvider = MockCalculationServiceProvider(fixture);
+            mockStandingQueue = MockStandingQueue(fixture);
             fixture.Register(() => logger);
             fixture.Register(() => mockConfigurationProvider.Object);
             fixture.Register(() => mockDataProvider.Object);
@@ -123,7 +125,8 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
                 fixture.Create<IEventCalculationDataProvider>(),
                 fixture.Create<IEventCalculationConfigurationProvider>(),
                 fixture.Create<IEventCalculationResultStore>(),
-                fixture.Create<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>());
+                fixture.Create<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
+                fixture.Create<IStandingCalculationQueue>());
         }
 
         private static Mock<IEventCalculationConfigurationProvider> MockConfigurationProvider(Fixture fixture)
@@ -175,6 +178,14 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
                 .Verifiable();
 
             return mockStore;
+        }
+
+        private static Mock<IStandingCalculationQueue> MockStandingQueue(Fixture fixture)
+        {
+            var mockQueue = new Mock<IStandingCalculationQueue>();
+            mockQueue.Setup(x => x.QueueStandingCalculationAsync(It.IsAny<long>()))
+                .Returns(Task.FromResult(0));
+            return mockQueue;
         }
 
         private static Mock<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>> MockCalculationServiceProvider(Fixture fixture)

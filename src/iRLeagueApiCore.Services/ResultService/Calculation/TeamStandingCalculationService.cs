@@ -3,11 +3,11 @@ using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
-internal sealed class MemberStandingCalculationService : ICalculationService<StandingCalculationData, StandingCalculationResult>
+internal sealed class TeamStandingCalculationService : ICalculationService<StandingCalculationData, StandingCalculationResult>
 {
     private readonly StandingCalculationConfiguration config;
 
-    public MemberStandingCalculationService(StandingCalculationConfiguration config)
+    public TeamStandingCalculationService(StandingCalculationConfiguration config)
     {
         this.config = config;
     }
@@ -40,8 +40,6 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
                 data.CurrentEventResult.SessionResults.Where(x => x.Name != "Practice" && x.Name != "Qualifying"));
         }
 
-        Func<ResultRowCalculationResult, long?> keySelector = x => x.MemberId;
-
         // flatten results so that we get one entry for each single result row from previous events
         var previousResultRows = previousSessionResults
             .SelectMany(result => result.sessionResults
@@ -49,37 +47,37 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
                     .Select(resultRow => (result.eventResult, sessionResult, resultRow))));
 
         // get the previous result rows for each individual driver
-        var previousMemberResultRows = previousResultRows
-            .Where(x => keySelector(x.resultRow) is not null)
-            .GroupBy(x => keySelector(x.resultRow)!.Value);
+        var previousTeamResultRows = previousResultRows
+            .Where(x => x.resultRow.TeamId is not null)
+            .GroupBy(x => x.resultRow.TeamId!.Value);
 
         // get the previous result rows per event
-        var previousMemberEventResults = previousMemberResultRows
+        var previousTeamEventResults = previousTeamResultRows
             .Select(x => (key: x.Key, results: x
-                .GroupBy(result => result.eventResult, result => new MemberSessionResultRow(x.Key, result.sessionResult, result.resultRow))
-                .Select(result => new MemberEventResult(x.Key, result.Key, result))))
+                .GroupBy(result => result.eventResult, result => new TeamSessionResultRow(x.Key, result.sessionResult, result.resultRow))
+                .Select(result => new TeamEventResult(x.Key, result.Key, result))))
             .ToDictionary(k => k.key, v => v.results);
 
         // do the same for current event result
         var currentResultRows = currentSessionResults.sessionResults
             .SelectMany(sessionResult => sessionResult.ResultRows
                     .Select(resultRow => (sessionResult, resultRow)));
-        var currentMemberResultRows = currentResultRows
-            .Where(x => x.resultRow.MemberId != null)
-            .GroupBy(x => x.resultRow.MemberId!.Value);
-        var currentMemberEventResult = currentMemberResultRows.Select(x => (key: x.Key, eventResult: currentSessionResults.eventResult, 
-                sessionResults: x.Select(sessionResult => new MemberSessionResultRow(x.Key, sessionResult.sessionResult, sessionResult.resultRow))))
-            .ToDictionary(k => k.key, v => new MemberEventResult(v.key, v.eventResult, v.sessionResults));
+        var currentTeamResultRows = currentResultRows
+            .Where(x => x.resultRow.TeamId != null)
+            .GroupBy(x => x.resultRow.TeamId!.Value);
+        var currentTeamEventResult = currentTeamResultRows.Select(x => (key: x.Key, eventResult: currentSessionResults.eventResult,
+                sessionResults: x.Select(sessionResult => new TeamSessionResultRow(x.Key, sessionResult.sessionResult, sessionResult.resultRow))))
+            .ToDictionary(k => k.key, v => new TeamEventResult(v.key, v.eventResult, v.sessionResults));
 
-        var memberIds = previousMemberEventResults.Keys.Concat(currentMemberEventResult.Keys).Distinct();
+        var teamIds = previousTeamEventResults.Keys.Concat(currentTeamEventResult.Keys).Distinct();
 
-        List<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> memberStandingRows = new();
-        foreach (var memberId in memberIds)
+        List<(long TeamId, StandingRowCalculationResult Previous, StandingRowCalculationResult Current)> memberStandingRows = new();
+        foreach (var memberId in teamIds)
         {
             // sort by best race points each event 
-            var previousEventResults = (previousMemberEventResults.GetValueOrDefault(memberId) ?? Array.Empty<MemberEventResult>())
+            var previousEventResults = (previousTeamEventResults.GetValueOrDefault(memberId) ?? Array.Empty<TeamEventResult>())
                 .OrderByDescending(GetEventOrderValue);
-            var currentResult = currentMemberEventResult.GetValueOrDefault(memberId);
+            var currentResult = currentTeamEventResult.GetValueOrDefault(memberId);
             var standingRow = new StandingRowCalculationResult();
             var lastResult = currentResult ?? previousEventResults.FirstOrDefault();
             var lastRow = lastResult?.SessionResults.LastOrDefault()?.ResultRow;
@@ -95,7 +93,7 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
 
             // accumulated data
             var previousStandingRow = new StandingRowCalculationResult(standingRow);
-            
+
             var previousResults = previousEventResults.SelectMany(x => x.SessionResults);
             var countedEventResults = previousEventResults.Take(config.WeeksCounted);
             var countedSessionResults = countedEventResults.SelectMany(x => x.SessionResults);
@@ -122,17 +120,17 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
 
         // Sort standings
         memberStandingRows = memberStandingRows
-            .OrderByDescending(x => x.current.TotalPoints)
-            .ThenByDescending(x => x.current.PenaltyPoints)
-            .ThenByDescending(x => x.current.Wins)
-            .ThenBy(x => x.current.Incidents)
+            .OrderByDescending(x => x.Current.TotalPoints)
+            .ThenByDescending(x => x.Current.PenaltyPoints)
+            .ThenByDescending(x => x.Current.Wins)
+            .ThenBy(x => x.Current.Incidents)
             .ToList();
 
         var finalStandingRows = new List<StandingRowCalculationResult>();
-        foreach(var (memberStandingRow, position) in memberStandingRows.Select((x, i) => (x, i + 1)))
+        foreach (var (memberStandingRow, position) in memberStandingRows.Select((x, i) => (x, i + 1)))
         {
-            memberStandingRow.current.Position = position;
-            var final = DiffStandingRows(memberStandingRow.previous, memberStandingRow.current);
+            memberStandingRow.Current.Position = position;
+            var final = DiffStandingRows(memberStandingRow.Previous, memberStandingRow.Current);
             finalStandingRows.Add(final);
         }
 
@@ -147,11 +145,11 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
         return Task.FromResult(standingResult);
     }
 
-    private static IComparable GetEventOrderValue(MemberEventResult eventResult)
+    private static IComparable GetEventOrderValue(TeamEventResult eventResult)
         => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints);
 
     private static StandingRowCalculationResult AccumulateCountedSessionResults(StandingRowCalculationResult standingRow,
-        IEnumerable<MemberSessionResultRow> results)
+        IEnumerable<TeamSessionResultRow> results)
     {
         if (results.None())
         {
@@ -166,7 +164,7 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
     }
 
     private static StandingRowCalculationResult AccumulateOverallSessionResults(StandingRowCalculationResult standingRow,
-        IEnumerable<MemberSessionResultRow> results)
+        IEnumerable<TeamSessionResultRow> results)
     {
         if (results.None())
         {
@@ -174,7 +172,7 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
         }
 
         // accumulate rows
-        foreach(var resultRow in results)
+        foreach (var resultRow in results)
         {
             var sessionResult = resultRow.SessionResult;
             var row = resultRow.ResultRow;
@@ -217,7 +215,7 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
         return diff;
     }
 
-    private record MemberSessionResultRow(long MemberId, SessionCalculationResult SessionResult, ResultRowCalculationResult ResultRow);
+    private record TeamSessionResultRow(long TeamId, SessionCalculationResult SessionResult, ResultRowCalculationResult ResultRow);
 
-    private record MemberEventResult(long MemberId, EventCalculationResult EventResult, IEnumerable<MemberSessionResultRow> SessionResults);
+    private record TeamEventResult(long TeamId, EventCalculationResult EventResult, IEnumerable<TeamSessionResultRow> SessionResults);
 }

@@ -34,6 +34,7 @@ public sealed class ColumnValueRowFilterTests
             new object[] { nameof(ResultRowCalculationResult.CompletedLaps), matchRow, new[] { matchRow.CompletedLaps.ToString() } },
             new object[] { nameof(ResultRowCalculationResult.FastestLapTime), matchRow, new[] { matchRow.FastestLapTime.ToString() } },
             new object[] { nameof(ResultRowCalculationResult.Firstname), matchRow, new[] { matchRow.Firstname.ToString() } },
+            new object[] { nameof(ResultRowCalculationResult.CompletedPct), matchRow, new[] { matchRow.CompletedPct.ToString() } },
         };
     }
 

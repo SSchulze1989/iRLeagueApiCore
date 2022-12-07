@@ -31,5 +31,21 @@
         {
             return enumerable.Where(x => x is not null).OfType<T>();
         }
+
+        /// <summary>
+        /// Returns true when the collection does not contain any elements
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static bool None<T>(this IEnumerable<T> enumerable) => !enumerable.Any();
+        /// <summary>
+        /// Returns true when the collection does not contain any elements with the given predicate
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => !enumerable.Any(predicate);
     }
 }
