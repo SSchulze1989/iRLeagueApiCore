@@ -23,7 +23,7 @@ internal sealed class MemberSessionCalculationService : CalculationServiceBase
             rows = CombineResults(rows, x => x.MemberId).ToList();
         }
         var pointRule = config.PointRule;
-        var finalRows = ApplyPointRule(rows, pointRule);
+        var finalRows = ApplyPoints(rows, pointRule, data);
 
         var result = new SessionCalculationResult(data)
         {

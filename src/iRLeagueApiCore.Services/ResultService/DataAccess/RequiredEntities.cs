@@ -9,5 +9,5 @@ internal sealed class RequiredEntities
     public ICollection<TeamEntity> Teams { get; set; } = Array.Empty<TeamEntity>();
     public ICollection<ScoredResultRowEntity> ScoredResultRows { get; set; } = Array.Empty<ScoredResultRowEntity>();
     public ICollection<AddPenaltyEntity> AddPenalties { get; set; } = Array.Empty<AddPenaltyEntity>();
-    public ICollection<ReviewPenaltyEntity> ReviewPenalties { get; set; } = Array.Empty<ReviewPenaltyEntity>();
+    public ICollection<IncidentReviewEntity> Reviews { get; set; } = Array.Empty<IncidentReviewEntity>();
 }

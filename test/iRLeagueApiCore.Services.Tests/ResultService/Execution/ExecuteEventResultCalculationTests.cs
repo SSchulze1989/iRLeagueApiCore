@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
 {
+    [Collection("DbTestFixture")]
     public sealed class ExecuteEventResultCalculationTests
     {
         private readonly Fixture fixture;
@@ -56,6 +57,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
             fixture.Register(() => mockDataProvider.Object);
             fixture.Register(() => mockResultStore.Object);
             fixture.Register(() => mockCalculationServiceProvider.Object);
+            fixture.Register(() => mockStandingQueue.Object);
         }
 
         [Fact]

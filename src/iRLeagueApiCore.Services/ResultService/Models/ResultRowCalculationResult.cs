@@ -53,7 +53,6 @@
             FinalPosition = data.FinalPosition;
             FinalPositionChange = data.FinalPositionChange;
         }
-        public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = Array.Empty<ReviewPenaltyCalculationResult>();
         public ICollection<long> ScoredMemberResultRowIds { get; set;} = Array.Empty<long>();
     }
 }

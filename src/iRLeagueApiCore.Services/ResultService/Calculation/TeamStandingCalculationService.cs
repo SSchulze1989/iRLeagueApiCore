@@ -71,7 +71,7 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
 
         var teamIds = previousTeamEventResults.Keys.Concat(currentTeamEventResult.Keys).Distinct();
 
-        List<(long TeamId, StandingRowCalculationResult Previous, StandingRowCalculationResult Current)> memberStandingRows = new();
+        List<(long TeamId, StandingRowCalculationResult Previous, StandingRowCalculationResult Current)> teamStandingRows = new();
         foreach (var memberId in teamIds)
         {
             // sort by best race points each event 
@@ -115,22 +115,25 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
                 standingRow = previousStandingRow;
             }
 
-            memberStandingRows.Add((memberId, previousStandingRow, standingRow));
+            teamStandingRows.Add((memberId, previousStandingRow, standingRow));
         }
 
-        // Sort standings
-        memberStandingRows = memberStandingRows
-            .OrderByDescending(x => x.Current.TotalPoints)
-            .ThenByDescending(x => x.Current.PenaltyPoints)
-            .ThenByDescending(x => x.Current.Wins)
-            .ThenBy(x => x.Current.Incidents)
+        // Sort and apply positions standings previous
+        teamStandingRows = SortStandingRows(teamStandingRows, x => x.Previous)
             .ToList();
-
-        var finalStandingRows = new List<StandingRowCalculationResult>();
-        foreach (var (memberStandingRow, position) in memberStandingRows.Select((x, i) => (x, i + 1)))
+        foreach (var (teamStandingRow, position) in teamStandingRows.Select((x, i) => (x, i + 1)))
         {
-            memberStandingRow.Current.Position = position;
-            var final = DiffStandingRows(memberStandingRow.Previous, memberStandingRow.Current);
+            teamStandingRow.Previous.Position = position;
+        }
+
+        // Sort and apply positions standings current
+        teamStandingRows = SortStandingRows(teamStandingRows, x => x.Current)
+            .ToList();
+        var finalStandingRows = new List<StandingRowCalculationResult>();
+        foreach (var (teamStandingRow, position) in teamStandingRows.Select((x, i) => (x, i + 1)))
+        {
+            teamStandingRow.Current.Position = position;
+            var final = DiffStandingRows(teamStandingRow.Previous, teamStandingRow.Current);
             finalStandingRows.Add(final);
         }
 
@@ -147,6 +150,15 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
 
     private static IComparable GetEventOrderValue(TeamEventResult eventResult)
         => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints);
+
+    private static IOrderedEnumerable<T> SortStandingRows<T>(IEnumerable<T> rows, Func<T, StandingRowCalculationResult> standingRowSelector)
+    {
+        return rows
+            .OrderByDescending(x => standingRowSelector(x).TotalPoints)
+            .ThenByDescending(x => standingRowSelector(x).PenaltyPoints)
+            .ThenByDescending(x => standingRowSelector(x).Wins)
+            .ThenBy(x => standingRowSelector(x).Incidents);
+    }
 
     private static StandingRowCalculationResult AccumulateCountedSessionResults(StandingRowCalculationResult standingRow,
         IEnumerable<TeamSessionResultRow> results)
@@ -207,7 +219,7 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
         diff.LeadLapsChange = current.LeadLaps - previous.LeadLaps;
         diff.PenaltyPointsChange = current.PenaltyPoints - previous.PenaltyPoints;
         diff.PolePositionsChange = current.PolePositions - previous.PolePositions;
-        diff.PositionChange = current.Position - previous.Position;
+        diff.PositionChange = -(current.Position - previous.Position);
         diff.RacePointsChange = current.RacePoints - previous.RacePoints;
         diff.TotalPointsChange = current.TotalPoints - previous.TotalPoints;
         diff.WinsChange = current.Wins - previous.Wins;

@@ -37,8 +37,8 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 SessionId = sessionResult.SessionId,
                 SessionNr = sessionResult.Session.SessionNr,
                 AcceptedReviewVotes = sessionResult.Session.IncidentReviews
-                .SelectMany(review => review.AcceptedReviewVotes)
-                .Select(vote => new AcceptedReviewVoteCalculationData()
+                    .SelectMany(review => review.AcceptedReviewVotes)
+                    .Select(vote => new AcceptedReviewVoteCalculationData()
                 {
                     DefaultPenalty = vote.VoteCategory == null ? 0 : vote.VoteCategory.DefaultPenalty,
                     MemberAtFaultId = vote.MemberAtFaultId,
@@ -98,6 +98,12 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
             SessionNr = sessionResult.SessionNr,
             ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowCalculationData()
             {
+                //ReviewPenalties = row.ReviewPenalties.Select(penalty => new ReviewPenaltyCalculationResult()
+                //{
+                //    ReviewId = penalty.ReviewId,
+                //    ReviewVoteId = penalty.ReviewVoteId,
+                //    PenaltyPoints = penalty.PenaltyPoints,
+                //}).ToList(),
                 ScoredResultRowId = row.ScoredResultRowId,
                 MemberId = row.MemberId,
                 Firstname = row.Member == null ? string.Empty : row.Member.Firstname,

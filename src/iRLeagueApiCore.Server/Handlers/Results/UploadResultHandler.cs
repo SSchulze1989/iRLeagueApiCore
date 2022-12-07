@@ -37,6 +37,7 @@ public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResult
             {
                 dbContext.Remove(@event.EventResult);
             }
+            @event.SimSessionDetails.Clear();
             await dbContext.SaveChangesAsync(cancellationToken);
             var result = await ReadResultsAsync(request.ResultData, @event, cancellationToken);
             @event.EventResult = result;
@@ -60,7 +61,8 @@ public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResult
             .Include(x => x.EventResult)
                 .ThenInclude(x => x.SessionResults)
                     .ThenInclude(x => x.IRSimSessionDetails)
-            .SingleOrDefaultAsync(cancellationToken);
+            .Include(x => x.SimSessionDetails)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     private async Task<ParseSimSessionResult> ParseDataStream(Stream dataStream, CancellationToken cancellationToken)
@@ -252,7 +254,7 @@ public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResult
         row.ClubId = data.club_id;
         row.ClubName = data.club_name;
         row.CompletedLaps = data.laps_complete;
-        row.CompletedPct = laps != 0 ? (double)data.laps_complete / laps : 0;
+        row.CompletedPct = laps != 0 ? data.laps_complete / (double)laps : 0;
         row.ContactLaps = "";
         row.Division = data.division;
         row.FastestLapTime = ParseTime(data.best_lap_time);

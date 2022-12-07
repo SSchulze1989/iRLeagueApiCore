@@ -23,7 +23,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             .NotNull()
             .ToList();
         var pointRule = config.PointRule;
-        var finalRows = ApplyPointRule(teamRows, pointRule);
+        var finalRows = ApplyPoints(teamRows, pointRule, data);
 
         var result = new SessionCalculationResult(data)
         {

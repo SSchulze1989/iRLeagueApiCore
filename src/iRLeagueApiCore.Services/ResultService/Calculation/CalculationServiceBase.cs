@@ -6,7 +6,8 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 {
     public abstract Task<SessionCalculationResult> Calculate(SessionCalculationData data);
 
-    protected static IEnumerable<ResultRowCalculationResult> ApplyPointRule(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule)
+    protected static IEnumerable<ResultRowCalculationResult> ApplyPoints(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule,
+        SessionCalculationData data)
     {
         IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
 
@@ -25,6 +26,8 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         {
             finalRows = filter.FilterRows(finalRows);
         }
+        finalRows = ApplyReviewPenalties(finalRows, data.AcceptedReviewVotes);
+        finalRows = ApplyTotalPoints(finalRows);
         finalRows = pointRule.SortFinal(finalRows);
         // Set final position
         foreach ((var row, var position) in finalRows.Select((x, i) => (x, i + 1)))
@@ -115,5 +118,34 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
 
         return combined;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyReviewPenalties(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<AcceptedReviewVoteCalculationData> reviewVotes)
+    {
+        foreach (var row in rows)
+        {
+            var rowVotes = reviewVotes.Where(x => x.MemberAtFaultId == row.MemberId);
+            foreach (var vote in rowVotes)
+            {
+                var penalty = new ReviewPenaltyCalculationResult()
+                {
+                    ReviewId = vote.ReviewId,
+                    ReviewVoteId = vote.ReviewVoteId,
+                    PenaltyPoints = vote.DefaultPenalty,
+                };
+                row.ReviewPenalties.Add(penalty);
+                row.PenaltyPoints += penalty.PenaltyPoints;
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyTotalPoints(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        foreach (var row in rows)
+        {
+            row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;
+        }
+        return rows;
     }
 }

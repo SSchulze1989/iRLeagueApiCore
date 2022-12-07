@@ -20,8 +20,6 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             foreach((var row, var pos) in rows.Select((x, i) => (x, i + 1)))
             {
                 row.RacePoints = PointsPerPlace.TryGetValue(pos, out double points) ? points : 0d;
-                row.PenaltyPoints += row.PenaltyPoints + row.AddPenalty?.PenaltyPoints ?? 0;
-                row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;
             }
             return rows;
         }

@@ -156,8 +156,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         rowEntity.PositionChange = row.PositionChange;
         rowEntity.QualifyingTime = row.QualifyingTime;
         rowEntity.RacePoints = row.RacePoints;
-        // TODO: Get review penaltie entities from calculated penalties
-        //rowEntity.ReviewPenalties = requiredEntities.ReviewPenalties
+        rowEntity.ReviewPenalties = MapToReviewPenaltyList(row, rowEntity.ReviewPenalties, requiredEntities);
         rowEntity.SeasonStartIRating = row.SeasonStartIrating;
         rowEntity.StartPosition = row.StartPosition;
         rowEntity.Status = row.Status;
@@ -165,6 +164,37 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         rowEntity.TeamResultRows = requiredEntities.ScoredResultRows
             .Where(x => row.ScoredMemberResultRowIds.Contains(x.ScoredResultRowId)).ToList();
         return rowEntity;
+    }
+
+    private ICollection<ReviewPenaltyEntity> MapToReviewPenaltyList(ResultRowCalculationResult row, ICollection<ReviewPenaltyEntity> penaltyEntities,
+        RequiredEntities requiredEntities)
+    {
+        foreach (var penalty in row.ReviewPenalties)
+        {
+            var penaltyEntity = penaltyEntities
+                .Where(x => x.ReviewVoteId == penalty.ReviewVoteId)
+                .FirstOrDefault();
+            if (penaltyEntity is null)
+            {
+                var review = requiredEntities.Reviews
+                    .FirstOrDefault(x => x.ReviewId == penalty.ReviewId);
+                var vote = review?.AcceptedReviewVotes
+                    .FirstOrDefault(x => x.ReviewVoteId == penalty.ReviewVoteId);
+                if (review is null || vote is null)
+                {
+                    continue;
+                }
+                penaltyEntity = new ReviewPenaltyEntity()
+                {
+                    LeagueId = review.LeagueId,
+                    Review = review,
+                    ReviewVote = vote,
+                };
+                penaltyEntities.Add(penaltyEntity);
+            }
+            penaltyEntity.PenaltyPoints = penalty.PenaltyPoints;
+        }
+        return penaltyEntities;
     }
 
     private async Task<ScoredSessionResultEntity> CreateScoredSessionResultEntity(long? scoringId, CancellationToken cancellationToken)
@@ -203,6 +233,9 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
                 .ThenInclude(x => x.ScoredResultRows)
                     .ThenInclude(x => x.TeamResultRows)
             .Include(x => x.ScoredSessionResults)
+                .ThenInclude(x => x.ScoredResultRows)
+                    .ThenInclude(x => x.ReviewPenalties)
+            .Include(x => x.ScoredSessionResults)
                 .ThenInclude(x => x.HardChargers)
             .Include(x => x.ScoredSessionResults)
                 .ThenInclude(x => x.CleanestDrivers)
@@ -225,7 +258,20 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         requiredEntities.ScoredResultRows = await GetScoredResultRowEntities(result.SessionResults
             .SelectMany(x => x.ResultRows)
             .SelectMany(x => x.ScoredMemberResultRowIds), cancellationToken);
+        requiredEntities.Reviews = await GetReviewEntities(result.SessionResults
+            .SelectMany(x => x.ResultRows)
+            .SelectMany(x => x.ReviewPenalties)
+            .Select(x => (x.ReviewId))
+            .NotNull(), cancellationToken);
         return requiredEntities;
+    }
+
+    private async Task<ICollection<IncidentReviewEntity>> GetReviewEntities(IEnumerable<long> reviewIds, CancellationToken cancellationToken)
+    {
+        return await dbContext.IncidentReviews
+            .Include(x => x.AcceptedReviewVotes)
+            .Where(x => reviewIds.Contains(x.ReviewId))
+            .ToListAsync(cancellationToken);
     }
 
     private async Task<ICollection<MemberEntity>> GetMemberEntities(IEnumerable<long> memberIds, CancellationToken cancellationToken)

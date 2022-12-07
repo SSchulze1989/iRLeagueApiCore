@@ -53,5 +53,6 @@ namespace iRLeagueApiCore.Services.ResultService.Models
         public int FinalPosition { get; set; }
         public double FinalPositionChange { get; set; }
         public AddPenaltyCalculationData? AddPenalty { get; set; }
+        public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = new List<ReviewPenaltyCalculationResult>();
     }
 }

@@ -17,14 +17,12 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
     public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAsyncLifetime
     {
         private readonly Fixture fixture;
-        private readonly DbTestFixture dbFixture;
         private readonly LeagueDbContext dbContext;
         private readonly IResultCalculationQueue calculationQueue;
         private readonly ILogger<UploadResultHandler> logger;
 
         public UploadResultHandlerTests(DbTestFixture dbFixture)
         {
-            this.dbFixture = dbFixture;
             fixture = new();
             dbContext = dbFixture.CreateDbContext();
             calculationQueue = Mock.Of<IResultCalculationQueue>();
@@ -232,7 +230,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
                 testRow.ClassId.Should().Be(resultRow.car_class_id);
                 testRow.ClubId.Should().Be(resultRow.club_id);
                 testRow.CompletedLaps.Should().Be(resultRow.laps_complete);
-                testRow.CompletedPct.Should().Be(resultRow.laps_complete / laps);
+                testRow.CompletedPct.Should().BeApproximately(resultRow.laps_complete / (double)laps, 0.001);
                 testRow.Division.Should().Be(resultRow.division);
                 testRow.FastestLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.best_lap_time / 10000D));
                 testRow.FastLapNr.Should().Be(resultRow.best_lap_num);
@@ -292,10 +290,10 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         {
             return fixture.Build<EventEntity>()
                 .With(x => x.LeagueId, dbContext.Leagues.Select(x => x.Id).Max())
+                .With(x => x.Schedule, dbContext.Schedules.First())
                 .With(x => x.EventId, () => dbContext.Events.Select(x => x.EventId).Max() + 1)
                 .Without(x => x.EventResult)
                 .Without(x => x.ResultConfigs)
-                .Without(x => x.Schedule)
                 .Without(x => x.ScoredEventResults)
                 .Without(x => x.Sessions)
                 .Without(x => x.Track);
