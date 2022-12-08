@@ -58,6 +58,19 @@ namespace iRLeagueApiCore.Server.Controllers
             return Ok(getSeason);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("Current")]
+        public async Task<ActionResult<SeasonModel>> GetCurrent([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] current season from {LeagueName} by {UserName}", "Get",
+                leagueName, GetUsername());
+            var request = new GetCurrentSeasonRequest(leagueId);
+            var getSeason = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
+            return Ok(getSeason);
+        }
+
         [HttpPost]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
         [Route("")]
