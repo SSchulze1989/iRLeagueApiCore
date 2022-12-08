@@ -113,7 +113,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             Name = @event.Name,
             ScheduleId = @event.ScheduleId,
             SeasonId = @event.Schedule.SeasonId,
-            HasResult = @event.ScoredEventResults.Any(),
+            HasResult = @event.EventResult != null,
             TrackName = @event.Track.TrackGroup.TrackName,
             ConfigName = @event.Track.ConfigName,
             Sessions = @event.Sessions.Select(session => new SessionModel()

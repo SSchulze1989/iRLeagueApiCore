@@ -59,7 +59,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
                 rowEntity = entity.StandingRows
                     .FirstOrDefault(x => x.MemberId == row.MemberId);
             }
-            if (rowEntity is null && row.TeamId is not null)
+            if (rowEntity is null && row.MemberId is null && row.TeamId is not null)
             {
                 rowEntity = entity.StandingRows
                     .FirstOrDefault(x => x.TeamId == row.TeamId);
