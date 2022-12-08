@@ -296,7 +296,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
                 .Without(x => x.ResultConfigs)
                 .Without(x => x.ScoredEventResults)
                 .Without(x => x.Sessions)
-                .Without(x => x.Track);
+                .Without(x => x.Track)
+                .Without(x => x.SimSessionDetails);
         }
 
         private IPostprocessComposer<SessionEntity> SessionBuilder()

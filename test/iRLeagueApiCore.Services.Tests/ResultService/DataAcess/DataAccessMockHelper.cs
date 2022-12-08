@@ -173,7 +173,8 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Without(x => x.EventResult)
                 .Without(x => x.ResultConfigs)
                 .Without(x => x.ScoredEventResults)
-                .Without(x => x.Track);
+                .Without(x => x.Track)
+                .Without(x => x.SimSessionDetails);
         }
 
         public IEnumerable<EventEntity> CreateEvents(ScheduleEntity schedule)
