@@ -6,5 +6,6 @@ namespace iRLeagueApiCore.Client.Endpoints.Results
     public interface IEventResultsEndpoint : IGetAllEndpoint<EventResultModel>
     {
         IPostEndpoint<bool, ParseSimSessionResult> Upload();
+        IPostEndpoint<bool> Calculate();
     }
 }

@@ -124,5 +124,18 @@ namespace iRLeagueApiCore.Server.Controllers
                 return BadRequest("Oops, something went wrong with the result upload!");
             }
         }
+
+        [HttpPost]
+        [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+        [Route("/{leagueName}/Events/{eventId:long}/[controller]/Calculate")]
+        public async Task<ActionResult<bool>> TriggerResultCalculation([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+            CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] trigger result calculation for event {EventId} in {LeagueName} by {UserName}", "Post",
+                eventId, leagueName, GetUsername());
+            var request = new TriggerResultCalculationCommand(leagueId, eventId);
+            await mediator.Send(request, cancellationToken);
+            return Ok(true);
+        }
     }
 }

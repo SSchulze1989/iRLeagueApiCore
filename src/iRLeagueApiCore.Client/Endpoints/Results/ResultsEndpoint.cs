@@ -23,5 +23,10 @@ namespace iRLeagueApiCore.Client.Endpoints.Results
         {
             return new ResultByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
         }
+
+        IPostEndpoint<bool> IEventResultsEndpoint.Calculate()
+        {
+            return new CalculateEndpoint(HttpClientWrapper, RouteBuilder);
+        }
     }
 }
