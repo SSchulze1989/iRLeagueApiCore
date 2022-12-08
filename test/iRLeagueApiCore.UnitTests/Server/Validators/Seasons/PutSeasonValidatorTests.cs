@@ -14,8 +14,8 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
 {
-    [Collection("ValidatorTests")]
-    public class PutSeasonValidatorTests : IClassFixture<DbTestFixture>
+    [Collection("DbTestFixture")]
+    public class PutSeasonDbTestFixture : IClassFixture<DbTestFixture>
     {
         private readonly DbTestFixture fixture;
 
@@ -23,7 +23,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
         private const long testSeasonId = 1;
         private const string testSeasonName = "TestSeason";
 
-        public PutSeasonValidatorTests(DbTestFixture fixture)
+        public PutSeasonDbTestFixture(DbTestFixture fixture)
         {
             this.fixture = fixture;
         }

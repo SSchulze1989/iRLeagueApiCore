@@ -27,7 +27,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
             var postResultConfig = await CreateResultConfigEntity(request.LeagueId, request.User, cancellationToken);
             postResultConfig = await MapToResultConfigEntityAsync(request.User, request.Model, postResultConfig, cancellationToken);
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(cancellationToken);
             var getResultConfig = await MapToResultConfigModel(postResultConfig.LeagueId, postResultConfig.ResultConfigId, cancellationToken)
                 ?? throw new InvalidOperationException("Created resource was not found");
             return getResultConfig;

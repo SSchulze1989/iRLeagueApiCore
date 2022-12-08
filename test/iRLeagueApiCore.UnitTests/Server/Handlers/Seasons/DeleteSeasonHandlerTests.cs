@@ -14,12 +14,12 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
 {
-    [Collection("HandlerTests")]
-    public class DeleteSeasonHandlerTests : HandlersTestsBase<DeleteSeasonHandler, DeleteSeasonRequest, Unit>
+    [Collection("DbTestFixture")]
+    public class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHandler, DeleteSeasonRequest, Unit>
     {
         private const string testSeasonName = "TestSeason";
 
-        public DeleteSeasonHandlerTests(DbTestFixture fixture) : base(fixture)
+        public DeleteSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

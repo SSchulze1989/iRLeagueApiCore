@@ -18,8 +18,8 @@ using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
-    [Collection("ControllerTests")]
-    public class LeagueControllerTests : IClassFixture<DbTestFixture>
+    [Collection("DbTestFixture")]
+    public class LeagueDbTestFixture : IClassFixture<DbTestFixture>
     {
         DbTestFixture Fixture { get; }
         ITestOutputHelper Output { get; }
@@ -29,7 +29,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         private const string testFullName = "Full Name";
         private const long testLeagueId = 1;
 
-        public LeagueControllerTests(DbTestFixture fixture, ITestOutputHelper output)
+        public LeagueDbTestFixture(DbTestFixture fixture, ITestOutputHelper output)
         {
             Fixture = fixture;
             MockLogger = new Mock<ILogger<LeaguesController>>().Object;

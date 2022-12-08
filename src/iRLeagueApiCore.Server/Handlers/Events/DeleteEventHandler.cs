@@ -26,6 +26,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 ?? throw new ResourceNotFoundException();
             dbContext.Events
                 .Remove(deleteEvent);
+            await dbContext.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
     }

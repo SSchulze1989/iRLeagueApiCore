@@ -17,13 +17,13 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Admin
 {
-    [Collection("HandlerTests")]
-    public class ListUserHandlerTests : IClassFixture<IdentityFixture>
+    [Collection("DbTestFixture")]
+    public class ListUserDbTestFixture : IClassFixture<IdentityFixture>
     {
         private readonly IdentityFixture fixture;
         private readonly ILogger<ListUsersHandler> logger;
 
-        public ListUserHandlerTests(IdentityFixture fixture)
+        public ListUserDbTestFixture(IdentityFixture fixture)
         {
             this.fixture = fixture;
             logger = Mock.Of<ILogger<ListUsersHandler>>();

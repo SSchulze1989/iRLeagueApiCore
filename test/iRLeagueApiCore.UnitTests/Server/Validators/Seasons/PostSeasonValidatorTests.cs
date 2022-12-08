@@ -14,15 +14,15 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
 {
-    [Collection("ValidatorTests")]
-    public class PostSeasonValidatorTests : IClassFixture<DbTestFixture>
+    [Collection("DbTestFixture")]
+    public class PostSeasonDbTestFixture : IClassFixture<DbTestFixture>
     {
         private readonly DbTestFixture fixture;
 
         private const long testLeagueId = 1;
         private const string testSeasonName = "TestSeason";
 
-        public PostSeasonValidatorTests(DbTestFixture fixture)
+        public PostSeasonDbTestFixture(DbTestFixture fixture)
         {
             this.fixture = fixture;
         }

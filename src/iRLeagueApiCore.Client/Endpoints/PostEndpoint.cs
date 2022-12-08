@@ -21,7 +21,7 @@ namespace iRLeagueApiCore.Client.Endpoints
         }
     }
 
-    public class PostEndpoint<TResult, TModel> : EndpointBase, IPostEndpoint<TResult, TModel>
+    public class PostEndpoint<TResult, TModel> : EndpointBase, IPostEndpoint<TResult, TModel> where TModel : notnull
     {
         public PostEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)

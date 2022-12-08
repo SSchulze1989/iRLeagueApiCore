@@ -5,6 +5,7 @@ using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
 using iRLeagueApiCore.Client.Endpoints.Users;
+using iRLeagueApiCore.Client.Endpoints.VoteCategories;
 using iRLeagueApiCore.Common.Models;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,6 @@ namespace iRLeagueApiCore.Client.Endpoints.Leagues
         IReviewCommentsEndpoint ReviewComments();
         ISessionsEndpoint Sessions();
         ILeagueUsersEndpoint Users();
+        IVoteCategoriesEndpoint VoteCategories();
     }
 }

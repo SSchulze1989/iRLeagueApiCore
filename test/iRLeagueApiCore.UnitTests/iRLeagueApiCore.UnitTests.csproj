@@ -2,16 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
     <UserSecretsId>268f531b-646e-4c03-bd3f-0c5544ed5c1b</UserSecretsId>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.7" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.7" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.8" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.9">
       <PrivateAssets>all</PrivateAssets>
@@ -33,12 +34,19 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Client\iRLeagueApiCore.Client.csproj" />
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj" />
+    <ProjectReference Include="..\..\src\iRLeagueApiCore.Services\iRLeagueApiCore.Services.csproj" />
     <ProjectReference Include="..\..\src\iRLeagueApiCore.TrackImport\iRLeagueApiCore.TrackImport.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Client\Endpoints\Leagues\" />
     <Folder Include="Server\Validators\Scorings\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\iracing-result.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

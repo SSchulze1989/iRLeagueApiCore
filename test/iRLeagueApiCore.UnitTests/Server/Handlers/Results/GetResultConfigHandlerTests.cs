@@ -12,10 +12,10 @@ using System.Linq;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class GetResultConfigHandlerTests : HandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
+    [Collection("DbTestFixture")]
+    public class GetResultConfigDbTestFixture : HandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
     {
-        public GetResultConfigHandlerTests(DbTestFixture fixture) : base(fixture)
+        public GetResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 
@@ -44,6 +44,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             result.ResultConfigId.Should().Be(request.ResultConfigId);
             result.Name.Should().Be(resultConfigEntity.Name);
             result.DisplayName.Should().Be(resultConfigEntity.DisplayName);
+            result.ResultsPerTeam.Should().Be(resultConfigEntity.ResultsPerTeam);
             base.DefaultAssertions(request, result, dbContext);
         }
 

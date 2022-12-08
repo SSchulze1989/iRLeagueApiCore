@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints
 {
-    public class PostGetAllEndpoint<TGet, TPost> : EndpointBase, IPostGetAllEndpoint<TGet, TPost>
+    public class PostGetAllEndpoint<TGet, TPost> : EndpointBase, IPostGetAllEndpoint<TGet, TPost> where TPost : notnull
     {
         public PostGetAllEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
         {

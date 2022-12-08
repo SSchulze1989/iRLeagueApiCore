@@ -24,7 +24,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Sessions
             return new MembersEndpoint(HttpClientWrapper, RouteBuilder);
         }
 
-        IGetAllEndpoint<EventResultModel> IEventByIdEndpoint.Results()
+        IEventResultsEndpoint IEventByIdEndpoint.Results()
         {
             return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
         }

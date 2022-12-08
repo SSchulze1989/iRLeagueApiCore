@@ -14,7 +14,7 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
-    [Collection("HandlerTests")]
+    [Collection("DbTestFixture")]
     public class GetScoringHandlerTest : HandlersTestsBase<GetScoringHandler, GetScoringRequest, ScoringModel>
     {
         public GetScoringHandlerTest(DbTestFixture fixture) : base(fixture)
@@ -43,11 +43,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             result.LeagueId.Should().Be(request.LeagueId);
             result.Id.Should().Be(request.ScoringId);
             result.Name.Should().Be(testScoring.Name);
-            result.ScoringKind.Should().Be(testScoring.ScoringKind);
             result.ExtScoringSourceId.Should().Be(testScoring.ExtScoringSourceId);
             result.MaxResultsPerGroup.Should().Be(testScoring.MaxResultsPerGroup);
             result.ResultConfigId.Should().Be(testScoring.ResultConfigId);
             result.ShowResults.Should().Be(testScoring.ShowResults);
+            result.IsCombinedResult.Should().Be(testScoring.IsCombinedResult);
             result.UpdateTeamOnRecalculation.Should().Be(testScoring.UpdateTeamOnRecalculation);
             result.UseResultSetTeam.Should().Be(testScoring.UseResultSetTeam);
             base.DefaultAssertions(request, result, dbContext);

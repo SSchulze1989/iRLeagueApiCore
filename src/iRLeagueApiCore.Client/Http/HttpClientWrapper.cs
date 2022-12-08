@@ -17,10 +17,10 @@ namespace iRLeagueApiCore.Client.Http
     {
         private readonly HttpClient httpClient;
         private readonly IAsyncTokenProvider tokenProvider;
-        private readonly ILeagueApiClient apiClient;
-        private readonly JsonSerializerOptions jsonOptions;
+        private readonly ILeagueApiClient? apiClient;
+        private readonly JsonSerializerOptions? jsonOptions;
 
-        public HttpClientWrapper(HttpClient httpClient, IAsyncTokenProvider tokenProvider, ILeagueApiClient apiClient = default, JsonSerializerOptions jsonOptions = default)
+        public HttpClientWrapper(HttpClient httpClient, IAsyncTokenProvider tokenProvider, ILeagueApiClient? apiClient = default, JsonSerializerOptions? jsonOptions = default)
         {
             this.httpClient = httpClient;
             this.tokenProvider = tokenProvider;
@@ -34,14 +34,14 @@ namespace iRLeagueApiCore.Client.Http
             return await SendRequest(request, cancellationToken);
         }
 
-        public async Task<HttpResponseMessage> Post(string uri, object data, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Post(string uri, object? data, CancellationToken cancellationToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, new Uri(uri, UriKind.RelativeOrAbsolute));
             request.Content = new StringContent(JsonSerializer.Serialize(data, jsonOptions), Encoding.UTF8, "application/json");
             return await SendRequest(request, cancellationToken);
         }
 
-        public async Task<HttpResponseMessage> Put(string uri, object data, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Put(string uri, object? data, CancellationToken cancellationToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Put, new Uri(uri, UriKind.RelativeOrAbsolute));
             request.Content = new StringContent(JsonSerializer.Serialize(data, jsonOptions), Encoding.UTF8, "application/json");
@@ -58,9 +58,9 @@ namespace iRLeagueApiCore.Client.Http
         {
             await AddJWTTokenAsync(request);
             var result = await httpClient.SendAsync(request, cancellationToken);
-            if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient != null)
             {
-                await apiClient?.LogOut();
+                await apiClient.LogOut();
             }
             return result;
         }
@@ -80,12 +80,12 @@ namespace iRLeagueApiCore.Client.Http
             return await Get(query, cancellationToken).AsClientActionResultAsync<T>(jsonOptions, cancellationToken);
         }
 
-        public async Task<ClientActionResult<T>> PostAsClientActionResult<T>(string query, object body, CancellationToken cancellationToken = default)
+        public async Task<ClientActionResult<T>> PostAsClientActionResult<T>(string query, object? body, CancellationToken cancellationToken = default)
         {
             return await Post(query, body, cancellationToken).AsClientActionResultAsync<T>(jsonOptions, cancellationToken);
         }
 
-        public async Task<ClientActionResult<T>> PutAsClientActionResult<T>(string query, object body, CancellationToken cancellationToken = default)
+        public async Task<ClientActionResult<T>> PutAsClientActionResult<T>(string query, object? body, CancellationToken cancellationToken = default)
         {
             return await Put(query, body, cancellationToken).AsClientActionResultAsync<T>(jsonOptions, cancellationToken);
         }

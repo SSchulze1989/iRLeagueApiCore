@@ -13,12 +13,12 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
-    [Collection("HandlerTests")]
-    public class PutScheduleHandlerTests : HandlersTestsBase<PutScheduleHandler, PutScheduleRequest, ScheduleModel>
+    [Collection("DbTestFixture")]
+    public class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHandler, PutScheduleRequest, ScheduleModel>
     {
         private const string testScheduleName = "TestSchedule";
 
-        public PutScheduleHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutScheduleDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

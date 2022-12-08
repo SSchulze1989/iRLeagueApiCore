@@ -17,33 +17,11 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
     public class DbTestFixture : IDisposable
     {
         private static IConfiguration Configuration { get; }
+        private readonly Fixture fixture;
 
         private static readonly int Seed = 12345;
         public static string ClientUserName => "TestClient";
         public static string ClientGuid => "6a6a6e09-f4b7-4ccb-a8ae-f2fc85d897dd";
-
-
-        private static IEnumerable<LeagueEntity> _leagues;
-        /// <summary>
-        /// Static list of leagues on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<LeagueEntity> Leagues => _leagues;
-        /// <summary>
-        /// Static list of members on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<MemberEntity> Members { get; private set; }
-        /// <summary>
-        /// Static list of seasons on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<SeasonEntity> Seasons { get; private set; }
-        /// <summary>
-        /// Static list of schedules on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<ScheduleEntity> Schedules { get; private set; }
-        /// <summary>
-        /// Static list of sessions on the pre-populated test database. Will not change during tests
-        /// </summary>
-        public IEnumerable<SessionEntity> Sessions { get; private set; }
 
         static DbTestFixture()
         {
@@ -51,22 +29,21 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 .AddUserSecrets<DbTestFixture>()
                 .Build(); ;
 
-            var random = new Random(Seed);
-
             // set up test database
-            using (var dbContext = CreateStaticDbContext())
-            {
-                dbContext.Database.EnsureDeleted();
-                dbContext.Database.Migrate();
+            //using (var dbContext = CreateStaticDbContext())
+            //{
+            //    dbContext.Database.EnsureDeleted();
+            //    dbContext.Database.EnsureCreated();
 
-                Populate(dbContext, random);
-                dbContext.SaveChanges();
-                _leagues = dbContext.Leagues.ToList();
-            }
+            //    Populate(dbContext, random);
+            //    dbContext.SaveChanges();
+            //    _leagues = dbContext.Leagues.ToList();
+            //}
         }
 
         public DbTestFixture()
         {
+            fixture = new();
         }
 
         public static LeagueDbContext CreateStaticDbContext()
@@ -75,8 +52,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             var connectionString = Configuration["ConnectionStrings:ModelDb"];
 
             // use in memory database when no connection string present
-            optionsBuilder.UseMySQL(connectionString);
-            //optionsBuilder.UseInMemoryDatabase("TestDatabase");
+            //optionsBuilder.UseMySQL(connectionString);
+            optionsBuilder.UseInMemoryDatabase("TestDatabase");
 
             var dbContext = new LeagueDbContext(optionsBuilder.Options);
             return dbContext;
@@ -84,10 +61,17 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
 
         public LeagueDbContext CreateDbContext()
         {
-            return CreateStaticDbContext();
+            var dbContext = CreateStaticDbContext();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+
+            var random = new Random(Seed);
+            Populate(dbContext, random);
+            dbContext.SaveChanges();
+            return dbContext;
         }
 
-        public static void Populate(LeagueDbContext context, Random random)
+        public void Populate(LeagueDbContext context, Random random)
         {
             // Create random users
             var users = new List<LeagueUser>();
@@ -306,7 +290,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             var resultConfig = new ResultConfigurationEntity()
             {
                 Name = "Resultconfig 1",
-                DisplayName = "Overall"
+                DisplayName = "Overall",
+                ResultsPerTeam = random.Next(1, 10),
             };
             var scoring = new ScoringEntity()
             {
@@ -420,7 +405,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
         {
             return new TimeSpan(0, 1, 2, 34, 567);
         }
-        private static void GenerateMembers(LeagueDbContext context, Random random)
+        private void GenerateMembers(LeagueDbContext context, Random random)
         {
             var minMemberCount = 50;
             var maxMemberCount = 100;
@@ -455,15 +440,9 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             return new string(name);
         }
 
-        private static string GetRandomIracingId(Random random)
+        private string GetRandomIracingId(Random random)
         {
-            var len = 6;
-            char[] id = new char[len];
-            for (int i = 0; i < len; i++)
-            {
-                id[i] = (char)('0' + random.Next(10));
-            }
-            return new string(id);
+            return fixture.Create<long>().ToString();
         }
 
         private static ReviewCommentEntity RandomComment(Random random, LeagueUser user, IEnumerable<MemberEntity> involvedMembers)

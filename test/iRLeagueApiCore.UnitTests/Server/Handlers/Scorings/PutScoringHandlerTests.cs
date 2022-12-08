@@ -14,12 +14,12 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
-    [Collection("HandlerTests")]
-    public class PutScoringHandlerTests : HandlersTestsBase<PutScoringHandler, PutScoringRequest, ScoringModel>
+    [Collection("DbTestFixture")]
+    public class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandler, PutScoringRequest, ScoringModel>
     {
         private const string NewScoringName = "New scoring Name";
 
-        public PutScoringHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutScoringDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 
@@ -33,6 +33,8 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             var model = new PutScoringModel()
             {
                 Name = NewScoringName,
+                ShowResults = true,
+                IsCombinedResult = true,
             };
             return new PutScoringRequest(leagueId, scoringId, DefaultUser(), model);
         }
@@ -52,6 +54,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
             result.ExtScoringSourceId.Should().Be(expected.ExtScoringSourceId);
             result.MaxResultsPerGroup.Should().Be(expected.MaxResultsPerGroup);
             result.ShowResults.Should().Be(expected.ShowResults);
+            result.IsCombinedResult.Should().Be(expected.IsCombinedResult);
             result.UpdateTeamOnRecalculation.Should().Be(expected.UpdateTeamOnRecalculation);
             result.UseResultSetTeam.Should().Be(expected.UseResultSetTeam);
             AssertChanged(request.User, DateTime.UtcNow, result);

@@ -14,12 +14,12 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
 {
-    [Collection("HandlerTests")]
-    public class PostLeagueHandlerTests : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, LeagueModel>
+    [Collection("DbTestFixture")]
+    public class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, LeagueModel>
     {
         private const string postLeagueName = "PostLeague";
 
-        public PostLeagueHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PostLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

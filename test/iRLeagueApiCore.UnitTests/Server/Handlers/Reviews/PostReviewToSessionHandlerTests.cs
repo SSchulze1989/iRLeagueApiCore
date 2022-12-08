@@ -13,10 +13,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
 {
-    [Collection("HandlerTests")]
-    public class PostReviewToSessionHandlerTests : HandlersTestsBase<PostReviewToSessionHandler, PostReviewToSessionRequest, ReviewModel>
+    [Collection("DbTestFixture")]
+    public class PostReviewToSessionDbTestFixture : HandlersTestsBase<PostReviewToSessionHandler, PostReviewToSessionRequest, ReviewModel>
     {
-        public PostReviewToSessionHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PostReviewToSessionDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 
@@ -67,7 +67,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             var reviewEntity = dbContext.IncidentReviews
                 .SingleOrDefault(x => x.ReviewId == result.ReviewId);
             reviewEntity.Should().NotBeNull();
-            foreach ((var member, var expectedMember) in result.InvolvedMembers.Zip(reviewEntity.InvolvedMembers))
+            foreach ((var member, var expectedMember) in result.InvolvedMembers.OrderBy(x => x.MemberId).Zip(reviewEntity.InvolvedMembers.OrderBy(x => x.Id)))
             {
                 AssertMemberInfo(expectedMember, member);
             }

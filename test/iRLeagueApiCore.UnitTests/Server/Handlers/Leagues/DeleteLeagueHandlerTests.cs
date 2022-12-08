@@ -12,10 +12,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
 {
-    [Collection("HandlerTests")]
-    public class DeleteLeagueHandlerTests : HandlersTestsBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
+    [Collection("DbTestFixture")]
+    public class DeleteLeagueDbTestFixture : HandlersTestsBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
     {
-        public DeleteLeagueHandlerTests(DbTestFixture fixture) : base(fixture)
+        public DeleteLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

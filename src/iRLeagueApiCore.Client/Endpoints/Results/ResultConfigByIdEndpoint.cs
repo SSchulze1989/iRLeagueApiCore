@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Results
         public ResultConfigByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long resultConfigId) : 
             base(httpClientWrapper, routeBuilder)
         {
-            routeBuilder.AddParameter(resultConfigId);
+            RouteBuilder.AddParameter(resultConfigId);
         }
     }
 }

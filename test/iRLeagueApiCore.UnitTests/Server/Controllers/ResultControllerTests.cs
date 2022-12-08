@@ -10,14 +10,14 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
-    [Collection("ControllerTests")]
-    public class ResultControllerTests : IClassFixture<DbTestFixture>
+    [Collection("DbTestFixture")]
+    public class ResultDbTestFixture : IClassFixture<DbTestFixture>
     {
         private DbTestFixture Fixture { get; }
 
         ILogger<ResultsController> MockLogger => new Mock<ILogger<ResultsController>>().Object;
 
-        public ResultControllerTests(DbTestFixture fixture)
+        public ResultDbTestFixture(DbTestFixture fixture)
         {
             Fixture = fixture;
         }

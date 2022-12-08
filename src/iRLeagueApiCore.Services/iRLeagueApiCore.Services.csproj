@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -16,11 +17,12 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.7" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.7" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.3.8" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.3.8" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
   </ItemGroup>
 

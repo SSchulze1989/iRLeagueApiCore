@@ -11,10 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class DeleteResultConfigHandlerTests : HandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
+    [Collection("DbTestFixture")]
+    public class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
     {
-        public DeleteResultConfigHandlerTests(DbTestFixture fixture) : base(fixture)
+        public DeleteResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 
