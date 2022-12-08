@@ -15,8 +15,8 @@ namespace iRLeagueApiCore.Client
     public interface ILeagueApiClient
     {
         bool IsLoggedIn { get; }
-        ILeagueByNameEndpoint CurrentLeague { get; }
-        ISeasonByIdEndpoint CurrentSeason { get; }
+        ILeagueByNameEndpoint? CurrentLeague { get; }
+        ISeasonByIdEndpoint? CurrentSeason { get; }
         ILeaguesEndpoint Leagues();
         IUsersEndpoint Users();
         ITracksEndpoint Tracks();

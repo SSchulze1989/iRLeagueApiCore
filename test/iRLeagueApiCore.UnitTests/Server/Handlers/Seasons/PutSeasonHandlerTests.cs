@@ -13,12 +13,12 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons
 {
-    [Collection("HandlerTests")]
-    public class PutSeasonHandlerTests : HandlersTestsBase<PutSeasonHandler, PutSeasonRequest, SeasonModel>
+    [Collection("DbTestFixture")]
+    public class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler, PutSeasonRequest, SeasonModel>
     {
         private const string testSeasonName = "TestSeason";
 
-        public PutSeasonHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

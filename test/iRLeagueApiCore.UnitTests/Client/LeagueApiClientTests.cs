@@ -50,8 +50,8 @@ namespace iRLeagueApiCore.UnitTests.Client
 
             var result = await apiClient.LogIn("testUser", "testPassword");
 
-            Assert.True(result.Success);
-            Assert.Equal(testToken, token);
+            result.Success.Should().BeTrue();
+            token.Should().Be(testToken);
         }
 
         [Fact]

@@ -18,8 +18,8 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
-    [Collection("ControllerTests")]
-    public class ScheduleControllerTests
+    [Collection("DbTestFixture")]
+    public class ScheduleDbTestFixture
     {
         private readonly ILogger<SchedulesController> logger;
 
@@ -29,7 +29,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         const long testScheduleId = 1;
         const string testScheduleName = "Schedule 1";
 
-        public ScheduleControllerTests()
+        public ScheduleDbTestFixture()
         {
             logger = Mock.Of<ILogger<SchedulesController>>();
         }

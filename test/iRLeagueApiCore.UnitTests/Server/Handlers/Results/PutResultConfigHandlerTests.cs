@@ -11,10 +11,10 @@ using iRLeagueApiCore.Server.Exceptions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class PutResultConfigHandlerTests : HandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
+    [Collection("DbTestFixture")]
+    public class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
     {
-        public PutResultConfigHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 
@@ -30,6 +30,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             {
                 Name = "TestresultConfig",
                 DisplayName = "TestResultConfig DisplayName",
+                ResultsPerTeam = 10,
             };
             return new PutResultConfigRequest(leagueId, resultConfigId, DefaultUser(), PutResultConfig);
         }
@@ -46,6 +47,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             result.ResultConfigId.Should().Be(request.ResultConfigId);
             result.Name.Should().Be(expected.Name);
             result.DisplayName.Should().Be(expected.DisplayName);
+            result.ResultsPerTeam.Should().Be(expected.ResultsPerTeam);
             base.DefaultAssertions(request, result, dbContext);
         }
 
@@ -62,7 +64,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         [InlineData(testLeagueId, 42)]
         public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
         {
-            using var dbContext = fixture.CreateDbContext();
+            using var dbContext = dbFixture.CreateDbContext();
             var handler = CreateTestHandler(dbContext);
             var request = DefaultRequest(leagueId, resultConfigId);
             var act = () => handler.Handle(request, default);

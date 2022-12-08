@@ -13,10 +13,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {
-    [Collection("HandlerTests")]
-    public class PostPointRuleHandlerTests : HandlersTestsBase<PostPointRuleHandler, PostPointRuleRequest, PointRuleModel>
+    [Collection("DbTestFixture")]
+    public class PostPointRuleDbTestFixture : HandlersTestsBase<PostPointRuleHandler, PostPointRuleRequest, PointRuleModel>
     {
-        public PostPointRuleHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PostPointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

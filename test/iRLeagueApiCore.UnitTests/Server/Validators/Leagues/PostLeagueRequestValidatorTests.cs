@@ -13,15 +13,15 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Leagues
 {
-    [Collection("ValidatorTests")]
-    public class PostLeagueRequestValidatorTests : IClassFixture<DbTestFixture>
+    [Collection("DbTestFixture")]
+    public class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture>
     {
         private readonly DbTestFixture fixture;
         private const string testLeagueName = "ValidationLeague123_-";
         private const string existingLeagueName = "TestLeague";
         private const string testLeagueNameFull = "Full test league name";
 
-        public PostLeagueRequestValidatorTests(DbTestFixture fixture)
+        public PostLeagueRequestDbTestFixture(DbTestFixture fixture)
         {
             this.fixture = fixture;
         }

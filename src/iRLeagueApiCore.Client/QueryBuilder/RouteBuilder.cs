@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Client.QueryBuilder
     {
         private readonly List<string> parts;
         
-        private IParameterBuilder ParameterBuilder { get; set; }
+        private IParameterBuilder? ParameterBuilder { get; set; }
 
         public RouteBuilder()
         {
@@ -30,7 +30,7 @@ namespace iRLeagueApiCore.Client.QueryBuilder
 
         public IRouteBuilder AddParameter<T>(T value)
         {
-            parts.Add(value.ToString());
+            parts.Add(value?.ToString() ?? string.Empty);
             return this;
         }
 
@@ -52,7 +52,7 @@ namespace iRLeagueApiCore.Client.QueryBuilder
 
         public IRouteBuilder WithParameters(Func<IParameterBuilder, IParameterBuilder> parameterBuilder)
         {
-            ParameterBuilder = parameterBuilder?.Invoke(new ParameterBuilder());
+            ParameterBuilder = parameterBuilder.Invoke(new ParameterBuilder());
             return this;
         }
 

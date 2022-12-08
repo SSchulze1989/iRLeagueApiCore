@@ -24,20 +24,20 @@ namespace iRLeagueApiCore.Client
         private readonly HttpClientWrapper httpClientWrapper;
         private readonly ITokenStore tokenStore;
 
-        private string CurrentLeagueName { get; set; }
+        private string? CurrentLeagueName { get; set; }
 
         public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, ITokenStore tokenStore, JsonSerializerOptions jsonOptions)
         {
             this.logger = logger;
-            this.httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this, jsonOptions);
+            httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this, jsonOptions);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             this.tokenStore = tokenStore;
         }
 
         public bool IsLoggedIn => tokenStore.IsLoggedIn;
 
-        public ILeagueByNameEndpoint CurrentLeague { get; private set; }
-        public ISeasonByIdEndpoint CurrentSeason { get; private set; }
+        public ILeagueByNameEndpoint? CurrentLeague { get; private set; }
+        public ISeasonByIdEndpoint? CurrentSeason { get; private set; }
 
         public ILeaguesEndpoint Leagues()
         {
@@ -102,6 +102,10 @@ namespace iRLeagueApiCore.Client
         public void SetCurrentSeason(string leagueName, long seasonId)
         {
             SetCurrentLeague(leagueName);
+            if (CurrentLeague == null)
+            {
+                throw new InvalidOperationException("Could not set current season: current league was null");
+            }
             CurrentSeason = CurrentLeague.Seasons().WithId(seasonId);
         }
     }

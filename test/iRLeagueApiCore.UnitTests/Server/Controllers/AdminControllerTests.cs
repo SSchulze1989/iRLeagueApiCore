@@ -23,8 +23,8 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
-    [Collection("ControllerTests")]
-    public class AdminControllerTests
+    [Collection("DbTestFixture")]
+    public class AdminDbTestFixture
     {
         readonly ILogger<AdminController> _mockLogger = new Mock<ILogger<AdminController>>().Object;
         ApplicationUser MockUser { get; }
@@ -34,7 +34,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         const string TestLeagueName = "TestLeague";
         string TestLeagueRoleName = LeagueRoles.GetLeagueRoleName(TestLeagueName, TestRoleName);
 
-        public AdminControllerTests()
+        public AdminDbTestFixture()
         {
             var userMock = new Mock<ApplicationUser>();
             userMock.SetupAllProperties();

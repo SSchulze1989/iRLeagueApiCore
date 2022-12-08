@@ -43,7 +43,9 @@ namespace iRLeagueApiCore.Server.Handlers.Standings
             Name = standing.Name,
             IsTeamStanding = standing.IsTeamStanding,
             StandingId = standing.StandingId,
-            StandingRows = standing.StandingRows.Select(standingRow => new StandingRowModel()
+            StandingRows = standing.StandingRows
+                .OrderBy(x => x.Position)
+                .Select(standingRow => new StandingRowModel()
             {
                 CarClass = standingRow.CarClass,
                 ClassId = standingRow.ClassId,

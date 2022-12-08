@@ -7,7 +7,7 @@ using iRLeagueApiCore.Client.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints
 {
-    public class UpdateEndpoint<TResult, TModel> : EndpointBase, IUpdateEndpoint<TResult, TModel>
+    public class UpdateEndpoint<TResult, TModel> : EndpointBase, IUpdateEndpoint<TResult, TModel> where TModel : notnull
     {
         public UpdateEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
             base(httpClientWrapper, routeBuilder)

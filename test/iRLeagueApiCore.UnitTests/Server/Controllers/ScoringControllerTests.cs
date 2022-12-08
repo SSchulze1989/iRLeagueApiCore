@@ -18,8 +18,8 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {
-    [Collection("ControllerTests")]
-    public class ScoringControllerTests
+    [Collection("DbTestFixture")]
+    public class ScoringDbTestFixture
     {
         private readonly ILogger<ScoringsController> logger;
 
@@ -28,7 +28,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Controllers
         const long testSeasonId = 1;
         const long testScoringId = 1;
 
-        public ScoringControllerTests()
+        public ScoringDbTestFixture()
         {
             logger = Mock.Of<ILogger<ScoringsController>>();
         }

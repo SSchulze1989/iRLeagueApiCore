@@ -12,10 +12,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
 {
-    [Collection("HandlerTests")]
-    public class GetReviewHandlerTests : HandlersTestsBase<GetReviewHandler, GetReviewRequest, ReviewModel>
+    [Collection("DbTestFixture")]
+    public class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler, GetReviewRequest, ReviewModel>
     {
-        public GetReviewHandlerTests(DbTestFixture fixture) : base(fixture)
+        public GetReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

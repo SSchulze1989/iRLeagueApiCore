@@ -13,10 +13,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
 {
-    [Collection("HandlerTests")]
-    public class PutLeagueHandlerTests : HandlersTestsBase<PutLeagueHandler, PutLeagueRequest, LeagueModel>
+    [Collection("DbTestFixture")]
+    public class PutLeagueDbTestFixture : HandlersTestsBase<PutLeagueHandler, PutLeagueRequest, LeagueModel>
     {
-        public PutLeagueHandlerTests(DbTestFixture fixture) : base(fixture)
+        public PutLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 

@@ -12,5 +12,11 @@ namespace iRLeagueApiCore.UnitTests.Extensions
         {
             return list.ElementAt(random.Next(list.Count()));
         }
+
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> list, Random random = default)
+        {
+            random ??= new();
+            return list.OrderBy(x => random.Next());
+        }
     }
 }

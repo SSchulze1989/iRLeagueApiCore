@@ -13,10 +13,10 @@ using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
-    [Collection("HandlerTests")]
-    public class GetResultHandlerTests : HandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
+    [Collection("DbTestFixture")]
+    public class GetResultDbTestFixture : HandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
     {
-        public GetResultHandlerTests(DbTestFixture fixture) : base(fixture)
+        public GetResultDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
         }
 
@@ -48,7 +48,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
                     .ThenInclude(x => x.ScoredResultRows)
                         .ThenInclude(x => x.Team)
                 .Single();
-            AssertEventResultData(actualResult, result);
+            AssertEventResultData(result, actualResult);
         }
 
         [Fact]
@@ -74,20 +74,20 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             await HandleNotFoundRequestAsync(request);
         }
 
-        private void AssertEventResultData(ScoredEventResultEntity expected, EventResultModel test)
+        private void AssertEventResultData(EventResultModel expected, ScoredEventResultEntity test)
         {
             Assert.Equal(expected.LeagueId, test.LeagueId);
-            AssertSessionResultData(expected.ScoredSessionResults.First(), test.SessionResults.First());
+            AssertSessionResultData(expected.SessionResults.First(), test.ScoredSessionResults.First());
         }
 
-        private void AssertSessionResultData(ScoredSessionResultEntity expected, ResultModel test)
+        private void AssertSessionResultData(ResultModel expected, ScoredSessionResultEntity test)
         {
             Assert.Equal(expected.ScoringId, test.ScoringId);
             Assert.Equal(expected.LeagueId, test.LeagueId);
-            AssertResultRowData(expected.ScoredResultRows.First(), test.ResultRows.First());
+            AssertResultRowData(expected.ResultRows.First(), test.ScoredResultRows.First());
         }
 
-        private void AssertResultRowData(ScoredResultRowEntity expected, ResultRowModel test)
+        private void AssertResultRowData(ResultRowModel expected, ScoredResultRowEntity test)
         {
             Assert.Equal(expected.BonusPoints, test.BonusPoints);
             Assert.Equal(expected.FinalPosition, test.FinalPosition);
@@ -107,24 +107,24 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             Assert.Equal(expected.FastLapNr, test.FastLapNr);
             Assert.Equal(expected.FinishPosition, test.FinishPosition);
             Assert.Equal(expected.Incidents, test.Incidents);
-            Assert.Equal(expected.Interval, test.Interval);
+            Assert.Equal(expected.Interval, new Interval(test.Interval));
             Assert.Equal(expected.LeadLaps, test.LeadLaps);
             Assert.Equal(expected.License, test.License);
-            Assert.Equal(expected.Member?.Firstname ?? string.Empty, test.Firstname);
-            Assert.Equal(expected.Member?.Lastname ?? string.Empty, test.Lastname);
+            Assert.Equal(expected.Firstname, test.Member?.Firstname ?? string.Empty);
+            Assert.Equal(expected.Lastname, test.Member?.Lastname ?? string.Empty);
             Assert.Equal(expected.MemberId, test.MemberId);
-            Assert.Equal(expected.NewIRating, test.NewIrating);
+            Assert.Equal(expected.NewIrating, test.NewIRating);
             Assert.Equal(expected.NewLicenseLevel, test.NewLicenseLevel);
             Assert.Equal(expected.NewSafetyRating, test.NewSafetyRating);
-            Assert.Equal(expected.OldIRating, test.OldIrating);
+            Assert.Equal(expected.OldIrating, test.OldIRating);
             Assert.Equal(expected.OldLicenseLevel, test.OldLicenseLevel);
             Assert.Equal(expected.OldSafetyRating, test.OldSafetyRating);
             Assert.Equal(expected.PositionChange, test.PositionChange);
             Assert.Equal(expected.QualifyingTime, test.QualifyingTime);
-            Assert.Equal(expected.SeasonStartIRating, test.SeasonStartIrating);
+            Assert.Equal(expected.SeasonStartIrating, test.SeasonStartIRating);
             Assert.Equal(expected.StartPosition, test.StartPosition);
             Assert.Equal(expected.Status, test.Status);
-            Assert.Equal(expected.Team?.Name ?? string.Empty, test.TeamName);
+            Assert.Equal(expected.TeamName, test.Team?.Name ?? string.Empty);
             Assert.Equal(expected.TeamId, test.TeamId);
             Assert.Equal(expected.TotalPoints, test.TotalPoints);
         }

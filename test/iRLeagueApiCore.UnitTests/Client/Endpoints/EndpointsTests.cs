@@ -20,7 +20,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints
             string requestUrl = "";
             var httpMessageHandler = MockHelpers.TestMessageHandler(x =>
             {
-                requestUrl = x.RequestUri.AbsoluteUri;
+                requestUrl = x.RequestUri!.AbsoluteUri;
                 return new HttpResponseMessage()
                 {
                     StatusCode = HttpStatusCode.OK,
