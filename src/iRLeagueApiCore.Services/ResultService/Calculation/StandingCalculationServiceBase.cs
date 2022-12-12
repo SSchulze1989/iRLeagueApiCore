@@ -84,6 +84,14 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
 
         standingRow.RacePoints += (int)results.Sum(x => x.ResultRow.RacePoints + x.ResultRow.BonusPoints);
         standingRow.RacesCounted += results.Count();
+        foreach(var resultRow in results)
+        {
+            var standingResultRow = standingRow.ResultRows.FirstOrDefault(x => x.ScoredResultRowId == resultRow.ResultRow.ScoredResultRowId);
+            if (standingResultRow is not null)
+            {
+                standingResultRow.IsScored = true;
+            }
+        }
 
         return standingRow;
     }
