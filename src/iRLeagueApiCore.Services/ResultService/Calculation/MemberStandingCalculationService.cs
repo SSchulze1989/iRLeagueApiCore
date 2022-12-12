@@ -210,7 +210,7 @@ internal sealed class MemberStandingCalculationService : ICalculationService<Sta
     {
         return rows
             .OrderByDescending(x => standingRowSelector(x).TotalPoints)
-            .ThenByDescending(x => standingRowSelector(x).PenaltyPoints)
+            .ThenBy(x => standingRowSelector(x).PenaltyPoints)
             .ThenByDescending(x => standingRowSelector(x).Wins)
             .ThenBy(x => standingRowSelector(x).Incidents);
     }
