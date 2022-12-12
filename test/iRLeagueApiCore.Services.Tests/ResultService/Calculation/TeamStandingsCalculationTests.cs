@@ -1,10 +1,12 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Services.ResultService.Calculation;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
+using System.Diagnostics;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 
-public sealed class MemberStandingCalculationServiceTests
+public sealed class TeamStandingCalculationServiceTests
 {
     private readonly Fixture fixture = new();
 
@@ -19,23 +21,25 @@ public sealed class MemberStandingCalculationServiceTests
     }
 
     [Fact]
-    public async Task Calculate_ShouldAccumulateMemberRows()
+    public async Task Calculate_ShouldAccumulateTeamRows()
     {
         const int nEvents = 3;
         const int nRaces = 2;
-        var memberId = fixture.Create<long>();
+        var teamId = fixture.Create<long>();
         var testRowData = TestRowBuilder()
-            .With(x => x.MemberId, memberId)
+            .With(x => x.TeamId, teamId)
             .CreateMany(nEvents * nRaces);
-        var data = CalculationDataBuilder(3, 2, true).Create();
+        var data = CalculationDataBuilder(nEvents, nRaces, true).Create();
         var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
             .Zip(testRowData);
+        Debug.Assert(tmp.None(x => x.First.ResultRows.Any(y => y.TeamId == teamId)));
         foreach (var (result, rowData) in tmp)
         {
-            result.ResultRows = result.ResultRows.Concat(new[] { rowData });
+            //result.ResultRows = result.ResultRows.Concat(new[] { rowData });
+            result.ResultRows = new[] { rowData };
         }
         var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
-            .With(x => x.ResultKind, Common.Enums.ResultKind.Member)
+            .With(x => x.ResultKind, Common.Enums.ResultKind.Team)
             .With(x => x.UseCombinedResult, false)
             .With(x => x.WeeksCounted, nEvents)
             .Create();
@@ -43,9 +47,10 @@ public sealed class MemberStandingCalculationServiceTests
 
         var test = await sut.Calculate(data);
 
-        test.StandingRows.Should().ContainSingle(x => x.MemberId == memberId);
-        var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
+        test.StandingRows.Should().ContainSingle(x => x.TeamId == teamId);
+        var testRow = test.StandingRows.Single(x => x.TeamId == teamId);
         var lastResultRowData = testRowData.TakeLast(2);
+        testRow.MemberId.Should().BeNull();
         testRow.Wins.Should().Be(testRowData.Sum(x => x.FinalPosition == 1 ? 1 : 0));
         testRow.RacePoints.Should().Be((int)testRowData.Sum(x => x.RacePoints + x.BonusPoints));
         testRow.TotalPoints.Should().Be((int)testRowData.Sum(x => x.RacePoints + x.BonusPoints - x.PenaltyPoints));
@@ -72,9 +77,9 @@ public sealed class MemberStandingCalculationServiceTests
     {
         const int nEvents = 3;
         const int nRaces = 2;
-        var memberId = fixture.Create<long>();
+        var teamId = fixture.Create<long>();
         var testRowData = TestRowBuilder()
-            .With(x => x.MemberId, memberId)
+            .With(x => x.TeamId, teamId)
             .CreateMany(nEvents * (nRaces + 1));
         var data = CalculationDataBuilder(nEvents, nRaces + 1, false).Create();
         var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults.OrderBy(x => x.SessionNr)).Concat(data.CurrentEventResult.SessionResults.OrderBy(x => x.SessionNr))
@@ -85,7 +90,7 @@ public sealed class MemberStandingCalculationServiceTests
             result.ResultRows = new[] { rowData };
         }
         var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
-            .With(x => x.ResultKind, Common.Enums.ResultKind.Member)
+            .With(x => x.ResultKind, Common.Enums.ResultKind.Team)
             .With(x => x.UseCombinedResult, true)
             .With(x => x.WeeksCounted, nEvents)
             .Create();
@@ -93,8 +98,8 @@ public sealed class MemberStandingCalculationServiceTests
 
         var test = await sut.Calculate(data);
 
-        test.StandingRows.Should().ContainSingle(x => x.MemberId == memberId);
-        var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
+        test.StandingRows.Should().ContainSingle(x => x.TeamId == teamId);
+        var testRow = test.StandingRows.Single(x => x.TeamId == teamId);
         var combinedResultRowData = testRowData.Chunk(3).Select(x => x.Last()).ToList();
         var lastResultRowData = combinedResultRowData.TakeLast(1);
         testRow.Wins.Should().Be(combinedResultRowData.Sum(x => x.FinalPosition == 1 ? 1 : 0));
@@ -153,13 +158,13 @@ public sealed class MemberStandingCalculationServiceTests
         test.StandingRows.Should().BeEquivalentTo(testOrder);
     }
 
-    private MemberStandingCalculationService CreateSut(StandingCalculationConfiguration config)
+    private TeamStandingCalculationService CreateSut(StandingCalculationConfiguration config)
     {
         if (config != null)
         {
             fixture.Register(() => config);
         }
-        return fixture.Create<MemberStandingCalculationService>();
+        return fixture.Create<TeamStandingCalculationService>();
     }
 
     private StandingCalculationData GetCalculationData()
@@ -205,3 +210,4 @@ public sealed class MemberStandingCalculationServiceTests
         return TestRowBuilder().CreateMany();
     }
 }
+
