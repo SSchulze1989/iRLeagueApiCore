@@ -83,8 +83,22 @@ namespace iRLeagueApiCore.Server.Handlers.Standings
                 TotalPointsChange = standingRow.TotalPointsChange,
                 Wins = standingRow.Wins,
                 WinsChange = standingRow.WinsChange,
-                ResultRows = Array.Empty<ResultRowModel>(),
-            })
+                ResultRows = standingRow.ResultRows.Select(resultRow => new StandingResultRowModel()
+                {
+                    BonusPoints = resultRow.BonusPoints,
+                    CompletedLaps = resultRow.CompletedLaps,
+                    FinalPosition = resultRow.FinalPosition,
+                    FinishPosition = resultRow.FinishPosition,
+                    Incidents = resultRow.Incidents,
+                    Irating = resultRow.OldIRating,
+                    PenaltyPoints = resultRow.PenaltyPoints,
+                    RacePoints = resultRow.RacePoints,
+                    SeasonStartIrating = resultRow.SeasonStartIRating,
+                    StartPosition = resultRow.StartPosition,
+                    Status = resultRow.Status,
+                    TotalPoints = resultRow.TotalPoints,
+                }).ToList(),
+            }).ToList(),
         };
     }
 }
