@@ -86,7 +86,7 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
                 continue;
             }
             // static data
-            standingRow.MemberId = lastRow.MemberId;
+            standingRow.MemberId = null;
             standingRow.CarClass = lastRow.CarClass;
             standingRow.ClassId = lastRow.ClassId;
             standingRow.TeamId = lastRow.TeamId;
@@ -99,6 +99,7 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
             var countedSessionResults = countedEventResults.SelectMany(x => x.SessionResults);
             previousStandingRow = AccumulateOverallSessionResults(previousStandingRow, previousResults);
             previousStandingRow = AccumulateCountedSessionResults(previousStandingRow, countedSessionResults);
+            previousStandingRow = AccumulateTotalPoints(previousStandingRow);
 
             if (currentResult is not null)
             {
@@ -109,6 +110,7 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
                 var currentCountedSessionResults = currentCountedResults.SelectMany(x => x.SessionResults);
                 standingRow = AccumulateOverallSessionResults(standingRow, currentMemberSessionResults);
                 standingRow = AccumulateCountedSessionResults(standingRow, currentCountedSessionResults);
+                standingRow = AccumulateTotalPoints(standingRow);
             }
             else
             {
@@ -155,9 +157,15 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
     {
         return rows
             .OrderByDescending(x => standingRowSelector(x).TotalPoints)
-            .ThenByDescending(x => standingRowSelector(x).PenaltyPoints)
+            .ThenBy(x => standingRowSelector(x).PenaltyPoints)
             .ThenByDescending(x => standingRowSelector(x).Wins)
             .ThenBy(x => standingRowSelector(x).Incidents);
+    }
+
+    private StandingRowCalculationResult AccumulateTotalPoints(StandingRowCalculationResult row)
+    {
+        row.TotalPoints = row.RacePoints - row.PenaltyPoints;
+        return row;
     }
 
     private static StandingRowCalculationResult AccumulateCountedSessionResults(StandingRowCalculationResult standingRow,
@@ -168,8 +176,7 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
             return standingRow;
         }
 
-        standingRow.RacePoints += (int)results.Sum(x => x.ResultRow.RacePoints);
-        standingRow.TotalPoints += (int)results.Sum(x => x.ResultRow.TotalPoints);
+        standingRow.RacePoints += (int)results.Sum(x => x.ResultRow.RacePoints + x.ResultRow.BonusPoints);
         standingRow.RacesCounted += results.Count();
 
         return standingRow;
