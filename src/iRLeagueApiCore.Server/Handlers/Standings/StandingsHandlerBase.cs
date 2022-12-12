@@ -32,7 +32,7 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
             .ToListAsync(cancellationToken);
         foreach(var standingRow in standings.SelectMany(x => x.StandingRows))
         {
-            standingRow.ResultRows = events.Select(x => standingRow.ResultRows.FirstOrDefault(y => y.EventId == x.EventId)).ToList();
+            standingRow.ResultRows = events.Select(x => standingRow.ResultRows.FirstOrDefault(y => y?.EventId == x.EventId)).ToList();
         }
         return standings;
     }
