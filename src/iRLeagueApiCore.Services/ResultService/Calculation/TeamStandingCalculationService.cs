@@ -81,6 +81,7 @@ internal sealed class TeamStandingCalculationService : StandingCalculationServic
             previousStandingRow = AccumulateOverallSessionResults(previousStandingRow, previousResults);
             previousStandingRow = AccumulateCountedSessionResults(previousStandingRow, countedSessionResults);
             previousStandingRow = AccumulateTotalPoints(previousStandingRow);
+            previousStandingRow = SetScoredResultRows(previousStandingRow, previousResults, countedSessionResults);
 
             if (currentResult is not null)
             {
@@ -92,6 +93,7 @@ internal sealed class TeamStandingCalculationService : StandingCalculationServic
                 standingRow = AccumulateOverallSessionResults(standingRow, currentMemberSessionResults);
                 standingRow = AccumulateCountedSessionResults(standingRow, currentCountedSessionResults);
                 standingRow = AccumulateTotalPoints(standingRow);
+                standingRow = SetScoredResultRows(standingRow, currentMemberSessionResults, currentCountedSessionResults);
             }
             else
             {

@@ -78,23 +78,25 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
             // accumulated data
             var previousStandingRow = new StandingRowCalculationResult(standingRow);
 
-            var previousResults = previousEventResults.SelectMany(x => x.SessionResults);
+            var previousSessionResults = previousEventResults.SelectMany(x => x.SessionResults);
             var countedEventResults = previousEventResults.Take(config.WeeksCounted);
             var countedSessionResults = countedEventResults.SelectMany(x => x.SessionResults);
-            previousStandingRow = AccumulateOverallSessionResults(previousStandingRow, previousResults);
+            previousStandingRow = AccumulateOverallSessionResults(previousStandingRow, previousSessionResults);
             previousStandingRow = AccumulateCountedSessionResults(previousStandingRow, countedSessionResults);
             previousStandingRow = AccumulateTotalPoints(previousStandingRow);
+            previousStandingRow = SetScoredResultRows(previousStandingRow, previousSessionResults, countedSessionResults);
 
             if (currentResult is not null)
             {
-                var currentResults = previousEventResults.Concat(new[] { currentResult })
+                var currentSessionResults = previousEventResults.Concat(new[] { currentResult })
                     .OrderByDescending(GetEventOrderValue);
-                var currentMemberSessionResults = currentResults.SelectMany(x => x.SessionResults);
-                var currentCountedResults = currentResults.Take(config.WeeksCounted);
+                var currentMemberSessionResults = currentSessionResults.SelectMany(x => x.SessionResults);
+                var currentCountedResults = currentSessionResults.Take(config.WeeksCounted);
                 var currentCountedSessionResults = currentCountedResults.SelectMany(x => x.SessionResults);
                 standingRow = AccumulateOverallSessionResults(standingRow, currentMemberSessionResults);
                 standingRow = AccumulateCountedSessionResults(standingRow, currentCountedSessionResults);
                 standingRow = AccumulateTotalPoints(standingRow);
+                standingRow = SetScoredResultRows(standingRow, currentMemberSessionResults, currentCountedSessionResults);
             }
             else
             {
