@@ -48,7 +48,7 @@ public sealed class ColumnValueRowFilterTests
 
     [Theory]
     [MemberData(nameof(TestInValidConstructorData))]
-    public void Constructor_ShouldThrow_WithInValidValues(string propertyName, IEnumerable<string> filterValues)
+    public void Constructor_ShouldThrow_WithInvalidValues(string propertyName, IEnumerable<string> filterValues)
     {
         var test = () => CreateSut(propertyName, filterValues);
         test.Should().Throw<ArgumentException>();
