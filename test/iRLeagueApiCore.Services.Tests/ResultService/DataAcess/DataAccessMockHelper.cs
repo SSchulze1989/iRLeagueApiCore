@@ -232,6 +232,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                         .Create())
                     .ToList())
                 .Without(x => x.League)
+                .Without(x => x.StandingConfigurations)
                 .Without(x => x.PointFilters)
                 .Without(x => x.ResultFilters)
                 .Without(x => x.SourceResultConfigId)
