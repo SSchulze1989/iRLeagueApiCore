@@ -30,9 +30,15 @@ namespace iRLeagueApiCore.Server.Handlers.Standings
 
         protected async Task<IEnumerable<StandingsModel>> MapToStandingModelFromSeasonAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
         {
-            return await dbContext.Standings
+            var lastEventWithStandingsId = await dbContext.Standings
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.SeasonId == seasonId)
+                .OrderByDescending(x => x.Event.Date)
+                .Select(x => x.EventId)
+                .FirstOrDefaultAsync(cancellationToken);
+            return await dbContext.Standings
+                .Where(x => x.LeagueId == leagueId)
+                .Where(x => x.EventId == lastEventWithStandingsId)
                 .Select(MapToStandingModelExpression)
                 .ToListAsync(cancellationToken);
         }
