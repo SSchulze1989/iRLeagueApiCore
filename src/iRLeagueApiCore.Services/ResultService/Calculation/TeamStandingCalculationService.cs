@@ -3,79 +3,60 @@ using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
-internal sealed class TeamStandingCalculationService : ICalculationService<StandingCalculationData, StandingCalculationResult>
+internal sealed class TeamStandingCalculationService : StandingCalculationServiceBase, ICalculationService<StandingCalculationData, StandingCalculationResult>
 {
-    private readonly StandingCalculationConfiguration config;
-
-    public TeamStandingCalculationService(StandingCalculationConfiguration config)
+    public TeamStandingCalculationService(StandingCalculationConfiguration config) : base(config)
     {
-        this.config = config;
     }
 
-    public Task<StandingCalculationResult> Calculate(StandingCalculationData data)
+    public override Task<StandingCalculationResult> Calculate(StandingCalculationData data)
     {
-        // TODO:
-        // 0. Get counting results per event
-        //   -> if "combined" use single combined result
-        //   -> if not "combined" use every race session result separately
-        // 1. Group by memberId
-        // 2. SortBy RacePoints
-        // 3. Take top {weeksCounted} results
-        // 4. Accumulate result rows
-        // 5. Sort by total points then by penalty points
-        // 6. Statistics? ...
-        IEnumerable<(EventCalculationResult eventResult, IEnumerable<SessionCalculationResult> sessionResults)> previousSessionResults;
-        (EventCalculationResult eventResult, IEnumerable<SessionCalculationResult> sessionResults) currentSessionResults;
-        if (config.UseCombinedResult)
+        var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data, config.UseCombinedResult);
+
+        Func<ResultRowCalculationResult, long?> keySelector = x => x.TeamId;
+        var previousTeamEventResults = GetGroupedEventResults(previousSessionResults, keySelector);
+        var currentTeamEventResult = GetGroupedEventResult(currentSessionResults, keySelector);
+
+        var teamStandingRows = CalculateTeamStandingRows(previousTeamEventResults, currentTeamEventResult);
+
+        // Sort and apply positions standings previous
+        teamStandingRows = SortStandingRows(teamStandingRows, x => x.Previous)
+            .ToList();
+        foreach (var (teamStandingRow, position) in teamStandingRows.Select((x, i) => (x, i + 1)))
         {
-            previousSessionResults = data.PreviousEventResults
-                .Select(eventResult => (eventResult, eventResult.SessionResults.OrderBy(x => x.SessionNr).TakeLast(1)));
-            currentSessionResults = (data.CurrentEventResult, data.CurrentEventResult.SessionResults.OrderBy(x => x.SessionNr).TakeLast(1));
-        }
-        else
-        {
-            previousSessionResults = data.PreviousEventResults
-                .Select(eventResult => (eventResult, eventResult.SessionResults.Where(x => x.Name != "Practice" && x.Name != "Qualifying")));
-            currentSessionResults = (data.CurrentEventResult,
-                data.CurrentEventResult.SessionResults.Where(x => x.Name != "Practice" && x.Name != "Qualifying"));
+            teamStandingRow.Previous.Position = position;
         }
 
-        // flatten results so that we get one entry for each single result row from previous events
-        var previousResultRows = previousSessionResults
-            .SelectMany(result => result.sessionResults
-                .SelectMany(sessionResult => sessionResult.ResultRows
-                    .Select(resultRow => (result.eventResult, sessionResult, resultRow))));
+        // Sort and apply positions standings current
+        teamStandingRows = SortStandingRows(teamStandingRows, x => x.Current)
+            .ToList();
+        var finalStandingRows = new List<StandingRowCalculationResult>();
+        foreach (var (teamStandingRow, position) in teamStandingRows.Select((x, i) => (x, i + 1)))
+        {
+            teamStandingRow.Current.Position = position;
+            var final = DiffStandingRows(teamStandingRow.Previous, teamStandingRow.Current);
+            finalStandingRows.Add(final);
+        }
 
-        // get the previous result rows for each individual driver
-        var previousTeamResultRows = previousResultRows
-            .Where(x => x.resultRow.TeamId is not null)
-            .GroupBy(x => x.resultRow.TeamId!.Value);
+        var standingResult = new StandingCalculationResult()
+        {
+            LeagueId = config.LeagueId,
+            EventId = config.EventId,
+            Name = config.Name,
+            SeasonId = config.SeasonId,
+            StandingRows = finalStandingRows
+        };
+        return Task.FromResult(standingResult);
+    }
 
-        // get the previous result rows per event
-        var previousTeamEventResults = previousTeamResultRows
-            .Select(x => (key: x.Key, results: x
-                .GroupBy(result => result.eventResult, result => new TeamSessionResultRow(x.Key, result.sessionResult, result.resultRow))
-                .Select(result => new TeamEventResult(x.Key, result.Key, result))))
-            .ToDictionary(k => k.key, v => v.results);
-
-        // do the same for current event result
-        var currentResultRows = currentSessionResults.sessionResults
-            .SelectMany(sessionResult => sessionResult.ResultRows
-                    .Select(resultRow => (sessionResult, resultRow)));
-        var currentTeamResultRows = currentResultRows
-            .Where(x => x.resultRow.TeamId != null)
-            .GroupBy(x => x.resultRow.TeamId!.Value);
-        var currentTeamEventResult = currentTeamResultRows.Select(x => (key: x.Key, eventResult: currentSessionResults.eventResult,
-                sessionResults: x.Select(sessionResult => new TeamSessionResultRow(x.Key, sessionResult.sessionResult, sessionResult.resultRow))))
-            .ToDictionary(k => k.key, v => new TeamEventResult(v.key, v.eventResult, v.sessionResults));
-
+    private List<(long TeamId, StandingRowCalculationResult Previous, StandingRowCalculationResult Current)> CalculateTeamStandingRows(Dictionary<long, IEnumerable<GroupedEventResult<long>>> previousTeamEventResults, Dictionary<long, GroupedEventResult<long>> currentTeamEventResult)
+    {
         var teamIds = previousTeamEventResults.Keys.Concat(currentTeamEventResult.Keys).Distinct();
-
         List<(long TeamId, StandingRowCalculationResult Previous, StandingRowCalculationResult Current)> teamStandingRows = new();
         foreach (var memberId in teamIds)
         {
             // sort by best race points each event 
-            var previousEventResults = (previousTeamEventResults.GetValueOrDefault(memberId) ?? Array.Empty<TeamEventResult>())
+            var previousEventResults = (previousTeamEventResults.GetValueOrDefault(memberId) ?? Array.Empty<GroupedEventResult<long>>())
                 .OrderByDescending(GetEventOrderValue);
             var currentResult = currentTeamEventResult.GetValueOrDefault(memberId);
             var standingRow = new StandingRowCalculationResult();
@@ -120,121 +101,6 @@ internal sealed class TeamStandingCalculationService : ICalculationService<Stand
             teamStandingRows.Add((memberId, previousStandingRow, standingRow));
         }
 
-        // Sort and apply positions standings previous
-        teamStandingRows = SortStandingRows(teamStandingRows, x => x.Previous)
-            .ToList();
-        foreach (var (teamStandingRow, position) in teamStandingRows.Select((x, i) => (x, i + 1)))
-        {
-            teamStandingRow.Previous.Position = position;
-        }
-
-        // Sort and apply positions standings current
-        teamStandingRows = SortStandingRows(teamStandingRows, x => x.Current)
-            .ToList();
-        var finalStandingRows = new List<StandingRowCalculationResult>();
-        foreach (var (teamStandingRow, position) in teamStandingRows.Select((x, i) => (x, i + 1)))
-        {
-            teamStandingRow.Current.Position = position;
-            var final = DiffStandingRows(teamStandingRow.Previous, teamStandingRow.Current);
-            finalStandingRows.Add(final);
-        }
-
-        var standingResult = new StandingCalculationResult()
-        {
-            LeagueId = config.LeagueId,
-            EventId = config.EventId,
-            Name = config.Name,
-            SeasonId = config.SeasonId,
-            StandingRows = finalStandingRows
-        };
-        return Task.FromResult(standingResult);
+        return teamStandingRows;
     }
-
-    private static IComparable GetEventOrderValue(TeamEventResult eventResult)
-        => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints);
-
-    private static IOrderedEnumerable<T> SortStandingRows<T>(IEnumerable<T> rows, Func<T, StandingRowCalculationResult> standingRowSelector)
-    {
-        return rows
-            .OrderByDescending(x => standingRowSelector(x).TotalPoints)
-            .ThenBy(x => standingRowSelector(x).PenaltyPoints)
-            .ThenByDescending(x => standingRowSelector(x).Wins)
-            .ThenBy(x => standingRowSelector(x).Incidents);
-    }
-
-    private StandingRowCalculationResult AccumulateTotalPoints(StandingRowCalculationResult row)
-    {
-        row.TotalPoints = row.RacePoints - row.PenaltyPoints;
-        return row;
-    }
-
-    private static StandingRowCalculationResult AccumulateCountedSessionResults(StandingRowCalculationResult standingRow,
-        IEnumerable<TeamSessionResultRow> results)
-    {
-        if (results.None())
-        {
-            return standingRow;
-        }
-
-        standingRow.RacePoints += (int)results.Sum(x => x.ResultRow.RacePoints + x.ResultRow.BonusPoints);
-        standingRow.RacesCounted += results.Count();
-
-        return standingRow;
-    }
-
-    private static StandingRowCalculationResult AccumulateOverallSessionResults(StandingRowCalculationResult standingRow,
-        IEnumerable<TeamSessionResultRow> results)
-    {
-        if (results.None())
-        {
-            return standingRow;
-        }
-
-        // accumulate rows
-        foreach (var resultRow in results)
-        {
-            var sessionResult = resultRow.SessionResult;
-            var row = resultRow.ResultRow;
-            standingRow.CompletedLaps += (int)row.CompletedLaps;
-            standingRow.FastestLaps += sessionResult.FastestLapDriverMemberId == standingRow.MemberId ? 1 : 0;
-            standingRow.Incidents += (int)row.Incidents;
-            standingRow.LeadLaps += (int)row.LeadLaps;
-            standingRow.PenaltyPoints += (int)row.PenaltyPoints;
-            standingRow.PolePositions += (int)row.StartPosition == 1 ? 1 : 0;
-            standingRow.Top10 += row.FinalPosition <= 10 ? 1 : 0;
-            standingRow.Top5 += row.FinalPosition <= 5 ? 1 : 0;
-            standingRow.Top3 += row.FinalPosition <= 3 ? 1 : 0;
-            standingRow.Wins += row.FinalPosition == 1 ? 1 : 0;
-            standingRow.Races += 1;
-            standingRow.ResultRows.Add(resultRow.ResultRow);
-        }
-
-        return standingRow;
-    }
-
-    private static StandingRowCalculationResult DiffStandingRows(StandingRowCalculationResult previous, StandingRowCalculationResult current)
-    {
-        if (previous == current)
-        {
-            return current;
-        }
-        var diff = current;
-
-        diff.CompletedLapsChange = current.CompletedLaps - previous.CompletedLaps;
-        diff.FastestLapsChange = current.FastestLaps - previous.FastestLaps;
-        diff.IncidentsChange = current.Incidents - previous.Incidents;
-        diff.LeadLapsChange = current.LeadLaps - previous.LeadLaps;
-        diff.PenaltyPointsChange = current.PenaltyPoints - previous.PenaltyPoints;
-        diff.PolePositionsChange = current.PolePositions - previous.PolePositions;
-        diff.PositionChange = -(current.Position - previous.Position);
-        diff.RacePointsChange = current.RacePoints - previous.RacePoints;
-        diff.TotalPointsChange = current.TotalPoints - previous.TotalPoints;
-        diff.WinsChange = current.Wins - previous.Wins;
-
-        return diff;
-    }
-
-    private record TeamSessionResultRow(long TeamId, SessionCalculationResult SessionResult, ResultRowCalculationResult ResultRow);
-
-    private record TeamEventResult(long TeamId, EventCalculationResult EventResult, IEnumerable<TeamSessionResultRow> SessionResults);
 }
