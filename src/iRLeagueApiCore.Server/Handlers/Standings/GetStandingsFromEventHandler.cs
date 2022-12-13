@@ -21,11 +21,17 @@ namespace iRLeagueApiCore.Server.Handlers.Standings
 
         private async Task<IEnumerable<StandingsModel>> MapToStandingModelFromEventAsync(long leagueId, long eventId, CancellationToken cancellationToken)
         {
-            return await dbContext.Standings
+            var standings = await dbContext.Standings
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
                 .Select(MapToStandingModelExpression)
                 .ToListAsync(cancellationToken);
+            if (standings.Any() == false)
+            {
+                return standings;
+            }
+            standings = (await AlignStandingResultRows(leagueId, standings.Select(x => x.SeasonId).First(), standings, cancellationToken)).ToList();
+            return standings;
         }
     }
 }

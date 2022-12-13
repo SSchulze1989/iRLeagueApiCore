@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -232,6 +233,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                         .Create())
                     .ToList())
                 .Without(x => x.League)
+                .Without(x => x.StandingConfigurations)
                 .Without(x => x.PointFilters)
                 .Without(x => x.ResultFilters)
                 .Without(x => x.SourceResultConfigId)
@@ -241,6 +243,14 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
         public ResultConfigurationEntity CreateConfiguration(EventEntity @event)
         {
             return ConfigurationBuilder(@event)
+                .Create();
+        }
+
+        public StandingConfigurationEntity CreateStandingConfiguration(ResultConfigurationEntity? resultConfig)
+        {
+            return fixture.Build<StandingConfigurationEntity>()
+                .With(x => x.ResultConfigurations, (new[] { resultConfig }).NotNull().ToList())
+                .Without(x => x.Standings)
                 .Create();
         }
 

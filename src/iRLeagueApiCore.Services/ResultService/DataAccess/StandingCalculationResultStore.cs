@@ -24,8 +24,9 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         var standing = await dbContext.Standings
             .Include(x => x.StandingRows)
                 .ThenInclude(x => x.ResultRows)
+                    .ThenInclude(x => x.ScoredResultRow)
             .Where(x => x.EventId == result.EventId)
-            .Where(x => x.Name == result.Name)
+            .Where(x => x.StandingConfigId == result.StandingConfigId)
             .FirstOrDefaultAsync(cancellationToken);
         if (standing is null)
         {
@@ -37,11 +38,16 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
                 .Where(x => x.LeagueId == result.LeagueId)
                 .FirstOrDefaultAsync(x => x.SeasonId == result.SeasonId)
                 ?? throw new InvalidOperationException($"No season with id {result.SeasonId} found");
+            var standingConfig = await dbContext.StandingConfigurations
+                .Where(x => x.LeagueId == result.LeagueId)
+                .Where(x => x.StandingConfigId == result.StandingConfigId)
+                .FirstOrDefaultAsync(cancellationToken);
             standing = new StandingEntity()
             {
                 Season = season,
                 Event = @event,
                 Name = result.Name,
+                StandingConfig = standingConfig,
             };
             dbContext.Standings.Add(standing);
         }
@@ -105,8 +111,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             rowEntity.TotalPointsChange = row.TotalPointsChange;
             rowEntity.Wins = row.Wins;
             rowEntity.WinsChange = row.WinsChange;
-            var resultRowIds = row.ResultRows.Select(x => x.ScoredResultRowId);
-            rowEntity.ResultRows = requiredEntities.ScoredResultRows.Where(x => resultRowIds.Contains(x.ScoredResultRowId)).ToList();
+            rowEntity.ResultRows = MapToStandingResultRowsList(result.LeagueId, row.ResultRows, rowEntity.ResultRows, requiredEntities);
         }
 
         var memberIds = result.StandingRows.Select(x => x.MemberId);
@@ -116,6 +121,29 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         }
 
         return Task.FromResult(entity);
+    }
+
+    private ICollection<StandingRows_ScoredResultRows> MapToStandingResultRowsList(long leagueId, IEnumerable<ResultRowCalculationResult> rowsData, 
+        ICollection<StandingRows_ScoredResultRows> rowsEntities, RequiredEntities requiredEntities)
+    {
+        foreach(var row in rowsData.Where(x => x.ScoredResultRowId != null))
+        {
+            var rowEntity = rowsEntities
+                .Where(x => x.LeagueId == leagueId)
+                .Where(x => x.ScoredResultRowRefId == row.ScoredResultRowId)
+                .FirstOrDefault();
+            if (rowEntity is null)
+            {
+                rowEntity = new()
+                {
+                    LeagueId = leagueId,
+                    ScoredResultRow = requiredEntities.ScoredResultRows.First(x => x.ScoredResultRowId == row.ScoredResultRowId)
+                };
+                rowsEntities.Add(rowEntity);
+            }
+            rowEntity.IsScored = row.IsScored;
+        }
+        return rowsEntities;
     }
 
     private async Task<RequiredEntities> GetRequiredEntities(StandingCalculationResult result, CancellationToken cancellationToken)
@@ -153,5 +181,18 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         return await dbContext.ScoredResultRows
             .Where(x => ids.Contains(x.ScoredResultRowId))
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task ClearStaleStandings(IEnumerable<long?> standingConfigIds, long eventId, CancellationToken cancellationToken = default)
+    {
+        var removeStandings = await dbContext.Standings
+            .Where(x => x.EventId == eventId)
+            .Where(x => standingConfigIds.Contains(x.StandingConfigId) == false)
+            .ToListAsync(cancellationToken);
+        foreach(var standing in removeStandings)
+        {
+            dbContext.Standings.Remove(standing);
+        }
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -36,11 +36,17 @@ namespace iRLeagueApiCore.Server.Handlers.Standings
                 .OrderByDescending(x => x.Event.Date)
                 .Select(x => x.EventId)
                 .FirstOrDefaultAsync(cancellationToken);
-            return await dbContext.Standings
+            var standings = await dbContext.Standings
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == lastEventWithStandingsId)
                 .Select(MapToStandingModelExpression)
                 .ToListAsync(cancellationToken);
+            if (standings.Any() == false)
+            {
+                return standings;
+            }
+            standings = (await AlignStandingResultRows(leagueId, seasonId, standings, cancellationToken)).ToList();
+            return standings;
         }
     }
 }

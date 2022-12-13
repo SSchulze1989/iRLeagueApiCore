@@ -112,9 +112,21 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
             standingRow.Top3 += row.FinalPosition <= 3 ? 1 : 0;
             standingRow.Wins += row.FinalPosition == 1 ? 1 : 0;
             standingRow.Races += 1;
-            standingRow.ResultRows.Add(resultRow.ResultRow);
         }
 
+        return standingRow;
+    }
+
+    protected static StandingRowCalculationResult SetScoredResultRows(StandingRowCalculationResult standingRow, IEnumerable<GroupedSessionResultRow<long>> allResults,
+        IEnumerable<GroupedSessionResultRow<long>> countedResults)
+    {
+        standingRow.ResultRows.Clear();
+        foreach(var resultRow in allResults)
+        {
+            var standingResultRow = resultRow.ResultRow;
+            standingResultRow.IsScored = countedResults.Contains(resultRow);
+            standingRow.ResultRows.Add(standingResultRow);
+        }
         return standingRow;
     }
 
