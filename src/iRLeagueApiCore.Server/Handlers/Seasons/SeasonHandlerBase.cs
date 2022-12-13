@@ -20,7 +20,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
         {
         }
 
-        protected virtual async Task<SeasonEntity> MapToSeasonEntityAsync(long leagueId, LeagueUser user, PutSeasonModel putSeason, 
+        protected virtual async Task<SeasonEntity> MapToSeasonEntityAsync(long leagueId, LeagueUser user, PostSeasonModel putSeason, 
             SeasonEntity target, CancellationToken cancellationToken)
         {
             target.Finished = putSeason.Finished;

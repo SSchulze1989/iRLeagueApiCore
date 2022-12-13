@@ -55,7 +55,8 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             foreach (var putSession in putSessions)
             {
                 // try to find subsession in target collection
-                var sessionEntity = target.SingleOrDefault(x => x.SessionId == putSession.SessionId);
+                var sessionEntity = target
+                    .FirstOrDefault(x => putSession.SessionId != 0 && x.SessionId == putSession.SessionId);
                 // create new subsession if no previous id was given
                 if (putSession.SessionId == 0)
                 {

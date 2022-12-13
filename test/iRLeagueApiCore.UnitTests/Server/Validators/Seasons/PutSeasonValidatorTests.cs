@@ -42,7 +42,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons
 
         private static PutSeasonRequestValidator CreateValidator(LeagueDbContext dbContext)
         {
-            return new PutSeasonRequestValidator(dbContext, new PutSeasonModelValidator());
+            return new PutSeasonRequestValidator(dbContext, new PutSeasonModelValidator(new()));
         }
 
         [Theory]

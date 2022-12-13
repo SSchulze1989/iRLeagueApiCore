@@ -7,15 +7,10 @@ using iRLeagueApiCore.Client.Endpoints.Sessions;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Endpoints.VoteCategories;
 using iRLeagueApiCore.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
-    public interface ILeagueByNameEndpoint
+    public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     {
         string Name { get; }
         ISeasonsEndpoint Seasons();
