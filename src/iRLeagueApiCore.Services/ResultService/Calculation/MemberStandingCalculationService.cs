@@ -43,8 +43,9 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         {
             LeagueId = config.LeagueId,
             EventId = config.EventId,
-            Name = config.Name,
+            Name = config.DisplayName,
             SeasonId = config.SeasonId,
+            StandingConfigId = config.StandingConfigId,
             StandingRows = finalStandingRows
         };
         return Task.FromResult(standingResult);

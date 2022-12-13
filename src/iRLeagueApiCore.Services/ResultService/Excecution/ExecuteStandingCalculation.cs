@@ -34,18 +34,18 @@ internal sealed class ExecuteStandingCalculation
             logger.LogInformation("No season found for event {EvenId} - cancelling standing calculation", eventId);
             return;
         }
-        IEnumerable<long?> resultConfigIds = (await configProvider.GetResultConfigIds(seasonId, cancellationToken)).Cast<long?>();
-        if (resultConfigIds.Any() == false)
+        IEnumerable<long?> standingConfigIds = (await configProvider.GetStandingConfigIds(seasonId, cancellationToken)).Cast<long?>();
+        if (standingConfigIds.Any() == false)
         {
-            resultConfigIds = new[] { default(long?) };
-            logger.LogInformation("No result config found -> Using default.");
+            standingConfigIds = new[] { default(long?) };
+            logger.LogInformation("No standing config found -> Using default.");
         }
 
         var standingCount = 0;
-        logger.LogInformation("Calculating standings for config ids: [{ResultConfigIds}]", resultConfigIds);
+        logger.LogInformation("Calculating standings for config ids: [{StandingConfigIds}]", standingConfigIds);
         try
         {
-            foreach (var configId in resultConfigIds)
+            foreach (var configId in standingConfigIds)
             {
                 try
                 {
@@ -71,6 +71,8 @@ internal sealed class ExecuteStandingCalculation
             }
             logger.LogInformation("Standings calculated for season: {SeasonId}, event: {EventId}\n" +
                 " - Standings: {StandingCount}", seasonId, eventId, standingCount);
+            await dataStore.ClearStaleStandings(standingConfigIds, eventId);
+            logger.LogInformation("Cleared stale Standings");
             logger.LogInformation("--- Standing calculation finished successfully ---");
         }
         catch (Exception ex) when (ex is AggregateException || ex is InvalidOperationException || ex is NotImplementedException)

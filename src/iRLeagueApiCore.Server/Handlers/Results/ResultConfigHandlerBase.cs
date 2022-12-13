@@ -38,7 +38,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         resultConfigEntity.Name = postResultConfig.Name;
         resultConfigEntity.ResultKind = postResultConfig.ResultKind;
         resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
-        resultConfigEntity.StandingConfigurations = await MapToStandingConfigListAsync(user, postResultConfig.StandingConfig, 
+        resultConfigEntity.StandingConfigurations = await MapToStandingConfigListAsync(resultConfigEntity.LeagueId, user, postResultConfig.StandingConfig, 
             resultConfigEntity.StandingConfigurations, cancellationToken);
         resultConfigEntity.Scorings = await MapToScoringList(resultConfigEntity.LeagueId, user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
         resultConfigEntity.PointFilters = await MapToFilterOptionListAsync(resultConfigEntity.LeagueId, user, postResultConfig.FiltersForPoints,
@@ -49,7 +49,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return await Task.FromResult(resultConfigEntity);
     }
 
-    private async Task<ICollection<StandingConfigurationEntity>> MapToStandingConfigListAsync(LeagueUser user, StandingConfigModel? standingConfigModel, 
+    private async Task<ICollection<StandingConfigurationEntity>> MapToStandingConfigListAsync(long leagueId, LeagueUser user, StandingConfigModel? standingConfigModel, 
         ICollection<StandingConfigurationEntity> standingConfigurationEntities, CancellationToken cancellationToken)
     {
         if (standingConfigModel is null)
@@ -61,6 +61,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         if (standingConfigEntity is null)
         {
             standingConfigEntity = CreateVersionEntity(user, new StandingConfigurationEntity());
+            standingConfigEntity.LeagueId = leagueId;
             standingConfigurationEntities.Clear();
             standingConfigurationEntities.Add(standingConfigEntity);
         }
