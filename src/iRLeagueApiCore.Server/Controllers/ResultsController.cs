@@ -61,7 +61,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<SeasonEventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from season {SeasonId} in {LeagueName} by {UserName}",
