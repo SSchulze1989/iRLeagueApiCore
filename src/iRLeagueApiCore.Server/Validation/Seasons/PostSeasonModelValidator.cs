@@ -1,13 +1,13 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Server.Validation.Seasons
+namespace iRLeagueApiCore.Server.Validation.Seasons;
+
+public class PostSeasonModelValidator : AbstractValidator<PostSeasonModel>
 {
-    public class PostSeasonModelValidator : AbstractValidator<PostSeasonModel>
+    public PostSeasonModelValidator()
     {
-        public PostSeasonModelValidator(PutSeasonModelValidator putSeasonValidator)
-        {
-            Include(putSeasonValidator);
-        }
+        RuleFor(x => x.SeasonName)
+            .NotEmpty()
+            .WithMessage("Season name required");
     }
 }
