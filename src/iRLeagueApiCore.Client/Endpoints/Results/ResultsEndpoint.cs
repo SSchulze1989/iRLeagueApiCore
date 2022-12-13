@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
+using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Models;
 
@@ -27,6 +28,11 @@ namespace iRLeagueApiCore.Client.Endpoints.Results
         IPostEndpoint<bool> IEventResultsEndpoint.Calculate()
         {
             return new CalculateEndpoint(HttpClientWrapper, RouteBuilder);
+        }
+
+        async Task<ClientActionResult<NoContent>> IDeleteEndpoint.Delete(CancellationToken cancellationToken)
+        {
+            return await HttpClientWrapper.DeleteAsClientActionResult(QueryUrl, cancellationToken);
         }
     }
 }

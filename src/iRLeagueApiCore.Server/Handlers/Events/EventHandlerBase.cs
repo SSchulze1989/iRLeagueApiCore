@@ -55,7 +55,8 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             foreach (var putSession in putSessions)
             {
                 // try to find subsession in target collection
-                var sessionEntity = target.SingleOrDefault(x => x.SessionId == putSession.SessionId);
+                var sessionEntity = target
+                    .FirstOrDefault(x => putSession.SessionId != 0 && x.SessionId == putSession.SessionId);
                 // create new subsession if no previous id was given
                 if (putSession.SessionId == 0)
                 {
@@ -113,7 +114,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             Name = @event.Name,
             ScheduleId = @event.ScheduleId,
             SeasonId = @event.Schedule.SeasonId,
-            HasResult = @event.ScoredEventResults.Any(),
+            HasResult = @event.EventResult != null,
             TrackName = @event.Track.TrackGroup.TrackName,
             ConfigName = @event.Track.ConfigName,
             Sessions = @event.Sessions.Select(session => new SessionModel()

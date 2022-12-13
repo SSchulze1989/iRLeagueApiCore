@@ -61,7 +61,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-        public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
+        public async Task<ActionResult<IEnumerable<SeasonEventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long seasonId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all results from season {SeasonId} in {LeagueName} by {UserName}",
@@ -94,6 +94,19 @@ namespace iRLeagueApiCore.Server.Controllers
             _logger.LogInformation("Return {Count} entries for result from event {EventId} in {LeagueName}",
                 getResults.Count(), eventId, leagueName);
             return Ok(getResults);
+        }
+
+        [HttpDelete]
+        [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
+        public async Task<ActionResult> DeleteFromEvent([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+            CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] all results from event {EventId} in {LeagueName} by {UserName}",
+                "Delete", eventId, leagueName, GetUsername());
+            var request = new DeleteResultRequest(leagueId, eventId);
+            var getResults = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Deleted results from event {EventId} in {LeagueName}", eventId, leagueName);
+            return NoContent();
         }
 
         /// <summary>

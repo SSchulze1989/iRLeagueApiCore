@@ -13,7 +13,7 @@ using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues
 {
-    internal class LeagueByNameEndpoint : EndpointBase, ILeagueByNameEndpoint
+    internal class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueByNameEndpoint
     {
         public string Name { get; }
 

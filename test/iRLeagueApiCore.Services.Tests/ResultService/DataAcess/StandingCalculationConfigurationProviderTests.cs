@@ -63,21 +63,24 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
     }
 
     [Fact]
-    public async Task GetConfiguration_ShouldProvideConfiguration_WithResultConfigId()
+    public async Task GetConfiguration_ShouldProvideConfiguration_WithStandingConfigId()
     {
         var season = await GetFirstSeasonAsync();
         var @event = season.Schedules.First().Events.First();
         var config = accessMockHelper.CreateConfiguration(@event);
+        var standingConfig = accessMockHelper.CreateStandingConfiguration(config);
+        config.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
-        var test = await sut.GetConfiguration(season.SeasonId, @event.EventId, config.ResultConfigId);
+        var test = await sut.GetConfiguration(season.SeasonId, @event.EventId, standingConfig.StandingConfigId);
 
         test.LeagueId.Should().Be(season.LeagueId);
         test.SeasonId.Should().Be(season.SeasonId);
         test.EventId.Should().Be(@event.EventId);
         test.ResultConfigId.Should().Be(config.ResultConfigId);
+        test.StandingConfigId.Should().Be(standingConfig.StandingConfigId);
     }
 
     private StandingCalculationConfigurationProvider CreateSut()

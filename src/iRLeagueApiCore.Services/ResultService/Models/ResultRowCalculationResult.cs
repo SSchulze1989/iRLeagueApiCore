@@ -53,6 +53,8 @@
             FinalPosition = data.FinalPosition;
             FinalPositionChange = data.FinalPositionChange;
         }
+
+        public bool IsScored { get; set; }
         public ICollection<long> ScoredMemberResultRowIds { get; set;} = Array.Empty<long>();
     }
 }

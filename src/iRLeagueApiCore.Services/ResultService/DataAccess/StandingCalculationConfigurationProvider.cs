@@ -18,20 +18,21 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<long>> GetResultConfigIds(long seasonId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<long>> GetStandingConfigIds(long seasonId, CancellationToken cancellationToken = default)
     {
         var configIds = await dbContext.Seasons
             .Where(x => x.SeasonId == seasonId)
             .SelectMany(x => x.Schedules)
             .SelectMany(x => x.Events)
             .SelectMany(x => x.ResultConfigs)
-            .Select(x => x.ResultConfigId)
+            .SelectMany(x => x.StandingConfigurations)
+            .Select(x => x.StandingConfigId)
             .Distinct()
             .ToListAsync(cancellationToken);
         return configIds;
     }
 
-    public async Task<StandingCalculationConfiguration> GetConfiguration(long seasonId, long? eventId, long? resultConfigId, CancellationToken cancellationToken = default)
+    public async Task<StandingCalculationConfiguration> GetConfiguration(long seasonId, long? eventId, long? standingConfigId, CancellationToken cancellationToken = default)
     {
         var season = await GetSeasonEntityAsync(seasonId, cancellationToken)
             ?? throw new ArgumentException($"No season with id {seasonId} found", nameof(seasonId));
@@ -42,15 +43,16 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             return EmptyStandingConfiguration();
         }
         var config = DefaultStandingConfiguration(season, @event.EventId);
-        var resultConfig = await GetConfigurationEntityAsync(resultConfigId, cancellationToken);
-        if (resultConfig is not null)
+        var standingConfig = await GetConfigurationEntityAsync(standingConfigId, cancellationToken);
+        if (standingConfig is not null)
         {
-            config.ResultConfigId = resultConfig.ResultConfigId;
-            config.Name = resultConfig.Name;
-            config.DisplayName = resultConfig.DisplayName;
-            config.UseCombinedResult = resultConfig.Scorings.Any(x => x.IsCombinedResult);
-            config.ResultKind = resultConfig.ResultKind;
-            config.WeeksCounted = 3;
+            config.StandingConfigId = standingConfig.StandingConfigId;
+            config.ResultConfigId = standingConfig.ResultConfigurations.FirstOrDefault()?.ResultConfigId;
+            config.Name = standingConfig.ResultConfigurations.FirstOrDefault()?.Name ?? standingConfig.Name;
+            config.DisplayName = standingConfig.ResultConfigurations.FirstOrDefault()?.DisplayName ?? standingConfig.Name;
+            config.UseCombinedResult = standingConfig.UseCombinedResult;
+            config.ResultKind = standingConfig.ResultConfigurations.FirstOrDefault()?.ResultKind ?? standingConfig.ResultKind;
+            config.WeeksCounted = standingConfig.WeeksCounted;
         }
         return config;
     }
@@ -61,11 +63,11 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             .FirstOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken);
     }
 
-    private async Task<ResultConfigurationEntity?> GetConfigurationEntityAsync(long? resultConfigId, CancellationToken cancellationToken)
+    private async Task<StandingConfigurationEntity?> GetConfigurationEntityAsync(long? standingConfigId, CancellationToken cancellationToken)
     {
-        return await dbContext.ResultConfigurations
-            .Include(x => x.Scorings)
-            .FirstOrDefaultAsync(x => x.ResultConfigId == resultConfigId, cancellationToken: cancellationToken);
+        return await dbContext.StandingConfigurations
+            .Include(x => x.ResultConfigurations)
+            .FirstOrDefaultAsync(x => x.StandingConfigId == standingConfigId, cancellationToken: cancellationToken);
     }
 
     private async Task<EventEntity?> GetEventEntityAsync(long seasonId, long? eventId, CancellationToken cancellationToken)

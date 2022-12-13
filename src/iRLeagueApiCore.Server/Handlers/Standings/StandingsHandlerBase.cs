@@ -1,51 +1,52 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Standings;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace iRLeagueApiCore.Server.Handlers.Standings
+namespace iRLeagueApiCore.Server.Handlers.Standings;
+
+public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
 {
-    public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+    public StandingsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
+        base(logger, dbContext, validators)
     {
-        public StandingsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
-            base(logger, dbContext, validators)
-        {
-        }
+    }
 
-        public async Task<StandingEntity?> GetStandingEntity(long leagueId, long standingId, CancellationToken cancellationToken)
+    /// <summary>
+    /// Align the result rows of each standing row so that the sequence in the collection is 
+    /// correlating with the event calendar.
+    /// That means that for each event in the calendar an entry in the resultRows collection will be created but it will be
+    /// null if the driver did not participate in this event.
+    /// </summary>
+    /// <param name="leagueId"></param>
+    /// <param name="seasonId"></param>
+    /// <param name="standings"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<IEnumerable<StandingsModel>> AlignStandingResultRows(long leagueId, long seasonId, IEnumerable<StandingsModel> standings,
+        CancellationToken cancellationToken)
+    {
+        var events = await dbContext.Events
+            .Where(x => x.LeagueId == leagueId)
+            .Where(x => x.Schedule.SeasonId == seasonId)
+            .OrderBy(x => x.Date)
+            .ToListAsync(cancellationToken);
+        foreach(var standingRow in standings.SelectMany(x => x.StandingRows))
         {
-            return await dbContext.Standings
-                .Include(x => x.StandingRows)
-                .Where(x => x.LeagueId == leagueId)
-                .Where(x => x.StandingId == standingId)
-                .FirstOrDefaultAsync(cancellationToken);
+            standingRow.ResultRows = events.Select(x => standingRow.ResultRows.FirstOrDefault(y => y?.EventId == x.EventId)).ToList();
         }
+        return standings;
+    }
 
-        public async Task<StandingsModel?> MapToStandingModel(long leagueId, long standingId, CancellationToken cancellationToken)
-        {
-            return await dbContext.Standings
-                .Where(x => x.LeagueId == leagueId)
-                .Where(x => x.StandingId == standingId)
-                .Select(MapToStandingModelExpression)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
-
-        protected Expression<Func<StandingEntity, StandingsModel>> MapToStandingModelExpression => standing => new StandingsModel()
-        {
-            Name = standing.Name,
-            IsTeamStanding = standing.IsTeamStanding,
-            StandingId = standing.StandingId,
-            StandingRows = standing.StandingRows
-                .OrderBy(x => x.Position)
-                .Select(standingRow => new StandingRowModel()
+    protected Expression<Func<StandingEntity, StandingsModel>> MapToStandingModelExpression => standing => new StandingsModel()
+    {
+        LeagueId = standing.LeagueId,
+        SeasonId = standing.SeasonId,
+        Name = standing.Name,
+        IsTeamStanding = standing.IsTeamStanding,
+        StandingId = standing.StandingId,
+        StandingRows = standing.StandingRows
+            .OrderBy(x => x.Position)
+            .Select(standingRow => new StandingRowModel()
             {
                 CarClass = standingRow.CarClass,
                 ClassId = standingRow.ClassId,
@@ -83,8 +84,25 @@ namespace iRLeagueApiCore.Server.Handlers.Standings
                 TotalPointsChange = standingRow.TotalPointsChange,
                 Wins = standingRow.Wins,
                 WinsChange = standingRow.WinsChange,
-                ResultRows = Array.Empty<ResultRowModel>(),
-            })
-        };
-    }
+                ResultRows = standingRow.ResultRows.Select(standingResultRow => new StandingResultRowModel()
+                {
+                    EventId = standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.EventId,
+                    Date = standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date != null ?
+                            standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date!.Value : DateTime.MinValue,
+                    BonusPoints = standingResultRow.ScoredResultRow.BonusPoints,
+                    CompletedLaps = standingResultRow.ScoredResultRow.CompletedLaps,
+                    FinalPosition = standingResultRow.ScoredResultRow.FinalPosition,
+                    FinishPosition = standingResultRow.ScoredResultRow.FinishPosition,
+                    Incidents = standingResultRow.ScoredResultRow.Incidents,
+                    Irating = standingResultRow.ScoredResultRow.OldIRating,
+                    PenaltyPoints = standingResultRow.ScoredResultRow.PenaltyPoints,
+                    RacePoints = standingResultRow.ScoredResultRow.RacePoints,
+                    SeasonStartIrating = standingResultRow.ScoredResultRow.SeasonStartIRating,
+                    StartPosition = standingResultRow.ScoredResultRow.StartPosition,
+                    Status = standingResultRow.ScoredResultRow.Status,
+                    TotalPoints = standingResultRow.ScoredResultRow.TotalPoints,
+                    IsScored = standingResultRow.IsScored,
+                }).ToList(),
+            }).ToList(),
+    };
 }

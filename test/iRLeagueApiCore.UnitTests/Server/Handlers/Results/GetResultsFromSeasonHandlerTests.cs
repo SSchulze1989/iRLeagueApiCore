@@ -14,7 +14,7 @@ using Xunit;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
     [Collection("DbTestFixture")]
-    public class GetResultsFromSeasonDbTestFixture : HandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<EventResultModel>>
+    public class GetResultsFromSeasonDbTestFixture : HandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
     {
         public GetResultsFromSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
         {
@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             return new GetResultsFromSeasonRequest(leagueId, seasonId);
         }
 
-        protected override void DefaultAssertions(GetResultsFromSeasonRequest request, IEnumerable<EventResultModel> result, LeagueDbContext dbContext)
+        protected override void DefaultAssertions(GetResultsFromSeasonRequest request, IEnumerable<SeasonEventResultModel> result, LeagueDbContext dbContext)
         {
             base.DefaultAssertions(request, result, dbContext);
             var seasonResults = dbContext.ScoredEventResults
@@ -45,7 +45,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         }
 
         [Fact]
-        public async override Task<IEnumerable<EventResultModel>> ShouldHandleDefault()
+        public async override Task<IEnumerable<SeasonEventResultModel>> ShouldHandleDefault()
         {
             return await base.ShouldHandleDefault();
         }

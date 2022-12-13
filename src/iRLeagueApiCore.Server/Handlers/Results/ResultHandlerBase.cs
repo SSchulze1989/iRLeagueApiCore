@@ -55,6 +55,8 @@ namespace iRLeagueApiCore.Server.Handlers.Results
                     CarId = row.CarId,
                     CarNumber = row.CarNumber,
                     ClassId = row.ClassId,
+                    ClubId = row.ClubId,
+                    ClubName = row.ClubName,
                     CompletedLaps = row.CompletedLaps,
                     CompletedPct = row.CompletedPct,
                     Division = row.Division,

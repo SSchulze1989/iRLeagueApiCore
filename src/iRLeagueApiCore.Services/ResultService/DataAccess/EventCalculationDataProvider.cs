@@ -61,6 +61,8 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     CarId = row.CarId,
                     CarNumber = row.CarNumber,
                     ClassId = row.ClassId,
+                    ClubId = row.ClubId,
+                    ClubName = row.ClubName,
                     CompletedLaps = row.CompletedLaps,
                     CompletedPct = row.CompletedPct,
                     FastestLapTime = row.FastestLapTime,

@@ -52,6 +52,19 @@ namespace iRLeagueApiCore.Server.Controllers
             return Ok(getLeague);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("/{leagueName}")]
+        public async Task<ActionResult<LeagueModel>> GetByName([FromRoute] string leagueName, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("[{Method}] league {LeagueName} by {UserName}",
+                "Get", leagueName, GetUsername());
+            var request = new GetLeagueByNameRequest(leagueName);
+            var getLeague = await mediator.Send(request, cancellationToken);
+            _logger.LogInformation("Return league entry for id {LeagueId}", getLeague.Id);
+            return Ok(getLeague);
+        }
+
         [HttpPost]
         [Authorize(Roles = UserRoles.Admin)]
         [Route("")]
