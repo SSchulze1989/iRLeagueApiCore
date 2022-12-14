@@ -11,27 +11,21 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             Func<IEnumerable<ResultRowCalculationResult>, IReadOnlyList<ResultRowCalculationResult>>? sortForPoints = default,
             Func<IEnumerable<ResultRowCalculationResult>, IReadOnlyList<ResultRowCalculationResult>>? sortFinal = default,
             Func<ResultRowCalculationResult, int, double>? getRacePoints = default,
-            Func<ResultRowCalculationResult, int, double>? getBonusPoints = default,
-            Func<ResultRowCalculationResult, int, double>? getPenaltyPoints = default,
-            Func<ResultRowCalculationResult, int, double>? getTotalPoints = default)
+            IDictionary<string, int>? bonusPoints = default)
         {
             pointFilters ??= Array.Empty<RowFilter<ResultRowCalculationResult>>();
             finalFilters ??= Array.Empty<RowFilter<ResultRowCalculationResult>>();
             sortForPoints ??= row => row.ToList();
             sortFinal ??= row => row.ToList();
             getRacePoints ??= (row, pos) => row.RacePoints;
-            getBonusPoints ??= (row, pos) => row.BonusPoints;
-            getPenaltyPoints ??= (row, pos) => row.PenaltyPoints + (row.AddPenalty?.PenaltyPoints ?? 0);
-            getTotalPoints ??= (row, pos) => row.RacePoints + row.BonusPoints - row.PenaltyPoints;
+            bonusPoints ??= new Dictionary<string, int>();
             return MockPointRule<ResultRowCalculationResult>(
                 pointFilters,
                 finalFilters,
                 sortForPoints,
                 sortFinal,
                 getRacePoints,
-                getBonusPoints,
-                getPenaltyPoints,
-                getTotalPoints);
+                bonusPoints);
         }
 
         internal static PointRule<T> MockPointRule<T>(
@@ -40,9 +34,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             Func<IEnumerable<T>, IReadOnlyList<T>> sortForPoints,
             Func<IEnumerable<T>, IReadOnlyList<T>> sortFinal,
             Func<T, int, double> getRacePoints,
-            Func<T, int, double> getBonusPoints,
-            Func<T, int, double> getPenaltyPoints,
-            Func<T, int, double> getTotalPoints) where T : IPointRow, IPenaltyRow
+            IDictionary<string, int> bonusPoints) where T : IPointRow, IPenaltyRow
         {
             var mockRule = new Mock<PointRule<T>>();
             mockRule.Setup(x => x.GetPointFilters()).Returns(pointFilters);
@@ -60,12 +52,10 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
                     foreach ((T row, int pos) in rows.Select((x, i) => (x, i + 1)))
                     {
                         row.RacePoints = getRacePoints(row, pos);
-                        row.BonusPoints = getBonusPoints(row, pos);
-                        row.PenaltyPoints = getPenaltyPoints(row, pos);
-                        row.TotalPoints = getTotalPoints(row, pos);
                     }
                     return rows.ToList();
                 });
+            mockRule.Setup(x => x.GetBonusPoints()).Returns(bonusPoints);
             return mockRule.Object;
         }
     }

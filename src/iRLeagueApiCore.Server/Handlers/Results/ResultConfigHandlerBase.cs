@@ -78,7 +78,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     {
         foreach (var filterModel in filterModels)
         {
-            var filterOptionEntity = filterEntities
+            var filterOptionEntity = filterModel.FilterOptionId == 0 ? null : filterEntities
                 .FirstOrDefault(x => x.FilterOptionId == filterModel.FilterOptionId);
             if (filterOptionEntity is null)
             {
@@ -121,7 +121,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         // Map votes
         foreach (var scoringModel in scoringModels)
         {
-            var scoringEntity = scoringEntities
+            var scoringEntity = scoringModel.Id == 0 ? null : scoringEntities
                 .FirstOrDefault(x => x.ScoringId == scoringModel.Id);
             if (scoringEntity == null)
             {

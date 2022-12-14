@@ -28,6 +28,8 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 
         public override IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
 
+        public override IDictionary<string, int> GetBonusPoints() => new Dictionary<string, int>();
+
         private static IReadOnlyList<T> DefaultSort<T>(IEnumerable<T> rows) where T : TRow
         {
             if (rows is IReadOnlyList<T> list)

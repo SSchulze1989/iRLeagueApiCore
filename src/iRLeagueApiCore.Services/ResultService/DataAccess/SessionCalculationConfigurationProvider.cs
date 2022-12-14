@@ -147,6 +147,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
 
         pointRule.PointSortOptions = pointsRuleEntity.PointsSortOptions;
         pointRule.FinalSortOptions = pointsRuleEntity.FinalSortOptions;
+        pointRule.BonusPoints = pointsRuleEntity.BonusPoints;
         if (includeFilters)
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
