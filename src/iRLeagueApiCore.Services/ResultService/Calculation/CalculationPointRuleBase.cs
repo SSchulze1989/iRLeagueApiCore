@@ -10,10 +10,13 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
         public IEnumerable<RowFilter<ResultRowCalculationResult>> ResultFilters { get; set; } = Array.Empty<RowFilter<ResultRowCalculationResult>>();
         public IEnumerable<SortOptions> PointSortOptions { get; set; } = Array.Empty<SortOptions>();
         public IEnumerable<SortOptions> FinalSortOptions { get; set; } = Array.Empty<SortOptions>();
+        public IDictionary<string, int> BonusPoints { get; set; } = new Dictionary<string, int>();
 
         public override IEnumerable<RowFilter<ResultRowCalculationResult>> GetResultFilters() => ResultFilters;
 
         public override IEnumerable<RowFilter<ResultRowCalculationResult>> GetPointFilters() => PointFilters;
+
+        public override IDictionary<string, int> GetBonusPoints() => BonusPoints;
 
         public override IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows)
         {

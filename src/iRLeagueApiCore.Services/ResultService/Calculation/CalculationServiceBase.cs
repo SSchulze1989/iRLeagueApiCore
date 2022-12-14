@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -9,8 +10,12 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     protected static IEnumerable<ResultRowCalculationResult> ApplyPoints(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule,
         SessionCalculationData data)
     {
-        IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
+        foreach (var filter in pointRule.GetResultFilters())
+        {
+            rows = filter.FilterRows(rows);
+        }
 
+        IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
         // Filter for points only
         foreach (var filter in pointRule.GetPointFilters())
         {
@@ -22,11 +27,8 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         pointRule.ApplyPoints(calcRows);
 
         IEnumerable<ResultRowCalculationResult> finalRows = rows;
-        foreach (var filter in pointRule.GetResultFilters())
-        {
-            finalRows = filter.FilterRows(finalRows);
-        }
         finalRows = ApplyReviewPenalties(finalRows, data.AcceptedReviewVotes);
+        finalRows = ApplyBonusPoints(pointRows, pointRule.GetBonusPoints());
         finalRows = ApplyTotalPoints(finalRows);
         finalRows = pointRule.SortFinal(finalRows);
         // Set final position
@@ -39,20 +41,20 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return finalRows;
     }
 
-    protected static (long? id, TimeSpan lap) GetBestLapValue<T>(IEnumerable<T> rows, Func<T, long?> idSelector, Func<T, TimeSpan> valueSelector)
+    protected static (TId? id, TimeSpan lap) GetBestLapValue<T, TId>(IEnumerable<T> rows, Func<T, TId?> idSelector, Func<T, TimeSpan> valueSelector)
     {
         return rows
-            .Select(row => ((long? id, TimeSpan lap))(idSelector.Invoke(row), valueSelector.Invoke(row)))
+            .Select(row => ((TId? id, TimeSpan lap))(idSelector.Invoke(row), valueSelector.Invoke(row)))
             .Where(row => LapIsValid(row.lap))
             .DefaultIfEmpty()
             .MinBy(row => row.lap);
     }
 
-    protected static IEnumerable<(long? id, TValue value)> GetBestValues<T, TValue>(IEnumerable<T> rows, Func<T, TValue> valueSelector, Func<T, long?> idSelector,
+    protected static IEnumerable<(TId? id, TValue value)> GetBestValues<T, TValue, TId>(IEnumerable<T> rows, Func<T, TValue> valueSelector, Func<T, TId?> idSelector,
         Func<IEnumerable<TValue>, TValue> bestValueFunc, EqualityComparer<TValue>? comparer = default)
     {
         comparer ??= EqualityComparer<TValue>.Default;
-        var valueRows = rows.Select(row => ((long? id, TValue value))(idSelector.Invoke(row), valueSelector.Invoke(row)));
+        var valueRows = rows.Select(row => ((TId? id, TValue value))(idSelector.Invoke(row), valueSelector.Invoke(row)));
         var bestValue = bestValueFunc.Invoke(valueRows.Select(x => x.value));
         return valueRows.Where(row => comparer.Equals(row.value, bestValue));
     }
@@ -145,6 +147,77 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         foreach (var row in rows)
         {
             row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyBonusPoints(IEnumerable<ResultRowCalculationResult> rows, IDictionary<string, int> BonusPoints)
+    {
+        if (rows.None())
+        {
+            return rows;
+        }
+
+        var minIncs = rows.Any(x => x.PenaltyPoints == 0) ? rows.Where(x => x.PenaltyPoints == 0).Min(x => x.Incidents) : -1;
+        var fastestLapRow = GetBestLapValue(rows, x => x, x => x.FastestLapTime);
+
+        foreach (var bonus in BonusPoints)
+        {
+            var bonusKey = bonus.Key[0];
+            int bonusKeyValue = 0;
+            int bonusPoints = bonus.Value;
+            if (bonus.Key.Length > 1 && int.TryParse(bonus.Key[1..], out bonusKeyValue) == false)
+            {
+                continue;
+            }
+            switch (bonusKey)
+            {
+                case 'p':
+                    ApplyPositionBonusPoints(rows, bonusKeyValue, bonusPoints);
+                    break;
+                case 'c':
+                    ApplyCleanestDriverBonusPoints(rows, bonusPoints);
+                    break;
+                case 'f':
+                    ApplyFastestLapBonusPoints(rows, bonusPoints);
+                    break;
+            };
+        }
+
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyPositionBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int position, int points)
+    {
+        foreach(var row in rows)
+        {
+            if (row.FinalPosition == position)
+            {
+                row.BonusPoints += points;
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyCleanestDriverBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        static bool condition(ResultRowCalculationResult x) => x.PenaltyPoints == 0;
+        var minIncRows = GetBestValues(rows.Where(condition), x => x.Incidents, x => x, x => x.Min())
+            .Select(x => x.id)
+            .NotNull();
+        foreach(var row in minIncRows)
+        {
+            row.BonusPoints += points;
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyFastestLapBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        var (row, lapTime) = GetBestLapValue(rows, x => x, x => x.FastestLapTime);
+        if (row is not null)
+        {
+            row.BonusPoints += points;
         }
         return rows;
     }
