@@ -33,6 +33,10 @@ namespace iRLeagueApiCore.Services.ResultService.Extensions
                 SortOptions.StartPosDesc => row => -row.StartPosition,
                 SortOptions.TotalPtsAsc => row => row.TotalPoints,
                 SortOptions.TotalPtsDesc => row => -row.TotalPoints,
+                SortOptions.TotalPtsWoBonusAsc => row => row.RacePoints - row.PenaltyPoints,
+                SortOptions.TotalPtsWoBonusDesc => row => -(row.RacePoints - row.PenaltyPoints),
+                SortOptions.TotalPtsWoPenaltyAsc => row => row.RacePoints + row.BonusPoints,
+                SortOptions.TotalPtsWoPenaltyDesc => row => -(row.RacePoints + row.BonusPoints),
                 _ => row => 0,
             };
         }
