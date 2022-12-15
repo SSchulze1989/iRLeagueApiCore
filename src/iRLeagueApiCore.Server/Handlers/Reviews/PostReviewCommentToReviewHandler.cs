@@ -44,6 +44,8 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new ResourceNotFoundException();
             var commentEntity = CreateVersionEntity(user, new ReviewCommentEntity());
+            commentEntity.AuthorName = user.Name;
+            commentEntity.AuthorUserId = user.Id;
             review.Comments.Add(commentEntity);
             return commentEntity;
         }
