@@ -100,12 +100,6 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
             SessionNr = sessionResult.SessionNr,
             ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowCalculationData()
             {
-                //ReviewPenalties = row.ReviewPenalties.Select(penalty => new ReviewPenaltyCalculationResult()
-                //{
-                //    ReviewId = penalty.ReviewId,
-                //    ReviewVoteId = penalty.ReviewVoteId,
-                //    PenaltyPoints = penalty.PenaltyPoints,
-                //}).ToList(),
                 ScoredResultRowId = row.ScoredResultRowId,
                 MemberId = row.MemberId,
                 Firstname = row.Member == null ? string.Empty : row.Member.Firstname,
