@@ -27,9 +27,9 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         pointRule.ApplyPoints(calcRows);
 
         IEnumerable<ResultRowCalculationResult> finalRows = rows;
-        finalRows = ApplyReviewPenalties(finalRows, data.AcceptedReviewVotes);
-        finalRows = ApplyBonusPoints(pointRows, pointRule.GetBonusPoints());
-        finalRows = ApplyTotalPoints(finalRows);
+        ApplyReviewPenalties(finalRows, data.AcceptedReviewVotes);
+        ApplyBonusPoints(pointRows, pointRule.GetBonusPoints());
+        ApplyTotalPoints(finalRows);
         finalRows = pointRule.SortFinal(finalRows);
         // Set final position
         foreach ((var row, var position) in finalRows.Select((x, i) => (x, i + 1)))
