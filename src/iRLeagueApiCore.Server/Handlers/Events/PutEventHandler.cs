@@ -28,7 +28,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 ?? throw new ResourceNotFoundException();
             putEvent = await MapToEventEntityAsync(request.User, request.Event, putEvent, cancellationToken);
             dbContext.SaveChanges();
-            var getEvent = await MapToEventModelAsync(request.LeagueId, putEvent.EventId, cancellationToken)
+            var getEvent = await MapToEventModelAsync(request.LeagueId, putEvent.EventId, cancellationToken: cancellationToken)
                 ?? throw new InvalidOperationException("Created resource was not found");
             return getEvent;
         }

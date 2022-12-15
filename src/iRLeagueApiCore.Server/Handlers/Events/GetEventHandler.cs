@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Events
 {
-    public record GetEventRequest(long LeagueId, long EventId) : IRequest<EventModel>;
+    public record GetEventRequest(long LeagueId, long EventId, bool IncludeDetails) : IRequest<EventModel>;
 
     public class GetEventHandler : EventHandlerBase<GetEventHandler, GetEventRequest>, IRequestHandler<GetEventRequest, EventModel>
     {
@@ -22,7 +22,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
         public async Task<EventModel> Handle(GetEventRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            var getEvent = await MapToEventModelAsync(request.LeagueId, request.EventId, cancellationToken)
+            var getEvent = await MapToEventModelAsync(request.LeagueId, request.EventId, includeDetails: request.IncludeDetails, cancellationToken: cancellationToken)
                 ?? throw new ResourceNotFoundException();
             return getEvent;
         }

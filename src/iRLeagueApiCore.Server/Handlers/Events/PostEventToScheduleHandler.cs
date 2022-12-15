@@ -29,7 +29,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             postEvent = await MapToEventEntityAsync(request.User, request.Event, postEvent, cancellationToken);
             dbContext.Events.Add(postEvent);
             await dbContext.SaveChangesAsync();
-            var getEvent = await MapToEventModelAsync(request.LeagueId, postEvent.EventId, cancellationToken)
+            var getEvent = await MapToEventModelAsync(request.LeagueId, postEvent.EventId, cancellationToken: cancellationToken)
                 ?? throw new ResourceNotFoundException();
             return getEvent;
         }

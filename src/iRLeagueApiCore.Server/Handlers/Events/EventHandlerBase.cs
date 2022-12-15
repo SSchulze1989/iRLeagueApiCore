@@ -95,16 +95,17 @@ namespace iRLeagueApiCore.Server.Handlers.Events
             return UpdateVersionEntity(user, target);
         }
 
-        protected virtual async Task<EventModel?> MapToEventModelAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+        protected virtual async Task<EventModel?> MapToEventModelAsync(long leagueId, long eventId, bool includeDetails = false, CancellationToken cancellationToken = default)
         {
-            return await dbContext.Events
+            var query = dbContext.Events
                 .Where(x => x.LeagueId == leagueId)
                 .Where(x => x.EventId == eventId)
-                .Select(MapToEventModelExpression)
-                .FirstOrDefaultAsync(cancellationToken);
+                .Select(MapToEventModelExpression(includeDetails));
+            var sql = query.ToQueryString();
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-        protected virtual Expression<Func<EventEntity, EventModel>> MapToEventModelExpression => @event => new EventModel()
+        protected virtual Expression<Func<EventEntity, EventModel>> MapToEventModelExpression(bool includeDetails = false) => @event => new EventModel()
         {
             Date = @event.Date,
             Duration = @event.Duration,
@@ -142,6 +143,34 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 Name = config.Name,
                 DisplayName = config.DisplayName,
             }).ToList(),
+            SimSessionDetails = (includeDetails == false || @event.SimSessionDetails.Any() == false) ? null : 
+                @event.SimSessionDetails.Take(1).Select(details => new SimSessionDetailsModel()
+            {
+                EventAverageLap = details.EventAverageLap,
+                EndTime = details.EndTime,
+                EventLapsComplete = details.EventLapsComplete,
+                EventStrengthOfField = details.EventStrengthOfField,
+                Fog = details.Fog,
+                IRRaceWeek = details.IRRaceWeek,
+                IRSessionId = details.IRSessionId,
+                IRSubsessionId = details.IRSubsessionId,
+                LicenseCategory = details.LicenseCategory,
+                RelHumidity = details.RelHumidity,
+                SessionDetailsId = details.SessionDetailsId,
+                SessionName = details.SessionName,
+                SimStartUtcOffset = details.SimStartUtcOffset,
+                SimStartUtcTime = details.SimStartUtcTime,
+                Skies = details.Skies,
+                StartTime = details.StartTime,
+                TempUnits = details.TempUnits,
+                TempValue = details.TempValue,
+                TimeOfDay = details.TimeOfDay,
+                WeatherType = details.WeatherType,
+                WeatherVarInitial = details.WeatherVarInitial,
+                WeatherVarOngoing = details.WeatherVarOngoing,
+                WindDir = details.WindDir,
+                WindUnits = details.WindUnits,
+            }).First(),
         };
     }
 }

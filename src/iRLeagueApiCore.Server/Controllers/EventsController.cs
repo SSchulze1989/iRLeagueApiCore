@@ -38,11 +38,11 @@ namespace iRLeagueApiCore.Server.Controllers
         [AllowAnonymous]
         [Route("{id:long}")]
         public async Task<ActionResult<EventModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromRoute] long id, CancellationToken cancellationToken = default)
+            [FromRoute] long id, [FromQuery] bool includeDetails = false, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] event {EventId} from {LeagueName} by {UserName}", "Get",
                 id, leagueName, GetUsername());
-            var request = new GetEventRequest(leagueId, id);
+            var request = new GetEventRequest(leagueId, id, includeDetails);
             var getEvent = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return entry for event {EventId} from {LeagueName}", getEvent.Id, leagueName);
             return Ok(getEvent);
@@ -52,11 +52,11 @@ namespace iRLeagueApiCore.Server.Controllers
         [AllowAnonymous]
         [Route("/{leagueName}/Schedules/{scheduleId:long}/Events")]
         public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
-            [FromRoute] long scheduleId, CancellationToken cancellationToken = default)
+            [FromRoute] long scheduleId, [FromQuery] bool includeDetails = false, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all sessions in schedule {ScheduleId} from {LeagueName} by {UserName}", "Get",
                 scheduleId, leagueName, GetUsername());
-            var request = new GetEventsFromScheduleRequest(leagueId, scheduleId);
+            var request = new GetEventsFromScheduleRequest(leagueId, scheduleId, includeDetails);
             var getEvents = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for events in schedule {ScheduleId} from {LeagueName}", 
                 getEvents.Count(), scheduleId, leagueName);
@@ -67,11 +67,11 @@ namespace iRLeagueApiCore.Server.Controllers
         [AllowAnonymous]
         [Route("/{leagueName}/Seasons/{seasonId:long}/Events")]
         public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, 
-            [FromRoute] long seasonId, CancellationToken cancellationToken)
+            [FromRoute] long seasonId, [FromQuery] bool includeDetails = false, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] all sessions in season {SeasonId} from {LeagueName} by {UserName}", "Get", 
                 seasonId, leagueName, GetUsername());
-            var request = new GetEventsFromSeasonRequest(leagueId, seasonId);
+            var request = new GetEventsFromSeasonRequest(leagueId, seasonId, includeDetails);
             var getSessions = await mediator.Send(request, cancellationToken);
             _logger.LogInformation("Return {Count} entries for events in season {SeasonId} from {LeagueName}",
                 getSessions.Count(), seasonId, leagueName);
