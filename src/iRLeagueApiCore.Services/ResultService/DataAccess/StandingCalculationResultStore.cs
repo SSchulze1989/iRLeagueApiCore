@@ -32,11 +32,11 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         {
             var @event = await dbContext.Events
                 .Where(x => x.LeagueId == result.LeagueId)
-                .FirstOrDefaultAsync(x => x.EventId == result.EventId)
+                .FirstOrDefaultAsync(x => x.EventId == result.EventId, cancellationToken)
                 ?? throw new InvalidOperationException($"No event with id {result.EventId} found");
             var season = await dbContext.Seasons
                 .Where(x => x.LeagueId == result.LeagueId)
-                .FirstOrDefaultAsync(x => x.SeasonId == result.SeasonId)
+                .FirstOrDefaultAsync(x => x.SeasonId == result.SeasonId, cancellationToken)
                 ?? throw new InvalidOperationException($"No season with id {result.SeasonId} found");
             var standingConfig = await dbContext.StandingConfigurations
                 .Where(x => x.LeagueId == result.LeagueId)
@@ -48,6 +48,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
                 Event = @event,
                 Name = result.Name,
                 StandingConfig = standingConfig,
+                IsTeamStanding = result.IsTeamStanding,
             };
             dbContext.Standings.Add(standing);
         }
@@ -112,6 +113,8 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             rowEntity.Wins = row.Wins;
             rowEntity.WinsChange = row.WinsChange;
             rowEntity.ResultRows = MapToStandingResultRowsList(result.LeagueId, row.ResultRows, rowEntity.ResultRows, requiredEntities);
+            rowEntity.StartIrating = row.StartIrating;
+            rowEntity.LastIrating = row.LastIrating;
         }
 
         var memberIds = result.StandingRows.Select(x => x.MemberId);
