@@ -20,6 +20,10 @@ namespace iRLeagueApiCore.Services.ResultService.Models
         public ResultKind ResultKind { get; set; }
         public bool IsCombinedResult { get; set; }
         public SessionType SessionType { get; set; }
+        /// <summary>
+        /// Use the points coming from a selected external source in a combined result configuration
+        /// </summary>
+        public bool UseExternalSourcePoints { get; set; }
 
         public PointRule<ResultRowCalculationResult> PointRule { get; set; } = PointRule<ResultRowCalculationResult>.Default();
     }

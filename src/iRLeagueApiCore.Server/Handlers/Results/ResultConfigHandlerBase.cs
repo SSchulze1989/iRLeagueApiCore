@@ -153,6 +153,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         scoringEntity.UpdateTeamOnRecalculation = scoringModel.UpdateTeamOnRecalculation;
         scoringEntity.PointsRule = scoringModel.PointRule is not null ? await MapToPointRuleEntityAsync(user, scoringModel.PointRule,
             scoringEntity.PointsRule ?? CreateVersionEntity(user, new PointRuleEntity() { LeagueId = scoringEntity.LeagueId }), cancellationToken) : null;
+        scoringEntity.UseExternalSourcePoints = scoringModel.UseSourcePoints;
         UpdateVersionEntity(user, scoringEntity);
         return await Task.FromResult(scoringEntity);
     }
@@ -219,6 +220,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             IsCombinedResult = scoring.IsCombinedResult,
             UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation,
             UseResultSetTeam = scoring.UseResultSetTeam,
+            UseSourcePoints = scoring.UseExternalSourcePoints,
             PointRule = scoring.PointsRule != null ? new PointRuleModel()
             {
                 BonusPoints = scoring.PointsRule.BonusPoints,

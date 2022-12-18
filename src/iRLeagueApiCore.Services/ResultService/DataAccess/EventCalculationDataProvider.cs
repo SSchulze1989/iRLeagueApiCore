@@ -132,6 +132,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 QualifyingTime = row.QualifyingTime,
                 PositionChange = row.PositionChange,
                 RacePoints = row.RacePoints,
+                BonusPoints = row.BonusPoints,
                 SeasonStartIrating = row.SeasonStartIRating,
                 StartPosition = row.StartPosition,
                 Status = row.Status,

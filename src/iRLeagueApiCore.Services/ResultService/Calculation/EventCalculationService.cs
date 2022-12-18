@@ -43,7 +43,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             {
                 var combinedConfig = config.SessionResultConfigurations.First(x => x.IsCombinedResult);
                 IEnumerable<ResultRowCalculationData> combinedRows;
-                if (data.SessionResults.Any(x => x.SessionNr == 999))
+                if (data.SessionResults.Any(x => x.SessionNr == 999) && combinedConfig.UseExternalSourcePoints)
                 {
                     combinedRows = data.SessionResults.First(x => x.SessionNr == 999).ResultRows;
                 }
