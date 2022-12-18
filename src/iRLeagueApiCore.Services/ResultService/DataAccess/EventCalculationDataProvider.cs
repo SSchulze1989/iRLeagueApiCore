@@ -133,6 +133,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 PositionChange = row.PositionChange,
                 RacePoints = row.RacePoints,
                 BonusPoints = row.BonusPoints,
+                PenaltyPoints = row.PenaltyPoints,
                 SeasonStartIrating = row.SeasonStartIRating,
                 StartPosition = row.StartPosition,
                 Status = row.Status,
