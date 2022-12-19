@@ -55,6 +55,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
                     .Select(x => x.SessionNr);
                     combinedRows = sessionResults
                         .Where(x => combinedSessionNrs.Contains(x.SessionNr))
+                        .OrderByDescending(x => x.SessionNr)
                         .SelectMany(x => x.ResultRows);
                 }
                 if (combinedRows.Any())
