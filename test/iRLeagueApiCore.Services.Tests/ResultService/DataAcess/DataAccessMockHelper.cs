@@ -226,6 +226,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                     .Select(session => fixture.Build<ScoringEntity>()
                         .With(x => x.LeagueId, @event.LeagueId)
                         .With(x => x.Index, session.SessionNr)
+                        .With(x => x.IsCombinedResult, false)
                         .Without(x => x.PointsRule)
                         .Without(x => x.DependendScorings)
                         .Without(x => x.ExtScoringSource)

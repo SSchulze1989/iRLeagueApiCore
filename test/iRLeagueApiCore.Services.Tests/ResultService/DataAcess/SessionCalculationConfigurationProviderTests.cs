@@ -130,7 +130,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     }
 
     [Fact]
-    public async Task GetConfigurations_ShouldProvideDefaultPointRule_WhenScoringOrPointRuleEntityIsNull()
+    public async Task GetConfigurations_ShouldProvideUseResultPointsPointRule_WhenScoringOrPointRuleEntityIsNull()
     {
         var @event = await GetFirstEventEntity();
         // creates default config with null point rule
@@ -145,7 +145,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            sessionConfig.PointRule.Should().BeOfType(CalculationPointRuleBase.Default().GetType());
+            sessionConfig.PointRule.Should().BeOfType<UseResultPointsPointRule>();
         }
     }
 
@@ -177,7 +177,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             {
                 sessionConfig.ScoringId.Should().BeNull();
                 sessionConfig.ResultKind.Should().Be(ResultKind.Member);
-                sessionConfig.PointRule.Should().BeOfType(CalculationPointRuleBase.Default().GetType());
+                sessionConfig.PointRule.Should().BeOfType<UseResultPointsPointRule>();
             }
             else
             {
