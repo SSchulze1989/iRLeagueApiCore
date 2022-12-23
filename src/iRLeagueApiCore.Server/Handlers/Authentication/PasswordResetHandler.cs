@@ -42,6 +42,7 @@ namespace iRLeagueApiCore.Server.Handlers.Authentication
             var token = await GetResetToken(user);
             if (user.Email.Equals(request.Model.Email, StringComparison.OrdinalIgnoreCase) == false)
             {
+                logger.LogWarning("Cancel password reset token request: provided Email does not match username");
                 return Unit.Value;
             }
             await SendResetMailAsync(user, request.Model.Email, token, request.Model.LinkUriTemplate);
