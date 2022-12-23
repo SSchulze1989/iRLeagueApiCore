@@ -1,43 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace iRLeagueApiCore.Client.QueryBuilder;
 
-namespace iRLeagueApiCore.Client.QueryBuilder
+public sealed class ParameterBuilder : IParameterBuilder
 {
-    public class ParameterBuilder : IParameterBuilder
+    private List<string> _parameters;
+
+    public ParameterBuilder()
     {
-        private List<string> _parameters;
+        _parameters = new List<string>();
+    }
 
-        public ParameterBuilder()
-        {
-            _parameters = new List<string>();
-        }
+    public IParameterBuilder Add<T>(string name, T value)
+    {
+        _parameters.Add(ParameterString(name, value));
+        return this;
+    }
 
-        public IParameterBuilder Add<T>(string name, T value)
+    public IParameterBuilder AddArray<T>(string name, IEnumerable<T> values)
+    {
+        foreach (var value in values)
         {
-            _parameters.Add(ParameterString(name,value));
-            return this;
+            _parameters.Add(ParameterString(name, value));
         }
+        return this;
+    }
 
-        public IParameterBuilder AddArray<T>(string name, IEnumerable<T> values)
-        {
-            foreach(var value in values)
-            {
-                _parameters.Add(ParameterString(name, value));
-            }
-            return this;
-        }
+    public string Build()
+    {
+        return string.Join("&", _parameters);
+    }
 
-        public string Build()
-        {
-            return string.Join("&", _parameters);
-        }
-
-        private string ParameterString<T>(string name, T value)
-        {
-            return string.Format("{0}={1}", name, value);
-        }
+    private string ParameterString<T>(string name, T value)
+    {
+        return string.Format("{0}={1}", name, value);
     }
 }

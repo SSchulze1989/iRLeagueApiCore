@@ -1,13 +1,11 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Server.Validation.Events
+namespace iRLeagueApiCore.Server.Validation.Events;
+
+public sealed class PutEventModelValidator : AbstractValidator<PutEventModel>
 {
-    public class PutEventModelValidator : AbstractValidator<PutEventModel>
+    public PutEventModelValidator(PostEventModelValidator postValidator)
     {
-        public PutEventModelValidator(PostEventModelValidator postValidator)
-        {
-            Include(postValidator);
-        }
+        Include(postValidator);
     }
 }

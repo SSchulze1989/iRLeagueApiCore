@@ -3,66 +3,59 @@ using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues
+namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
+
+[Collection("DbTestFixture")]
+public sealed class DeleteLeagueDbTestFixture : HandlersTestsBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
 {
-    [Collection("DbTestFixture")]
-    public class DeleteLeagueDbTestFixture : HandlersTestsBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
+    public DeleteLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
-        public DeleteLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
-        {
-        }
+    }
 
-        protected override DeleteLeagueHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteLeagueRequest> validator)
-        {
-            return new DeleteLeagueHandler(logger, dbContext, new IValidator<DeleteLeagueRequest>[] { validator });
-        }
+    protected override DeleteLeagueHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteLeagueRequest> validator)
+    {
+        return new DeleteLeagueHandler(logger, dbContext, new IValidator<DeleteLeagueRequest>[] { validator });
+    }
 
-        protected override DeleteLeagueRequest DefaultRequest()
-        {
-            return DefaultRequest(testLeagueId);
-        }
+    protected override DeleteLeagueRequest DefaultRequest()
+    {
+        return DefaultRequest(testLeagueId);
+    }
 
-        protected override void DefaultPreTestAssertions(DeleteLeagueRequest request, LeagueDbContext dbContext)
-        {
-            Assert.Contains(dbContext.Leagues, x => x.Id == request.LeagueId);
-        }
+    protected override void DefaultPreTestAssertions(DeleteLeagueRequest request, LeagueDbContext dbContext)
+    {
+        Assert.Contains(dbContext.Leagues, x => x.Id == request.LeagueId);
+    }
 
-        protected override void DefaultAssertions(DeleteLeagueRequest request, Unit result, LeagueDbContext dbContext)
-        {
-            Assert.DoesNotContain(dbContext.Leagues, x => x.Id == request.LeagueId);
-        }
+    protected override void DefaultAssertions(DeleteLeagueRequest request, Unit result, LeagueDbContext dbContext)
+    {
+        Assert.DoesNotContain(dbContext.Leagues, x => x.Id == request.LeagueId);
+    }
 
-        private DeleteLeagueRequest DefaultRequest(long leagueId)
-        {
-            return new DeleteLeagueRequest(leagueId);
-        }
+    private DeleteLeagueRequest DefaultRequest(long leagueId)
+    {
+        return new DeleteLeagueRequest(leagueId);
+    }
 
-        [Fact]
-        public async override Task<Unit> ShouldHandleDefault()
-        {
-            return await base.ShouldHandleDefault();
-        }
+    [Fact]
+    public async override Task<Unit> ShouldHandleDefault()
+    {
+        return await base.ShouldHandleDefault();
+    }
 
-        [Fact]
-        public async override Task ShouldHandleValidationFailed()
-        {
-            await base.ShouldHandleValidationFailed();
-        }
+    [Fact]
+    public async override Task ShouldHandleValidationFailed()
+    {
+        await base.ShouldHandleValidationFailed();
+    }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(42)]
-        public async Task HandleNotFoundAsync(long leagueId)
-        {
-            var request = DefaultRequest(leagueId);
-            await base.HandleNotFoundRequestAsync(request);
-        }
+    [Theory]
+    [InlineData(0)]
+    [InlineData(42)]
+    public async Task HandleNotFoundAsync(long leagueId)
+    {
+        var request = DefaultRequest(leagueId);
+        await base.HandleNotFoundRequestAsync(request);
     }
 }

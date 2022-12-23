@@ -1,8 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
 
-namespace iRLeagueApiCore.Client.Endpoints.Users
+namespace iRLeagueApiCore.Client.Endpoints.Users;
+
+public interface IUserByIdEndpoint : IGetEndpoint<UserModel>, IPutEndpoint<PrivateUserModel, PutUserModel>
 {
-    public interface IUserByIdEndpoint : IGetEndpoint<UserModel>, IPutEndpoint<PrivateUserModel, PutUserModel>
-    {
-    }
 }

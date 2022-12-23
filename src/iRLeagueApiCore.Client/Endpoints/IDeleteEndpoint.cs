@@ -1,11 +1,8 @@
 using iRLeagueApiCore.Client.Results;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace iRLeagueApiCore.Client.Endpoints
+namespace iRLeagueApiCore.Client.Endpoints;
+
+public interface IDeleteEndpoint
 {
-    public interface IDeleteEndpoint
-    {
-        Task<ClientActionResult<NoContent>> Delete(CancellationToken cancellationToken = default);
-    }
+    Task<ClientActionResult<NoContent>> Delete(CancellationToken cancellationToken = default);
 }

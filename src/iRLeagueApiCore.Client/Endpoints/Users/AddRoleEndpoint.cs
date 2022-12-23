@@ -2,14 +2,13 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models.Users;
 
-namespace iRLeagueApiCore.Client.Endpoints.Users
+namespace iRLeagueApiCore.Client.Endpoints.Users;
+
+public sealed class AddRoleEndpoint : PostEndpoint<LeagueUserModel, RoleModel>, IPostEndpoint<LeagueUserModel, RoleModel>
 {
-    public class AddRoleEndpoint : PostEndpoint<LeagueUserModel, RoleModel>, IPostEndpoint<LeagueUserModel, RoleModel>
+    public AddRoleEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
+        base(httpClientWrapper, routeBuilder)
     {
-        public AddRoleEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
-            base(httpClientWrapper, routeBuilder)
-        {
-            RouteBuilder.AddEndpoint("AddRole");
-        }
+        RouteBuilder.AddEndpoint("AddRole");
     }
 }

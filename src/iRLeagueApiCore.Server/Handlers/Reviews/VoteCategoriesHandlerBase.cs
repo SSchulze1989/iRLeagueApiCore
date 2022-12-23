@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public class VoteCategoriesHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
 {
-    public VoteCategoriesHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+    public VoteCategoriesHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

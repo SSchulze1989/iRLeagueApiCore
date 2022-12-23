@@ -1,11 +1,10 @@
-﻿global using Moq;
+﻿global using AutoFixture;
 global using FluentAssertions;
+global using Moq;
 global using Xunit;
-global using AutoFixture;
 
-namespace iRLeagueApiCore.UnitTests
+namespace iRLeagueApiCore.UnitTests;
+
+internal class GlobalUsings
 {
-    internal class GlobalUsings
-    {
-    }
 }

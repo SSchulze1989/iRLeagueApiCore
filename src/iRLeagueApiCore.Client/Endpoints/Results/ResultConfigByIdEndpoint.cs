@@ -2,14 +2,13 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Results
+namespace iRLeagueApiCore.Client.Endpoints.Results;
+
+internal class ResultConfigByIdEndpoint : UpdateEndpoint<ResultConfigModel, PutResultConfigModel>, IResultConfigByIdEndpoint
 {
-    internal class ResultConfigByIdEndpoint : UpdateEndpoint<ResultConfigModel, PutResultConfigModel>, IResultConfigByIdEndpoint
+    public ResultConfigByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long resultConfigId) :
+        base(httpClientWrapper, routeBuilder)
     {
-        public ResultConfigByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long resultConfigId) : 
-            base(httpClientWrapper, routeBuilder)
-        {
-            RouteBuilder.AddParameter(resultConfigId);
-        }
+        RouteBuilder.AddParameter(resultConfigId);
     }
 }

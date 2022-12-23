@@ -1,2 +1,2 @@
-﻿global using System.Linq.Expressions;
-global using Microsoft.Extensions.Logging;
+﻿global using Microsoft.Extensions.Logging;
+global using System.Linq.Expressions;

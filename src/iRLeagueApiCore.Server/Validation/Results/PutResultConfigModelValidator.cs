@@ -1,13 +1,11 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Server.Validation.Results
+namespace iRLeagueApiCore.Server.Validation.Results;
+
+public sealed class PutResultConfigModelValidator : AbstractValidator<PutResultConfigModel>
 {
-    public class PutResultConfigModelValidator : AbstractValidator<PutResultConfigModel>
+    public PutResultConfigModelValidator(PostResultConfigModelValidator includeValidator)
     {
-        public PutResultConfigModelValidator(PostResultConfigModelValidator includeValidator)
-        {
-            Include(includeValidator);
-        }
+        Include(includeValidator);
     }
 }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿namespace iRLeagueApiCore.Client.Http;
 
-namespace iRLeagueApiCore.Client.Http
+public interface IAsyncTokenProvider
 {
-    public interface IAsyncTokenProvider
-    {
-        event EventHandler TokenChanged;
-        Task<string> GetTokenAsync();
-    }
+    event EventHandler TokenChanged;
+    Task<string> GetTokenAsync();
 }

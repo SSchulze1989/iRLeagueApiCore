@@ -144,7 +144,7 @@ public sealed class ColumnValueRowFilterTests
         var test = sut.FilterRows(rows);
 
         test.Should().Contain(cutoffRow);
-        test.Should().HaveCount(rows.Count() -1);
+        test.Should().HaveCount(rows.Count() - 1);
     }
 
     [Fact]
@@ -195,9 +195,9 @@ public sealed class ColumnValueRowFilterTests
         test.Should().HaveCount(2);
     }
 
-    private ColumnValueRowFilter CreateSut(string propertyName, 
-                                 IEnumerable<string> filterValues, 
-                                 ComparatorType comparator = ComparatorType.IsSmallerOrEqual, 
+    private ColumnValueRowFilter CreateSut(string propertyName,
+                                 IEnumerable<string> filterValues,
+                                 ComparatorType comparator = ComparatorType.IsSmallerOrEqual,
                                  MatchedValueAction action = MatchedValueAction.Keep)
     {
         return new ColumnValueRowFilter(propertyName, comparator, filterValues, action);

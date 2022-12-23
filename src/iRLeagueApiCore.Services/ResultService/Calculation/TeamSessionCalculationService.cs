@@ -1,5 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -18,7 +18,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             .OrderBy(x => x.FinalPosition);
         var teamRows = memberRows
             .GroupBy(x => x.TeamId)
-            .Where(x => x.Key != null)        
+            .Where(x => x.Key != null)
             .Select(x => GetTeamResultRow(x))
             .NotNull()
             .ToList();

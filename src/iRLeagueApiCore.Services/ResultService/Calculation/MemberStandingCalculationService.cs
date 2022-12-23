@@ -51,7 +51,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
     }
 
     private IEnumerable<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> CalculateMemberStandingRows(
-        Dictionary<long, IEnumerable<GroupedEventResult<long>>> previousMemberResults, 
+        Dictionary<long, IEnumerable<GroupedEventResult<long>>> previousMemberResults,
         Dictionary<long, GroupedEventResult<long>> currentMemberResult)
     {
         var memberIds = previousMemberResults.Keys.Concat(currentMemberResult.Keys).Distinct();

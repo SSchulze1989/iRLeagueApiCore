@@ -12,8 +12,8 @@ internal sealed class ExecuteStandingCalculation
     private readonly IStandingCalculationResultStore dataStore;
     private readonly ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult> calculationServiceProvider;
 
-    public ExecuteStandingCalculation(ILogger<ExecuteStandingCalculation> logger, IStandingCalculationDataProvider dataProvider, 
-        IStandingCalculationConfigurationProvider configProvider, IStandingCalculationResultStore dataStore, 
+    public ExecuteStandingCalculation(ILogger<ExecuteStandingCalculation> logger, IStandingCalculationDataProvider dataProvider,
+        IStandingCalculationConfigurationProvider configProvider, IStandingCalculationResultStore dataStore,
         ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult> calculationServiceProvider)
     {
         this.logger = logger;

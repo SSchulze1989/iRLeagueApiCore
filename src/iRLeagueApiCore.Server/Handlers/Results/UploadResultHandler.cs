@@ -1,6 +1,5 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueApiCore.Client.ResultsParsing;
+﻿using iRLeagueApiCore.Client.ResultsParsing;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using System.Text.Json;
 using System.Transactions;
@@ -9,7 +8,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record UploadResultRequest(long leagueId, long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
 
-public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
+public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
     IRequestHandler<UploadResultRequest, bool>
 {
     private readonly IResultCalculationQueue calculationQueue;

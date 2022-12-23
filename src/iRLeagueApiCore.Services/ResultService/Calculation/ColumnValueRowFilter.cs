@@ -24,7 +24,7 @@ internal class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
         {
             FilterValues = GetFilterValuesOfType(ColumnProperty.PropertyType, values).ToList();
         }
-        catch (Exception ex) when (ex is InvalidCastException || 
+        catch (Exception ex) when (ex is InvalidCastException ||
                                    ex is FormatException ||
                                    ex is OverflowException ||
                                    ex is ArgumentNullException)
@@ -78,16 +78,23 @@ internal class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
         return values.Select(x => Convert.ChangeType(x, type, CultureInfo.InvariantCulture)).Cast<IComparable>();
     }
 
-    private static Func<IComparable?, IEnumerable<IComparable>, bool> GetCompareFunction(ComparatorType comparatorType) 
+    private static Func<IComparable?, IEnumerable<IComparable>, bool> GetCompareFunction(ComparatorType comparatorType)
         => comparatorType switch
-    {
-        ComparatorType.IsBigger => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1; },
-        ComparatorType.IsBiggerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == 0; },
-        ComparatorType.IsEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 0; },
-        ComparatorType.IsSmallerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1 || c == 0; },
-        ComparatorType.IsSmaller => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1; },
-        ComparatorType.NotEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == -1; },
-        ComparatorType.InList => (x, y) => { var c = y.Any(z => x?.CompareTo(z) == 0); return c; },
-        _ => (x, y) => true,
-    };
+        {
+            ComparatorType.IsBigger => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1; }
+            ,
+            ComparatorType.IsBiggerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == 0; }
+            ,
+            ComparatorType.IsEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 0; }
+            ,
+            ComparatorType.IsSmallerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1 || c == 0; }
+            ,
+            ComparatorType.IsSmaller => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1; }
+            ,
+            ComparatorType.NotEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == -1; }
+            ,
+            ComparatorType.InList => (x, y) => { var c = y.Any(z => x?.CompareTo(z) == 0); return c; }
+            ,
+            _ => (x, y) => true,
+        };
 }

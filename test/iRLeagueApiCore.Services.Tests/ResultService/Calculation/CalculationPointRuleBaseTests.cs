@@ -29,7 +29,7 @@ public sealed class CalculationPointRuleBaseTests
         var test = sut.SortForPoints(rows);
 
         var expected = new[] { 3, 1, 2, 5, 4 };
-        foreach((var testRow, var expectedPos) in test.Zip(expected))
+        foreach ((var testRow, var expectedPos) in test.Zip(expected))
         {
             testRow.FinishPosition.Should().Be(expectedPos);
         }

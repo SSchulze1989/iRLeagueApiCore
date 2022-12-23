@@ -40,7 +40,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
             .ToDictionary(k => k.Key, v => v.Value.First());
     }
 
-    protected Dictionary<T, IEnumerable<GroupedEventResult<T>>> GetGroupedEventResults<T>(IEnumerable<EventSessionResults> sessionResults, 
+    protected Dictionary<T, IEnumerable<GroupedEventResult<T>>> GetGroupedEventResults<T>(IEnumerable<EventSessionResults> sessionResults,
         Func<ResultRowCalculationResult, T?> groupBy) where T : struct
     {
         var resultRows = sessionResults
@@ -65,7 +65,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
 
     public abstract Task<StandingCalculationResult> Calculate(StandingCalculationData data);
 
-    protected static IComparable GetEventOrderValue<T>(GroupedEventResult<T> eventResult) where T: notnull
+    protected static IComparable GetEventOrderValue<T>(GroupedEventResult<T> eventResult) where T : notnull
         => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints);
 
     protected StandingRowCalculationResult AccumulateTotalPoints(StandingRowCalculationResult row)
@@ -121,7 +121,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         IEnumerable<GroupedSessionResultRow<long>> countedResults)
     {
         standingRow.ResultRows.Clear();
-        foreach(var resultRow in allResults)
+        foreach (var resultRow in allResults)
         {
             var standingResultRow = resultRow.ResultRow;
             standingResultRow.IsScored = countedResults.Contains(resultRow);

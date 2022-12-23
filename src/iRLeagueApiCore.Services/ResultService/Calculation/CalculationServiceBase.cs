@@ -95,7 +95,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         var groupedRows = rows.Reverse().GroupBy(groupBy);
         var combined = new List<ResultRowCalculationResult>();
 
-        foreach(var group in groupedRows.Where(x => x.Any()))
+        foreach (var group in groupedRows.Where(x => x.Any()))
         {
             var row = new ResultRowCalculationResult(group.First());
             foreach (var groupRow in group.Skip(1))
@@ -189,7 +189,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyPositionBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int position, int points)
     {
-        foreach(var row in rows)
+        foreach (var row in rows)
         {
             if (row.FinalPosition == position)
             {
@@ -205,7 +205,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         var minIncRows = GetBestValues(rows.Where(condition), x => x.Incidents, x => x, x => x.Min())
             .Select(x => x.id)
             .NotNull();
-        foreach(var row in minIncRows)
+        foreach (var row in minIncRows)
         {
             row.BonusPoints += points;
         }

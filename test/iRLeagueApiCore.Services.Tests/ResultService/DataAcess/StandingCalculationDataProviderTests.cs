@@ -25,7 +25,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         test!.LeagueId.Should().Be(season.LeagueId);
         test.SeasonId.Should().Be(season.SeasonId);
         test.PreviousEventResults.Should().HaveCount(prevCount);
-        foreach(var (result, prevEvent) in test.PreviousEventResults.Zip(events.Take(prevCount)))
+        foreach (var (result, prevEvent) in test.PreviousEventResults.Zip(events.Take(prevCount)))
         {
             result.EventId.Should().Be(prevEvent.EventId);
             result.SessionResults.Should().HaveCountGreaterThanOrEqualTo(prevEvent.Sessions.Count);

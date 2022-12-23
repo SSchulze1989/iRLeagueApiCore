@@ -1,14 +1,12 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Handlers.Admin;
+﻿using iRLeagueApiCore.Server.Handlers.Admin;
 
-namespace iRLeagueApiCore.Server.Validation
+namespace iRLeagueApiCore.Server.Validation;
+
+public sealed class ListUsersRequestValidator : AbstractValidator<ListUsersRequest>
 {
-    public class ListUsersRequestValidator : AbstractValidator<ListUsersRequest>
+    public ListUsersRequestValidator()
     {
-        public ListUsersRequestValidator()
-        {
-            RuleFor(x => x.LeagueName).NotEmpty()
-                .WithMessage("'leagueName' may not be empty");
-        }
+        RuleFor(x => x.LeagueName).NotEmpty()
+            .WithMessage("'leagueName' may not be empty");
     }
 }
