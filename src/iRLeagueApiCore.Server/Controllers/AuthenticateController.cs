@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Authentication;
 using iRLeagueApiCore.Server.Models;
 using MediatR;
@@ -132,18 +133,21 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("ResetPassword")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> ResetPassword([FromBody] PasswordResetModel model, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] Generate password reset token for user {User} by {UserName}", "Post", model.UserName, User.Identity?.Name);
             var request = new PasswordResetRequest(model);
             await mediator.Send(request, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPost]
         [Route("SetPassword/{userId}")]
+        [TypeFilter(typeof(DefaultExceptionFilterAttribute))]
         [AllowAnonymous]
-        public async Task<ActionResult<bool>> ResetPasswordWithToken([FromRoute] string userId, [FromBody] SetPasswordTokenModel model, CancellationToken cancellationToken = default)
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<ActionResult> ResetPasswordWithToken([FromRoute] string userId, [FromBody] SetPasswordTokenModel model, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] Set Password with reset token for user {UserId}", "Post", userId);
             var request = new SetPasswordWithTokenRequest(userId, model);
@@ -151,10 +155,10 @@ namespace iRLeagueApiCore.Server.Controllers
             if (result)
             {
                 _logger.LogInformation("Password was set successfully");
-                return Ok();
+                return NoContent();
             }
             _logger.LogInformation("Set password failed");
-            return BadRequest(result);
+            return BadRequest();
         }
     }
 }

@@ -6,12 +6,14 @@ using iRLeagueApiCore.Services.EmailService;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace iRLeagueApiCore.Server.Handlers.Authentication
 {
@@ -38,7 +40,11 @@ namespace iRLeagueApiCore.Server.Handlers.Authentication
             var user = await userManager.FindByNameAsync(request.Model.UserName)
                 ?? throw new ResourceNotFoundException();
             var token = await GetResetToken(user);
-            await SendResetMailAsync(user, request.Model.Email, token);
+            if (user.Email.Equals(request.Model.Email, StringComparison.OrdinalIgnoreCase) == false)
+            {
+                return Unit.Value;
+            }
+            await SendResetMailAsync(user, request.Model.Email, token, request.Model.LinkUriTemplate);
             return Unit.Value;
         }
 
@@ -47,16 +53,16 @@ namespace iRLeagueApiCore.Server.Handlers.Authentication
             return await userManager.GeneratePasswordResetTokenAsync(user);
         }
 
-        private async Task SendResetMailAsync(ApplicationUser user, string email, string token)
+        private async Task SendResetMailAsync(ApplicationUser user, string email, string token, string linkTemplate)
         {
             string subject = $"Password Reset Token for your Account \"{user.UserName}\"";
-            string body = GenerateMailBody(user, token);
+            string body = GenerateMailBody(user, token, linkTemplate);
             await emailClient.SendNoReplyMailAsync(email, subject, body);
         }
 
-        private static string GenerateMailBody(ApplicationUser user, string token)
+        private static string GenerateMailBody(ApplicationUser user, string token, string linkTemplate)
         {
-            var resetUrl = GeneratePasswordResetUrl(user.Id, token);
+            var resetUrl = GeneratePasswordResetUrl(user.Id, token, linkTemplate);
             StringBuilder sb = new();
             sb.Append($@"
 <p>Dear User,</p>
@@ -68,9 +74,17 @@ If you posted this request pleas use the following link to complete the process 
             return sb.ToString();
         }
 
-        private static string GeneratePasswordResetUrl(string userId, string token)
+        private static string GeneratePasswordResetUrl(string userId, string token, string template)
         {
-            return $"https://irleaguemanager.net/app/Auth/SetPassword/{userId}/{token}";
+            if (string.IsNullOrWhiteSpace(template))
+            {
+                template = "https://irleaguemanager.net/app/member/{userId}/SetPassword/{token}";
+            }
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var url = template
+                .Replace("{userId}", userId)
+                .Replace("{token}", encodedToken);
+            return url;
         }
     }
 }
