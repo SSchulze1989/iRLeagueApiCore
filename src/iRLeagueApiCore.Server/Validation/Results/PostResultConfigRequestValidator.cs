@@ -1,9 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueDatabaseCore.Models;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Validation.Results
 {

@@ -7,7 +7,7 @@ public sealed record GetLeagueByNameRequest(string LeagueName) : IRequest<League
 public sealed class GetLeagueByNameHandler : LeagueHandlerBase<GetLeagueByNameHandler, GetLeagueByNameRequest>,
     IRequestHandler<GetLeagueByNameRequest, LeagueModel>
 {
-    public GetLeagueByNameHandler(ILogger<GetLeagueByNameHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetLeagueByNameRequest>> validators) : 
+    public GetLeagueByNameHandler(ILogger<GetLeagueByNameHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetLeagueByNameRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

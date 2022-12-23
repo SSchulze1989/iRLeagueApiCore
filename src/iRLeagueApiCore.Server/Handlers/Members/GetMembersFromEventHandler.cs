@@ -1,15 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Members;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models.Members;
 
 namespace iRLeagueApiCore.Server.Handlers.Members
 {
@@ -52,7 +41,7 @@ namespace iRLeagueApiCore.Server.Handlers.Members
             var memberIds = resultMembers
                 .Concat(scoredResultMembers)
                 .Distinct();
-            
+
             return await MapToMemberInfoListAsync(memberIds, cancellationToken);
         }
     }

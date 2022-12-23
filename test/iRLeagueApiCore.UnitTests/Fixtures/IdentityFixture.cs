@@ -2,17 +2,9 @@
 using FluentValidation.Results;
 using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Handlers.Admin;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Test;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures
 {

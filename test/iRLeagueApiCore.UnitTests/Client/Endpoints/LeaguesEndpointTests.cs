@@ -1,20 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints;
-using iRLeagueApiCore.Client.Endpoints.Leagues;
+﻿using iRLeagueApiCore.Client.Endpoints.Leagues;
 using iRLeagueApiCore.Client.QueryBuilder;
-using iRLeagueApiCore.Common.Models;
-using Microsoft.AspNetCore.Identity.Test;
-using Moq;
-using Moq.Protected;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints
 {
@@ -27,7 +12,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints
         public async Task ShouldCallCorrectRequestUrlLeagues()
         {
             var shouldRequestUrl = EndpointsTests.BaseUrl + "Leagues";
-            await EndpointsTests.TestRequestUrl<ILeaguesEndpoint>(shouldRequestUrl, x => new LeaguesEndpoint(x, new RouteBuilder()), x => x.Get()); 
+            await EndpointsTests.TestRequestUrl<ILeaguesEndpoint>(shouldRequestUrl, x => new LeaguesEndpoint(x, new RouteBuilder()), x => x.Get());
         }
 
         [Fact]

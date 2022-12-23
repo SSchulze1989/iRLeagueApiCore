@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Handlers.Admin;
+﻿using iRLeagueApiCore.Server.Handlers.Admin;
 
 namespace iRLeagueApiCore.Server.Validation
 {

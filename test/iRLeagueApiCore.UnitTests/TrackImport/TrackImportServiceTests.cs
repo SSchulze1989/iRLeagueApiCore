@@ -1,15 +1,6 @@
-﻿using FluentAssertions;
-using iRLeagueApiCore.TrackImport.Service;
+﻿using iRLeagueApiCore.TrackImport.Service;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.TrackImport
 {

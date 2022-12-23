@@ -3,12 +3,6 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Schedules;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
@@ -36,7 +30,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 
         protected override void DefaultAssertions(GetSchedulesRequest request, IEnumerable<ScheduleModel> result, LeagueDbContext dbContext)
         {
-            foreach(var dbSchedule in dbContext.Schedules.Where(x => x.LeagueId == testLeagueId))
+            foreach (var dbSchedule in dbContext.Schedules.Where(x => x.LeagueId == testLeagueId))
             {
                 Assert.Contains(result, x => x.ScheduleId == dbSchedule.ScheduleId);
             }

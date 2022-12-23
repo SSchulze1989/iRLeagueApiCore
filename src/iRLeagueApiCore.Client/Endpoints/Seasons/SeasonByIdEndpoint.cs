@@ -7,7 +7,6 @@ using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Standings;
-using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {

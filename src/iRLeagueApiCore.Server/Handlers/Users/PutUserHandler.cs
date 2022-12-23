@@ -1,13 +1,6 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Users;
+﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Exceptions;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Users
 {
@@ -15,7 +8,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users
 
     public class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, IRequestHandler<PutUserRequest, UserModel>
     {
-        public PutUserHandler(ILogger<PutUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager, 
+        public PutUserHandler(ILogger<PutUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
             IEnumerable<IValidator<PutUserRequest>> validators) : base(logger, userDbContext, userManager, validators)
         {
         }

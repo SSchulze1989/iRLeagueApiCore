@@ -1,12 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews
 {
@@ -14,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
 
     public class GetReviewHandler : ReviewsHandlerBase<GetReviewHandler, GetReviewRequest>, IRequestHandler<GetReviewRequest, ReviewModel>
     {
-        public GetReviewHandler(ILogger<GetReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetReviewRequest>> validators) : 
+        public GetReviewHandler(ILogger<GetReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetReviewRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

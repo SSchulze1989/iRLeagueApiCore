@@ -1,15 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Server.Handlers.Seasons
+﻿namespace iRLeagueApiCore.Server.Handlers.Seasons
 {
     public record DeleteSeasonRequest(long LeagueId, long SeasonId) : IRequest;
 
@@ -32,7 +21,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
         {
             var deleteSeason = await dbContext.Seasons
                 .Where(x => x.LeagueId == leagueId)
-                .SingleOrDefaultAsync(x => x.SeasonId == seasonId) 
+                .SingleOrDefaultAsync(x => x.SeasonId == seasonId)
                 ?? throw new ResourceNotFoundException();
             dbContext.Seasons.Remove(deleteSeason);
         }

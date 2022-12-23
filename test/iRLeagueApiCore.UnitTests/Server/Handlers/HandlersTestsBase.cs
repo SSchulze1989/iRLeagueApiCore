@@ -1,33 +1,21 @@
-﻿using FluentAssertions;
-using FluentIdentityBuilder;
+﻿using FluentIdentityBuilder;
 using FluentValidation;
 using FluentValidation.Results;
 using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.Extensions.Logging;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers
 {
-    public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFixture<DbTestFixture> 
-        where THandler : IRequestHandler<TRequest, TResult> 
+    public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFixture<DbTestFixture>
+        where THandler : IRequestHandler<TRequest, TResult>
         where TRequest : class, IRequest<TResult>
     {
         protected readonly Fixture fixture;
@@ -112,14 +100,14 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
             var builder = StaticIdentityBuilders.BuildPrincipal()
                 .WithName(userName)
                 .WithIdentifier(userId);
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 builder.WithRole(LeagueRoles.GetLeagueRoleName(leagueName, role));
             }
             return builder.Create();
         }
 
-        protected virtual LeagueUser DefaultUser(string leagueName = testLeagueName, string userName = testUserName, 
+        protected virtual LeagueUser DefaultUser(string leagueName = testLeagueName, string userName = testUserName,
             string userId = testUserId, IEnumerable<string> roles = default)
         {
             return new LeagueUser(leagueName, DefaultPrincipal(leagueName, userName, userId, roles));
@@ -162,7 +150,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers
         /// <param name="request">Request for a not existing resource</param>
         /// <param name="assertions">Assertions to be performed</param>
         /// <returns></returns>
-        public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext> assertions, 
+        public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext> assertions,
             Action<TRequest, LeagueDbContext> preTestAssertions = default)
         {
             using var dbContext = dbFixture.CreateDbContext();

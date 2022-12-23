@@ -1,23 +1,12 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public class PointRuleHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
     {
-        public PointRuleHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+        public PointRuleHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
@@ -30,7 +19,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        protected virtual async Task<PointRuleEntity> MapToPointRuleEntityAsync(LeagueUser user, PostPointRuleModel postPointRule, PointRuleEntity pointRuleEntity, 
+        protected virtual async Task<PointRuleEntity> MapToPointRuleEntityAsync(LeagueUser user, PostPointRuleModel postPointRule, PointRuleEntity pointRuleEntity,
             CancellationToken cancellationToken)
         {
             pointRuleEntity.BonusPoints = postPointRule.BonusPoints;

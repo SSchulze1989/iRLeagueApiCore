@@ -20,7 +20,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 
         public override IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows)
         {
-            foreach(var sortOption in FinalSortOptions.Reverse())
+            foreach (var sortOption in FinalSortOptions.Reverse())
             {
                 rows = rows.OrderBy(sortOption.GetSortingValue<T>());
             }
@@ -29,7 +29,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 
         public override IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows)
         {
-            foreach(var sortOptions in PointSortOptions.Reverse())
+            foreach (var sortOptions in PointSortOptions.Reverse())
             {
                 rows = rows.OrderBy(sortOptions.GetSortingValue<T>());
             }

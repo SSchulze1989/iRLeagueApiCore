@@ -1,20 +1,11 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Server.Handlers.Reviews
+﻿namespace iRLeagueApiCore.Server.Handlers.Reviews
 {
     public record DeleteReviewRequest(long LeagueId, long ReviewId) : IRequest;
 
-    public class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler, DeleteReviewRequest>, 
+    public class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler, DeleteReviewRequest>,
         IRequestHandler<DeleteReviewRequest>
     {
-        public DeleteReviewHandler(ILogger<DeleteReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteReviewRequest>> validators) : 
+        public DeleteReviewHandler(ILogger<DeleteReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteReviewRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

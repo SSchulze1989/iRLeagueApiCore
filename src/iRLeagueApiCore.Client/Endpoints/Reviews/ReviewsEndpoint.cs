@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Reviews
 {
     public class ReviewsEndpoint : PostGetAllEndpoint<ReviewModel, PostReviewModel>, IReviewsEndpoint, IGetAllEndpoint<ReviewModel>, IPostEndpoint<ReviewModel, PostReviewModel>
     {
-        public ReviewsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) : 
+        public ReviewsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
             base(httpClient, routeBuilder)
         {
             RouteBuilder.AddEndpoint("Reviews");

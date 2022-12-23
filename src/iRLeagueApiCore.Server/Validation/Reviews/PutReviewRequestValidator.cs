@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Handlers.Reviews;
-using iRLeagueDatabaseCore.Models;
+﻿using iRLeagueApiCore.Server.Handlers.Reviews;
 
 namespace iRLeagueApiCore.Server.Validation.Reviews
 {

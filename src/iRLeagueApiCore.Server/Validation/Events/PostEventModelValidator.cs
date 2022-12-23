@@ -1,11 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Handlers.Events;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Validation.Events
 {

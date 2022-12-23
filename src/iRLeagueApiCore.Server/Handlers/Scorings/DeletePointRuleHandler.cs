@@ -1,20 +1,11 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Server.Handlers.Scorings
+﻿namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public record DeletePointRuleRequest(long LeagueId, long PointRuleId) : IRequest;
 
-    public class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler, DeletePointRuleRequest>, 
+    public class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler, DeletePointRuleRequest>,
         IRequestHandler<DeletePointRuleRequest, Unit>
     {
-        public DeletePointRuleHandler(ILogger<DeletePointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeletePointRuleRequest>> validators) : 
+        public DeletePointRuleHandler(ILogger<DeletePointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeletePointRuleRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

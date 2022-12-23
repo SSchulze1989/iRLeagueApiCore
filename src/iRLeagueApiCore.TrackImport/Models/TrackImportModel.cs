@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.TrackImport.Models
+﻿namespace iRLeagueApiCore.TrackImport.Models
 {
     public struct TrackImportModel
     {
-        public bool ai_enabled { get; set;}
+        public bool ai_enabled { get; set; }
         public bool award_exempt { get; set; }
         public string? category { get; set; }
         public int category_id { get; set; }

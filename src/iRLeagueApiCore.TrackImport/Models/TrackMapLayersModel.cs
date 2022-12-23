@@ -10,6 +10,6 @@ namespace iRLeagueApiCore.TrackImport.Models
         public string pitroad { get; set; }
         [JsonPropertyName("start-finish")]
         public string start_finish { get; set; }
-        public string turns { get; set; }  
+        public string turns { get; set; }
     }
 }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace iRLeagueApiCore.Client.QueryBuilder
 {
     public class RouteBuilder : IRouteBuilder
     {
         private readonly List<string> parts;
-        
+
         private IParameterBuilder? ParameterBuilder { get; set; }
 
         public RouteBuilder()

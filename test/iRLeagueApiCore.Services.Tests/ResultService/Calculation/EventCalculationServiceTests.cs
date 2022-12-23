@@ -1,6 +1,6 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Services.ResultService.Calculation;
+﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 {
@@ -8,7 +8,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
     {
         private readonly Fixture fixture;
         private readonly Mock<ICalculationService<SessionCalculationData, SessionCalculationResult>> mockService;
-        private readonly Mock<ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>> 
+        private readonly Mock<ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>>
             mockServiceProvider;
 
         public EventCalculationServiceTests()
@@ -18,7 +18,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             mockService.Setup(x => x.Calculate(It.IsAny<SessionCalculationData>()))
                 .ReturnsAsync(() => fixture.Create<SessionCalculationResult>())
                 .Verifiable();
-            mockServiceProvider = new Mock<ICalculationServiceProvider< SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>>();
+            mockServiceProvider = new Mock<ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>>();
             mockServiceProvider
                 .Setup(x => x.GetCalculationService(It.IsAny<SessionCalculationConfiguration>()))
                 .Returns(() => mockService.Object)
@@ -64,7 +64,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 
             var test = await sut.Calculate(data);
 
-            foreach(var session in data.SessionResults)
+            foreach (var session in data.SessionResults)
             {
                 mockService.Verify(x => x.Calculate(session), Times.Once());
             }
@@ -123,7 +123,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
                 .With(x => x.LeagueId, leagueId)
                 .With(x => x.EventId, eventId)
                 .Create();
-            foreach((var sessionConfig, var index) in config.SessionResultConfigurations.Select((x, i) => (x, i)))
+            foreach ((var sessionConfig, var index) in config.SessionResultConfigurations.Select((x, i) => (x, i)))
             {
                 sessionConfig.SessionId = sessionIds.ElementAtOrDefault(index);
                 sessionConfig.SessionNr = sessionNrs.ElementAtOrDefault(index);

@@ -2,10 +2,10 @@
 
 public record DeleteResultRequest(long LeagueId, long EventId) : IRequest;
 
-public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler, DeleteResultRequest>, 
+public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler, DeleteResultRequest>,
     IRequestHandler<DeleteResultRequest, Unit>
 {
-    public DeleteResultHandler(ILogger<DeleteResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteResultRequest>> validators) : 
+    public DeleteResultHandler(ILogger<DeleteResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteResultRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -15,11 +15,11 @@ public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler,
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var deleteEventResults = await GetScoredEventResults(request.LeagueId, request.EventId, cancellationToken);
         var deleteStandings = await GetEventStandings(request.LeagueId, request.EventId, cancellationToken);
-        foreach(var result in deleteEventResults)
+        foreach (var result in deleteEventResults)
         {
             dbContext.ScoredEventResults.Remove(result);
         }
-        foreach(var standing in deleteStandings)
+        foreach (var standing in deleteStandings)
         {
             dbContext.Standings.Remove(standing);
         }

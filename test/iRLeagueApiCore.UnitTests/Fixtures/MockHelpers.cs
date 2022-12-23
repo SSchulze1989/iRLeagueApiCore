@@ -7,16 +7,9 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using Moq.Protected;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
-using System.Net.Http;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Identity.Test
 {
@@ -126,8 +119,8 @@ namespace Microsoft.AspNetCore.Identity.Test
         /// <param name="result">Result that should be returned from <see cref="IMediator.Send(object, System.Threading.CancellationToken)"/></param>
         /// <param name="throws">If set a call to <see cref="IMediator.Send(object, System.Threading.CancellationToken)"/> will throw the provided Exception instead</param>
         /// <returns>Configured <see cref="IMediator"/></returns>
-        public static IMediator TestMediator<TRequest, TResult>(Expression<Func<TRequest, bool>> match = default, 
-            TResult result = default, Exception throws = default) 
+        public static IMediator TestMediator<TRequest, TResult>(Expression<Func<TRequest, bool>> match = default,
+            TResult result = default, Exception throws = default)
             where TRequest : IRequest<TResult>
         {
             match ??= x => true;

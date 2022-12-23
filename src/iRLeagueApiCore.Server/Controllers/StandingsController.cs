@@ -1,14 +1,8 @@
 ﻿using iRLeagueApiCore.Common.Models.Standings;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Standings;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -18,7 +12,7 @@ namespace iRLeagueApiCore.Server.Controllers
     [RequireLeagueRole]
     public class StandingsController : LeagueApiController<StandingsController>
     {
-        public StandingsController(ILogger<StandingsController> logger, IMediator mediator) : 
+        public StandingsController(ILogger<StandingsController> logger, IMediator mediator) :
             base(logger, mediator)
         {
         }

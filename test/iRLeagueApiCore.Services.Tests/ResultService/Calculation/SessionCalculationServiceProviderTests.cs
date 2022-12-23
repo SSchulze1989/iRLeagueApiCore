@@ -19,7 +19,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
             var config = GetCalculationConfiguration();
             config.ResultKind = ResultKind.Member;
             var sut = CreateSut();
-            
+
             var test = sut.GetCalculationService(config);
 
             test.Should().BeOfType<MemberSessionCalculationService>();

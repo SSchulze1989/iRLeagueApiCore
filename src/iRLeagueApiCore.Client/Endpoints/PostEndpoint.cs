@@ -1,16 +1,12 @@
-using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Client.QueryBuilder;
-using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using iRLeagueApiCore.Client.Http;
+using iRLeagueApiCore.Client.QueryBuilder;
+using iRLeagueApiCore.Client.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints
 {
     public class PostEndpoint<TResult> : EndpointBase, IPostEndpoint<TResult>
     {
-        public PostEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) : 
+        public PostEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
             base(httpClient, routeBuilder)
         {
         }
@@ -25,7 +21,7 @@ namespace iRLeagueApiCore.Client.Endpoints
     {
         public PostEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
-        {}
+        { }
 
         async Task<ClientActionResult<TResult>> IPostEndpoint<TResult, TModel>.Post(TModel model, CancellationToken cancellationToken)
         {

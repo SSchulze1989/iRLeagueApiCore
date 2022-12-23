@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Tracks
 {
     public class TracksEndpoint : GetAllEndpoint<TrackGroupModel>, ITracksEndpoint
     {
-        public TracksEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public TracksEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddEndpoint("Tracks");

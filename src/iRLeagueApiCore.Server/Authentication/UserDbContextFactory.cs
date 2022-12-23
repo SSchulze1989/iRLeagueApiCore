@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
-namespace iRLeagueApiCore.Server.Authentication
+﻿namespace iRLeagueApiCore.Server.Authentication
 {
     public class UserDbContextFactory : IDbContextFactory<UserDbContext>
     {

@@ -1,21 +1,9 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -44,7 +32,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("{id:long}")]
         public async Task<ActionResult<LeagueModel>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] league {LeagueId} by {UserName}", 
+            _logger.LogInformation("[{Method}] league {LeagueId} by {UserName}",
                 "Get", id, GetUsername());
             var request = new GetLeagueRequest(id);
             var getLeague = await mediator.Send(request, cancellationToken);

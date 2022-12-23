@@ -30,7 +30,7 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
             .Where(x => x.Schedule.SeasonId == seasonId)
             .OrderBy(x => x.Date)
             .ToListAsync(cancellationToken);
-        foreach(var standingRow in standings.SelectMany(x => x.StandingRows))
+        foreach (var standingRow in standings.SelectMany(x => x.StandingRows))
         {
             standingRow.ResultRows = events.Select(x => standingRow.ResultRows.FirstOrDefault(y => y?.EventId == x.EventId)).ToList();
         }

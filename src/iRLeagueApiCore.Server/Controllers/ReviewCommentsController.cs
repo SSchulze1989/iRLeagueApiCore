@@ -1,14 +1,8 @@
-﻿using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Reviews;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -54,7 +48,7 @@ namespace iRLeagueApiCore.Server.Controllers
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostReviewCommentToReviewRequest(leagueId, reviewId, leagueUser, postComment);
             var getComment = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Created entry for review comment {CommentId} on review {ReviewId} from {LeagueName}", 
+            _logger.LogInformation("Created entry for review comment {CommentId} on review {ReviewId} from {LeagueName}",
                 getComment.CommentId, getComment.ReviewId, leagueName);
             return CreatedAtAction(nameof(Get), new { leagueName, id = getComment.CommentId }, getComment);
         }

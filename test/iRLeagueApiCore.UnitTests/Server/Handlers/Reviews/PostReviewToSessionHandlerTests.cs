@@ -1,15 +1,9 @@
-﻿using FluentAssertions;
-using FluentValidation;
+﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models.Members;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Handlers.Reviews;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
 {

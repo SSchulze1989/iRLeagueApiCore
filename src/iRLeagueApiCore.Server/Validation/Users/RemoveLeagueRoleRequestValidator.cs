@@ -1,10 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueApiCore.Server.Handlers.Users;
-using Microsoft.AspNetCore.Identity;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Server.Handlers.Users;
 
 namespace iRLeagueApiCore.Server.Validation.Users
 {

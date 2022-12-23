@@ -1,22 +1,13 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Standings;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models.Standings;
 
 namespace iRLeagueApiCore.Server.Handlers.Standings
 {
     public record GetStandingsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<StandingsModel>>;
 
-    public class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler, GetStandingsFromSeasonRequest>, 
+    public class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler, GetStandingsFromSeasonRequest>,
         IRequestHandler<GetStandingsFromSeasonRequest, IEnumerable<StandingsModel>>
     {
-        public GetStandingsFromSeasonHandler(ILogger<GetStandingsFromSeasonHandler> logger, LeagueDbContext dbContext, 
+        public GetStandingsFromSeasonHandler(ILogger<GetStandingsFromSeasonHandler> logger, LeagueDbContext dbContext,
             IEnumerable<IValidator<GetStandingsFromSeasonRequest>> validators) : base(logger, dbContext, validators)
         {
         }

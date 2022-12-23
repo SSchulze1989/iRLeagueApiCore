@@ -1,16 +1,9 @@
 ﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Extensions;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures
 {
@@ -163,7 +156,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                 LastModifiedByUserId = ClientGuid
             };
             // Create events on schedule1
-            for (int i=0; i< 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var @event = new EventEntity()
                 {
@@ -357,7 +350,7 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
             }
 
             // Create reviews
-            for (int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var cat = new VoteCategoryEntity()
                 {
@@ -391,8 +384,8 @@ namespace iRLeagueApiCore.UnitTests.Fixtures
                     TimeStamp = TimeSpan.FromMinutes(1),
                     ResultLongText = "Long text for much more details on the result",
                     Comments = new[] { RandomComment(random, users.Random(random), involvedMembers), RandomComment(random, users.Random(random), involvedMembers) }.ToList(),
-                    AcceptedReviewVotes = new[] {new AcceptedReviewVoteEntity() 
-                    { 
+                    AcceptedReviewVotes = new[] {new AcceptedReviewVoteEntity()
+                    {
                         MemberAtFault = involvedMembers.Random(random),
                         Description = "Description",
                     } }.ToList(),

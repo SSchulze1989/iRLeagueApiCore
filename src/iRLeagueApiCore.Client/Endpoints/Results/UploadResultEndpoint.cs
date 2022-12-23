@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Results
 {
     internal sealed class UploadResultEndpoint : PostEndpoint<bool, ParseSimSessionResult>, IPostEndpoint<bool, ParseSimSessionResult>
     {
-        public UploadResultEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public UploadResultEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddEndpoint("Upload");

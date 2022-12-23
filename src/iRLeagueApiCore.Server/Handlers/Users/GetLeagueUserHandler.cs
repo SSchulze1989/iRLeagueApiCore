@@ -1,21 +1,13 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Users;
+﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Exceptions;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Users
 {
     public record GetLeagueUserRequest(string LeagueName, string UserId) : IRequest<LeagueUserModel>;
     public class GetLeagueUserHandler : UsersHandlerBase<GetLeagueUserHandler, GetLeagueUserRequest>, IRequestHandler<GetLeagueUserRequest, LeagueUserModel>
     {
-        public GetLeagueUserHandler(ILogger<GetLeagueUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager, 
+        public GetLeagueUserHandler(ILogger<GetLeagueUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
             IEnumerable<IValidator<GetLeagueUserRequest>> validators) : base(logger, userDbContext, userManager, validators)
         {
         }

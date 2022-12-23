@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace iRLeagueApiCore.Server.Filters
+﻿namespace iRLeagueApiCore.Server.Filters
 {
     /// <summary>
     /// Sets requirement for having at least one of the listed league roles to access the resource

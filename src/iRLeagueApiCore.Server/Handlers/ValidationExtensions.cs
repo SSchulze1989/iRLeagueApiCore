@@ -1,9 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using FluentValidation.Results;
 
 namespace iRLeagueApiCore.Server.Handlers
 {
@@ -21,7 +16,7 @@ namespace iRLeagueApiCore.Server.Handlers
         public static async Task ValidateAllAndThrowAsync<T>(this IEnumerable<IValidator<T>> validators, T instance, CancellationToken cancellationToken)
         {
             var results = new List<ValidationResult>();
-            foreach(var validator in validators)
+            foreach (var validator in validators)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 results.Add(await validator.ValidateAsync(instance, cancellationToken));

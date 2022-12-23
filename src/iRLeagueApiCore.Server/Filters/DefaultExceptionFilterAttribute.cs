@@ -1,11 +1,6 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Controllers;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Server.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 
 namespace iRLeagueApiCore.Server.Filters
 {
@@ -23,7 +18,7 @@ namespace iRLeagueApiCore.Server.Filters
         {
             if (context.Exception is ValidationException validationException)
             {
-                _logger.LogInformation("Bad request - errors: {ValidationErrors}", 
+                _logger.LogInformation("Bad request - errors: {ValidationErrors}",
                     validationException.Errors.Select(x => x.ErrorMessage));
                 context.Result = validationException.ToActionResult();
                 return;

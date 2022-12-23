@@ -13,7 +13,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Sessions
 {
     internal class EventByIdEndpoint : UpdateEndpoint<EventModel, PutEventModel>, IEventByIdEndpoint
     {
-        public EventByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long EventId) : 
+        public EventByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long EventId) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddParameter(EventId);

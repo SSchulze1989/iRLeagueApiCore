@@ -1,15 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons
 {
@@ -17,7 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
 
     public class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, SeasonModel>
     {
-        public PostSeasonHandler(ILogger<PostSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSeasonRequest>> validators) : 
+        public PostSeasonHandler(ILogger<PostSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSeasonRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
@@ -25,7 +15,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
         public async Task<SeasonModel> Handle(PostSeasonRequest request, CancellationToken cancellationToken)
         {
             await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            
+
             var postSeason = await CreateSeasonEntity(request.User, request.LeagueId, cancellationToken);
             await MapToSeasonEntityAsync(request.LeagueId, request.User, request.Model, postSeason, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);

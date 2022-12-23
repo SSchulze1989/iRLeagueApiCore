@@ -1,12 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules
 {

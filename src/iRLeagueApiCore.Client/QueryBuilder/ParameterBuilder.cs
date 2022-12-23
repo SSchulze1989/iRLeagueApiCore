@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Client.QueryBuilder
+﻿namespace iRLeagueApiCore.Client.QueryBuilder
 {
     public class ParameterBuilder : IParameterBuilder
     {
@@ -17,13 +11,13 @@ namespace iRLeagueApiCore.Client.QueryBuilder
 
         public IParameterBuilder Add<T>(string name, T value)
         {
-            _parameters.Add(ParameterString(name,value));
+            _parameters.Add(ParameterString(name, value));
             return this;
         }
 
         public IParameterBuilder AddArray<T>(string name, IEnumerable<T> values)
         {
-            foreach(var value in values)
+            foreach (var value in values)
             {
                 _parameters.Add(ParameterString(name, value));
             }

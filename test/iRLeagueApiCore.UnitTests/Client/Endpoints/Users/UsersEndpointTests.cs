@@ -1,14 +1,6 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Leagues;
-using iRLeagueApiCore.Client.Endpoints.Users;
+﻿using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints.Users
 {
@@ -21,7 +13,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints.Users
         private readonly string testLeague = "TestLeague";
         private readonly string testUserId = "1234-56789";
         private readonly PutUserModel testPutUser = new();
-        private static RouteBuilder BaseRouteBuilder => new ();
+        private static RouteBuilder BaseRouteBuilder => new();
         private RouteBuilder LeagueRouteBuilder => (RouteBuilder)(new RouteBuilder().AddEndpoint(testLeague));
 
         [Fact]

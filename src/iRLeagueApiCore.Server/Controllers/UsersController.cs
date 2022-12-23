@@ -1,20 +1,10 @@
-﻿using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Users;
-using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Users;
-using iRLeagueApiCore.Server.Models;
-using MediatR;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -63,7 +53,7 @@ namespace iRLeagueApiCore.Server.Controllers
             {
                 // if the user requests its own info --> return private user data
                 var request = new GetPrivateUserRequest(id);
-                result = await mediator.Send(request,cancellationToken);
+                result = await mediator.Send(request, cancellationToken);
                 _logger.LogInformation("Return private data for users {UserId}", id);
             }
             else

@@ -1,17 +1,9 @@
-﻿using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Reviews;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -33,7 +25,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("{id:long}")]
-        public async Task<ActionResult<ReviewModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id, 
+        public async Task<ActionResult<ReviewModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review {ReviewId} from {LeagueName} by {UserName}", "Get", id, leagueName,
@@ -47,7 +39,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpPost]
         [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
-        public async Task<ActionResult<ReviewModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId, 
+        public async Task<ActionResult<ReviewModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId,
             PostReviewModel postReview, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] review to session {SessionId} from {LeagueName} by {UserName}", "Post",
@@ -90,7 +82,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("/{leagueName}/Sessions/{sessionId:long}/Reviews")]
-        public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long sessionId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] all reviews on session {SessionId} from {LeagueName} by {UserName}", "Get",
@@ -121,7 +113,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpPost]
         [Route("{id:long}/MoveToSession/{sessionId:long}")]
-        public async Task<ActionResult<ReviewModel>> MoveReviewToSession([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id, 
+        public async Task<ActionResult<ReviewModel>> MoveReviewToSession([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             [FromRoute] long sessionId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] Move review {ReviewId} to event {EventId} from {LeagueName} by {UserName}", "Post",

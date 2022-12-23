@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Handlers.Tracks;
+﻿using iRLeagueApiCore.Server.Handlers.Tracks;
 
 namespace iRLeagueApiCore.Server.Validation.Tracks
 {

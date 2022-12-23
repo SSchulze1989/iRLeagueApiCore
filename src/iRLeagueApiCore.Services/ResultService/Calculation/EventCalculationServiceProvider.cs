@@ -2,10 +2,10 @@
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
-    internal sealed class EventCalculationServiceProvider : 
-        ICalculationServiceProvider<EventCalculationConfiguration,EventCalculationData,EventCalculationResult>
+    internal sealed class EventCalculationServiceProvider :
+        ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>
     {
-        private readonly ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult> 
+        private readonly ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>
             sessionCalculationServiceProvider;
 
         public EventCalculationServiceProvider(

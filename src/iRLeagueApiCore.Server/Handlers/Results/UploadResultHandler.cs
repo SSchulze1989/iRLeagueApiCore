@@ -1,6 +1,5 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueApiCore.Client.ResultsParsing;
+﻿using iRLeagueApiCore.Client.ResultsParsing;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using System.Text.Json;
 using System.Transactions;

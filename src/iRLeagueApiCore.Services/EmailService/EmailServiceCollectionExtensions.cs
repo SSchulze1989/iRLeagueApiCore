@@ -1,6 +1,5 @@
 ﻿using iRLeagueApiCore.Services.EmailService;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Net.Mail;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

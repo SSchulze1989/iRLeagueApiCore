@@ -1,19 +1,9 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.Services.EmailService;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Net.Mail;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace iRLeagueApiCore.Server.Handlers.Authentication
 {
@@ -25,7 +15,7 @@ namespace iRLeagueApiCore.Server.Handlers.Authentication
         private readonly IEnumerable<IValidator<PasswordResetRequest>> validators;
         private readonly IEmailClient emailClient;
 
-        public PasswordResetHandler(ILogger<PasswordResetHandler> logger, UserManager<ApplicationUser> userManager, 
+        public PasswordResetHandler(ILogger<PasswordResetHandler> logger, UserManager<ApplicationUser> userManager,
             IEnumerable<IValidator<PasswordResetRequest>> validators, IEmailClient emailClient)
         {
             this.logger = logger;

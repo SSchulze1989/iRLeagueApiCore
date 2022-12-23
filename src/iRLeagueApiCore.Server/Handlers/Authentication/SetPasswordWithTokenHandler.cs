@@ -1,14 +1,6 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Authentication
 {
@@ -20,7 +12,7 @@ namespace iRLeagueApiCore.Server.Handlers.Authentication
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IEnumerable<IValidator<SetPasswordWithTokenRequest>> validators;
 
-        public SetPasswordWithTokenHandler(ILogger<SetPasswordWithTokenHandler> logger, UserManager<ApplicationUser> userManager, 
+        public SetPasswordWithTokenHandler(ILogger<SetPasswordWithTokenHandler> logger, UserManager<ApplicationUser> userManager,
             IEnumerable<IValidator<SetPasswordWithTokenRequest>> validators)
         {
             this.logger = logger;

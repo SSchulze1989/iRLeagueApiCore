@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Standings
 {
     public class StandingsEndpoint : GetAllEndpoint<StandingsModel>, IStandingsEndpoint
     {
-        public StandingsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public StandingsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddEndpoint("Standings");

@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
     internal sealed class EventCalculationService : ICalculationService<EventCalculationData, EventCalculationResult>
     {
         private readonly EventCalculationConfiguration config;
-        private readonly ICalculationServiceProvider< SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult> 
+        private readonly ICalculationServiceProvider<SessionCalculationConfiguration, SessionCalculationData, SessionCalculationResult>
             sessionCalculationServiceProvider;
 
         public EventCalculationService(EventCalculationConfiguration config,
@@ -28,7 +28,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
             result.ResultConfigId = config.ResultConfigId;
             result.Name = config.DisplayName;
             List<SessionCalculationResult> sessionResults = new();
-            foreach(var sessionConfig in config.SessionResultConfigurations.Where(x => x.IsCombinedResult == false).OrderBy(x => x.SessionNr))
+            foreach (var sessionConfig in config.SessionResultConfigurations.Where(x => x.IsCombinedResult == false).OrderBy(x => x.SessionNr))
             {
                 var sessionData = data.SessionResults
                     .FirstOrDefault(x => x.SessionNr == sessionConfig.SessionNr);

@@ -1,15 +1,8 @@
-﻿using FluentAssertions;
-using FluentValidation;
+﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Schedules;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
 {
@@ -68,7 +61,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules
         [InlineData(testLeagueId, 0)]
         [InlineData(43, testSeasonId)]
         [InlineData(testLeagueId, 43)]
-        public async Task HandleNotFoundAsync(long leagueId, long seasonId  )
+        public async Task HandleNotFoundAsync(long leagueId, long seasonId)
         {
             var request = DefaultRequest(leagueId, seasonId);
             await base.HandleNotFoundRequestAsync(request);

@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Users
 {
     public class AddRoleEndpoint : PostEndpoint<LeagueUserModel, RoleModel>, IPostEndpoint<LeagueUserModel, RoleModel>
     {
-        public AddRoleEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public AddRoleEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddEndpoint("AddRole");

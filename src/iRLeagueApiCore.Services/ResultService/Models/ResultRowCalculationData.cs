@@ -1,5 +1,4 @@
-﻿using iRLeagueDatabaseCore.Models;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace iRLeagueApiCore.Services.ResultService.Models
 {

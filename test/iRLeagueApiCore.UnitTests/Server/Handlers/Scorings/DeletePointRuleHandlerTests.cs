@@ -1,12 +1,7 @@
-﻿using FluentAssertions;
-using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using FluentValidation;
 using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings
 {

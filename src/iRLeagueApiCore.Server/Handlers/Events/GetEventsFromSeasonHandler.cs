@@ -1,13 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Events
 {
@@ -16,7 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events
     public class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromSeasonHandler, GetEventsFromSeasonRequest>,
         IRequestHandler<GetEventsFromSeasonRequest, IEnumerable<EventModel>>
     {
-        public GetEventsFromSeasonHandler(ILogger<GetEventsFromSeasonHandler> logger, LeagueDbContext dbContext, 
+        public GetEventsFromSeasonHandler(ILogger<GetEventsFromSeasonHandler> logger, LeagueDbContext dbContext,
             IEnumerable<IValidator<GetEventsFromSeasonRequest>> validators) : base(logger, dbContext, validators)
         {
         }

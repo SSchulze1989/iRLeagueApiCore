@@ -1,24 +1,15 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Users;
+﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Users
 {
     public record SearchUsersByNameRequest(string[] SearchKeys) : IRequest<IEnumerable<UserModel>>;
 
-    public class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNameHandler, SearchUsersByNameRequest>, 
+    public class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNameHandler, SearchUsersByNameRequest>,
         IRequestHandler<SearchUsersByNameRequest, IEnumerable<UserModel>>
     {
-        public SearchUsersByNameHandler(ILogger<SearchUsersByNameHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager, 
+        public SearchUsersByNameHandler(ILogger<SearchUsersByNameHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
             IEnumerable<IValidator<SearchUsersByNameRequest>> validators) : base(logger, userDbContext, userManager, validators)
         {
         }

@@ -3,13 +3,6 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
@@ -41,7 +34,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
             var seasonResults = dbContext.ScoredEventResults
                 .Where(x => x.LeagueId == request.LeagueId)
                 .Where(x => x.Event.Schedule.SeasonId == request.SeasonId);
-            Assert.Equal(seasonResults.Count(), result.Count());   
+            Assert.Equal(seasonResults.Count(), result.Count());
         }
 
         [Fact]

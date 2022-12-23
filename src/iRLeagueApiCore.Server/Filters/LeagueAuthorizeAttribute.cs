@@ -1,13 +1,8 @@
-﻿using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Server.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Filters
 {
@@ -105,8 +100,8 @@ namespace iRLeagueApiCore.Server.Filters
         {
             var leagueRole = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
             if (leagueRole == null)
-            { 
-                return false; 
+            {
+                return false;
             }
             return user.IsInRole(leagueRole) || user.IsInRole(UserRoles.Admin);
         }

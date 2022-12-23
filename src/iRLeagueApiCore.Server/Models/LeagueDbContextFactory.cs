@@ -1,8 +1,4 @@
-﻿using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
-namespace iRLeagueApiCore.Server.Models
+﻿namespace iRLeagueApiCore.Server.Models
 {
     public class LeagueDbContextFactory : IDbContextFactory<LeagueDbContext>
     {

@@ -3,22 +3,13 @@ using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Authentication;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -33,8 +24,8 @@ namespace iRLeagueApiCore.Server.Controllers
         private readonly IConfiguration _configuration;
 
         public AuthenticateController(
-            ILogger<AuthenticateController> logger, 
-            UserManager<ApplicationUser> userManager, 
+            ILogger<AuthenticateController> logger,
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IMediator mediator,
             IConfiguration configuration)

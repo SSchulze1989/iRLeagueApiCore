@@ -4,7 +4,7 @@
     {
         public static IEnumerable<T> ForEeach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach(var item in enumerable)
+            foreach (var item in enumerable)
             {
                 action(item);
             }
@@ -18,7 +18,7 @@
                 .Select(item => new { item, rnd = random.Next() })
                 .OrderBy(x => x.rnd)
                 .Select(x => x.item);
-                
+
         }
 
         /// <summary>

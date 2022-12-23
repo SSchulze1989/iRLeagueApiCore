@@ -1,19 +1,11 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Controllers;
 using iRLeagueApiCore.Server.Handlers.Leagues;
-using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
-using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers

@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Sessions
 {
     public class SessionsEndpoint : EndpointBase, ISessionsEndpoint
     {
-        public SessionsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) : 
+        public SessionsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
             base(httpClient, routeBuilder)
         {
             RouteBuilder.AddEndpoint("Sessions");

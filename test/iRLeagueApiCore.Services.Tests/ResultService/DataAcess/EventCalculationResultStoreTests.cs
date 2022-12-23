@@ -198,7 +198,7 @@ public class EventCalculationResultStoreTests : DataAccessTestsBase
             .Create();
     }
 
-    private EventCalculationResult GetCalculationResult(EventEntity @event, EventCalculationConfiguration config, 
+    private EventCalculationResult GetCalculationResult(EventEntity @event, EventCalculationConfiguration config,
         ScoredEventResultEntity? resultEntity = null, IEnumerable<LeagueMemberEntity>? members = null)
     {
         return fixture.Build<EventCalculationResult>()

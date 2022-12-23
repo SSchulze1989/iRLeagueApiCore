@@ -1,10 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using iRLeagueApiCore.Common.Models;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Validation.Leagues
 {

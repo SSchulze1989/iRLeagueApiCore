@@ -1,9 +1,5 @@
-using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Client.QueryBuilder;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using iRLeagueApiCore.Client.Http;
+using iRLeagueApiCore.Client.QueryBuilder;
 
 namespace iRLeagueApiCore.Client.Endpoints
 {

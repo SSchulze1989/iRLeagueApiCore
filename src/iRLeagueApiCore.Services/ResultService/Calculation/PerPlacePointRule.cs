@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Services.ResultService.Calculation
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
     internal sealed class PerPlacePointRule : CalculationPointRuleBase
     {
@@ -17,7 +11,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 
         public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
         {
-            foreach((var row, var pos) in rows.Select((x, i) => (x, i + 1)))
+            foreach ((var row, var pos) in rows.Select((x, i) => (x, i + 1)))
             {
                 row.RacePoints = PointsPerPlace.TryGetValue(pos, out double points) ? points : 0d;
             }

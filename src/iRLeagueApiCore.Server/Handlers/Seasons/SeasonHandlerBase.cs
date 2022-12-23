@@ -1,26 +1,17 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons
 {
     public abstract class SeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
     {
-        protected SeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+        protected SeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
 
-        protected virtual async Task<SeasonEntity> MapToSeasonEntityAsync(long leagueId, LeagueUser user, PostSeasonModel putSeason, 
+        protected virtual async Task<SeasonEntity> MapToSeasonEntityAsync(long leagueId, LeagueUser user, PostSeasonModel putSeason,
             SeasonEntity target, CancellationToken cancellationToken)
         {
             target.Finished = putSeason.Finished;

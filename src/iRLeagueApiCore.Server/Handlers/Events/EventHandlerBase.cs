@@ -1,21 +1,12 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Events
 {
     public class EventHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
     {
-        public EventHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+        public EventHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
@@ -143,34 +134,34 @@ namespace iRLeagueApiCore.Server.Handlers.Events
                 Name = config.Name,
                 DisplayName = config.DisplayName,
             }).ToList(),
-            SimSessionDetails = (includeDetails == false || @event.SimSessionDetails.Any() == false) ? null : 
+            SimSessionDetails = (includeDetails == false || @event.SimSessionDetails.Any() == false) ? null :
                 @event.SimSessionDetails.Take(1).Select(details => new SimSessionDetailsModel()
-            {
-                EventAverageLap = details.EventAverageLap,
-                EndTime = details.EndTime,
-                EventLapsComplete = details.EventLapsComplete,
-                EventStrengthOfField = details.EventStrengthOfField,
-                Fog = details.Fog,
-                IRRaceWeek = details.IRRaceWeek,
-                IRSessionId = details.IRSessionId,
-                IRSubsessionId = details.IRSubsessionId,
-                LicenseCategory = details.LicenseCategory,
-                RelHumidity = details.RelHumidity,
-                SessionDetailsId = details.SessionDetailsId,
-                SessionName = details.SessionName,
-                SimStartUtcOffset = details.SimStartUtcOffset,
-                SimStartUtcTime = details.SimStartUtcTime,
-                Skies = details.Skies,
-                StartTime = details.StartTime,
-                TempUnits = details.TempUnits,
-                TempValue = details.TempValue,
-                TimeOfDay = details.TimeOfDay,
-                WeatherType = details.WeatherType,
-                WeatherVarInitial = details.WeatherVarInitial,
-                WeatherVarOngoing = details.WeatherVarOngoing,
-                WindDir = details.WindDir,
-                WindUnits = details.WindUnits,
-            }).First(),
+                {
+                    EventAverageLap = details.EventAverageLap,
+                    EndTime = details.EndTime,
+                    EventLapsComplete = details.EventLapsComplete,
+                    EventStrengthOfField = details.EventStrengthOfField,
+                    Fog = details.Fog,
+                    IRRaceWeek = details.IRRaceWeek,
+                    IRSessionId = details.IRSessionId,
+                    IRSubsessionId = details.IRSubsessionId,
+                    LicenseCategory = details.LicenseCategory,
+                    RelHumidity = details.RelHumidity,
+                    SessionDetailsId = details.SessionDetailsId,
+                    SessionName = details.SessionName,
+                    SimStartUtcOffset = details.SimStartUtcOffset,
+                    SimStartUtcTime = details.SimStartUtcTime,
+                    Skies = details.Skies,
+                    StartTime = details.StartTime,
+                    TempUnits = details.TempUnits,
+                    TempValue = details.TempValue,
+                    TimeOfDay = details.TimeOfDay,
+                    WeatherType = details.WeatherType,
+                    WeatherVarInitial = details.WeatherVarInitial,
+                    WeatherVarOngoing = details.WeatherVarOngoing,
+                    WindDir = details.WindDir,
+                    WindUnits = details.WindUnits,
+                }).First(),
         };
     }
 }

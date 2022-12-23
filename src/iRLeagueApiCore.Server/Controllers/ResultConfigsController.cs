@@ -1,16 +1,8 @@
-﻿using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -37,7 +29,7 @@ namespace iRLeagueApiCore.Server.Controllers
 
         [HttpGet]
         [Route("{id:long}")]
-        public async Task<ActionResult<ResultConfigModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id, 
+        public async Task<ActionResult<ResultConfigModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] resultConfig {ResultConfigId} from {LeagueName} by {UserName}", "Get", id, leagueName,
@@ -51,10 +43,10 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpPost]
         [Route("")]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult<ResultConfigModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        public async Task<ActionResult<ResultConfigModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromBody] PostResultConfigModel postResultConfig, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[{Method}] new resultConfig to {LeagueName} by {UserName}", "Post", leagueName, 
+            _logger.LogInformation("[{Method}] new resultConfig to {LeagueName} by {UserName}", "Post", leagueName,
                 GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostResultConfigRequest(leagueId, leagueUser, postResultConfig);
@@ -81,7 +73,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpDelete]
         [Route("{id:long}")]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id, 
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Method}] resultConfig {ResultConfigId} from {LeagueName} by {UserName}", "Delete",

@@ -1,15 +1,9 @@
-﻿using FluentAssertions;
-using FluentValidation;
+﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models.Members;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Handlers.Reviews;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
 {
@@ -35,11 +29,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             },
             VoteResults = new[]
             {
-                new VoteModel() { 
+                new VoteModel() {
                     Id = 1,
-                    VoteCategoryId = testVoteCategory, 
-                    Description = "Vote Description", 
-                    MemberAtFault = new MemberInfoModel() { MemberId = testMemberId } 
+                    VoteCategoryId = testVoteCategory,
+                    Description = "Vote Description",
+                    MemberAtFault = new MemberInfoModel() { MemberId = testMemberId }
                 },
             },
         };
@@ -51,7 +45,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
 
         protected virtual PutReviewRequest DefaultRequest(long leagueId, long reviewId)
         {
-            
+
             return new PutReviewRequest(leagueId, reviewId, DefaultUser(), TestReviewModel);
         }
 
@@ -71,12 +65,12 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             result.IncidentNr.Should().Be(expected.IncidentNr);
             result.TimeStamp.Should().Be(expected.TimeStamp);
             result.InvolvedMembers.Should().HaveSameCount(expected.InvolvedMembers);
-            foreach((var member, var expectedMember) in result.InvolvedMembers.OrderBy(x => x.MemberId).Zip(expected.InvolvedMembers.OrderBy(x => x.MemberId)))
+            foreach ((var member, var expectedMember) in result.InvolvedMembers.OrderBy(x => x.MemberId).Zip(expected.InvolvedMembers.OrderBy(x => x.MemberId)))
             {
                 AssertMemberInfo(expectedMember, member);
             }
             result.VoteResults.Should().HaveSameCount(expected.VoteResults);
-            foreach((var vote, var expectedVote) in result.VoteResults.Zip(expected.VoteResults))
+            foreach ((var vote, var expectedVote) in result.VoteResults.Zip(expected.VoteResults))
             {
                 AssertVote(expectedVote, vote);
             }

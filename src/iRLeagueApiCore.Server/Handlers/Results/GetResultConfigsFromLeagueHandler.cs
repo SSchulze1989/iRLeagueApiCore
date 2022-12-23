@@ -1,13 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {
@@ -16,7 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results
     public class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler, GetResultConfigsFromLeagueRequest>,
         IRequestHandler<GetResultConfigsFromLeagueRequest, IEnumerable<ResultConfigModel>>
     {
-        public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext, 
+        public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext,
             IEnumerable<IValidator<GetResultConfigsFromLeagueRequest>> validators) : base(logger, dbContext, validators)
         {
         }

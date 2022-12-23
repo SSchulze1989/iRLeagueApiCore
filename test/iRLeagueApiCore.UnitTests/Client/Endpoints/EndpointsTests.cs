@@ -1,12 +1,7 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using Microsoft.AspNetCore.Identity.Test;
-using Moq;
 using Newtonsoft.Json;
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints
 {

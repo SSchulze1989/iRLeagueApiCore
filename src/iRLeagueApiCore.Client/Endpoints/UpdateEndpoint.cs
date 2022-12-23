@@ -1,15 +1,12 @@
-using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Client.QueryBuilder;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using iRLeagueApiCore.Client.Http;
+using iRLeagueApiCore.Client.QueryBuilder;
+using iRLeagueApiCore.Client.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints
 {
     public class UpdateEndpoint<TResult, TModel> : EndpointBase, IUpdateEndpoint<TResult, TModel> where TModel : notnull
     {
-        public UpdateEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public UpdateEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
         }

@@ -1,7 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Responses;
+﻿using iRLeagueApiCore.Common.Responses;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace iRLeagueApiCore.Server.Controllers
 {

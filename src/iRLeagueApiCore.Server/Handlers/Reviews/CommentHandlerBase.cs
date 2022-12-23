@@ -1,23 +1,13 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Members;
+﻿using iRLeagueApiCore.Common.Models.Members;
 using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews
 {
     public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
     {
-        public CommentHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+        public CommentHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
@@ -31,7 +21,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
                 .FirstOrDefaultAsync();
         }
 
-        protected virtual async Task<ReviewCommentEntity> MapToReviewCommentEntityAsync(LeagueUser user, PostReviewCommentModel postComment, 
+        protected virtual async Task<ReviewCommentEntity> MapToReviewCommentEntityAsync(LeagueUser user, PostReviewCommentModel postComment,
             ReviewCommentEntity commentEntity, CancellationToken cancellationToken)
         {
             commentEntity.Text = postComment.Text;
@@ -58,7 +48,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             ICollection<ReviewCommentVoteEntity> voteEntities, CancellationToken cancellationToken)
         {
             // Map votes
-            foreach(var voteModel in voteModels)
+            foreach (var voteModel in voteModels)
             {
                 var voteEntity = voteEntities
                     .FirstOrDefault(x => x.ReviewVoteId == voteModel.Id);
@@ -72,7 +62,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             // Delete votes that are no longer in source collection
             var deleteVotes = voteEntities
                 .Where(x => voteModels.Any(y => y.Id == x.ReviewVoteId) == false);
-            foreach(var deleteVote in deleteVotes)
+            foreach (var deleteVote in deleteVotes)
             {
                 dbContext.Remove(deleteVote);
             }

@@ -1,13 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers
 {
@@ -76,7 +67,7 @@ namespace iRLeagueApiCore.Server.Handlers
                 .ToListAsync(cancellationToken);
         }
 
-        protected virtual T CreateVersionEntity<T> (LeagueUser user, T target) where T : IVersionEntity
+        protected virtual T CreateVersionEntity<T>(LeagueUser user, T target) where T : IVersionEntity
         {
             target.CreatedOn = DateTime.UtcNow;
             target.CreatedByUserId = user.Id;
@@ -85,7 +76,7 @@ namespace iRLeagueApiCore.Server.Handlers
             return target;
         }
 
-        protected virtual T UpdateVersionEntity<T> (LeagueUser user, T target) where T : IVersionEntity
+        protected virtual T UpdateVersionEntity<T>(LeagueUser user, T target) where T : IVersionEntity
         {
             target.LastModifiedOn = DateTime.UtcNow;
             target.LastModifiedByUserId = user.Id;

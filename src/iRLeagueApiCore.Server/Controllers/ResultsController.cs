@@ -1,19 +1,9 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Client.ResultsParsing;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueApiCore.Client.ResultsParsing;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -38,14 +28,14 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("{id:long}")]
-        public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long resultId, 
+        public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long resultId,
             CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[{Method}] result {ResultId} in {LeagueName} by {UserName}", 
+            _logger.LogInformation("[{Method}] result {ResultId} in {LeagueName} by {UserName}",
                 "Get", resultId, leagueName, GetUsername());
             var request = new GetResultRequest(leagueId, resultId);
             var getResult = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return entry for result {ResultId} from {LeagueName}", 
+            _logger.LogInformation("Return entry for result {ResultId} from {LeagueName}",
                 getResult.ResultId, leagueName);
             return Ok(getResult);
         }
@@ -124,7 +114,7 @@ namespace iRLeagueApiCore.Server.Controllers
         public async Task<ActionResult<bool>> UploadResult([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
             [FromBody] ParseSimSessionResult result, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] raw results for event {EventId} in {LeagueName} by {UserName}", "Post", 
+            _logger.LogInformation("[{Method}] raw results for event {EventId} in {LeagueName} by {UserName}", "Post",
                 eventId, leagueName, GetUsername());
             var request = new UploadResultRequest(leagueId, eventId, result);
             var success = await mediator.Send(request, cancellationToken);

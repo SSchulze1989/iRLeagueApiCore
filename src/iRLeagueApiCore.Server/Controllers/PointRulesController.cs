@@ -1,14 +1,8 @@
-﻿using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {

@@ -1,25 +1,17 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models.Users;
+﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Exceptions;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Users
 {
     public record AddLeagueRoleRequest(string LeagueName, string UserId, string RoleName) : IRequest<LeagueUserModel>;
 
-    public class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler, AddLeagueRoleRequest>, 
+    public class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler, AddLeagueRoleRequest>,
         IRequestHandler<AddLeagueRoleRequest, LeagueUserModel>
     {
         private readonly RoleManager<IdentityRole> roleManager;
 
-        public AddLeagueRoleHandler(ILogger<AddLeagueRoleHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager, 
+        public AddLeagueRoleHandler(ILogger<AddLeagueRoleHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager, IEnumerable<IValidator<AddLeagueRoleRequest>> validators) : base(logger, userDbContext, userManager, validators)
         {
             this.roleManager = roleManager;

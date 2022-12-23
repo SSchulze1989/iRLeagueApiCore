@@ -1,7 +1,6 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
-using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Services.Tests.Extensions;
 using Microsoft.Extensions.Logging;
@@ -114,7 +113,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Execution
             await sut.Execute(eventId);
 
             storedResults.Should().HaveCount(resultConfigCount);
-            foreach((var result, var configId) in storedResults.Zip(resultConfigIds))
+            foreach ((var result, var configId) in storedResults.Zip(resultConfigIds))
             {
                 result.ResultConfigId.Should().Be(configId);
             }

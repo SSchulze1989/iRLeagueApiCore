@@ -1,8 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
+﻿using iRLeagueApiCore.Common.Models;
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<SeasonEventResultModel>>;

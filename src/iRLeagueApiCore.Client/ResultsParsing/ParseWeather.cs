@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace iRLeagueApiCore.Client.ResultsParsing
+﻿namespace iRLeagueApiCore.Client.ResultsParsing
 {
     public sealed class ParseWeather
     {

@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Sessions
     internal class EventsEndpoint : PostGetAllEndpoint<EventModel, PostEventModel>, IEventsEndpoint,
         IPostEndpoint<EventModel, PostEventModel>, IGetAllEndpoint<EventModel>, IWithIdEndpoint<IEventByIdEndpoint>
     {
-        public EventsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public EventsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddEndpoint("Events");

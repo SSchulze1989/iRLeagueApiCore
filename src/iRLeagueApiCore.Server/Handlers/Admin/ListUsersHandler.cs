@@ -1,15 +1,6 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Users;
+﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Admin
 {
@@ -21,7 +12,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
         private readonly IEnumerable<IValidator<ListUsersRequest>> _validators;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ListUsersHandler(ILogger<ListUsersHandler> logger, IEnumerable<IValidator<ListUsersRequest>> validators, 
+        public ListUsersHandler(ILogger<ListUsersHandler> logger, IEnumerable<IValidator<ListUsersRequest>> validators,
             UserManager<ApplicationUser> userManager)
         {
             _logger = logger;

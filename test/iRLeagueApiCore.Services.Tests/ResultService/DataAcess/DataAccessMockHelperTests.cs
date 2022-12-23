@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Extensions;
-using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
@@ -55,7 +54,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Include(x => x.EventResult)
                 .ToListAsync();
 
-            foreach(var @event in events)
+            foreach (var @event in events)
             {
                 @event.EventResult.Should().NotBeNull();
             }
@@ -97,7 +96,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess
                 .Include(x => x.IncidentReviews)
                 .ToListAsync();
 
-            foreach(var session in sessions)
+            foreach (var session in sessions)
             {
                 session.IncidentReviews.Should().NotBeEmpty();
             }

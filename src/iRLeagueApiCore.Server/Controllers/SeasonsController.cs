@@ -1,21 +1,9 @@
-﻿using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Authentication;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Seasons;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -47,7 +35,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("{id:long}")]
-        public async Task<ActionResult<SeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        public async Task<ActionResult<SeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Get",
@@ -77,7 +65,7 @@ namespace iRLeagueApiCore.Server.Controllers
         public async Task<ActionResult<SeasonModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromBody] PostSeasonModel postSeason, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("[{Method}] new season to {LeagueName} by {UserName}", "Post", leagueName, 
+            _logger.LogInformation("[{Method}] new season to {LeagueName} by {UserName}", "Post", leagueName,
                 GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PostSeasonRequest(leagueId, leagueUser, postSeason);

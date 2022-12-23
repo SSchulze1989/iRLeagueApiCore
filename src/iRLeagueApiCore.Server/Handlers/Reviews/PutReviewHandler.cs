@@ -1,14 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews
 {
@@ -21,7 +12,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
         /// </summary>
         private const bool includeComments = true;
 
-        public PutReviewHandler(ILogger<PutReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewRequest>> validators) : 
+        public PutReviewHandler(ILogger<PutReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

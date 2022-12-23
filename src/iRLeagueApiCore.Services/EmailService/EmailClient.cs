@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 
 namespace iRLeagueApiCore.Services.EmailService
 {

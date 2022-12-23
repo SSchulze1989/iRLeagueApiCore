@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Users
 {
     public class RemoveRoleEndpoint : PostEndpoint<LeagueUserModel, RoleModel>, IPostEndpoint<LeagueUserModel, RoleModel>
     {
-        public RemoveRoleEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public RemoveRoleEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddEndpoint("RemoveRole");

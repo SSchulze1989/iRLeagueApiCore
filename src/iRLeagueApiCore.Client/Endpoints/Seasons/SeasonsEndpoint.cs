@@ -1,16 +1,6 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Schedules;
-using iRLeagueApiCore.Client.Http;
+﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
-using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Models;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
@@ -28,7 +18,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
         }
 
         ISeasonByIdEndpoint IWithIdEndpoint<ISeasonByIdEndpoint>.WithId(long id)
-        { 
+        {
             return new SeasonByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
         }
     }

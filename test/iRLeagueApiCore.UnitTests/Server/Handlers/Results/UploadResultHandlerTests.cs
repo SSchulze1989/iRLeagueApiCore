@@ -1,15 +1,14 @@
 ﻿using AutoFixture.Dsl;
 using FluentValidation;
+using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.UnitTests.Extensions;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
@@ -36,7 +35,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 
         [Fact]
         public async Task CreateFakeResult_ShouldReturnDefaultResult()
-        {            
+        {
             var result = await CreateFakeResult();
 
             result.session_results.Should().HaveCount(3);
@@ -58,7 +57,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         public async Task Handle_ShouldCreateMembers_WhenMemberDoesNotExist()
         {
             var rowCount = 10;
-            var names = Enumerable.Range(0, rowCount).Select(x => 
+            var names = Enumerable.Range(0, rowCount).Select(x =>
                 new { Firstname = fixture.Create<string>(), Lastname = fixture.Create<string>() })
                 .ToArray();
             var newMemberRows = names.Select((x, i) => fixture.Build<ParseSessionResultRow>()
@@ -222,7 +221,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
                     .ThenInclude(x => x.Member)
                 .FirstAsync(x => x.EventId == @event.EventId);
             var laps = result.session_results.First().results.Select(y => y.laps_complete).Max();
-            foreach((var testRow, var resultRow) in sessionResult.ResultRows.Zip(result.session_results.First().results))
+            foreach ((var testRow, var resultRow) in sessionResult.ResultRows.Zip(result.session_results.First().results))
             {
                 testRow.AvgLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.average_lap / 10000D));
                 testRow.CarId.Should().Be(resultRow.car_id);
@@ -332,7 +331,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
                 .Without(x => x.session_results)
                 .Create();
             var sessionResults = new List<ParseSessionResult>();
-            var sessionNr = (practice ? -1 : 0) + (qualy ? -1 : 0) - raceCount*2 + 1;
+            var sessionNr = (practice ? -1 : 0) + (qualy ? -1 : 0) - raceCount * 2 + 1;
             if (practice)
             {
                 sessionResults.Add(SessionResultBuilder(members)
@@ -353,7 +352,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 
             }
             var heatNr = 1;
-            for (int i=0; i<raceCount; i++)
+            for (int i = 0; i < raceCount; i++)
             {
                 sessionResults.Add(SessionResultBuilder(members)
                     .With(x => x.simsession_number, ++sessionNr)
@@ -379,7 +378,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
         private IPostprocessComposer<ParseSessionResult> SessionResultBuilder(IEnumerable<LeagueMemberEntity> members)
         {
             return fixture.Build<ParseSessionResult>()
-                .With(x => x.results, members.Shuffle().Select((member, i) => CreateResultRow(i+1, member)).ToArray());
+                .With(x => x.results, members.Shuffle().Select((member, i) => CreateResultRow(i + 1, member)).ToArray());
         }
 
         private ParseSessionResultRow CreateResultRow(int pos, LeagueMemberEntity leagueMember)

@@ -1,12 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using iRLeagueApiCore.Common.Models;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Results
 {

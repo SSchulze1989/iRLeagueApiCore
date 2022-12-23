@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System.Net;
-using System.Net.Mail;
 
 namespace iRLeagueApiCore.Services.EmailService
 {
@@ -36,7 +34,7 @@ namespace iRLeagueApiCore.Services.EmailService
                 return EmailClientConfiguration.Default;
             }
 
-            string host = mailConfig["Host"] 
+            string host = mailConfig["Host"]
                 ?? throw new InvalidOperationException("No value provided for \"Mail:Host\" in appsettings");
             if (int.TryParse(mailConfig["Port"], out int port) == false)
             {

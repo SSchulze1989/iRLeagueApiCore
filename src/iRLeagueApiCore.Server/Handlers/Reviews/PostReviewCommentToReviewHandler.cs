@@ -1,25 +1,14 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews
 {
     public record PostReviewCommentToReviewRequest(long LeagueId, long ReviewId, LeagueUser User, PostReviewCommentModel Model) : IRequest<ReviewCommentModel>;
 
-    public class PostReviewCommentToReviewHandler : CommentHandlerBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest>, 
+    public class PostReviewCommentToReviewHandler : CommentHandlerBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest>,
         IRequestHandler<PostReviewCommentToReviewRequest, ReviewCommentModel>
     {
-        public PostReviewCommentToReviewHandler(ILogger<PostReviewCommentToReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewCommentToReviewRequest>> validators) : 
+        public PostReviewCommentToReviewHandler(ILogger<PostReviewCommentToReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewCommentToReviewRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
@@ -35,7 +24,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
             return getComment;
         }
 
-        protected virtual async Task<ReviewCommentEntity> CreateCommentEntityOnReviewAsync(long leagueId, long reviewId, LeagueUser user, 
+        protected virtual async Task<ReviewCommentEntity> CreateCommentEntityOnReviewAsync(long leagueId, long reviewId, LeagueUser user,
             CancellationToken cancellationToken)
         {
             var review = await dbContext.IncidentReviews

@@ -3,17 +3,8 @@ using FluentValidation.Results;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Handlers.Admin;
 using iRLeagueApiCore.UnitTests.Fixtures;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.Extensions.Logging;
-using Moq;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Admin
 {

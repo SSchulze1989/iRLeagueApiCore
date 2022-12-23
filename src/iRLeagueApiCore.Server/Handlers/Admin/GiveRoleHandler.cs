@@ -1,14 +1,6 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Admin
 {
@@ -32,7 +24,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public GiveRoleHandler(ILogger<GiveRoleHandler> logger, IEnumerable<IValidator<GiveRoleRequest>> validators, 
+        public GiveRoleHandler(ILogger<GiveRoleHandler> logger, IEnumerable<IValidator<GiveRoleRequest>> validators,
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _logger = logger;

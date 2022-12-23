@@ -1,21 +1,10 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews
 {
     public record MoveReviewToSessionRequest(long LeagueId, long SessionId, long ReviewId, LeagueUser User) : IRequest<ReviewModel>;
-    public class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler, MoveReviewToSessionRequest>, 
+    public class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler, MoveReviewToSessionRequest>,
         IRequestHandler<MoveReviewToSessionRequest, ReviewModel>
     {
         /// <summary>
@@ -23,7 +12,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews
         /// </summary>
         private const bool includeComments = true;
 
-        public MoveReviewToSessionHandler(ILogger<MoveReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<MoveReviewToSessionRequest>> validators) : 
+        public MoveReviewToSessionHandler(ILogger<MoveReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<MoveReviewToSessionRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

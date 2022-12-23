@@ -1,5 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 

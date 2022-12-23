@@ -1,12 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Leagues;
-using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.QueryBuilder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints
 {

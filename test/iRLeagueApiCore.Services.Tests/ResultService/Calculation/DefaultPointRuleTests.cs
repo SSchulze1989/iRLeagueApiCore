@@ -26,7 +26,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
 
             var test = sut.ApplyPoints(rows.ToList());
 
-            foreach(var row in test)
+            foreach (var row in test)
             {
                 row.TotalPoints.Should().Be(row.RacePoints + row.BonusPoints - row.PenaltyPoints);
             }
@@ -52,7 +52,7 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
                 .Without(x => x.AddPenalty)
                 .CreateMany(10).ToList();
         }
-        
+
         private static DefaultPointRule<ResultRowCalculationData> GetPointRule(Fixture fixture)
         {
             return fixture.Create<DefaultPointRule<ResultRowCalculationData>>();

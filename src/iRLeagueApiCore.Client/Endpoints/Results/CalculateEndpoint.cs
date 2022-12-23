@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Results;
 
 internal class CalculateEndpoint : PostEndpoint<bool>
 {
-    public CalculateEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) : 
+    public CalculateEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
         base(httpClient, routeBuilder)
     {
         RouteBuilder.AddEndpoint("Calculate");

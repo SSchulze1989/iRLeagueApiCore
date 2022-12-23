@@ -3,12 +3,7 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using System.Threading.Tasks;
-using Xunit;
-using FluentAssertions;
 using Microsoft.AspNetCore.Identity.Test;
-using iRLeagueApiCore.Server.Exceptions;
-using System.Linq;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {

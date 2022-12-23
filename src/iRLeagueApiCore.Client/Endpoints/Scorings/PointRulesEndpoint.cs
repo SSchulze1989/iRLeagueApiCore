@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Scorings
 {
     internal class PointRulesEndpoint : PostEndpoint<PointRuleModel, PostPointRuleModel>, IPointRulesEndpoint
     {
-        public PointRulesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+        public PointRulesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
             base(httpClientWrapper, routeBuilder)
         {
             routeBuilder.AddEndpoint("PointRules");

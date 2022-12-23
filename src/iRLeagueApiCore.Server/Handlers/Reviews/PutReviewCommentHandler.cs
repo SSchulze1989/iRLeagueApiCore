@@ -1,23 +1,14 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews
 {
     public record PutReviewCommentRequest(long LeagueId, long CommentId, LeagueUser User, PutReviewCommentModel Model) : IRequest<ReviewCommentModel>;
 
-    public class PutReviewCommentHandler : CommentHandlerBase<PutReviewCommentHandler, PutReviewCommentRequest>, 
+    public class PutReviewCommentHandler : CommentHandlerBase<PutReviewCommentHandler, PutReviewCommentRequest>,
         IRequestHandler<PutReviewCommentRequest, ReviewCommentModel>
     {
-        public PutReviewCommentHandler(ILogger<PutReviewCommentHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewCommentRequest>> validators) : 
+        public PutReviewCommentHandler(ILogger<PutReviewCommentHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewCommentRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

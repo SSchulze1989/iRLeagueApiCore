@@ -2,13 +2,12 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Models;
-using System.Net.Http;
 
 namespace iRLeagueApiCore.Client.Endpoints.Scorings
 {
     internal class ScoringByIdEndpoint : UpdateEndpoint<ScoringModel, PutScoringModel>, IScoringByIdEndpoint
     {
-        public ScoringByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scoringId) : 
+        public ScoringByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scoringId) :
             base(httpClientWrapper, routeBuilder)
         {
             RouteBuilder.AddParameter(scoringId);

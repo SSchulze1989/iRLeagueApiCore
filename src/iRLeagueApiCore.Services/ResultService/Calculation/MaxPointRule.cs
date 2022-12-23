@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Services.ResultService.Calculation
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
     internal sealed class MaxPointRule : CalculationPointRuleBase
     {
@@ -13,7 +7,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 
         public MaxPointRule(int maxPoints, int dropOff)
         {
-            MaxPoints = maxPoints; 
+            MaxPoints = maxPoints;
             DropOff = dropOff;
         }
 

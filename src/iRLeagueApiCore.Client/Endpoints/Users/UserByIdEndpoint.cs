@@ -2,14 +2,12 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Models.Users;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Users
 {
     public class UserByIdEndpoint : EndpointBase, IUserByIdEndpoint, ILeagueUserByIdEndpoint
     {
-        public UserByIdEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder, string id) : 
+        public UserByIdEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder, string id) :
             base(httpClient, routeBuilder)
         {
             RouteBuilder.AddParameter(id);

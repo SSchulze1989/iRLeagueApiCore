@@ -1,9 +1,4 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation
 {
@@ -16,7 +11,7 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation
 
         public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
         {
-            foreach(var row in rows)
+            foreach (var row in rows)
             {
                 row.PenaltyPoints = row.AddPenalty?.PenaltyPoints ?? 0;
                 row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;

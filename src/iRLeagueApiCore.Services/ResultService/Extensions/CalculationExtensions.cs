@@ -1,12 +1,4 @@
-﻿using iRLeagueApiCore.Services.ResultService.Calculation;
-using iRLeagueApiCore.Services.ResultService.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Services.ResultService.Extensions
+﻿namespace iRLeagueApiCore.Services.ResultService.Extensions
 {
     public static class CalculationExtensions
     {

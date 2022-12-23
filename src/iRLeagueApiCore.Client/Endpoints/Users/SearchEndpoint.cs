@@ -2,11 +2,6 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Users
 {

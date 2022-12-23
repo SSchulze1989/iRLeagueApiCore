@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace iRLeagueApiCore.Server.Filters
+﻿namespace iRLeagueApiCore.Server.Filters
 {
     /// <summary>
     /// Ignore parameter when generating Swagger open API documentation

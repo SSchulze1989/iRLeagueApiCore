@@ -1,14 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace iRLeagueApiCore.Server.Handlers.Scorings
+﻿namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
     public record DeleteScoringRequest(long LeagueId, long ScoringId) : IRequest;
 
@@ -24,7 +14,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
             var scoring = await GetScoringEntityAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();
             dbContext.Scorings.Remove(scoring);
             await dbContext.SaveChangesAsync();
-            _logger.LogInformation("Removed scoring {ScoringId} inside league {LeagueId} from database", 
+            _logger.LogInformation("Removed scoring {ScoringId} inside league {LeagueId} from database",
                 scoring.ScoringId, scoring.LeagueId);
             return Unit.Value;
         }

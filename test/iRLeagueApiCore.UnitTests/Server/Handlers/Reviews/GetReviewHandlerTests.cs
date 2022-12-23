@@ -1,14 +1,10 @@
-﻿using FluentAssertions;
-using FluentValidation;
+﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models.Members;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Handlers.Reviews;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
 {
@@ -49,7 +45,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             reviewEntity.Should().NotBeNull();
             result.SeasonId.Should().Be(reviewEntity.Session.Event.Schedule.SeasonId);
             result.ReviewComments.Should().HaveSameCount(reviewEntity.Comments);
-            foreach((var comment, var expected) in result.ReviewComments.Zip(reviewEntity.Comments))
+            foreach ((var comment, var expected) in result.ReviewComments.Zip(reviewEntity.Comments))
             {
                 AssertReviewComment(expected, comment);
             }
@@ -66,7 +62,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews
             result.ReviewId.Should().Be(expected.ReviewId);
             result.Text.Should().Be(expected.Text);
             result.Votes.Should().HaveSameCount(expected.ReviewCommentVotes);
-            foreach((var vote, var expectedVote) in result.Votes.Zip(expected.ReviewCommentVotes))
+            foreach ((var vote, var expectedVote) in result.Votes.Zip(expected.ReviewCommentVotes))
             {
                 AssertCommentVote(expectedVote, vote);
             }

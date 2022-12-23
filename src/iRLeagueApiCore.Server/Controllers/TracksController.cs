@@ -1,21 +1,15 @@
 ﻿using iRLeagueApiCore.Common.Models.Tracks;
 using iRLeagueApiCore.Server.Handlers.Tracks;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
     [Route("[controller]")]
     public class TracksController : LeagueApiController<TracksController>
     {
-        public TracksController(ILogger<TracksController> logger, IMediator mediator) : 
+        public TracksController(ILogger<TracksController> logger, IMediator mediator) :
             base(logger, mediator)
         {
         }

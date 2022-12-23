@@ -1,18 +1,8 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.Server.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Controllers
 {
@@ -141,7 +131,7 @@ namespace iRLeagueApiCore.Server.Controllers
         [Route("{id:long}")]
         [HttpDelete]
         [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
             [FromRoute] long id, CancellationToken cancellationToken = default)
         {
             try

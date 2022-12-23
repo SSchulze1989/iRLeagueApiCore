@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons
     public class GetCurrentSeasonHandler : SeasonHandlerBase<GetCurrentSeasonHandler, GetCurrentSeasonRequest>,
         IRequestHandler<GetCurrentSeasonRequest, SeasonModel>
     {
-        public GetCurrentSeasonHandler(ILogger<GetCurrentSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetCurrentSeasonRequest>> validators) : 
+        public GetCurrentSeasonHandler(ILogger<GetCurrentSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetCurrentSeasonRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

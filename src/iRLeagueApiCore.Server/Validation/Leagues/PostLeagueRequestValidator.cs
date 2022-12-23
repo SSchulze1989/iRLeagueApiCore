@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Handlers.Leagues;
-using iRLeagueDatabaseCore.Models;
+﻿using iRLeagueApiCore.Server.Handlers.Leagues;
 
 namespace iRLeagueApiCore.Server.Validation.Leagues
 {

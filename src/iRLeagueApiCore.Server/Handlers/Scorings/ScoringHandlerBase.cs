@@ -1,14 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
@@ -16,7 +8,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
     {
         protected const char pointsDelimiter = ';';
 
-        public ScoringHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<FluentValidation.IValidator<TRequest>> validators) : 
+        public ScoringHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<FluentValidation.IValidator<TRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }
@@ -45,7 +37,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
                 .Where(x => string.IsNullOrEmpty(x) == false) ?? new string[0];
         }
 
-        protected virtual async Task<ScoringEntity> MapToScoringEntityAsync(LeagueUser user, long leagueId, PostScoringModel source, ScoringEntity target, 
+        protected virtual async Task<ScoringEntity> MapToScoringEntityAsync(LeagueUser user, long leagueId, PostScoringModel source, ScoringEntity target,
             CancellationToken cancellationToken = default)
         {
             target.ExtScoringSource = await GetScoringEntityAsync(leagueId, source.ExtScoringSourceId, cancellationToken);

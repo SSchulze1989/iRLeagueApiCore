@@ -1,18 +1,9 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Responses;
-using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Client.Results
 {
@@ -39,7 +30,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
             Assert.Equal(testValue, result.Content.Value);
         }
 
-        [Fact] 
+        [Fact]
         public async Task ShouldReturnNoContentActionResult()
         {
             var testMessge = new HttpResponseMessage()
@@ -156,7 +147,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Results
                     Content = null
                 });
             mockMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => 
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
                     x.Headers.Authorization != null && x.Headers.Authorization.Parameter == testToken), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {

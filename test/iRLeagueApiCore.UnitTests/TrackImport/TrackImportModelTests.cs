@@ -1,13 +1,5 @@
-﻿using FluentAssertions;
-using iRLeagueApiCore.TrackImport.Models;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+﻿using iRLeagueApiCore.TrackImport.Models;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.TrackImport
 {

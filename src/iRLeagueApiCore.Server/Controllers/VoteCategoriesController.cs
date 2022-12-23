@@ -12,7 +12,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [Route("{leagueName}/[controller]")]
 public class VoteCategoriesController : LeagueApiController<VoteCategoriesController>
 {
-    public VoteCategoriesController(ILogger<VoteCategoriesController> logger, IMediator mediator) : 
+    public VoteCategoriesController(ILogger<VoteCategoriesController> logger, IMediator mediator) :
         base(logger, mediator)
     {
     }

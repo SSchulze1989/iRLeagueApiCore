@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using System.Collections.Generic;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Validation.Scorings
 {

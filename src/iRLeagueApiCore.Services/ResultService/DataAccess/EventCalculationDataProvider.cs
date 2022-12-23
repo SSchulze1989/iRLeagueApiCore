@@ -39,13 +39,13 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 AcceptedReviewVotes = sessionResult.Session.IncidentReviews
                     .SelectMany(review => review.AcceptedReviewVotes)
                     .Select(vote => new AcceptedReviewVoteCalculationData()
-                {
-                    DefaultPenalty = vote.VoteCategory == null ? 0 : vote.VoteCategory.DefaultPenalty,
-                    MemberAtFaultId = vote.MemberAtFaultId,
-                    ReviewId = vote.ReviewId,
-                    VoteCategoryId = vote.VoteCategoryId,
-                    ReviewVoteId = vote.ReviewVoteId,
-                }),
+                    {
+                        DefaultPenalty = vote.VoteCategory == null ? 0 : vote.VoteCategory.DefaultPenalty,
+                        MemberAtFaultId = vote.MemberAtFaultId,
+                        ReviewId = vote.ReviewId,
+                        VoteCategoryId = vote.VoteCategoryId,
+                        ReviewVoteId = vote.ReviewVoteId,
+                    }),
                 ResultRows = sessionResult.ResultRows.Select(row => new ResultRowCalculationData()
                 {
                     ScoredResultRowId = null,

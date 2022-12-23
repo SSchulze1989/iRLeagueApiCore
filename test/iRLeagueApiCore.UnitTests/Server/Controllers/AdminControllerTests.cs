@@ -1,25 +1,15 @@
 ﻿using FluentValidation;
-using FluentValidation.Results;
 using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Controllers;
 using iRLeagueApiCore.Server.Handlers.Admin;
-using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers
 {

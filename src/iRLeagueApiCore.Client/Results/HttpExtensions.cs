@@ -1,14 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using iRLeagueApiCore.Client.Http;
-using System.Text.Json.Serialization;
-using iRLeagueApiCore.Common.Converters;
 #if NETCOREAPP
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -120,7 +111,7 @@ namespace iRLeagueApiCore.Client.Results
             return await httpClient.PostAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(jsonOptions, cancellationToken);
         }
 
-        public static async Task<ClientActionResult<TResponse>> PutAsClientActionResult<TResponse, TPut>(this HttpClient httpClient, string query, TPut body , JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
+        public static async Task<ClientActionResult<TResponse>> PutAsClientActionResult<TResponse, TPut>(this HttpClient httpClient, string query, TPut body, JsonSerializerOptions jsonOptions, CancellationToken cancellationToken = default)
         {
             return await httpClient.PutAsJsonAsync(query, body, cancellationToken).AsClientActionResultAsync<TResponse>(jsonOptions, cancellationToken);
         }

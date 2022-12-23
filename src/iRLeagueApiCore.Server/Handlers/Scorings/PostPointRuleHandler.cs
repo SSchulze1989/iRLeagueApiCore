@@ -1,15 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
@@ -18,7 +8,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
     public class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHandler, PostPointRuleRequest>,
         IRequestHandler<PostPointRuleRequest, PointRuleModel>
     {
-        public PostPointRuleHandler(ILogger<PostPointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostPointRuleRequest>> validators) : 
+        public PostPointRuleHandler(ILogger<PostPointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostPointRuleRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

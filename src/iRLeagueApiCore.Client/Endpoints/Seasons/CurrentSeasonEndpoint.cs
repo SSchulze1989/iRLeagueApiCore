@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
 {
     internal sealed class CurrentSeasonEndpoint : GetEndpoint<SeasonModel>
     {
-        public CurrentSeasonEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) : 
+        public CurrentSeasonEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
             base(httpClient, routeBuilder)
         {
             RouteBuilder.AddEndpoint("Current");

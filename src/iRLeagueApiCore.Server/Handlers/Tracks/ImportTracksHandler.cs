@@ -1,29 +1,18 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Enums;
+﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.TrackImport.Models;
 using iRLeagueApiCore.TrackImport.Service;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Tracks
 {
     public record ImportTracksCommand(IracingAuthModel Model) : IRequest;
 
-    public class ImportTracksHandler : HandlerBase<ImportTracksHandler, ImportTracksCommand>, 
+    public class ImportTracksHandler : HandlerBase<ImportTracksHandler, ImportTracksCommand>,
         IRequestHandler<ImportTracksCommand, Unit>
     {
         private readonly TrackImportService trackImportService;
 
-        public ImportTracksHandler(ILogger<ImportTracksHandler> logger, LeagueDbContext dbContext, 
+        public ImportTracksHandler(ILogger<ImportTracksHandler> logger, LeagueDbContext dbContext,
             IEnumerable<IValidator<ImportTracksCommand>> validators, TrackImportService trackImportService) : base(logger, dbContext, validators)
         {
             this.trackImportService = trackImportService;
@@ -49,7 +38,7 @@ namespace iRLeagueApiCore.Server.Handlers.Tracks
 
         private async Task UpdateTracksInDatabase(LeagueDbContext dbContext, IEnumerable<TrackImportModel> importTracks, CancellationToken cancellationToken)
         {
-            foreach(var importTrack in importTracks)
+            foreach (var importTrack in importTracks)
             {
                 var trackConfig = dbContext.TrackConfigs.Local
                     .FirstOrDefault(x => x.TrackId == importTrack.track_id)
@@ -81,7 +70,7 @@ namespace iRLeagueApiCore.Server.Handlers.Tracks
                 }
 
                 trackConfig = MapToTrackConfigEntity(importTrack, trackConfig);
-                _logger.LogInformation("Updated data for track id: {TrackId}, track: {TrackName}, config: {ConfigName}", 
+                _logger.LogInformation("Updated data for track id: {TrackId}, track: {TrackName}, config: {ConfigName}",
                     trackConfig.TrackId, trackConfig.TrackGroup.TrackName, trackConfig.ConfigName);
             }
         }

@@ -58,7 +58,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
     private Task<StandingEntity> MapToStandingEntity(StandingCalculationResult result, StandingEntity entity, RequiredEntities requiredEntities,
         CancellationToken cancellationToken)
     {
-        foreach(var row in result.StandingRows)
+        foreach (var row in result.StandingRows)
         {
             StandingRowEntity? rowEntity = default;
             if (row.MemberId is not null)
@@ -118,7 +118,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         }
 
         var memberIds = result.StandingRows.Select(x => x.MemberId);
-        foreach(var row in entity.StandingRows.Where(x => memberIds.Contains(x.MemberId) == false))
+        foreach (var row in entity.StandingRows.Where(x => memberIds.Contains(x.MemberId) == false))
         {
             entity.StandingRows.Remove(row);
         }
@@ -126,10 +126,10 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         return Task.FromResult(entity);
     }
 
-    private ICollection<StandingRows_ScoredResultRows> MapToStandingResultRowsList(long leagueId, IEnumerable<ResultRowCalculationResult> rowsData, 
+    private ICollection<StandingRows_ScoredResultRows> MapToStandingResultRowsList(long leagueId, IEnumerable<ResultRowCalculationResult> rowsData,
         ICollection<StandingRows_ScoredResultRows> rowsEntities, RequiredEntities requiredEntities)
     {
-        foreach(var row in rowsData.Where(x => x.ScoredResultRowId != null))
+        foreach (var row in rowsData.Where(x => x.ScoredResultRowId != null))
         {
             var rowEntity = rowsEntities
                 .Where(x => x.LeagueId == leagueId)
@@ -192,7 +192,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             .Where(x => x.EventId == eventId)
             .Where(x => standingConfigIds.Contains(x.StandingConfigId) == false)
             .ToListAsync(cancellationToken);
-        foreach(var standing in removeStandings)
+        foreach (var standing in removeStandings)
         {
             dbContext.Standings.Remove(standing);
         }

@@ -1,13 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Members;
+﻿using iRLeagueApiCore.Common.Models.Members;
 using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Validation.Reviews
 {

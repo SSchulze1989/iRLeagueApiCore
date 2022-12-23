@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace iRLeagueApiCore.Client.ResultsParsing
+﻿namespace iRLeagueApiCore.Client.ResultsParsing
 {
     public sealed class ParseSimSessionResult
-	{
+    {
         public long subsession_id { get; set; }
         public long season_id { get; set; }
         public string? season_name { get; set; }

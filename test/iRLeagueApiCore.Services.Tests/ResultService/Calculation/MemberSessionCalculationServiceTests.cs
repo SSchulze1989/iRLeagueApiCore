@@ -1,6 +1,6 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Services.ResultService.Calculation;
-using AutoFixture.Dsl;
+using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Services.Tests.Extensions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;

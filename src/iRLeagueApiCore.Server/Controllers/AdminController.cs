@@ -1,21 +1,8 @@
 ﻿using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Admin;
-using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-using iRLeagueApiCore.Common.Models.Users;
-using iRLeagueApiCore.Common;
-using Microsoft.AspNetCore.Authorization;
-using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Controllers
 {

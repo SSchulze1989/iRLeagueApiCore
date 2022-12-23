@@ -1,13 +1,10 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using System.Threading.Tasks;
-using Xunit;
-using FluentAssertions;
 using Microsoft.AspNetCore.Identity.Test;
-using iRLeagueApiCore.Server.Exceptions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 {
@@ -20,7 +17,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
 
         protected override PutResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutResultConfigRequest> validator = null)
         {
-            return new PutResultConfigHandler(logger, dbContext, 
+            return new PutResultConfigHandler(logger, dbContext,
                 new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() });
         }
 

@@ -1,14 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueDatabaseCore.Models;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings
 {
@@ -16,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings
 
     public class GetScoringsHandler : ScoringHandlerBase<GetScoringsHandler, GetScoringsRequest>, IRequestHandler<GetScoringsRequest, IEnumerable<ScoringModel>>
     {
-        public GetScoringsHandler(ILogger<GetScoringsHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringsRequest>> validators) : 
+        public GetScoringsHandler(ILogger<GetScoringsHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringsRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

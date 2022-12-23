@@ -1,20 +1,11 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Tracks;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using iRLeagueApiCore.Common.Models.Tracks;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iRLeagueApiCore.Server.Handlers.Tracks
 {
     public class TracksHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
     {
-        public TracksHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+        public TracksHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
             base(logger, dbContext, validators)
         {
         }

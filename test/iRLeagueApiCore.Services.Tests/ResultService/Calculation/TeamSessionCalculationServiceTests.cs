@@ -45,7 +45,7 @@ public sealed class TeamSessionCalculationServiceTests
         var test = await sut.Calculate(data);
 
         test.ResultRows.Should().HaveCount(teamCount);
-        foreach(var teamRow in test.ResultRows)
+        foreach (var teamRow in test.ResultRows)
         {
             teamRow.ScoredMemberResultRowIds.Should().HaveCount(Math.Min(rowsPerTeam, groupRowCount));
             teamRow.ScoredMemberResultRowIds.OrderBy(x => x).Should()
@@ -116,7 +116,7 @@ public sealed class TeamSessionCalculationServiceTests
 
         var test = await sut.Calculate(data);
 
-        foreach(var row in test.ResultRows)
+        foreach (var row in test.ResultRows)
         {
             row.TotalPoints.Should().Be(row.RacePoints + row.BonusPoints - row.PenaltyPoints);
         }

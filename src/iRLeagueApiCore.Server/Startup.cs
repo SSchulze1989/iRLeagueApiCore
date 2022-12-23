@@ -141,16 +141,16 @@ public class Startup
         // Adding Jwt Bearer  
         .AddJwtBearer(options =>
         {
-             options.SaveToken = true;
-             options.RequireHttpsMetadata = false;
-             options.TokenValidationParameters = new TokenValidationParameters()
-             {
-                 ValidateIssuer = true,
-                 ValidateAudience = true,
-                 ValidAudience = Configuration["JWT:ValidAudience"],
-                 ValidIssuer = Configuration["JWT:ValidIssuer"],
-                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
-             };
+            options.SaveToken = true;
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = Configuration["JWT:ValidAudience"],
+                ValidIssuer = Configuration["JWT:ValidIssuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+            };
         });
 
         services.Configure<IdentityOptions>(options =>
@@ -190,9 +190,9 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                    //c.SwaggerEndpoint("./v1/swagger.json", "TestDeploy v1");
-                    //c.RoutePrefix = string.Empty;
-                    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "./swagger/" : "";
+                //c.SwaggerEndpoint("./v1/swagger.json", "TestDeploy v1");
+                //c.RoutePrefix = string.Empty;
+                string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "./swagger/" : "";
                 c.SwaggerEndpoint($"{swaggerJsonBasePath}v1/swagger.json", "iRLeagueApiCore.Server v1");
             });
         }
