@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Standings;
 
 public record GetStandingsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<StandingsModel>>;
 
-public class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler, GetStandingsFromSeasonRequest>,
+public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler, GetStandingsFromSeasonRequest>,
     IRequestHandler<GetStandingsFromSeasonRequest, IEnumerable<StandingsModel>>
 {
     public GetStandingsFromSeasonHandler(ILogger<GetStandingsFromSeasonHandler> logger, LeagueDbContext dbContext,
@@ -19,7 +19,7 @@ public class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFr
         return getStandings;
     }
 
-    protected async Task<IEnumerable<StandingsModel>> MapToStandingModelFromSeasonAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<StandingsModel>> MapToStandingModelFromSeasonAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
     {
         var lastEventWithStandingsId = await dbContext.Standings
             .Where(x => x.LeagueId == leagueId)

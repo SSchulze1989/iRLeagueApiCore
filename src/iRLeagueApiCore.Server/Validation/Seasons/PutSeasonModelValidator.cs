@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Seasons;
 
-public class PutSeasonModelValidator : AbstractValidator<PutSeasonModel>
+public sealed class PutSeasonModelValidator : AbstractValidator<PutSeasonModel>
 {
     public PutSeasonModelValidator(PostSeasonModelValidator putSeasonValidator)
     {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
 
 [Collection("DataAccessTests")]
-public class DataAccessMockHelperTests
+public sealed class DataAccessMockHelperTests
 {
     private readonly DataAccessMockHelper accessMockHelper = new();
 

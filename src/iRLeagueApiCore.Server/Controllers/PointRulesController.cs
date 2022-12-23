@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
-public class PointRulesController : LeagueApiController<PointRulesController>
+public sealed class PointRulesController : LeagueApiController<PointRulesController>
 {
     public PointRulesController(ILogger<PointRulesController> logger, IMediator mediator) : base(logger, mediator)
     {

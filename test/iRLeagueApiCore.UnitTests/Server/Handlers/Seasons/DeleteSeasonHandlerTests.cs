@@ -8,7 +8,7 @@ using MediatR;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 
 [Collection("DbTestFixture")]
-public class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHandler, DeleteSeasonRequest, Unit>
+public sealed class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHandler, DeleteSeasonRequest, Unit>
 {
     private const string testSeasonName = "TestSeason";
 

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Scorings;
 
-public class PutPointRuleRequestValidator : AbstractValidator<PutPointRuleRequest>
+public sealed class PutPointRuleRequestValidator : AbstractValidator<PutPointRuleRequest>
 {
 
     public PutPointRuleRequestValidator(PutPointRuleModelValidator modelValidator)

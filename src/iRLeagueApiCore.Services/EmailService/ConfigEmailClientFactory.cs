@@ -3,7 +3,7 @@ using System.Net;
 
 namespace iRLeagueApiCore.Services.EmailService;
 
-public class ConfigEmailClientFactory : IEmailClientFactory
+public sealed class ConfigEmailClientFactory : IEmailClientFactory
 {
     private readonly EmailClientConfiguration clientConfiguration;
     private readonly ILoggerFactory loggerFactory;

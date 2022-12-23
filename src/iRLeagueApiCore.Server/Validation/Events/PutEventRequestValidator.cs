@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Events;
 
-public class PutEventRequestValidator : AbstractValidator<PutEventRequest>
+public sealed class PutEventRequestValidator : AbstractValidator<PutEventRequest>
 {
     public PutEventRequestValidator(PutEventModelValidator eventValidator)
     {

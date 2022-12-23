@@ -2,7 +2,7 @@
 
 public record DeleteEventRequest(long LeagueId, long EventId) : IRequest;
 
-public class DeleteEventHandler : EventHandlerBase<DeleteEventHandler, DeleteEventRequest>, IRequestHandler<DeleteEventRequest>
+public sealed class DeleteEventHandler : EventHandlerBase<DeleteEventHandler, DeleteEventRequest>, IRequestHandler<DeleteEventRequest>
 {
     public DeleteEventHandler(ILogger<DeleteEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteEventRequest>> validators) :
         base(logger, dbContext, validators)

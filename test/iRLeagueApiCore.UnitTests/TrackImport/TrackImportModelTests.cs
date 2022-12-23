@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace iRLeagueApiCore.UnitTests.TrackImport;
 
-public class TrackImportModelTests
+public sealed class TrackImportModelTests
 {
     [Fact]
     public void ShouldReadDataFromJson()

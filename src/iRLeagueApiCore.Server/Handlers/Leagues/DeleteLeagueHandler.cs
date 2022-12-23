@@ -2,7 +2,7 @@
 
 public record DeleteLeagueRequest(long LeagueId) : IRequest;
 
-public class DeleteLeagueHandler : LeagueHandlerBase<DeleteLeagueHandler, DeleteLeagueRequest>, IRequestHandler<DeleteLeagueRequest>
+public sealed class DeleteLeagueHandler : LeagueHandlerBase<DeleteLeagueHandler, DeleteLeagueRequest>, IRequestHandler<DeleteLeagueRequest>
 {
     public DeleteLeagueHandler(ILogger<DeleteLeagueHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteLeagueRequest>> validators) :
         base(logger, dbContext, validators)

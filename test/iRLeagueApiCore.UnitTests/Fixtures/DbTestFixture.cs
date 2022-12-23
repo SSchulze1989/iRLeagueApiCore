@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 
-public class DbTestFixture : IDisposable
+public sealed class DbTestFixture : IDisposable
 {
     private static IConfiguration Configuration { get; }
     private readonly Fixture fixture;

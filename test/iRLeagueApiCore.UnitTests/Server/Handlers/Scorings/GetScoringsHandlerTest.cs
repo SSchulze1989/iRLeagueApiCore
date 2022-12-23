@@ -7,7 +7,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 
 [Collection("DbTestFixture")]
-public class GetScoringsHandlerTest : HandlersTestsBase<GetScoringsHandler, GetScoringsRequest, IEnumerable<ScoringModel>>
+public sealed class GetScoringsHandlerTest : HandlersTestsBase<GetScoringsHandler, GetScoringsRequest, IEnumerable<ScoringModel>>
 {
     public GetScoringsHandlerTest(DbTestFixture fixture) : base(fixture)
     {

@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record PostLeagueRequest(LeagueUser User, PostLeagueModel Model) : IRequest<LeagueModel>;
 
-public class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, PostLeagueRequest>, IRequestHandler<PostLeagueRequest, LeagueModel>
+public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, PostLeagueRequest>, IRequestHandler<PostLeagueRequest, LeagueModel>
 {
     public PostLeagueHandler(ILogger<PostLeagueHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostLeagueRequest>> validators)
         : base(logger, dbContext, validators)

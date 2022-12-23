@@ -3,7 +3,7 @@
 namespace iRLeagueApiCore.Server.Models;
 
 [DataContract]
-public class IracingAuthModel
+public sealed class IracingAuthModel
 {
     /// <summary>
     /// UserName (email) for use of authentication against iracing api 

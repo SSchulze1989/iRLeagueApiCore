@@ -3,7 +3,7 @@ using iRLeagueApiCore.Client.QueryBuilder;
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints;
 
-public class LeaguesEndpointTests
+public sealed class LeaguesEndpointTests
 {
     private const string testLeagueName = "testLeague";
     private const long testLeagueId = 1;

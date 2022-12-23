@@ -8,7 +8,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler, PutReviewRequest, ReviewModel>
+public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler, PutReviewRequest, ReviewModel>
 {
     public PutReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -43,7 +43,7 @@ public class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler, PutRev
         return new PutReviewHandler(logger, dbContext, new[] { validator });
     }
 
-    protected virtual PutReviewRequest DefaultRequest(long leagueId, long reviewId)
+    private PutReviewRequest DefaultRequest(long leagueId, long reviewId)
     {
 
         return new PutReviewRequest(leagueId, reviewId, DefaultUser(), TestReviewModel);

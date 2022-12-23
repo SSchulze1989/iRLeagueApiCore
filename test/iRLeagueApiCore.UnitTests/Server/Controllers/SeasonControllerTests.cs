@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
 [Collection("DbTestFixture")]
-public class SeasonDbTestFixture
+public sealed class SeasonDbTestFixture
 {
     private readonly ILogger<SeasonsController> logger;
 

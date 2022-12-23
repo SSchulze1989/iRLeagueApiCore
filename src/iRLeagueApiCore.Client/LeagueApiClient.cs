@@ -12,7 +12,7 @@ using System.Text.Json;
 
 namespace iRLeagueApiCore.Client;
 
-public class LeagueApiClient : ILeagueApiClient
+public sealed class LeagueApiClient : ILeagueApiClient
 {
     private readonly ILogger<LeagueApiClient> logger;
     private readonly HttpClientWrapper httpClientWrapper;

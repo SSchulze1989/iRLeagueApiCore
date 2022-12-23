@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record PutLeagueRequest(long LeagueId, LeagueUser User, PutLeagueModel Model) : IRequest<LeagueModel>;
 
-public class PutLeagueHandler : LeagueHandlerBase<PutLeagueHandler, PutLeagueRequest>, IRequestHandler<PutLeagueRequest, LeagueModel>
+public sealed class PutLeagueHandler : LeagueHandlerBase<PutLeagueHandler, PutLeagueRequest>, IRequestHandler<PutLeagueRequest, LeagueModel>
 {
     public PutLeagueHandler(ILogger<PutLeagueHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutLeagueRequest>> validators) :
         base(logger, dbContext, validators)

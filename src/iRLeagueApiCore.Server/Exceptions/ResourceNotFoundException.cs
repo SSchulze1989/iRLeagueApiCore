@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Exceptions;
 
-public class ResourceNotFoundException : Exception
+public sealed class ResourceNotFoundException : Exception
 {
     public string ResourceName { get; } = string.Empty;
     public ResourceNotFoundException() : this("Requested resource was not found")
@@ -17,7 +17,7 @@ public class ResourceNotFoundException : Exception
     {
     }
 
-    protected ResourceNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
+    private ResourceNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }

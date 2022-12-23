@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints;
 
-public class CustomEndpointTests
+public sealed class CustomEndpointTests
 {
     [Fact]
     public async Task ShouldCallCorrectRoute()

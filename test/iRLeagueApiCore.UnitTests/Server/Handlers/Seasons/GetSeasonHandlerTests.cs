@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 
 [Collection("DbTestFixture")]
-public class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, SeasonModel>
+public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, SeasonModel>
 {
     public GetSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
     {

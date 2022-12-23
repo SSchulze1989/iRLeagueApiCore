@@ -11,7 +11,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
-public class SchedulesController : LeagueApiController<SchedulesController>
+public sealed class SchedulesController : LeagueApiController<SchedulesController>
 {
     public SchedulesController(ILogger<SchedulesController> logger, IMediator mediator) : base(logger, mediator)
     {

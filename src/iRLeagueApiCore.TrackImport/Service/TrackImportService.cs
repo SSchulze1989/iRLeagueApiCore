@@ -5,7 +5,7 @@ using System.Text;
 
 namespace iRLeagueApiCore.TrackImport.Service;
 
-public class TrackImportService
+public sealed class TrackImportService
 {
     public const double m2km = 1.60934;
 

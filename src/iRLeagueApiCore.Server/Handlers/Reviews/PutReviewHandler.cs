@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PutReviewRequest(long LeagueId, long ReviewId, LeagueUser User, PutReviewModel Model) : IRequest<ReviewModel>;
 
-public class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutReviewRequest>, IRequestHandler<PutReviewRequest, ReviewModel>
+public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutReviewRequest>, IRequestHandler<PutReviewRequest, ReviewModel>
 {
     /// <summary>
     /// Always include comments because this can only be called by an authorized user

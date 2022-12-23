@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record PostEventToScheduleRequest(long LeagueId, long ScheduleId, LeagueUser User, PostEventModel Event) : IRequest<EventModel>;
 
-public class PostEventToScheduleHandler : EventHandlerBase<PostEventToScheduleHandler, PostEventToScheduleRequest>, IRequestHandler<PostEventToScheduleRequest, EventModel>
+public sealed class PostEventToScheduleHandler : EventHandlerBase<PostEventToScheduleHandler, PostEventToScheduleRequest>, IRequestHandler<PostEventToScheduleRequest, EventModel>
 {
     public PostEventToScheduleHandler(ILogger<PostEventToScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostEventToScheduleRequest>> validators) :
         base(logger, dbContext, validators)
@@ -24,7 +24,7 @@ public class PostEventToScheduleHandler : EventHandlerBase<PostEventToScheduleHa
         return getEvent;
     }
 
-    protected virtual async Task<EventEntity> CreateEventOnScheduleAsync(LeagueUser user, long leagueId, long scheduleId, CancellationToken cancellationToken)
+    private async Task<EventEntity> CreateEventOnScheduleAsync(LeagueUser user, long leagueId, long scheduleId, CancellationToken cancellationToken)
     {
         var schedule = await dbContext.Schedules
             .Where(x => x.LeagueId == leagueId)

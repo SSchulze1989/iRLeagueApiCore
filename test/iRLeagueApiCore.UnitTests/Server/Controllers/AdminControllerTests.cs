@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
 [Collection("DbTestFixture")]
-public class AdminDbTestFixture
+public sealed class AdminDbTestFixture
 {
     readonly ILogger<AdminController> _mockLogger = new Mock<ILogger<AdminController>>().Object;
     ApplicationUser MockUser { get; }

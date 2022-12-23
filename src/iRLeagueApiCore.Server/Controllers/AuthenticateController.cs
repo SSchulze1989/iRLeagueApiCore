@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthenticateController : Controller
+public sealed class AuthenticateController : Controller
 {
     private readonly ILogger<AuthenticateController> _logger;
     private readonly UserManager<ApplicationUser> userManager;

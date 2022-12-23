@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Models;
 
-public class LeagueDbContextFactory : IDbContextFactory<LeagueDbContext>
+public sealed class LeagueDbContextFactory : IDbContextFactory<LeagueDbContext>
 {
     private readonly IConfiguration _configuration;
 

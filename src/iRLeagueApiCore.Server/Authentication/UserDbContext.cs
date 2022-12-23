@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Server.Authentication;
 
-public class UserDbContext : IdentityDbContext<ApplicationUser>
+public sealed class UserDbContext : IdentityDbContext<ApplicationUser>
 {
     public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
     {

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace iRLeagueApiCore.Server.Handlers.Admin;
 
-public class GiveRoleRequest : UserRoleModel, IRequest
+public sealed class GiveRoleRequest : UserRoleModel, IRequest
 {
     public string LeagueName { get; }
     public ApplicationUser User { get; set; } = default!;
@@ -17,7 +17,7 @@ public class GiveRoleRequest : UserRoleModel, IRequest
     }
 }
 
-public class GiveRoleHandler : IRequestHandler<GiveRoleRequest>
+public sealed class GiveRoleHandler : IRequestHandler<GiveRoleRequest>
 {
     private readonly ILogger<GiveRoleHandler> _logger;
     private readonly IEnumerable<IValidator<GiveRoleRequest>> _validators;

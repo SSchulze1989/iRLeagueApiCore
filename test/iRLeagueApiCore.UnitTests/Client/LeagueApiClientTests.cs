@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 
 namespace iRLeagueApiCore.UnitTests.Client;
 
-public class LeagueApiClientTests
+public sealed class LeagueApiClientTests
 {
     private const string baseUrl = "https://example.com/api";
     private const string testToken = "aslkgjwuipoht2io3ro2pqhuishgiag";

@@ -7,7 +7,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 
 [Collection("DbTestFixture")]
-public class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler, PutSeasonRequest, SeasonModel>
+public sealed class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler, PutSeasonRequest, SeasonModel>
 {
     private const string testSeasonName = "TestSeason";
 

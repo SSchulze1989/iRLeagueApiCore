@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
 
 [Collection("DataAccessTests")]
-public class EventCalculationResultStoreTests : DataAccessTestsBase
+public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
 {
     [Fact]
     public async Task StoreCalculationResult_ShouldStoreNewResult_WhenResultNotExists()

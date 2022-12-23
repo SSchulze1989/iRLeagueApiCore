@@ -4,7 +4,7 @@ using System.Net;
 
 namespace iRLeagueApiCore.UnitTests.TrackImport;
 
-public class TrackImportServiceTests
+public sealed class TrackImportServiceTests
 {
     private readonly IConfiguration configuration;
     private const string Skip = "Skip tests that hit external api";

@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Admin;
 
 public record ListUsersRequest(string LeagueName) : IRequest<IEnumerable<AdminUserModel>>;
 
-public class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumerable<AdminUserModel>>
+public sealed class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumerable<AdminUserModel>>
 {
     private readonly ILogger<ListUsersHandler> _logger;
     private readonly IEnumerable<IValidator<ListUsersRequest>> _validators;

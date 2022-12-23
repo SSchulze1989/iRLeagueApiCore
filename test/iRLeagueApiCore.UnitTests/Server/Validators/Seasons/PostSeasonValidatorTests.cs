@@ -9,7 +9,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Seasons;
 
 [Collection("DbTestFixture")]
-public class PostSeasonDbTestFixture : IClassFixture<DbTestFixture>
+public sealed class PostSeasonDbTestFixture : IClassFixture<DbTestFixture>
 {
     private readonly DbTestFixture fixture;
 

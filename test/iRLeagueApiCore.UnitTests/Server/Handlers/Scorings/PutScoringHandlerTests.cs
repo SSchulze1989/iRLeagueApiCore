@@ -8,7 +8,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 
 [Collection("DbTestFixture")]
-public class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandler, PutScoringRequest, ScoringModel>
+public sealed class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandler, PutScoringRequest, ScoringModel>
 {
     private const string NewScoringName = "New scoring Name";
 
@@ -21,7 +21,7 @@ public class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandler, PutS
         return new PutScoringHandler(logger, dbContext, new IValidator<PutScoringRequest>[] { validator });
     }
 
-    protected PutScoringRequest DefaultRequest(long leagueId, long scoringId)
+    private PutScoringRequest DefaultRequest(long leagueId, long scoringId)
     {
         var model = new PutScoringModel()
         {

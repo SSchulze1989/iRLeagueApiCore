@@ -3,7 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 
-public class DefaultPointRuleTests
+public sealed class DefaultPointRuleTests
 {
     private readonly Fixture fixture = new();
 

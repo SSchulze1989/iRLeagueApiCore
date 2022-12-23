@@ -8,7 +8,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Leagues;
 
 [Collection("DbTestFixture")]
-public class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture>
+public sealed class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture>
 {
     private readonly DbTestFixture fixture;
     private const string testLeagueName = "ValidationLeague123_-";

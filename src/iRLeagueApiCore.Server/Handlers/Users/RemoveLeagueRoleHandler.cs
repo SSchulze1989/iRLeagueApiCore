@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record RemoveLeagueRoleRequest(string LeagueName, string UserId, string RoleName) : IRequest<LeagueUserModel>;
 
-public class RemoveLeagueRoleHandler : UsersHandlerBase<RemoveLeagueRoleHandler, RemoveLeagueRoleRequest>,
+public sealed class RemoveLeagueRoleHandler : UsersHandlerBase<RemoveLeagueRoleHandler, RemoveLeagueRoleRequest>,
     IRequestHandler<RemoveLeagueRoleRequest, LeagueUserModel>
 {
     public RemoveLeagueRoleHandler(ILogger<RemoveLeagueRoleHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,

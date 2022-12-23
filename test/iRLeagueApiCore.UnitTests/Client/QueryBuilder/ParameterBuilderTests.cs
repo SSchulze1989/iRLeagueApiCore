@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.UnitTests.Client.QueryBuilder;
 
-public class ParameterBuilderTests
+public sealed class ParameterBuilderTests
 {
     [Fact]
     public void ShouldBuildSingleParameter()

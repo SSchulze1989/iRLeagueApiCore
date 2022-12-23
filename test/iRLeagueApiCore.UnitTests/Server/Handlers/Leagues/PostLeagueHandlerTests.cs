@@ -8,7 +8,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 
 [Collection("DbTestFixture")]
-public class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, LeagueModel>
+public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, LeagueModel>
 {
     private const string postLeagueName = "PostLeague";
 
@@ -41,7 +41,7 @@ public class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandler, Post
         base.DefaultAssertions(request, result, dbContext);
     }
 
-    protected PostLeagueRequest CreateRequest(LeagueUser user, PostLeagueModel model)
+    private PostLeagueRequest CreateRequest(LeagueUser user, PostLeagueModel model)
     {
         return new PostLeagueRequest(user, model);
     }

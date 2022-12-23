@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Exceptions;
 
-public class HandlerOperationException : InvalidOperationException
+public sealed class HandlerOperationException : InvalidOperationException
 {
     public HandlerOperationException()
     {
@@ -16,7 +16,7 @@ public class HandlerOperationException : InvalidOperationException
     {
     }
 
-    protected HandlerOperationException(SerializationInfo info, StreamingContext context) : base(info, context)
+    private HandlerOperationException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }

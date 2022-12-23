@@ -4,7 +4,7 @@ using iRLeagueApiCore.Common.Models.Reviews;
 
 namespace iRLeagueApiCore.Client.Endpoints.Reviews;
 
-public class ReviewsEndpoint : PostGetAllEndpoint<ReviewModel, PostReviewModel>, IReviewsEndpoint, IGetAllEndpoint<ReviewModel>, IPostEndpoint<ReviewModel, PostReviewModel>
+public sealed class ReviewsEndpoint : PostGetAllEndpoint<ReviewModel, PostReviewModel>, IReviewsEndpoint, IGetAllEndpoint<ReviewModel>, IPostEndpoint<ReviewModel, PostReviewModel>
 {
     public ReviewsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
         base(httpClient, routeBuilder)

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Events;
 
-public class PostEventModelValidator : AbstractValidator<PostEventModel>
+public sealed class PostEventModelValidator : AbstractValidator<PostEventModel>
 {
     private readonly LeagueDbContext dbContext;
 

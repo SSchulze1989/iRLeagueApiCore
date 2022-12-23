@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Services.ResultService.Models;
 
-public class AcceptedReviewVoteCalculationData
+public sealed class AcceptedReviewVoteCalculationData
 {
     public long ReviewVoteId { get; set; }
     public long ReviewId { get; set; }

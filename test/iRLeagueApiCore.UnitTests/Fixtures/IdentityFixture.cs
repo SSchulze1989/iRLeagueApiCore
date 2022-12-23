@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.Test;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 
-public class IdentityFixture
+public sealed class IdentityFixture
 {
     public readonly string testLeague = "TestLeague";
     public readonly ApplicationUser validUser = new ApplicationUser()

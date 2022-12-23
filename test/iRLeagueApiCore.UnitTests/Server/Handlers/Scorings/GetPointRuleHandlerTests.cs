@@ -7,7 +7,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 
 [Collection("DbTestFixture")]
-public class GetPointRuleDbTestFixture : HandlersTestsBase<GetPointRuleHandler, GetPointRuleRequest, PointRuleModel>
+public sealed class GetPointRuleDbTestFixture : HandlersTestsBase<GetPointRuleHandler, GetPointRuleRequest, PointRuleModel>
 {
     public GetPointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -18,7 +18,7 @@ public class GetPointRuleDbTestFixture : HandlersTestsBase<GetPointRuleHandler, 
         return new GetPointRuleHandler(logger, dbContext, new IValidator<GetPointRuleRequest>[] { validator });
     }
 
-    protected virtual GetPointRuleRequest DefaultRequest(long leagueId, long pointRuleId)
+    private GetPointRuleRequest DefaultRequest(long leagueId, long pointRuleId)
     {
         return new GetPointRuleRequest(leagueId, pointRuleId);
     }

@@ -2,7 +2,7 @@
 
 public record DeleteReviewRequest(long LeagueId, long ReviewId) : IRequest;
 
-public class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler, DeleteReviewRequest>,
+public sealed class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler, DeleteReviewRequest>,
     IRequestHandler<DeleteReviewRequest>
 {
     public DeleteReviewHandler(ILogger<DeleteReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteReviewRequest>> validators) :

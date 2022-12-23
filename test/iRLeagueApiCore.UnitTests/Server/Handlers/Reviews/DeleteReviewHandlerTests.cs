@@ -8,7 +8,7 @@ using MediatR;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHandler, DeleteReviewRequest, Unit>
+public sealed class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHandler, DeleteReviewRequest, Unit>
 {
     public DeleteReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -19,7 +19,7 @@ public class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHandler, 
         return new DeleteReviewHandler(logger, dbContext, new[] { validator });
     }
 
-    protected virtual DeleteReviewRequest DefaultRequest(long leagueId, long reviewId)
+    private DeleteReviewRequest DefaultRequest(long leagueId, long reviewId)
     {
 
         return new DeleteReviewRequest(leagueId, reviewId);

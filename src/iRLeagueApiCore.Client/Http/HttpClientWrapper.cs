@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace iRLeagueApiCore.Client.Http;
 
-public class HttpClientWrapper
+public sealed class HttpClientWrapper
 {
     private readonly HttpClient httpClient;
     private readonly IAsyncTokenProvider tokenProvider;

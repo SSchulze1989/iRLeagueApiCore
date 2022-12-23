@@ -8,7 +8,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 
 [Collection("DbTestFixture")]
-public class PutPointRuleDbTestFixture : HandlersTestsBase<PutPointRuleHandler, PutPointRuleRequest, PointRuleModel>
+public sealed class PutPointRuleDbTestFixture : HandlersTestsBase<PutPointRuleHandler, PutPointRuleRequest, PointRuleModel>
 {
     public PutPointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -19,7 +19,7 @@ public class PutPointRuleDbTestFixture : HandlersTestsBase<PutPointRuleHandler, 
         return new PutPointRuleHandler(logger, dbContext, new IValidator<PutPointRuleRequest>[] { validator });
     }
 
-    protected virtual PutPointRuleRequest DefaultRequest(long leagueId, long pointRuleId)
+    private PutPointRuleRequest DefaultRequest(long leagueId, long pointRuleId)
     {
         var putPointRule = new PutPointRuleModel()
         {

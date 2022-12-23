@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record GetEventRequest(long LeagueId, long EventId, bool IncludeDetails) : IRequest<EventModel>;
 
-public class GetEventHandler : EventHandlerBase<GetEventHandler, GetEventRequest>, IRequestHandler<GetEventRequest, EventModel>
+public sealed class GetEventHandler : EventHandlerBase<GetEventHandler, GetEventRequest>, IRequestHandler<GetEventRequest, EventModel>
 {
     public GetEventHandler(ILogger<GetEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetEventRequest>> validators) :
         base(logger, dbContext, validators)

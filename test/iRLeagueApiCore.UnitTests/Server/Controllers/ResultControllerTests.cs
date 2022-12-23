@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
 [Collection("DbTestFixture")]
-public class ResultDbTestFixture : IClassFixture<DbTestFixture>
+public sealed class ResultDbTestFixture : IClassFixture<DbTestFixture>
 {
     private DbTestFixture Fixture { get; }
 

@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigRequest(long LeagueId, long ResultConfigId) : IRequest<ResultConfigModel>;
 
-public class GetResultConfigHandler : ResultConfigHandlerBase<GetResultConfigHandler, GetResultConfigRequest>,
+public sealed class GetResultConfigHandler : ResultConfigHandlerBase<GetResultConfigHandler, GetResultConfigRequest>,
     IRequestHandler<GetResultConfigRequest, ResultConfigModel>
 {
     public GetResultConfigHandler(ILogger<GetResultConfigHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultConfigRequest>> validators) :

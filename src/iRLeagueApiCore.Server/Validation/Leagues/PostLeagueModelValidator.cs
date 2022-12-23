@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace iRLeagueApiCore.Server.Validation.Leagues;
 
-public class PostLeagueModelValidator : AbstractValidator<PostLeagueModel>
+public sealed class PostLeagueModelValidator : AbstractValidator<PostLeagueModel>
 {
     private readonly LeagueDbContext dbContext;
 

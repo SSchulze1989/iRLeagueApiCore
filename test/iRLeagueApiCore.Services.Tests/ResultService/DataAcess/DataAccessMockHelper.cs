@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
 
-public class DataAccessMockHelper
+public sealed class DataAccessMockHelper
 {
     private readonly Fixture fixture = new();
 

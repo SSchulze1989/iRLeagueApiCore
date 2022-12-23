@@ -6,7 +6,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
+public sealed class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
 {
     public DeleteResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -17,7 +17,7 @@ public class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteResultCon
         return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator });
     }
 
-    protected virtual DeleteResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
+    private DeleteResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
     {
         return new DeleteResultConfigRequest(leagueId, resultConfigId);
     }

@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole]
-public class StandingsController : LeagueApiController<StandingsController>
+public sealed class StandingsController : LeagueApiController<StandingsController>
 {
     public StandingsController(ILogger<StandingsController> logger, IMediator mediator) :
         base(logger, mediator)

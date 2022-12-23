@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Client.QueryBuilder;
 
-public class ParameterBuilder : IParameterBuilder
+public sealed class ParameterBuilder : IParameterBuilder
 {
     private List<string> _parameters;
 

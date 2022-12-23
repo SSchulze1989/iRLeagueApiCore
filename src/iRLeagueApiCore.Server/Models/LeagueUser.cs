@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace iRLeagueApiCore.Server.Models;
 
-public class LeagueUser
+public sealed class LeagueUser
 {
     public string Id { get; set; }
     public string Name { get; set; }

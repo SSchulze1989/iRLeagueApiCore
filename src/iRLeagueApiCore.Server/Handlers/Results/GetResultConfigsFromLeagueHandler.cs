@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigsFromLeagueRequest(long LeagueId) : IRequest<IEnumerable<ResultConfigModel>>;
 
-public class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler, GetResultConfigsFromLeagueRequest>,
+public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler, GetResultConfigsFromLeagueRequest>,
     IRequestHandler<GetResultConfigsFromLeagueRequest, IEnumerable<ResultConfigModel>>
 {
     public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext,
@@ -19,7 +19,7 @@ public class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResu
         return getResults;
     }
 
-    protected virtual async Task<IEnumerable<ResultConfigModel>> MapToGetResultConfigsFromLeagueAsync(long leagueId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<ResultConfigModel>> MapToGetResultConfigsFromLeagueAsync(long leagueId, CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
             .Where(x => x.LeagueId == leagueId)

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Scorings;
 
-public class PostPointRuleModelValidator : AbstractValidator<PostPointRuleModel>
+public sealed class PostPointRuleModelValidator : AbstractValidator<PostPointRuleModel>
 {
     public PostPointRuleModelValidator()
     {

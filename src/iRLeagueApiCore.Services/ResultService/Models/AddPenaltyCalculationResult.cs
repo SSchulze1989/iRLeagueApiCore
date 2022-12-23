@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Services.ResultService.Models;
 
-public class AddPenaltyCalculationResult
+public sealed class AddPenaltyCalculationResult
 {
     public int PenaltyPoints { get; set; }
 }

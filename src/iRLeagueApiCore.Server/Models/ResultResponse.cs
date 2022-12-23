@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Models;
 
-public class ResultResponse
+public sealed class ResultResponse
 {
     public string Status { get; set; } = string.Empty;
     public string Result { get; set; } = string.Empty;

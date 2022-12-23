@@ -14,7 +14,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
-public class MembersController : LeagueApiController<MembersController>
+public sealed class MembersController : LeagueApiController<MembersController>
 {
     public MembersController(ILogger<MembersController> logger, IMediator mediator) : base(logger, mediator)
     {

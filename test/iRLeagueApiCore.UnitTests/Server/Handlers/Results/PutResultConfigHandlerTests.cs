@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity.Test;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
+public sealed class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
 {
     public PutResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -21,7 +21,7 @@ public class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultConfigHan
             new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() });
     }
 
-    protected virtual PutResultConfigRequest DefaultRequest(long leagueId = testLeagueId, long resultConfigId = testResultConfigId)
+    private PutResultConfigRequest DefaultRequest(long leagueId = testLeagueId, long resultConfigId = testResultConfigId)
     {
         var PutResultConfig = new PutResultConfigModel()
         {

@@ -11,7 +11,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
 [Route("{leagueName}/[controller]")]
-public class ReviewsController : LeagueApiController<ReviewsController>
+public sealed class ReviewsController : LeagueApiController<ReviewsController>
 {
     public ReviewsController(ILogger<ReviewsController> logger, IMediator mediator) : base(logger, mediator)
     {

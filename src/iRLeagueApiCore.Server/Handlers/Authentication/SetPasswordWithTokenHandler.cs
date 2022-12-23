@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Authentication;
 
 public record SetPasswordWithTokenRequest(string UserId, SetPasswordTokenModel Model) : IRequest<bool>;
 
-public class SetPasswordWithTokenHandler : IRequestHandler<SetPasswordWithTokenRequest, bool>
+public sealed class SetPasswordWithTokenHandler : IRequestHandler<SetPasswordWithTokenRequest, bool>
 {
     private readonly ILogger<SetPasswordWithTokenHandler> logger;
     private readonly UserManager<ApplicationUser> userManager;

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Users;
 
-public class RemoveLeagueRoleRequestValidator : AbstractValidator<RemoveLeagueRoleRequest>
+public sealed class RemoveLeagueRoleRequestValidator : AbstractValidator<RemoveLeagueRoleRequest>
 {
     public RemoveLeagueRoleRequestValidator()
     {

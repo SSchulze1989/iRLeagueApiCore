@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.UnitTests.Client.QueryBuilder;
 
-public class RouteBuilderTests
+public sealed class RouteBuilderTests
 {
     [Fact]
     public void ShouldBuildRouteWithNameAndValue()

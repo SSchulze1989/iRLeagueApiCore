@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace iRLeagueApiCore.Server.Validation.Authentication;
 
-public class SetPasswordWithTokenRequestValidator : AbstractValidator<SetPasswordWithTokenRequest>
+public sealed class SetPasswordWithTokenRequestValidator : AbstractValidator<SetPasswordWithTokenRequest>
 {
     private readonly UserManager<ApplicationUser> userManager;
 

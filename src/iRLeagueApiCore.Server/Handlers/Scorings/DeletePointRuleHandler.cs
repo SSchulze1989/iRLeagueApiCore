@@ -2,7 +2,7 @@
 
 public record DeletePointRuleRequest(long LeagueId, long PointRuleId) : IRequest;
 
-public class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler, DeletePointRuleRequest>,
+public sealed class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler, DeletePointRuleRequest>,
     IRequestHandler<DeletePointRuleRequest, Unit>
 {
     public DeletePointRuleHandler(ILogger<DeletePointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeletePointRuleRequest>> validators) :

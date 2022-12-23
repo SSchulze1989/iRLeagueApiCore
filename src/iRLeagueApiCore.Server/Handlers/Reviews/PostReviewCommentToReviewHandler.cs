@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostReviewCommentToReviewRequest(long LeagueId, long ReviewId, LeagueUser User, PostReviewCommentModel Model) : IRequest<ReviewCommentModel>;
 
-public class PostReviewCommentToReviewHandler : CommentHandlerBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest>,
+public sealed class PostReviewCommentToReviewHandler : CommentHandlerBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest>,
     IRequestHandler<PostReviewCommentToReviewRequest, ReviewCommentModel>
 {
     public PostReviewCommentToReviewHandler(ILogger<PostReviewCommentToReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewCommentToReviewRequest>> validators) :
@@ -24,7 +24,7 @@ public class PostReviewCommentToReviewHandler : CommentHandlerBase<PostReviewCom
         return getComment;
     }
 
-    protected virtual async Task<ReviewCommentEntity> CreateCommentEntityOnReviewAsync(long leagueId, long reviewId, LeagueUser user,
+    private async Task<ReviewCommentEntity> CreateCommentEntityOnReviewAsync(long leagueId, long reviewId, LeagueUser user,
         CancellationToken cancellationToken)
     {
         var review = await dbContext.IncidentReviews

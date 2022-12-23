@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record GetPointRuleRequest(long LeagueId, long PointRuleId) : IRequest<PointRuleModel>;
 
-public class GetPointRuleHandler : PointRuleHandlerBase<GetPointRuleHandler, GetPointRuleRequest>,
+public sealed class GetPointRuleHandler : PointRuleHandlerBase<GetPointRuleHandler, GetPointRuleRequest>,
     IRequestHandler<GetPointRuleRequest, PointRuleModel>
 {
     public GetPointRuleHandler(ILogger<GetPointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetPointRuleRequest>> validators) :

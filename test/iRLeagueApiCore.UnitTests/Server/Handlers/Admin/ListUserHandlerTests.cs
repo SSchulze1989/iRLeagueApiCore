@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Admin;
 
 [Collection("DbTestFixture")]
-public class ListUserDbTestFixture : IClassFixture<IdentityFixture>
+public sealed class ListUserDbTestFixture : IClassFixture<IdentityFixture>
 {
     private readonly IdentityFixture fixture;
     private readonly ILogger<ListUsersHandler> logger;

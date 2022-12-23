@@ -4,7 +4,7 @@ using iRLeagueApiCore.Common.Models.Tracks;
 
 namespace iRLeagueApiCore.Client.Endpoints.Tracks;
 
-public class TracksEndpoint : GetAllEndpoint<TrackGroupModel>, ITracksEndpoint
+public sealed class TracksEndpoint : GetAllEndpoint<TrackGroupModel>, ITracksEndpoint
 {
     public TracksEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
         base(httpClientWrapper, routeBuilder)

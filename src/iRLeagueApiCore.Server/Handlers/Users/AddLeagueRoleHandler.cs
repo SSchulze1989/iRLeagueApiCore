@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record AddLeagueRoleRequest(string LeagueName, string UserId, string RoleName) : IRequest<LeagueUserModel>;
 
-public class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler, AddLeagueRoleRequest>,
+public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler, AddLeagueRoleRequest>,
     IRequestHandler<AddLeagueRoleRequest, LeagueUserModel>
 {
     private readonly RoleManager<IdentityRole> roleManager;

@@ -15,7 +15,7 @@ using System.Text.Json.Serialization;
 
 namespace iRLeagueApiCore.Server;
 
-public class Startup
+public sealed class Startup
 {
     public Startup(IConfiguration configuration)
     {

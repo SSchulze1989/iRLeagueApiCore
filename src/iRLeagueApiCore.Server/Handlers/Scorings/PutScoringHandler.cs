@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record PutScoringRequest(long LeagueId, long ScoringId, LeagueUser User, PutScoringModel Model) : IRequest<ScoringModel>;
 
-public class PutScoringHandler : ScoringHandlerBase<PutScoringHandler, PutScoringRequest>, IRequestHandler<PutScoringRequest, ScoringModel>
+public sealed class PutScoringHandler : ScoringHandlerBase<PutScoringHandler, PutScoringRequest>, IRequestHandler<PutScoringRequest, ScoringModel>
 {
     public PutScoringHandler(ILogger<PutScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutScoringRequest>> validators) :
         base(logger, dbContext, validators)

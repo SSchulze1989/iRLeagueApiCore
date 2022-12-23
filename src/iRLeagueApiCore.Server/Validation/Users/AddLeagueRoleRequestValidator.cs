@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Users;
 
-public class AddLeagueRoleRequestValidator : AbstractValidator<AddLeagueRoleRequest>
+public sealed class AddLeagueRoleRequestValidator : AbstractValidator<AddLeagueRoleRequest>
 {
     public AddLeagueRoleRequestValidator()
     {

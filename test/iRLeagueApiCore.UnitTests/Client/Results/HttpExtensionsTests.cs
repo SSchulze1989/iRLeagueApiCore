@@ -7,7 +7,7 @@ using System.Net;
 
 namespace iRLeagueApiCore.UnitTests.Client.Results;
 
-public class HttpExtensionsTests
+public sealed class HttpExtensionsTests
 {
     private const string testString = "TestMessage";
     private const long testValue = 42;

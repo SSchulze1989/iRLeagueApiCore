@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
 public record GetSchedulesFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<ScheduleModel>>;
 
-public class GetSchedulesFromSeasonHandler : ScheduleHandlerBase<GetSchedulesFromSeasonRequest, GetSchedulesFromSeasonRequest>,
+public sealed class GetSchedulesFromSeasonHandler : ScheduleHandlerBase<GetSchedulesFromSeasonRequest, GetSchedulesFromSeasonRequest>,
     IRequestHandler<GetSchedulesFromSeasonRequest, IEnumerable<ScheduleModel>>
 {
     public GetSchedulesFromSeasonHandler(ILogger<GetSchedulesFromSeasonRequest> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetSchedulesFromSeasonRequest>> validators) :

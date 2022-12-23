@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record PutPointRuleRequest(long LeagueId, long PointRuleId, LeagueUser User, PutPointRuleModel Model) : IRequest<PointRuleModel>;
 
-public class PutPointRuleHandler : PointRuleHandlerBase<PutPointRuleHandler, PutPointRuleRequest>,
+public sealed class PutPointRuleHandler : PointRuleHandlerBase<PutPointRuleHandler, PutPointRuleRequest>,
     IRequestHandler<PutPointRuleRequest, PointRuleModel>
 {
     public PutPointRuleHandler(ILogger<PutPointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutPointRuleRequest>> validators) :

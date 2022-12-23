@@ -11,7 +11,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole]
-public class ResultsController : LeagueApiController<ResultsController>
+public sealed class ResultsController : LeagueApiController<ResultsController>
 {
     public ResultsController(ILogger<ResultsController> logger, IMediator mediator) : base(logger, mediator)
     {

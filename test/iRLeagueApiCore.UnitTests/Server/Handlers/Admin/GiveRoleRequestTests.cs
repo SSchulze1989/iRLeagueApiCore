@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Admin;
 
 [Collection("DbTestFixture")]
-public class GiveRoleRequestTests : IClassFixture<IdentityFixture>
+public sealed class GiveRoleRequestTests : IClassFixture<IdentityFixture>
 {
     private readonly IdentityFixture fixture;
     private readonly ILogger<GiveRoleHandler> logger;

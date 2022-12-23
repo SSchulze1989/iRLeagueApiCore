@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetLeagueUserRequest(string LeagueName, string UserId) : IRequest<LeagueUserModel>;
-public class GetLeagueUserHandler : UsersHandlerBase<GetLeagueUserHandler, GetLeagueUserRequest>, IRequestHandler<GetLeagueUserRequest, LeagueUserModel>
+public sealed class GetLeagueUserHandler : UsersHandlerBase<GetLeagueUserHandler, GetLeagueUserRequest>, IRequestHandler<GetLeagueUserRequest, LeagueUserModel>
 {
     public GetLeagueUserHandler(ILogger<GetLeagueUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<GetLeagueUserRequest>> validators) : base(logger, userDbContext, userManager, validators)

@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetUserListRequest(string LeagueName) : IRequest<IEnumerable<LeagueUserModel>>;
 
-public class GetUserListHandler : UsersHandlerBase<GetUserListHandler, GetUserListRequest>,
+public sealed class GetUserListHandler : UsersHandlerBase<GetUserListHandler, GetUserListRequest>,
     IRequestHandler<GetUserListRequest, IEnumerable<LeagueUserModel>>
 {
     public GetUserListHandler(ILogger<GetUserListHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
@@ -22,7 +22,7 @@ public class GetUserListHandler : UsersHandlerBase<GetUserListHandler, GetUserLi
         return getUsers;
     }
 
-    protected async Task<IEnumerable<ApplicationUser>> GetUserEntitiesWithLeagueRole(string leagueName, CancellationToken cancellationToken)
+    private async Task<IEnumerable<ApplicationUser>> GetUserEntitiesWithLeagueRole(string leagueName, CancellationToken cancellationToken)
     {
         var leagueRoles = LeagueRoles.RolesAvailable
             .Select(x => LeagueRoles.GetLeagueRoleName(leagueName, x));
@@ -34,7 +34,7 @@ public class GetUserListHandler : UsersHandlerBase<GetUserListHandler, GetUserLi
         return usersWithRole.DistinctBy(x => x.Id);
     }
 
-    protected async Task<IEnumerable<LeagueUserModel>> MapToLeagueUserListAsync(IEnumerable<ApplicationUser> users, string leagueName, CancellationToken cancellationToken)
+    private async Task<IEnumerable<LeagueUserModel>> MapToLeagueUserListAsync(IEnumerable<ApplicationUser> users, string leagueName, CancellationToken cancellationToken)
     {
         var userModels = new List<LeagueUserModel>();
         foreach (var user in users)

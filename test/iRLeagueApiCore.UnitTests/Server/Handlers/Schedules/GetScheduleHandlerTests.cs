@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;
 
 [Collection("DbTestFixture")]
-public class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHandler, GetScheduleRequest, ScheduleModel>
+public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHandler, GetScheduleRequest, ScheduleModel>
 {
     public GetScheduleDbTestFixture(DbTestFixture fixture) : base(fixture)
     {

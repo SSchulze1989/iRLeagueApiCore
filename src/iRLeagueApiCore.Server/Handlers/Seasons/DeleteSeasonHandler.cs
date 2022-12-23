@@ -2,7 +2,7 @@
 
 public record DeleteSeasonRequest(long LeagueId, long SeasonId) : IRequest;
 
-public class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler, DeleteSeasonRequest>, IRequestHandler<DeleteSeasonRequest>
+public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler, DeleteSeasonRequest>, IRequestHandler<DeleteSeasonRequest>
 {
     public DeleteSeasonHandler(ILogger<DeleteSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteSeasonRequest>> validators) :
         base(logger, dbContext, validators)
@@ -17,7 +17,7 @@ public class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler, Delete
         return Unit.Value;
     }
 
-    protected async Task DeleteSeasonEntity(long leagueId, long seasonId, CancellationToken cancellationToken)
+    private async Task DeleteSeasonEntity(long leagueId, long seasonId, CancellationToken cancellationToken)
     {
         var deleteSeason = await dbContext.Seasons
             .Where(x => x.LeagueId == leagueId)

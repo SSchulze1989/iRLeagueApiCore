@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
 [Route("{leagueName}/[controller]")]
-public class VoteCategoriesController : LeagueApiController<VoteCategoriesController>
+public sealed class VoteCategoriesController : LeagueApiController<VoteCategoriesController>
 {
     public VoteCategoriesController(ILogger<VoteCategoriesController> logger, IMediator mediator) :
         base(logger, mediator)

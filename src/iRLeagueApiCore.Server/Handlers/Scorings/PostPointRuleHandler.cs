@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record PostPointRuleRequest(long LeagueId, LeagueUser User, PostPointRuleModel Model) : IRequest<PointRuleModel>;
 
-public class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHandler, PostPointRuleRequest>,
+public sealed class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHandler, PostPointRuleRequest>,
     IRequestHandler<PostPointRuleRequest, PointRuleModel>
 {
     public PostPointRuleHandler(ILogger<PostPointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostPointRuleRequest>> validators) :

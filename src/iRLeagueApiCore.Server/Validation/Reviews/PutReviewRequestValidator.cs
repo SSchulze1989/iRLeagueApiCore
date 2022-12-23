@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Reviews;
 
-public class PutReviewRequestValidator : AbstractValidator<PutReviewRequest>
+public sealed class PutReviewRequestValidator : AbstractValidator<PutReviewRequest>
 {
     public PutReviewRequestValidator(LeagueDbContext dbContext)
     {

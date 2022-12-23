@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record PutUserRequest(string UserId, PutUserModel Model) : IRequest<PrivateUserModel>;
 
-public class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, IRequestHandler<PutUserRequest, UserModel>
+public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, IRequestHandler<PutUserRequest, UserModel>
 {
     public PutUserHandler(ILogger<PutUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<PutUserRequest>> validators) : base(logger, userDbContext, userManager, validators)
@@ -24,7 +24,7 @@ public class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, 
         return getUser;
     }
 
-    protected ApplicationUser MapToUserEntity(PutUserModel model, ApplicationUser user)
+    private ApplicationUser MapToUserEntity(PutUserModel model, ApplicationUser user)
     {
         user.FullName = GetUserFullName(model.Firstname, model.Lastname);
         user.Email = model.Email;

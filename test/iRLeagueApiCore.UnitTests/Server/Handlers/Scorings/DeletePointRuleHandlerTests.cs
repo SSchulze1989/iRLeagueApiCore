@@ -6,7 +6,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 
 [Collection("DbTestFixture")]
-public class DeletePointRuleDbTestFixture : HandlersTestsBase<DeletePointRuleHandler, DeletePointRuleRequest, MediatR.Unit>
+public sealed class DeletePointRuleDbTestFixture : HandlersTestsBase<DeletePointRuleHandler, DeletePointRuleRequest, MediatR.Unit>
 {
     public DeletePointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -17,7 +17,7 @@ public class DeletePointRuleDbTestFixture : HandlersTestsBase<DeletePointRuleHan
         return new DeletePointRuleHandler(logger, dbContext, new IValidator<DeletePointRuleRequest>[] { validator });
     }
 
-    protected virtual DeletePointRuleRequest DefaultRequest(long leagueId, long pointRuleId)
+    private DeletePointRuleRequest DefaultRequest(long leagueId, long pointRuleId)
     {
         return new DeletePointRuleRequest(leagueId, pointRuleId);
     }

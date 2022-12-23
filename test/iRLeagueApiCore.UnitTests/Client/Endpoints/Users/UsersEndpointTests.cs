@@ -4,7 +4,7 @@ using iRLeagueApiCore.Common.Models.Users;
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints.Users;
 
-public class UsersEndpointTests
+public sealed class UsersEndpointTests
 {
     private readonly string usersController = "Users";
     private readonly string searchEndpoint = "Search";

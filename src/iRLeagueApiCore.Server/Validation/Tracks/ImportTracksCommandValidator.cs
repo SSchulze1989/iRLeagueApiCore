@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Tracks;
 
-public class ImportTracksCommandValidator : AbstractValidator<ImportTracksCommand>
+public sealed class ImportTracksCommandValidator : AbstractValidator<ImportTracksCommand>
 {
     public ImportTracksCommandValidator()
     {

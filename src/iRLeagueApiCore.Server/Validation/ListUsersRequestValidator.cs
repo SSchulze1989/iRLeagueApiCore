@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation;
 
-public class ListUsersRequestValidator : AbstractValidator<ListUsersRequest>
+public sealed class ListUsersRequestValidator : AbstractValidator<ListUsersRequest>
 {
     public ListUsersRequestValidator()
     {

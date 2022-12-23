@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace iRLeagueApiCore.TrackImport.Converters;
 
-public class JsonStringOrNumberToStringConverter : JsonConverter<string>
+public sealed class JsonStringOrNumberToStringConverter : JsonConverter<string>
 {
     public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

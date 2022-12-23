@@ -2,7 +2,7 @@
 
 public record DeleteResultConfigRequest(long LeagueId, long ResultConfigId) : IRequest;
 
-public class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest>,
+public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest>,
     IRequestHandler<DeleteResultConfigRequest>
 {
     public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteResultConfigRequest>> validators) :

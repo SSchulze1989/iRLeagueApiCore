@@ -8,7 +8,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record UploadResultRequest(long leagueId, long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
 
-public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
+public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
     IRequestHandler<UploadResultRequest, bool>
 {
     private readonly IResultCalculationQueue calculationQueue;

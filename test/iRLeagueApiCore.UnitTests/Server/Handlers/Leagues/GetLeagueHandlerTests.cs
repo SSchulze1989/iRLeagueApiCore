@@ -7,7 +7,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 
 [Collection("DbTestFixture")]
-public class GetLeagueDbTestFixture : HandlersTestsBase<GetLeagueHandler, GetLeagueRequest, LeagueModel>
+public sealed class GetLeagueDbTestFixture : HandlersTestsBase<GetLeagueHandler, GetLeagueRequest, LeagueModel>
 {
     public GetLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
     {

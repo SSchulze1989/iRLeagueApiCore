@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
 [Collection("DbTestFixture")]
-public class LeagueDbTestFixture : IClassFixture<DbTestFixture>
+public sealed class LeagueDbTestFixture : IClassFixture<DbTestFixture>
 {
     DbTestFixture Fixture { get; }
     ITestOutputHelper Output { get; }

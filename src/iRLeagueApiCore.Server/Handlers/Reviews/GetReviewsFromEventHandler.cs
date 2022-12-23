@@ -3,7 +3,7 @@
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetReviewsFromEventRequest(long LeagueId, long EventId, bool IncludeComments) : IRequest<IEnumerable<ReviewModel>>;
-public class GetReviewsFromEventHandler : ReviewsHandlerBase<GetReviewsFromEventHandler, GetReviewsFromEventRequest>,
+public sealed class GetReviewsFromEventHandler : ReviewsHandlerBase<GetReviewsFromEventHandler, GetReviewsFromEventRequest>,
     IRequestHandler<GetReviewsFromEventRequest, IEnumerable<ReviewModel>>
 {
     public GetReviewsFromEventHandler(ILogger<GetReviewsFromEventHandler> logger, LeagueDbContext dbContext,

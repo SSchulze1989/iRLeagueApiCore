@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Services.EmailService;
 
-public class EmailClientConfiguration
+public sealed class EmailClientConfiguration
 {
     public EmailClientConfiguration(string host, int port, NetworkCredential credentials, string sender, bool enableSsl = true)
     {

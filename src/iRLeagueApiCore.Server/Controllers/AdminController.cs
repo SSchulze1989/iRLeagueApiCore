@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
 [RequireLeagueRole(LeagueRoles.Admin)]
 [Route("{leagueName}/[controller]")]
-public class AdminController : LeagueApiController<AdminController>
+public sealed class AdminController : LeagueApiController<AdminController>
 {
     public AdminController(ILogger<AdminController> logger, IMediator mediator) : base(logger, mediator)
     {

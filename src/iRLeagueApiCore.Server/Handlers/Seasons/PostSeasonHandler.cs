@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record PostSeasonRequest(long LeagueId, LeagueUser User, PostSeasonModel Model) : IRequest<SeasonModel>;
 
-public class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, SeasonModel>
+public sealed class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, SeasonModel>
 {
     public PostSeasonHandler(ILogger<PostSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSeasonRequest>> validators) :
         base(logger, dbContext, validators)
@@ -24,7 +24,7 @@ public class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeason
         return getSeason;
     }
 
-    protected async Task<SeasonEntity> CreateSeasonEntity(LeagueUser user, long leagueId, CancellationToken cancellationToken = default)
+    private async Task<SeasonEntity> CreateSeasonEntity(LeagueUser user, long leagueId, CancellationToken cancellationToken = default)
     {
         var league = await dbContext.Leagues
             .SingleOrDefaultAsync(x => x.Id == leagueId) ?? throw new ResourceNotFoundException();

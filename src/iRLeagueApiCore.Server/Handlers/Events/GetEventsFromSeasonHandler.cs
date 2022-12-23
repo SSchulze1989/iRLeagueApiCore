@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record GetEventsFromSeasonRequest(long LeagueId, long SeasonId, bool IncludeDetails) : IRequest<IEnumerable<EventModel>>;
 
-public class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromSeasonHandler, GetEventsFromSeasonRequest>,
+public sealed class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromSeasonHandler, GetEventsFromSeasonRequest>,
     IRequestHandler<GetEventsFromSeasonRequest, IEnumerable<EventModel>>
 {
     public GetEventsFromSeasonHandler(ILogger<GetEventsFromSeasonHandler> logger, LeagueDbContext dbContext,
@@ -19,7 +19,7 @@ public class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromSeasonHa
         return getEvents;
     }
 
-    protected virtual async Task<IEnumerable<EventModel>> MapToEventsFromSeasonAsync(long leagueId, long seasonId, bool includeDetails = false,
+    private async Task<IEnumerable<EventModel>> MapToEventsFromSeasonAsync(long leagueId, long seasonId, bool includeDetails = false,
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Events

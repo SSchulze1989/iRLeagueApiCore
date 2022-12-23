@@ -7,7 +7,7 @@ using MediatR;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 
 [Collection("DbTestFixture")]
-public class DeleteScoringDbTestFixture : HandlersTestsBase<DeleteScoringHandler, DeleteScoringRequest, Unit>
+public sealed class DeleteScoringDbTestFixture : HandlersTestsBase<DeleteScoringHandler, DeleteScoringRequest, Unit>
 {
     public DeleteScoringDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -23,7 +23,7 @@ public class DeleteScoringDbTestFixture : HandlersTestsBase<DeleteScoringHandler
         return DefaultRequest();
     }
 
-    protected DeleteScoringRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = testScoringId)
+    private DeleteScoringRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = testScoringId)
     {
         return new DeleteScoringRequest(leagueId, scoringId);
     }

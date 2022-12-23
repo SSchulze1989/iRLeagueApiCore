@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace iRLeagueApiCore.Server.Validation;
 
-public class GiveRoleRequestValidator : AbstractValidator<GiveRoleRequest>
+public sealed class GiveRoleRequestValidator : AbstractValidator<GiveRoleRequest>
 {
     private readonly LeagueDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;

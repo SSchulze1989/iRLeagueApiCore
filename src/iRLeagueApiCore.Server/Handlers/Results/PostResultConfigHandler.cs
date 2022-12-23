@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record PostResultConfigRequest(long LeagueId, LeagueUser User, PostResultConfigModel Model) : IRequest<ResultConfigModel>;
 
-public class PostResultConfigHandler : ResultConfigHandlerBase<PostResultConfigHandler, PostResultConfigRequest>,
+public sealed class PostResultConfigHandler : ResultConfigHandlerBase<PostResultConfigHandler, PostResultConfigRequest>,
     IRequestHandler<PostResultConfigRequest, ResultConfigModel>
 {
     public PostResultConfigHandler(ILogger<PostResultConfigHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostResultConfigRequest>> validators) :
@@ -24,7 +24,7 @@ public class PostResultConfigHandler : ResultConfigHandlerBase<PostResultConfigH
         return getResultConfig;
     }
 
-    protected virtual async Task<ResultConfigurationEntity> CreateResultConfigEntity(long leagueId, LeagueUser user, CancellationToken cancellationToken)
+    private async Task<ResultConfigurationEntity> CreateResultConfigEntity(long leagueId, LeagueUser user, CancellationToken cancellationToken)
     {
         var league = await GetLeagueEntityAsync(leagueId, cancellationToken)
             ?? throw new ResourceNotFoundException();

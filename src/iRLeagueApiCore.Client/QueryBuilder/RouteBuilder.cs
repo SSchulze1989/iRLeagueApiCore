@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Client.QueryBuilder;
 
-public class RouteBuilder : IRouteBuilder
+public sealed class RouteBuilder : IRouteBuilder
 {
     private readonly List<string> parts;
 

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Reviews;
 
-public class PostReviewRequestValidator : AbstractValidator<PostReviewToSessionRequest>
+public sealed class PostReviewRequestValidator : AbstractValidator<PostReviewToSessionRequest>
 {
     private readonly LeagueDbContext dbContext;
 

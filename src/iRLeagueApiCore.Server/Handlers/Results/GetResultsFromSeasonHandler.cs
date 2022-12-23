@@ -3,7 +3,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<SeasonEventResultModel>>;
 
-public class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest>,
+public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest>,
     IRequestHandler<GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
 {
     public GetResultsFromSeasonHandler(ILogger<GetResultsFromSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromSeasonRequest>> validators) :

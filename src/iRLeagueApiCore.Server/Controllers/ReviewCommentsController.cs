@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
 [Route("{leagueName}/[controller]")]
-public class ReviewCommentsController : LeagueApiController<ReviewCommentsController>
+public sealed class ReviewCommentsController : LeagueApiController<ReviewCommentsController>
 {
     public ReviewCommentsController(ILogger<ReviewCommentsController> logger, IMediator mediator) : base(logger, mediator)
     {

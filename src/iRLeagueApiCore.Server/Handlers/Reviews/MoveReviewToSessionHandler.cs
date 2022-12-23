@@ -4,7 +4,7 @@ using iRLeagueApiCore.Server.Models;
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record MoveReviewToSessionRequest(long LeagueId, long SessionId, long ReviewId, LeagueUser User) : IRequest<ReviewModel>;
-public class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler, MoveReviewToSessionRequest>,
+public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler, MoveReviewToSessionRequest>,
     IRequestHandler<MoveReviewToSessionRequest, ReviewModel>
 {
     /// <summary>
@@ -31,13 +31,13 @@ public class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSession
         return getReview;
     }
 
-    protected async Task<IncidentReviewEntity> MoveToSessionAsync(LeagueUser user, IncidentReviewEntity review, SessionEntity session, CancellationToken cancellationToken)
+    private async Task<IncidentReviewEntity> MoveToSessionAsync(LeagueUser user, IncidentReviewEntity review, SessionEntity session, CancellationToken cancellationToken)
     {
         review.Session = session;
         return await Task.FromResult(UpdateVersionEntity(user, review));
     }
 
-    protected async Task<SessionEntity?> GetSessionEntityAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
+    private async Task<SessionEntity?> GetSessionEntityAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
     {
         return await dbContext.Sessions
             .Where(x => x.LeagueId == leagueId)

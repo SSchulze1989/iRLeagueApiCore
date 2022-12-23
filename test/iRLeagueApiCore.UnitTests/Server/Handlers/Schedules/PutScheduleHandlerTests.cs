@@ -7,7 +7,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;
 
 [Collection("DbTestFixture")]
-public class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHandler, PutScheduleRequest, ScheduleModel>
+public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHandler, PutScheduleRequest, ScheduleModel>
 {
     private const string testScheduleName = "TestSchedule";
 

@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Tracks;
 
 public record ImportTracksCommand(IracingAuthModel Model) : IRequest;
 
-public class ImportTracksHandler : HandlerBase<ImportTracksHandler, ImportTracksCommand>,
+public sealed class ImportTracksHandler : HandlerBase<ImportTracksHandler, ImportTracksCommand>,
     IRequestHandler<ImportTracksCommand, Unit>
 {
     private readonly TrackImportService trackImportService;

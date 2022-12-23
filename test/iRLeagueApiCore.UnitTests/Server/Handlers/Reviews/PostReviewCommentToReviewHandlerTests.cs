@@ -8,7 +8,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public class PostReviewCommentToReviewDbTestFixture : HandlersTestsBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
+public sealed class PostReviewCommentToReviewDbTestFixture : HandlersTestsBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
 {
     public PostReviewCommentToReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -29,7 +29,7 @@ public class PostReviewCommentToReviewDbTestFixture : HandlersTestsBase<PostRevi
         return new PostReviewCommentToReviewHandler(logger, dbContext, new[] { validator });
     }
 
-    protected virtual PostReviewCommentToReviewRequest DefaultRequest(long leagueId, long reviewId)
+    private PostReviewCommentToReviewRequest DefaultRequest(long leagueId, long reviewId)
     {
 
         return new PostReviewCommentToReviewRequest(leagueId, reviewId, DefaultUser(), TestReviewComment);

@@ -4,7 +4,7 @@ using iRLeagueApiCore.Server.Models;
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostReviewToSessionRequest(long LeagueId, long SessionId, LeagueUser User, PostReviewModel Model) : IRequest<ReviewModel>;
-public class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewToSessionHandler, PostReviewToSessionRequest>, IRequestHandler<PostReviewToSessionRequest, ReviewModel>
+public sealed class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewToSessionHandler, PostReviewToSessionRequest>, IRequestHandler<PostReviewToSessionRequest, ReviewModel>
 {
     /// <summary>
     /// Always include comments because this can only be called by an authorized user
@@ -27,7 +27,7 @@ public class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewToSession
         return getReview;
     }
 
-    protected virtual async Task<IncidentReviewEntity> CreateReviewEntityOnSession(long leagueId, long sessionId, LeagueUser user, CancellationToken cancellationToken)
+    private async Task<IncidentReviewEntity> CreateReviewEntityOnSession(long leagueId, long sessionId, LeagueUser user, CancellationToken cancellationToken)
     {
         var session = await dbContext.Sessions
             .Where(x => x.LeagueId == leagueId)

@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Authentication;
 
-public class UserDbContextFactory : IDbContextFactory<UserDbContext>
+public sealed class UserDbContextFactory : IDbContextFactory<UserDbContext>
 {
     private readonly IConfiguration _configuration;
 

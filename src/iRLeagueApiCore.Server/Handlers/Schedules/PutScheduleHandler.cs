@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
 public record PutScheduleRequest(long LeagueId, LeagueUser User, long ScheduleId, PutScheduleModel Model) : IRequest<ScheduleModel>;
 
-public class PutScheduleHandler : ScheduleHandlerBase<PutScheduleHandler, PutScheduleRequest>,
+public sealed class PutScheduleHandler : ScheduleHandlerBase<PutScheduleHandler, PutScheduleRequest>,
     IRequestHandler<PutScheduleRequest, ScheduleModel>
 {
     public PutScheduleHandler(ILogger<PutScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutScheduleRequest>> validators) : base(logger, dbContext, validators)

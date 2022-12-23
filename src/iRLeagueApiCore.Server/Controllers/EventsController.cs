@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [TypeFilter(typeof(InsertLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
-public class EventsController : LeagueApiController<EventsController>
+public sealed class EventsController : LeagueApiController<EventsController>
 {
     public EventsController(ILogger<EventsController> logger, IMediator mediator) : base(logger, mediator)
     {

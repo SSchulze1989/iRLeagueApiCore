@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace iRLeagueApiCore.TrackImport.Models;
 
-public class IRacingAuthResponse
+public sealed class IRacingAuthResponse
 {
     [JsonPropertyName("authcode"), JsonConverter(typeof(JsonStringOrNumberToStringConverter))]
     public string? Authcode { get; set; }

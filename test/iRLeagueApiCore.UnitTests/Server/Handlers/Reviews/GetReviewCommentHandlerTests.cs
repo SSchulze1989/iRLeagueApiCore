@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewCommentHandler, GetReviewCommentRequest, ReviewCommentModel>
+public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewCommentHandler, GetReviewCommentRequest, ReviewCommentModel>
 {
     public GetReviewCommentDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
@@ -20,7 +20,7 @@ public class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewCommentH
         return new GetReviewCommentHandler(logger, dbContext, new[] { validator });
     }
 
-    protected virtual GetReviewCommentRequest DefaultRequest(long leagueId, long commentId)
+    private GetReviewCommentRequest DefaultRequest(long leagueId, long commentId)
     {
 
         return new GetReviewCommentRequest(leagueId, commentId);

@@ -5,7 +5,7 @@ using System.Net;
 
 namespace iRLeagueApiCore.UnitTests.Client.Endpoints;
 
-public class EndpointsTests
+public sealed class EndpointsTests
 {
     public static string BaseUrl = "https://example.com/api/";
 

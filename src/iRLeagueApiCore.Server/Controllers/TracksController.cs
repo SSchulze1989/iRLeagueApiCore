@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [Route("[controller]")]
-public class TracksController : LeagueApiController<TracksController>
+public sealed class TracksController : LeagueApiController<TracksController>
 {
     public TracksController(ILogger<TracksController> logger, IMediator mediator) :
         base(logger, mediator)

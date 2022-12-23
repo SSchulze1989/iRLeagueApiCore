@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Leagues;
 
-public class PostLeagueRequestValidator : AbstractValidator<PostLeagueRequest>
+public sealed class PostLeagueRequestValidator : AbstractValidator<PostLeagueRequest>
 {
     public PostLeagueRequestValidator(PostLeagueModelValidator modelValidator)
     {

@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Members;
 
 public record GetMembersFromEventRequest(long LeagueId, long EventId) : IRequest<IEnumerable<MemberInfoModel>>;
 
-public class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler, GetMembersFromEventRequest>,
+public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler, GetMembersFromEventRequest>,
     IRequestHandler<GetMembersFromEventRequest, IEnumerable<MemberInfoModel>>
 {
     public GetMembersFromEventHandler(ILogger<GetMembersFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetMembersFromEventRequest>> validators) : base(logger, dbContext, validators)
@@ -18,7 +18,7 @@ public class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEvent
         return getMembers;
     }
 
-    protected async Task<IEnumerable<MemberInfoModel>> GetMembersFromEvent(long leagueId, long eventId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<MemberInfoModel>> GetMembersFromEvent(long leagueId, long eventId, CancellationToken cancellationToken)
     {
         var resultMembers = await dbContext.EventResults
             .Where(x => x.LeagueId == leagueId)

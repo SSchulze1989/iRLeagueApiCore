@@ -3,7 +3,7 @@ using iRLeagueApiCore.Common.Models.Reviews;
 
 namespace iRLeagueApiCore.Server.Validation.Reviews;
 
-public class PostReviewModelValidator : AbstractValidator<PostReviewModel>
+public sealed class PostReviewModelValidator : AbstractValidator<PostReviewModel>
 {
     private readonly LeagueDbContext dbContext;
 

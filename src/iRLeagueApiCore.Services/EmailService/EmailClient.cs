@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Services.EmailService;
 
-public class EmailClient : IEmailClient
+public sealed class EmailClient : IEmailClient
 {
     private readonly ILogger<EmailClient> logger;
     private readonly EmailClientConfiguration clientConfiguration;
