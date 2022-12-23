@@ -93,7 +93,7 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             Description = vote.Description,
             VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
             VoteCategoryText = vote.VoteCategory.Text,
-            MemberAtFault = new MemberInfoModel()
+            MemberAtFault = vote.MemberAtFault == null ? null : new MemberInfoModel()
             {
                 MemberId = vote.MemberAtFault.Id,
                 FirstName = vote.MemberAtFault.Firstname,
