@@ -2,19 +2,18 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models.Reviews;
 
-namespace iRLeagueApiCore.Client.Endpoints.Reviews
-{
-    public class ReviewsEndpoint : PostGetAllEndpoint<ReviewModel, PostReviewModel>, IReviewsEndpoint, IGetAllEndpoint<ReviewModel>, IPostEndpoint<ReviewModel, PostReviewModel>
-    {
-        public ReviewsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
-            base(httpClient, routeBuilder)
-        {
-            RouteBuilder.AddEndpoint("Reviews");
-        }
+namespace iRLeagueApiCore.Client.Endpoints.Reviews;
 
-        public IReviewByIdEndpoint WithId(long id)
-        {
-            return new ReviewByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
-        }
+public class ReviewsEndpoint : PostGetAllEndpoint<ReviewModel, PostReviewModel>, IReviewsEndpoint, IGetAllEndpoint<ReviewModel>, IPostEndpoint<ReviewModel, PostReviewModel>
+{
+    public ReviewsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
+        base(httpClient, routeBuilder)
+    {
+        RouteBuilder.AddEndpoint("Reviews");
+    }
+
+    public IReviewByIdEndpoint WithId(long id)
+    {
+        return new ReviewByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
 }

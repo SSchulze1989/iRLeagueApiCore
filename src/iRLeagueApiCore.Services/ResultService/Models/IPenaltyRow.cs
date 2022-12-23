@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Models
+﻿namespace iRLeagueApiCore.Services.ResultService.Models;
+
+internal interface IPenaltyRow
 {
-    internal interface IPenaltyRow
-    {
-        public AddPenaltyCalculationData? AddPenalty { get; set; }
-    }
+    public AddPenaltyCalculationData? AddPenalty { get; set; }
 }

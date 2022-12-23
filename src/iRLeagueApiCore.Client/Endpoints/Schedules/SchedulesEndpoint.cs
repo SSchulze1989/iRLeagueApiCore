@@ -2,18 +2,17 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Schedules
-{
-    internal class SchedulesEndpoint : PostGetAllEndpoint<ScheduleModel, PostScheduleModel>, ISchedulesEndpoint
-    {
-        public SchedulesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
-        {
-            RouteBuilder.AddEndpoint("Schedules");
-        }
+namespace iRLeagueApiCore.Client.Endpoints.Schedules;
 
-        IScheduleByIdEndpoint IWithIdEndpoint<IScheduleByIdEndpoint>.WithId(long id)
-        {
-            return new ScheduleByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
-        }
+internal class SchedulesEndpoint : PostGetAllEndpoint<ScheduleModel, PostScheduleModel>, ISchedulesEndpoint
+{
+    public SchedulesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
+    {
+        RouteBuilder.AddEndpoint("Schedules");
+    }
+
+    IScheduleByIdEndpoint IWithIdEndpoint<IScheduleByIdEndpoint>.WithId(long id)
+    {
+        return new ScheduleByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
 }

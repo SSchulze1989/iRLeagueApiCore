@@ -1,15 +1,14 @@
 ﻿using iRLeagueApiCore.Server.Handlers.Tracks;
 
-namespace iRLeagueApiCore.Server.Validation.Tracks
+namespace iRLeagueApiCore.Server.Validation.Tracks;
+
+public class ImportTracksCommandValidator : AbstractValidator<ImportTracksCommand>
 {
-    public class ImportTracksCommandValidator : AbstractValidator<ImportTracksCommand>
+    public ImportTracksCommandValidator()
     {
-        public ImportTracksCommandValidator()
-        {
-            RuleFor(x => x.Model.UserName)
-                .NotEmpty();
-            RuleFor(x => x.Model.Password)
-                .NotEmpty();
-        }
+        RuleFor(x => x.Model.UserName)
+            .NotEmpty();
+        RuleFor(x => x.Model.Password)
+            .NotEmpty();
     }
 }

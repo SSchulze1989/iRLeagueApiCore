@@ -1,13 +1,12 @@
 ﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Server.Validation.Results
+namespace iRLeagueApiCore.Server.Validation.Results;
+
+public class PostResultConfigModelValidator : AbstractValidator<PostResultConfigModel>
 {
-    public class PostResultConfigModelValidator : AbstractValidator<PostResultConfigModel>
+    public PostResultConfigModelValidator()
     {
-        public PostResultConfigModelValidator()
-        {
-            RuleFor(x => x.Name).NotEmpty();
-            RuleFor(x => x.DisplayName).NotEmpty();
-        }
+        RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.DisplayName).NotEmpty();
     }
 }

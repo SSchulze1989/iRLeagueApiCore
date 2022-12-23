@@ -1,8 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Scorings
+namespace iRLeagueApiCore.Client.Endpoints.Scorings;
+
+public interface IScoringsEndpoint : IPostGetAllEndpoint<ScoringModel, PostScoringModel>, IWithIdEndpoint<IScoringByIdEndpoint>
 {
-    public interface IScoringsEndpoint : IPostGetAllEndpoint<ScoringModel, PostScoringModel>, IWithIdEndpoint<IScoringByIdEndpoint>
-    {
-    }
 }

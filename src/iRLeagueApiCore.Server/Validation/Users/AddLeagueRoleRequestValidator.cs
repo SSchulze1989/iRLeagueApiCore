@@ -1,15 +1,14 @@
 ﻿using iRLeagueApiCore.Server.Handlers.Users;
 
-namespace iRLeagueApiCore.Server.Validation.Users
+namespace iRLeagueApiCore.Server.Validation.Users;
+
+public class AddLeagueRoleRequestValidator : AbstractValidator<AddLeagueRoleRequest>
 {
-    public class AddLeagueRoleRequestValidator : AbstractValidator<AddLeagueRoleRequest>
+    public AddLeagueRoleRequestValidator()
     {
-        public AddLeagueRoleRequestValidator()
-        {
-            RuleFor(x => x.RoleName)
-                .Must(LeagueRoles.IsValidRole)
-                .WithMessage(request =>
-                    $"Invalid value. Valid roles: [{string.Join<LeagueRoleValue>(", ", LeagueRoles.RolesAvailable)}]");
-        }
+        RuleFor(x => x.RoleName)
+            .Must(LeagueRoles.IsValidRole)
+            .WithMessage(request =>
+                $"Invalid value. Valid roles: [{string.Join<LeagueRoleValue>(", ", LeagueRoles.RolesAvailable)}]");
     }
 }

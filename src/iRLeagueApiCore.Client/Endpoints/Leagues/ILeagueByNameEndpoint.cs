@@ -8,20 +8,19 @@ using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Endpoints.VoteCategories;
 using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Leagues
+namespace iRLeagueApiCore.Client.Endpoints.Leagues;
+
+public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
 {
-    public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
-    {
-        string Name { get; }
-        ISeasonsEndpoint Seasons();
-        ISchedulesEndpoint Schedules();
-        IEventsEndpoint Events();
-        IResultConfigsEndpoint ResultConfigs();
-        IPointRulesEndpoint PointRules();
-        IReviewsEndpoint Reviews();
-        IReviewCommentsEndpoint ReviewComments();
-        ISessionsEndpoint Sessions();
-        ILeagueUsersEndpoint Users();
-        IVoteCategoriesEndpoint VoteCategories();
-    }
+    string Name { get; }
+    ISeasonsEndpoint Seasons();
+    ISchedulesEndpoint Schedules();
+    IEventsEndpoint Events();
+    IResultConfigsEndpoint ResultConfigs();
+    IPointRulesEndpoint PointRules();
+    IReviewsEndpoint Reviews();
+    IReviewCommentsEndpoint ReviewComments();
+    ISessionsEndpoint Sessions();
+    ILeagueUsersEndpoint Users();
+    IVoteCategoriesEndpoint VoteCategories();
 }

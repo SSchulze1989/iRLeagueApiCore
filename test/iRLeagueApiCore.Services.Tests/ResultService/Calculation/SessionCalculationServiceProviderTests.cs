@@ -2,49 +2,48 @@
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation
+namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
+
+public sealed class SessionCalculationServiceProviderTests
 {
-    public sealed class SessionCalculationServiceProviderTests
+    private readonly Fixture fixture;
+
+    public SessionCalculationServiceProviderTests()
     {
-        private readonly Fixture fixture;
+        fixture = new();
+    }
 
-        public SessionCalculationServiceProviderTests()
-        {
-            fixture = new();
-        }
+    [Fact]
+    public void GetCalculationService_ShouldProvideMemberCalculationService_WhenScoringKindIsMember()
+    {
+        var config = GetCalculationConfiguration();
+        config.ResultKind = ResultKind.Member;
+        var sut = CreateSut();
 
-        [Fact]
-        public void GetCalculationService_ShouldProvideMemberCalculationService_WhenScoringKindIsMember()
-        {
-            var config = GetCalculationConfiguration();
-            config.ResultKind = ResultKind.Member;
-            var sut = CreateSut();
+        var test = sut.GetCalculationService(config);
 
-            var test = sut.GetCalculationService(config);
+        test.Should().BeOfType<MemberSessionCalculationService>();
+    }
 
-            test.Should().BeOfType<MemberSessionCalculationService>();
-        }
+    [Fact]
+    public void GetCalculationService_ShouldProvideTeamCalculationService_WhenScoringKindIsTeam()
+    {
+        var config = GetCalculationConfiguration();
+        config.ResultKind = ResultKind.Team;
+        var sut = CreateSut();
 
-        [Fact]
-        public void GetCalculationService_ShouldProvideTeamCalculationService_WhenScoringKindIsTeam()
-        {
-            var config = GetCalculationConfiguration();
-            config.ResultKind = ResultKind.Team;
-            var sut = CreateSut();
+        var test = sut.GetCalculationService(config);
 
-            var test = sut.GetCalculationService(config);
+        test.Should().BeOfType<TeamSessionCalculationService>();
+    }
 
-            test.Should().BeOfType<TeamSessionCalculationService>();
-        }
+    private SessionCalculationServiceProvider CreateSut()
+    {
+        return fixture.Create<SessionCalculationServiceProvider>();
+    }
 
-        private SessionCalculationServiceProvider CreateSut()
-        {
-            return fixture.Create<SessionCalculationServiceProvider>();
-        }
-
-        private SessionCalculationConfiguration GetCalculationConfiguration()
-        {
-            return fixture.Create<SessionCalculationConfiguration>();
-        }
+    private SessionCalculationConfiguration GetCalculationConfiguration()
+    {
+        return fixture.Create<SessionCalculationConfiguration>();
     }
 }

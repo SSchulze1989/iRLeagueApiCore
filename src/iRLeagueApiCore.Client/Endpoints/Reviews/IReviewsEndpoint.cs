@@ -1,6 +1,5 @@
-﻿namespace iRLeagueApiCore.Client.Endpoints.Reviews
+﻿namespace iRLeagueApiCore.Client.Endpoints.Reviews;
+
+public interface IReviewsEndpoint : IWithIdEndpoint<IReviewByIdEndpoint>
 {
-    public interface IReviewsEndpoint : IWithIdEndpoint<IReviewByIdEndpoint>
-    {
-    }
 }

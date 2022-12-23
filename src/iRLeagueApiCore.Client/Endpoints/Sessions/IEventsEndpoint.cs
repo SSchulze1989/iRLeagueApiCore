@@ -1,6 +1,5 @@
-﻿namespace iRLeagueApiCore.Client.Endpoints.Sessions
+﻿namespace iRLeagueApiCore.Client.Endpoints.Sessions;
+
+public interface IEventsEndpoint : IWithIdEndpoint<IEventByIdEndpoint>
 {
-    public interface IEventsEndpoint : IWithIdEndpoint<IEventByIdEndpoint>
-    {
-    }
 }

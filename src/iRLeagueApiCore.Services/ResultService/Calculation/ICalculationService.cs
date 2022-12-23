@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Calculation
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
+
+public interface ICalculationService<TIn, TOut>
 {
-    public interface ICalculationService<TIn, TOut>
-    {
-        public Task<TOut> Calculate(TIn data);
-    }
+    public Task<TOut> Calculate(TIn data);
 }

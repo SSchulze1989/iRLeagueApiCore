@@ -1,23 +1,22 @@
-﻿namespace iRLeagueApiCore.Server.Handlers.Scorings
+﻿namespace iRLeagueApiCore.Server.Handlers.Scorings;
+
+public record DeletePointRuleRequest(long LeagueId, long PointRuleId) : IRequest;
+
+public class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler, DeletePointRuleRequest>,
+    IRequestHandler<DeletePointRuleRequest, Unit>
 {
-    public record DeletePointRuleRequest(long LeagueId, long PointRuleId) : IRequest;
-
-    public class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler, DeletePointRuleRequest>,
-        IRequestHandler<DeletePointRuleRequest, Unit>
+    public DeletePointRuleHandler(ILogger<DeletePointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeletePointRuleRequest>> validators) :
+        base(logger, dbContext, validators)
     {
-        public DeletePointRuleHandler(ILogger<DeletePointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeletePointRuleRequest>> validators) :
-            base(logger, dbContext, validators)
-        {
-        }
+    }
 
-        public async Task<Unit> Handle(DeletePointRuleRequest request, CancellationToken cancellationToken)
-        {
-            await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-            var deletePointRule = await GetPointRuleEntityAsync(request.LeagueId, request.PointRuleId, cancellationToken)
-                ?? throw new ResourceNotFoundException();
-            dbContext.PointRules.Remove(deletePointRule);
-            await dbContext.SaveChangesAsync(cancellationToken);
-            return Unit.Value;
-        }
+    public async Task<Unit> Handle(DeletePointRuleRequest request, CancellationToken cancellationToken)
+    {
+        await validators.ValidateAllAndThrowAsync(request, cancellationToken);
+        var deletePointRule = await GetPointRuleEntityAsync(request.LeagueId, request.PointRuleId, cancellationToken)
+            ?? throw new ResourceNotFoundException();
+        dbContext.PointRules.Remove(deletePointRule);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return Unit.Value;
     }
 }

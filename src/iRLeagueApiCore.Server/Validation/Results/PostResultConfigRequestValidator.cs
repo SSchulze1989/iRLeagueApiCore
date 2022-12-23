@@ -1,24 +1,23 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 
-namespace iRLeagueApiCore.Server.Validation.Results
+namespace iRLeagueApiCore.Server.Validation.Results;
+
+public class PostResultConfigRequestValidator : AbstractValidator<PostResultConfigRequest>
 {
-    public class PostResultConfigRequestValidator : AbstractValidator<PostResultConfigRequest>
+    private readonly LeagueDbContext dbContext;
+
+    public PostResultConfigRequestValidator(LeagueDbContext dbContext, PostResultConfigModelValidator modelValidator)
     {
-        private readonly LeagueDbContext dbContext;
+        this.dbContext = dbContext;
+        RuleFor(x => x.Model)
+            .SetValidator(modelValidator);
+        RuleForEach(x => x.Model.Scorings)
+            .Must(ScoringIdZero);
+    }
 
-        public PostResultConfigRequestValidator(LeagueDbContext dbContext, PostResultConfigModelValidator modelValidator)
-        {
-            this.dbContext = dbContext;
-            RuleFor(x => x.Model)
-                .SetValidator(modelValidator);
-            RuleForEach(x => x.Model.Scorings)
-                .Must(ScoringIdZero);
-        }
-
-        private bool ScoringIdZero(ScoringModel scoringModel)
-        {
-            return scoringModel.Id == 0;
-        }
+    private bool ScoringIdZero(ScoringModel scoringModel)
+    {
+        return scoringModel.Id == 0;
     }
 }

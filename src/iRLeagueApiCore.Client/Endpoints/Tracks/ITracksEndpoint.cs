@@ -1,8 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models.Tracks;
 
-namespace iRLeagueApiCore.Client.Endpoints.Tracks
+namespace iRLeagueApiCore.Client.Endpoints.Tracks;
+
+public interface ITracksEndpoint : IGetAllEndpoint<TrackGroupModel>
 {
-    public interface ITracksEndpoint : IGetAllEndpoint<TrackGroupModel>
-    {
-    }
 }

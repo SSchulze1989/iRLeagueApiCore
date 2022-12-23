@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Client.Endpoints
+﻿namespace iRLeagueApiCore.Client.Endpoints;
+
+public interface IWithIdEndpoint<T>
 {
-    public interface IWithIdEndpoint<T>
-    {
-        T WithId(long id);
-    }
+    T WithId(long id);
 }

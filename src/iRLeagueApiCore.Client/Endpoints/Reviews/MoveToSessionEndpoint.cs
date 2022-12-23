@@ -2,15 +2,14 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models.Reviews;
 
-namespace iRLeagueApiCore.Client.Endpoints.Reviews
+namespace iRLeagueApiCore.Client.Endpoints.Reviews;
+
+public class MoveToSessionEndpoint : PostEndpoint<ReviewModel>, IPostEndpoint<ReviewModel>
 {
-    public class MoveToSessionEndpoint : PostEndpoint<ReviewModel>, IPostEndpoint<ReviewModel>
+    public MoveToSessionEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder, long sessionId) :
+        base(httpClient, routeBuilder)
     {
-        public MoveToSessionEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder, long sessionId) :
-            base(httpClient, routeBuilder)
-        {
-            RouteBuilder.AddEndpoint("MoveToSession");
-            RouteBuilder.AddParameter(sessionId);
-        }
+        RouteBuilder.AddEndpoint("MoveToSession");
+        RouteBuilder.AddParameter(sessionId);
     }
 }

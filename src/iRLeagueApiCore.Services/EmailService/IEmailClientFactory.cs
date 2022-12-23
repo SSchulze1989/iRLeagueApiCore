@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.EmailService
+﻿namespace iRLeagueApiCore.Services.EmailService;
+
+public interface IEmailClientFactory
 {
-    public interface IEmailClientFactory
-    {
-        public IEmailClient CreateEmailClient();
-    }
+    public IEmailClient CreateEmailClient();
 }

@@ -1,21 +1,20 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Calculation
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
+
+internal sealed class PerPlacePointRule : CalculationPointRuleBase
 {
-    internal sealed class PerPlacePointRule : CalculationPointRuleBase
+    public IReadOnlyDictionary<int, double> PointsPerPlace { get; private set; }
+
+    public PerPlacePointRule(IReadOnlyDictionary<int, double> pointPerPlace)
     {
-        public IReadOnlyDictionary<int, double> PointsPerPlace { get; private set; }
+        PointsPerPlace = pointPerPlace;
+    }
 
-        public PerPlacePointRule(IReadOnlyDictionary<int, double> pointPerPlace)
+    public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
+    {
+        foreach ((var row, var pos) in rows.Select((x, i) => (x, i + 1)))
         {
-            PointsPerPlace = pointPerPlace;
+            row.RacePoints = PointsPerPlace.TryGetValue(pos, out double points) ? points : 0d;
         }
-
-        public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
-        {
-            foreach ((var row, var pos) in rows.Select((x, i) => (x, i + 1)))
-            {
-                row.RacePoints = PointsPerPlace.TryGetValue(pos, out double points) ? points : 0d;
-            }
-            return rows;
-        }
+        return rows;
     }
 }

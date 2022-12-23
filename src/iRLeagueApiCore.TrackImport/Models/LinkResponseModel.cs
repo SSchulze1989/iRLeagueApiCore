@@ -1,8 +1,7 @@
-﻿namespace iRLeagueApiCore.TrackImport.Models
+﻿namespace iRLeagueApiCore.TrackImport.Models;
+
+public struct LinkResponseModel
 {
-    public struct LinkResponseModel
-    {
-        public string link { get; set; }
-        public DateTime expires { get; set; }
-    }
+    public string link { get; set; }
+    public DateTime expires { get; set; }
 }

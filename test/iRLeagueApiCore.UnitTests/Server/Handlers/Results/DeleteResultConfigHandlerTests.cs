@@ -3,60 +3,59 @@ using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 
-namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results
+namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
+
+[Collection("DbTestFixture")]
+public class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
 {
-    [Collection("DbTestFixture")]
-    public class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
+    public DeleteResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
     {
-        public DeleteResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
-        {
-        }
+    }
 
-        protected override DeleteResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteResultConfigRequest> validator)
-        {
-            return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator });
-        }
+    protected override DeleteResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteResultConfigRequest> validator)
+    {
+        return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator });
+    }
 
-        protected virtual DeleteResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
-        {
-            return new DeleteResultConfigRequest(leagueId, resultConfigId);
-        }
+    protected virtual DeleteResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
+    {
+        return new DeleteResultConfigRequest(leagueId, resultConfigId);
+    }
 
-        protected override DeleteResultConfigRequest DefaultRequest()
-        {
-            return DefaultRequest(testLeagueId, testResultConfigId);
-        }
+    protected override DeleteResultConfigRequest DefaultRequest()
+    {
+        return DefaultRequest(testLeagueId, testResultConfigId);
+    }
 
-        protected override void DefaultAssertions(DeleteResultConfigRequest request, MediatR.Unit result, LeagueDbContext dbContext)
-        {
-            var deletedResultConfig = dbContext.ResultConfigurations
-                .Where(x => x.ResultConfigId == request.ResultConfigId)
-                .FirstOrDefault();
-            deletedResultConfig.Should().BeNull();
-            base.DefaultAssertions(request, result, dbContext);
-        }
+    protected override void DefaultAssertions(DeleteResultConfigRequest request, MediatR.Unit result, LeagueDbContext dbContext)
+    {
+        var deletedResultConfig = dbContext.ResultConfigurations
+            .Where(x => x.ResultConfigId == request.ResultConfigId)
+            .FirstOrDefault();
+        deletedResultConfig.Should().BeNull();
+        base.DefaultAssertions(request, result, dbContext);
+    }
 
-        [Fact]
-        public override async Task<MediatR.Unit> ShouldHandleDefault()
-        {
-            return await base.ShouldHandleDefault();
-        }
+    [Fact]
+    public override async Task<MediatR.Unit> ShouldHandleDefault()
+    {
+        return await base.ShouldHandleDefault();
+    }
 
-        [Theory]
-        [InlineData(0, testResultId)]
-        [InlineData(testLeagueId, 0)]
-        [InlineData(42, testResultId)]
-        [InlineData(testLeagueId, 42)]
-        public async Task HandleNotFoundAsync(long leagueId, long resultId)
-        {
-            var request = DefaultRequest(leagueId, resultId);
-            await HandleNotFoundRequestAsync(request);
-        }
+    [Theory]
+    [InlineData(0, testResultId)]
+    [InlineData(testLeagueId, 0)]
+    [InlineData(42, testResultId)]
+    [InlineData(testLeagueId, 42)]
+    public async Task HandleNotFoundAsync(long leagueId, long resultId)
+    {
+        var request = DefaultRequest(leagueId, resultId);
+        await HandleNotFoundRequestAsync(request);
+    }
 
-        [Fact]
-        public override async Task ShouldHandleValidationFailed()
-        {
-            await base.ShouldHandleValidationFailed();
-        }
+    [Fact]
+    public override async Task ShouldHandleValidationFailed()
+    {
+        await base.ShouldHandleValidationFailed();
     }
 }

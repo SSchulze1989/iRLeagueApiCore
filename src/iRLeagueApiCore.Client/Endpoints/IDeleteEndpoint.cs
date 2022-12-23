@@ -1,9 +1,8 @@
 using iRLeagueApiCore.Client.Results;
 
-namespace iRLeagueApiCore.Client.Endpoints
+namespace iRLeagueApiCore.Client.Endpoints;
+
+public interface IDeleteEndpoint
 {
-    public interface IDeleteEndpoint
-    {
-        Task<ClientActionResult<NoContent>> Delete(CancellationToken cancellationToken = default);
-    }
+    Task<ClientActionResult<NoContent>> Delete(CancellationToken cancellationToken = default);
 }

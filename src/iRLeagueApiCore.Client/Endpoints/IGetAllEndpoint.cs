@@ -1,6 +1,5 @@
-namespace iRLeagueApiCore.Client.Endpoints
+namespace iRLeagueApiCore.Client.Endpoints;
+
+public interface IGetAllEndpoint<T> : IGetEndpoint<IEnumerable<T>>
 {
-    public interface IGetAllEndpoint<T> : IGetEndpoint<IEnumerable<T>>
-    {
-    }
 }

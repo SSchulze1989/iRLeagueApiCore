@@ -1,37 +1,36 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Models;
 
-namespace iRLeagueApiCore.Services.ResultService.Calculation
+namespace iRLeagueApiCore.Services.ResultService.Calculation;
+
+internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, IPenaltyRow
 {
-    internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, IPenaltyRow
+    private readonly IEnumerable<RowFilter<TRow>> filters = Array.Empty<RowFilter<TRow>>();
+
+    public override IEnumerable<RowFilter<TRow>> GetPointFilters() => filters;
+    public override IEnumerable<RowFilter<TRow>> GetResultFilters() => filters;
+
+    public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
     {
-        private readonly IEnumerable<RowFilter<TRow>> filters = Array.Empty<RowFilter<TRow>>();
-
-        public override IEnumerable<RowFilter<TRow>> GetPointFilters() => filters;
-        public override IEnumerable<RowFilter<TRow>> GetResultFilters() => filters;
-
-        public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
+        foreach (var row in rows)
         {
-            foreach (var row in rows)
-            {
-                row.PenaltyPoints = row.AddPenalty?.PenaltyPoints ?? 0;
-                row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;
-            }
-            return rows;
+            row.PenaltyPoints = row.AddPenalty?.PenaltyPoints ?? 0;
+            row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;
         }
+        return rows;
+    }
 
-        public override IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
+    public override IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
 
-        public override IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
+    public override IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
 
-        public override IDictionary<string, int> GetBonusPoints() => new Dictionary<string, int>();
+    public override IDictionary<string, int> GetBonusPoints() => new Dictionary<string, int>();
 
-        private static IReadOnlyList<T> DefaultSort<T>(IEnumerable<T> rows) where T : TRow
+    private static IReadOnlyList<T> DefaultSort<T>(IEnumerable<T> rows) where T : TRow
+    {
+        if (rows is IReadOnlyList<T> list)
         {
-            if (rows is IReadOnlyList<T> list)
-            {
-                return list;
-            }
-            return rows.ToList();
+            return list;
         }
+        return rows.ToList();
     }
 }

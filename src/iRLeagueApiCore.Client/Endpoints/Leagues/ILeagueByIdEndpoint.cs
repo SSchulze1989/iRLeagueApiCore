@@ -1,8 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Leagues
+namespace iRLeagueApiCore.Client.Endpoints.Leagues;
+
+public interface ILeagueByIdEndpoint : IUpdateEndpoint<LeagueModel, PutLeagueModel>
 {
-    public interface ILeagueByIdEndpoint : IUpdateEndpoint<LeagueModel, PutLeagueModel>
-    {
-    }
 }

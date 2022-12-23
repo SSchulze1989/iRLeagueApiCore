@@ -2,19 +2,18 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Scorings
-{
-    internal class ScoringsEndpoint : PostGetAllEndpoint<ScoringModel, PostScoringModel>, IScoringsEndpoint
-    {
-        public ScoringsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
-            base(httpClientWrapper, routeBuilder)
-        {
-            RouteBuilder.AddEndpoint("Scorings");
-        }
+namespace iRLeagueApiCore.Client.Endpoints.Scorings;
 
-        IScoringByIdEndpoint IWithIdEndpoint<IScoringByIdEndpoint>.WithId(long id)
-        {
-            return new ScoringByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
-        }
+internal class ScoringsEndpoint : PostGetAllEndpoint<ScoringModel, PostScoringModel>, IScoringsEndpoint
+{
+    public ScoringsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
+        base(httpClientWrapper, routeBuilder)
+    {
+        RouteBuilder.AddEndpoint("Scorings");
+    }
+
+    IScoringByIdEndpoint IWithIdEndpoint<IScoringByIdEndpoint>.WithId(long id)
+    {
+        return new ScoringByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
 }

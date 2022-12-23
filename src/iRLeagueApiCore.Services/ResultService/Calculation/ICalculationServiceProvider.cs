@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Calculation
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
+
+public interface ICalculationServiceProvider<TConfig, TIn, TOut>
 {
-    public interface ICalculationServiceProvider<TConfig, TIn, TOut>
-    {
-        public ICalculationService<TIn, TOut> GetCalculationService(TConfig config);
-    }
+    public ICalculationService<TIn, TOut> GetCalculationService(TConfig config);
 }

@@ -2,18 +2,17 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 
-namespace iRLeagueApiCore.Client.Endpoints
-{
-    public class GetAllEndpoint<T> : EndpointBase, IGetAllEndpoint<T>
-    {
-        public GetAllEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
-            base(httpClientWrapper, routeBuilder)
-        {
-        }
+namespace iRLeagueApiCore.Client.Endpoints;
 
-        async Task<ClientActionResult<IEnumerable<T>>> IGetEndpoint<IEnumerable<T>>.Get(CancellationToken cancellationToken)
-        {
-            return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<T>>(QueryUrl, cancellationToken);
-        }
+public class GetAllEndpoint<T> : EndpointBase, IGetAllEndpoint<T>
+{
+    public GetAllEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
+        base(httpClientWrapper, routeBuilder)
+    {
+    }
+
+    async Task<ClientActionResult<IEnumerable<T>>> IGetEndpoint<IEnumerable<T>>.Get(CancellationToken cancellationToken)
+    {
+        return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<T>>(QueryUrl, cancellationToken);
     }
 }
