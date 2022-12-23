@@ -227,6 +227,7 @@ public sealed class MemberSessionCalculationServiceTests
             .Build<SessionCalculationConfiguration>()
             .With(x => x.LeagueId, leagueId)
             .With(x => x.SessionId, sessionId)
+            .With(x => x.IsCombinedResult, false)
             .Create();
     }
 

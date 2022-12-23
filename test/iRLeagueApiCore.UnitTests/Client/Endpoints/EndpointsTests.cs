@@ -35,7 +35,7 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints
             var testClientWrapper = new HttpClientWrapper(testClient, Mock.Of<IAsyncTokenProvider>());
             await action.Invoke(endpoint.Invoke(testClientWrapper));
 
-            Assert.Equal(expectedUrl, requestUrl);
+            requestUrl.Should().Be(expectedUrl);
         }
 
         public static async Task TestRequest<TEndpoint>(string expectedUrl, Func<HttpClientWrapper, TEndpoint> endpoint, Func<TEndpoint, Task> action, HttpMethod method)
@@ -61,8 +61,8 @@ namespace iRLeagueApiCore.UnitTests.Client.Endpoints
             var testClientWrapper = new HttpClientWrapper(testClient, Mock.Of<IAsyncTokenProvider>());
             await action.Invoke(endpoint.Invoke(testClientWrapper));
 
-            Assert.Equal(expectedUrl, requestUrl);
-            Assert.Equal(method, requestMethod);
+            requestUrl.Should().Be(expectedUrl);
+            requestMethod.Should().Be(method);
         }
     }
 }

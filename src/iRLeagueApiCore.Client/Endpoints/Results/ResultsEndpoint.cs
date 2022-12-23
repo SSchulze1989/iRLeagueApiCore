@@ -4,35 +4,39 @@ using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Results
+namespace iRLeagueApiCore.Client.Endpoints.Results;
+
+internal class ResultsEndpoint : GetAllEndpoint<EventResultModel>,
+    IResultsEndpoint, IWithIdEndpoint<IResultByIdEndpoint>, IEventResultsEndpoint, ISeasonResultsEndpoint
 {
-    internal class ResultsEndpoint : GetAllEndpoint<EventResultModel>, 
-        IResultsEndpoint, IWithIdEndpoint<IResultByIdEndpoint>, IEventResultsEndpoint
+    public ResultsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
+        base(httpClientWrapper, routeBuilder)
     {
-        public ResultsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
-            base(httpClientWrapper, routeBuilder)
-        {
-            RouteBuilder.AddEndpoint("Results");
-        }
+        RouteBuilder.AddEndpoint("Results");
+    }
 
-        public IPostEndpoint<bool, ParseSimSessionResult> Upload()
-        {
-            return new UploadResultEndpoint(HttpClientWrapper, RouteBuilder);
-        }
+    public IPostEndpoint<bool, ParseSimSessionResult> Upload()
+    {
+        return new UploadResultEndpoint(HttpClientWrapper, RouteBuilder);
+    }
 
-        public IResultByIdEndpoint WithId(long id)
-        {
-            return new ResultByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
-        }
+    public IResultByIdEndpoint WithId(long id)
+    {
+        return new ResultByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
+    }
 
-        IPostEndpoint<bool> IEventResultsEndpoint.Calculate()
-        {
-            return new CalculateEndpoint(HttpClientWrapper, RouteBuilder);
-        }
+    IPostEndpoint<bool> IEventResultsEndpoint.Calculate()
+    {
+        return new CalculateEndpoint(HttpClientWrapper, RouteBuilder);
+    }
 
-        async Task<ClientActionResult<NoContent>> IDeleteEndpoint.Delete(CancellationToken cancellationToken)
-        {
-            return await HttpClientWrapper.DeleteAsClientActionResult(QueryUrl, cancellationToken);
-        }
+    async Task<ClientActionResult<NoContent>> IDeleteEndpoint.Delete(CancellationToken cancellationToken)
+    {
+        return await HttpClientWrapper.DeleteAsClientActionResult(QueryUrl, cancellationToken);
+    }
+
+    async Task<ClientActionResult<IEnumerable<SeasonEventResultModel>>> IGetEndpoint<IEnumerable<SeasonEventResultModel>>.Get(CancellationToken cancellationToken)
+    {
+        return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<SeasonEventResultModel>>(QueryUrl, cancellationToken);
     }
 }

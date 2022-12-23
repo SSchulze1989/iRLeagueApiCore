@@ -22,7 +22,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Seasons
             RouteBuilder.AddParameter(seasonId);
         }
 
-        IGetAllEndpoint<EventResultModel> ISeasonByIdEndpoint.Results()
+        IGetAllEndpoint<SeasonEventResultModel> ISeasonByIdEndpoint.Results()
         {
             return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
         }

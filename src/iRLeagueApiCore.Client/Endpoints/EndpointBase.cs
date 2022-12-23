@@ -12,7 +12,7 @@ namespace iRLeagueApiCore.Client.Endpoints
         protected HttpClientWrapper HttpClientWrapper { get; }
         protected RouteBuilder RouteBuilder { get; }
 
-        protected string QueryUrl => RouteBuilder.Build();
+        protected virtual string QueryUrl => RouteBuilder.Build();
 
         public EndpointBase(HttpClientWrapper httpClient, RouteBuilder routeBuilder)
         {
