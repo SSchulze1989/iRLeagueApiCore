@@ -51,7 +51,7 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         foreach (var voteModel in voteModels)
         {
             var voteEntity = voteEntities
-                .FirstOrDefault(x => x.ReviewVoteId == voteModel.Id);
+                .FirstOrDefault(x => x.ReviewVoteId == voteModel.Id && voteModel.Id != 0);
             if (voteEntity == null)
             {
                 voteEntity = new ReviewCommentVoteEntity();
