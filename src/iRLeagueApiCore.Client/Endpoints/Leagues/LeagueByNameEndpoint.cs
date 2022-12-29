@@ -4,6 +4,7 @@ using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Endpoints.Teams;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Endpoints.VoteCategories;
 using iRLeagueApiCore.Client.Http;
@@ -71,5 +72,10 @@ internal class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueByNameEnd
     IVoteCategoriesEndpoint ILeagueByNameEndpoint.VoteCategories()
     {
         return new VoteCategoriesEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    ITeamsEndpoint ILeagueByNameEndpoint.Teams()
+    {
+        return new TeamsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

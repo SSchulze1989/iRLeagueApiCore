@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Client.Endpoints;
 using iRLeagueApiCore.Client.Endpoints.Leagues;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
+using iRLeagueApiCore.Client.Endpoints.Teams;
 using iRLeagueApiCore.Client.Endpoints.Tracks;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;

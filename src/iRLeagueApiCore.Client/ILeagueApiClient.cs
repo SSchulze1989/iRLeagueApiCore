@@ -15,7 +15,6 @@ public interface ILeagueApiClient
     ISeasonByIdEndpoint? CurrentSeason { get; }
     ILeaguesEndpoint Leagues();
     IUsersEndpoint Users();
-    ITeamsEndpoint Teams();
     ITracksEndpoint Tracks();
     ICustomEndpoint CustomEndpoint(string route);
     Task<ClientActionResult<LoginResponse>> LogIn(string username, string password, CancellationToken cancellationToken = default);
