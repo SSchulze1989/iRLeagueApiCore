@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Results;
+﻿using iRLeagueApiCore.Client.Endpoints.Members;
+using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
@@ -24,5 +25,6 @@ public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     ISessionsEndpoint Sessions();
     ILeagueUsersEndpoint Users();
     ITeamsEndpoint Teams();
+    IMembersEndpoint Members();
     IVoteCategoriesEndpoint VoteCategories();
 }

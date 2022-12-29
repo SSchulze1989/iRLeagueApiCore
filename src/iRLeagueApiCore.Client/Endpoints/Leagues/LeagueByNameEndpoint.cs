@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Results;
+﻿using iRLeagueApiCore.Client.Endpoints.Members;
+using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
@@ -77,5 +78,10 @@ internal class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueByNameEnd
     ITeamsEndpoint ILeagueByNameEndpoint.Teams()
     {
         return new TeamsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    IMembersEndpoint ILeagueByNameEndpoint.Members()
+    {
+        return new MembersEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }
