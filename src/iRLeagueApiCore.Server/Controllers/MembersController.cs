@@ -21,7 +21,21 @@ public sealed class MembersController : LeagueApiController<MembersController>
     }
 
     [HttpGet]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<MemberInfoModel>>> GetFromLeague([FromRoute] string leagueName, [FromFilter] long leagueId,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("[{Method}] all members from {LeagueName} by {UserName}", "Get", leagueName,
+            GetUsername());
+        var request = new GetMembersFromLeagueRequest(leagueId);
+        var getMembers = await mediator.Send(request, cancellationToken);
+        _logger.LogInformation("Return {Count} entries for members from {LeagueName}", getMembers.Count(), leagueName);
+        return Ok(getMembers);
+    }
+
+    [HttpGet]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<MemberInfoModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
         CancellationToken cancellationToken)
     {
