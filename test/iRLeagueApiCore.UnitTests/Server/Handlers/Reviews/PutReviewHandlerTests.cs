@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Members;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Handlers.Reviews;
 using iRLeagueApiCore.UnitTests.Fixtures;

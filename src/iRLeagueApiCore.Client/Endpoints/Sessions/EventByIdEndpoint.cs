@@ -5,7 +5,6 @@ using iRLeagueApiCore.Client.Endpoints.Standings;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Members;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Common.Models.Standings;
 
@@ -19,7 +18,7 @@ internal class EventByIdEndpoint : UpdateEndpoint<EventModel, PutEventModel>, IE
         RouteBuilder.AddParameter(EventId);
     }
 
-    public IGetAllEndpoint<MemberInfoModel> Members()
+    public IGetAllEndpoint<MemberModel> Members()
     {
         return new MembersEndpoint(HttpClientWrapper, RouteBuilder);
     }

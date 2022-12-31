@@ -1,10 +1,10 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
-using iRLeagueApiCore.Common.Models.Members;
+using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Members;
 
-public sealed class MembersEndpoint : GetAllEndpoint<MemberInfoModel>, IMembersEndpoint
+public sealed class MembersEndpoint : GetAllEndpoint<MemberModel>, IMembersEndpoint
 {
     public MembersEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
         base(httpClientWrapper, routeBuilder)

@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Common.Models.Members;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Members;
 using Microsoft.AspNetCore.Authorization;
