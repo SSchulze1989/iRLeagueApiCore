@@ -195,7 +195,7 @@ public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAs
         {
             foreach ((var testRow, var resultRow) in testSession.SessionResult.ResultRows.OrderBy(x => x.FinishPosition).Zip(sessionResult.results))
             {
-                testRow.FinishPosition.Should().Be(resultRow.position);
+                testRow.FinishPosition.Should().Be(resultRow.position+1);
                 testRow.Member.IRacingId.Should().Be(resultRow.cust_id.ToString());
             }
         }
@@ -233,7 +233,7 @@ public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAs
             testRow.Division.Should().Be(resultRow.division);
             testRow.FastestLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.best_lap_time / 10000D));
             testRow.FastLapNr.Should().Be(resultRow.best_lap_num);
-            testRow.FinishPosition.Should().Be(resultRow.position);
+            testRow.FinishPosition.Should().Be(resultRow.position+1);
             testRow.Incidents.Should().Be(resultRow.incidents);
             testRow.Interval.Should().Be(TimeSpan.FromSeconds(resultRow.interval / 10000D));
             testRow.IRacingId.Should().Be(resultRow.cust_id.ToString());

@@ -258,7 +258,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         row.Division = data.division;
         row.FastestLapTime = ParseTime(data.best_lap_time);
         row.FastLapNr = data.best_lap_num;
-        row.FinishPosition = data.position;
+        row.FinishPosition = data.position+1;
         row.Incidents = data.incidents;
         row.Interval = ParseInterval(data.interval, data.laps_complete, laps);
         row.IRacingId = data.cust_id.ToString();
