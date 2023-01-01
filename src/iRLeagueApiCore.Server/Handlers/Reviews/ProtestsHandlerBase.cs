@@ -45,8 +45,12 @@ public class ProtestsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
 
     protected virtual Expression<Func<ProtestEntity, ProtestModel>> MapToProtestModelExpression => protest => new()
     {
-        AuthorMemberId = protest.AuthorMemberId,
-        ConfirmIRacingId = string.Empty,
+        Author = new()
+        {
+            FirstName = protest.Author.Member.Firstname,
+            LastName = protest.Author.Member.Lastname,
+            MemberId = protest.Author.MemberId,
+        },
         Corner = protest.Corner,
         EventId = protest.Session.EventId,
         FullDescription = protest.FullDescription,
