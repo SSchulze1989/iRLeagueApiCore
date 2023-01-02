@@ -249,7 +249,7 @@ public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAs
             testRow.OldSafetyRating.Should().Be(resultRow.old_sub_level);
             testRow.PointsEligible.Should().Be(true);
             testRow.PositionChange.Should().Be(resultRow.position - resultRow.starting_position);
-            testRow.QualifyingTime.Should().Be(TimeSpan.FromSeconds(resultRow.qual_lap_time / 10000D));
+            testRow.QualifyingTime.Should().Be(TimeSpan.FromSeconds(resultRow.best_qual_lap_time / 10000D));
             testRow.QualifyingTimeAt.Should().Be(resultRow.best_qual_lap_at);
             testRow.StartPosition.Should().Be(resultRow.starting_position + 1);
             testRow.Status.Should().Be(resultRow.reason_out_id);
