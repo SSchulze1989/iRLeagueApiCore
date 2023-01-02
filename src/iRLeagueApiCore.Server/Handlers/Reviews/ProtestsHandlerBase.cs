@@ -11,6 +11,14 @@ public class ProtestsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
     {
     }
 
+    protected virtual async Task<ProtestEntity?> GetProtestEntityAsync(long leagueId, long protestId, CancellationToken cancellationToken)
+    {
+        return await dbContext.Protests
+            .Where(x => x.LeagueId == leagueId)
+            .Where(x => x.ProtestId == protestId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     protected virtual async Task<ProtestEntity> MapToProtestEntity(long leagueId, LeagueUser user, PostProtestModel model, ProtestEntity entity, CancellationToken cancellationToken)
     {
         entity.Author = await dbContext.LeagueMembers

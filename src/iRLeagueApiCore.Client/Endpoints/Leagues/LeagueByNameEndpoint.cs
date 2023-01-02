@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Members;
+using iRLeagueApiCore.Client.Endpoints.Protests;
 using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
@@ -14,7 +15,7 @@ using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues;
 
-internal class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueByNameEndpoint
+internal sealed class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueByNameEndpoint
 {
     public string Name { get; }
 
@@ -83,5 +84,10 @@ internal class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueByNameEnd
     IMembersEndpoint ILeagueByNameEndpoint.Members()
     {
         return new MembersEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    IProtestsEndpoint ILeagueByNameEndpoint.Protests()
+    {
+        return new ProtestsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

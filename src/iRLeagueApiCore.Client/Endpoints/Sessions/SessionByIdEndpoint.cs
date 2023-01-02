@@ -22,6 +22,6 @@ public sealed class SessionByIdEndpoint : EndpointBase, ISessionByIdEndpoint
 
     public IPostEndpoint<ProtestModel, PostProtestModel> Protests()
     {
-        return new ProtestEndpoint(HttpClientWrapper, RouteBuilder);
+        return new ProtestsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

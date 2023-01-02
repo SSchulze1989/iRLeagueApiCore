@@ -26,7 +26,7 @@ internal class EventByIdEndpoint : UpdateEndpoint<EventModel, PutEventModel>, IE
 
     IGetAllEndpoint<ProtestModel> IEventByIdEndpoint.Protests()
     {
-        return new ProtestEndpoint(HttpClientWrapper, RouteBuilder);
+        return new ProtestsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
     IEventResultsEndpoint IEventByIdEndpoint.Results()

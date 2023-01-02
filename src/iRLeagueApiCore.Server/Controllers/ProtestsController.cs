@@ -46,4 +46,19 @@ public class ProtestsController : LeagueApiController<ProtestsController>
             getProtests.Count(), eventId, leagueName);
         return Ok(getProtests);
     }
+
+    [HttpDelete]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
+    [Route("{id:long}")]
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("[{Method}] protest {ProtestId} from {LeagueName} by {UserName}", "Delete",
+            id, leagueName,
+            GetUsername());
+        var request = new DeleteProtestRequest(leagueId, id);
+        await mediator.Send(request, cancellationToken);
+        _logger.LogInformation("Deleted protest {ProtestId} from {LeagueName}", id, leagueName);
+        return NoContent();
+    }
 }
