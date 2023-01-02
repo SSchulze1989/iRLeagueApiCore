@@ -20,7 +20,7 @@ public class ProtestsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
         entity.Corner = model.Corner;
         entity.FullDescription = model.FullDescription;
         entity.OnLap = model.OnLap;
-        entity.InvolvedMembers = await MapToLeagueMemberList(leagueId, model.InvolvedMemberIds.Select(x => x.MemberId), entity.InvolvedMembers, cancellationToken);
+        entity.InvolvedMembers = await MapToLeagueMemberList(leagueId, model.InvolvedMembers.Select(x => x.MemberId), entity.InvolvedMembers, cancellationToken);
         return entity;
     }
 
@@ -54,7 +54,7 @@ public class ProtestsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
         Corner = protest.Corner,
         EventId = protest.Session.EventId,
         FullDescription = protest.FullDescription,
-        InvolvedMemberIds = protest.InvolvedMembers.Select(leagueMember => new MemberInfoModel()
+        InvolvedMembers = protest.InvolvedMembers.Select(leagueMember => new MemberInfoModel()
         {
             FirstName = leagueMember.Member.Firstname,
             LastName = leagueMember.Member.Lastname,
@@ -64,5 +64,6 @@ public class ProtestsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
         ProtestId = protest.ProtestId,
         SessionId = protest.SessionId,
         SessionNr = protest.Session.SessionNr,
+        SessionName = protest.Session.Name,
     };
 }

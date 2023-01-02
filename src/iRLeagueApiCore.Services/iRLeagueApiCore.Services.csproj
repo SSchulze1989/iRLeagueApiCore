@@ -17,7 +17,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.4.1-dev.14" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.4.1-dev.16" />
     <PackageReference Include="iRLeagueDatabaseCore" Version="0.4.1-dev.6" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
