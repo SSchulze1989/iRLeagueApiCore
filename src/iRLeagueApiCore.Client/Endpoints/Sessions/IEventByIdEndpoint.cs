@@ -11,4 +11,5 @@ public interface IEventByIdEndpoint : IUpdateEndpoint<EventModel, PutEventModel>
     IGetAllEndpoint<ReviewModel> Reviews();
     IGetAllEndpoint<MemberModel> Members();
     IGetAllEndpoint<StandingsModel> Standings();
+    IGetAllEndpoint<ProtestModel> Protests();
 }

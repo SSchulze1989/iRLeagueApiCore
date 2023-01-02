@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Members;
+using iRLeagueApiCore.Client.Endpoints.Protests;
 using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
 using iRLeagueApiCore.Client.Endpoints.Standings;
@@ -21,6 +22,11 @@ internal class EventByIdEndpoint : UpdateEndpoint<EventModel, PutEventModel>, IE
     public IGetAllEndpoint<MemberModel> Members()
     {
         return new MembersEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    IGetAllEndpoint<ProtestModel> IEventByIdEndpoint.Protests()
+    {
+        return new ProtestsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
     IEventResultsEndpoint IEventByIdEndpoint.Results()

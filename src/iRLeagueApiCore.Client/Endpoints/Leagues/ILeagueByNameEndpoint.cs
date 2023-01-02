@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Members;
+using iRLeagueApiCore.Client.Endpoints.Protests;
 using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
@@ -20,6 +21,7 @@ public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     IEventsEndpoint Events();
     IResultConfigsEndpoint ResultConfigs();
     IPointRulesEndpoint PointRules();
+    IProtestsEndpoint Protests();
     IReviewsEndpoint Reviews();
     IReviewCommentsEndpoint ReviewComments();
     ISessionsEndpoint Sessions();

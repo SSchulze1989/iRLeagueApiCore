@@ -117,6 +117,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.Member, member)
             .Without(x => x.Team)
             .Without(x => x.TeamId)
+            .Without(x => x.ProtestsInvolved)
             .Create())
             .ToList();
     }
