@@ -13,6 +13,19 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
 
     public async Task<EventCalculationData?> GetData(EventCalculationConfiguration config, CancellationToken cancellationToken = default)
     {
+        var data = await GetDataFromConfiguration(config, cancellationToken);
+        if (data is null)
+        {
+            return data;
+        }
+
+        // Fill Qualy lap
+        data = FillQualyLapTime(config, data);
+        return data;
+    }
+
+    public async Task<EventCalculationData?> GetDataFromConfiguration(EventCalculationConfiguration config, CancellationToken cancellationToken = default)
+    {
         if (config.SourceResultConfigId is not null)
         {
             return await dbContext.ScoredEventResults
@@ -24,6 +37,44 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         return await dbContext.EventResults
             .Select(MapToEventResultCalculationDataExpression)
             .FirstOrDefaultAsync(x => x.EventId == config.EventId, cancellationToken);
+    }
+
+    /// <summary>
+    /// Fill qualy lap time for first race session after qualifying
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    private static EventCalculationData FillQualyLapTime(EventCalculationConfiguration config, EventCalculationData data)
+    {
+        // find driver qualy laps
+        var qualySessionNr = config.SessionResultConfigurations.FirstOrDefault(x => x.SessionType == Common.Enums.SessionType.Qualifying)?.SessionNr;
+        var qualySessionData = data.SessionResults.FirstOrDefault(x => x.SessionNr == qualySessionNr);
+        if (qualySessionData is null)
+        {
+            return data;
+        }
+
+        // find driver qualy laps
+        var driverQualyLaps = qualySessionData.ResultRows.Select(x => new { x.MemberId, x.QualifyingTime });
+
+        // fill qualifying time for all sessions
+        var firstRaceSessionNr = config.SessionResultConfigurations
+            .Where(x => x.SessionNr > qualySessionNr)
+            .Where(x => x.SessionType == Common.Enums.SessionType.Race)
+            .FirstOrDefault()?.SessionNr;
+        var firstRaceSession = data.SessionResults.FirstOrDefault(x => x.SessionNr == firstRaceSessionNr);
+        if (firstRaceSession is null)
+        {
+            return data;
+        }
+
+        foreach(var row in firstRaceSession.ResultRows)
+        {
+            row.QualifyingTime = driverQualyLaps.FirstOrDefault(x => x.MemberId == row.MemberId)?.QualifyingTime ?? TimeSpan.Zero;
+        }
+
+        return data;
     }
 
     private static Expression<Func<EventResultEntity, EventCalculationData>> MapToEventResultCalculationDataExpression => eventResult => new EventCalculationData()

@@ -280,7 +280,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         row.PittedLaps = "";
         row.PointsEligible = true;
         row.PositionChange = data.position - data.starting_position;
-        row.QualifyingTime = ParseTime(data.qual_lap_time);
+        row.QualifyingTime = ParseTime(data.best_qual_lap_time);
         row.QualifyingTimeAt = data.best_qual_lap_at;
         row.SimSessionType = -1;
         row.StartPosition = data.starting_position + 1;
@@ -325,9 +325,9 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         return mappedResults;
     }
 
-    private static TimeSpan ParseTime(int value) => TimeSpan.FromSeconds(value / 10000D);
+    private static TimeSpan ParseTime(int value) => value < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(value / 10000D);
 
-    private static TimeSpan ParseTime(long value) => TimeSpan.FromSeconds(value / 10000D);
+    private static TimeSpan ParseTime(long value) => value < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(value / 10000D);
 
     private static TimeSpan ParseInterval(int value, int completedLaps, int sessionLaps)
     {

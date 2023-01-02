@@ -54,9 +54,16 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         Func<IEnumerable<TValue>, TValue> bestValueFunc, EqualityComparer<TValue>? comparer = default)
     {
         comparer ??= EqualityComparer<TValue>.Default;
-        var valueRows = rows.Select(row => ((TId? id, TValue value))(idSelector.Invoke(row), valueSelector.Invoke(row)));
-        var bestValue = bestValueFunc.Invoke(valueRows.Select(x => x.value));
-        return valueRows.Where(row => comparer.Equals(row.value, bestValue));
+        try
+        {
+            var valueRows = rows.Select(row => ((TId? id, TValue value))(idSelector.Invoke(row), valueSelector.Invoke(row)));
+            var bestValue = bestValueFunc.Invoke(valueRows.Select(x => x.value));
+            return valueRows.Where(row => comparer.Equals(row.value, bestValue));
+        }
+        catch (Exception ex) when (ex is InvalidOperationException)
+        {
+            return Array.Empty<(TId? id, TValue value)>();
+        }
     }
 
     protected static TimeSpan GetAverageLapValue<T>(IEnumerable<T> rows, Func<T, TimeSpan> valueSelector, Func<T, double> weightSelector)
@@ -80,7 +87,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     protected static bool HardChargerEligible(ResultRowCalculationResult row)
     {
-        return true;
+        return row.QualifyingTime > TimeSpan.Zero;
     }
 
     /// <summary>
