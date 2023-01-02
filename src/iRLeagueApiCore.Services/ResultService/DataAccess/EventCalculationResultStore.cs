@@ -77,7 +77,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         entity.FastestAvgLap = result.FastestAvgLap;
         entity.FastestAvgLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestQualyLapDriverMemberId);
         entity.FastestLap = result.FastestLap;
-        entity.FastestAvgLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestAvgLapDriverMemberId);
+        entity.FastestLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestLapDriverMemberId);
         entity.FastestQualyLap = result.FastestQualyLap;
         entity.FastestQualyLapDriver = requiredEntities.Members.FirstOrDefault(x => x.Id == result.FastestQualyLapDriverMemberId);
         entity.HardChargers = requiredEntities.Members.Where(x => result.HardChargers.Contains(x.Id)).ToList();

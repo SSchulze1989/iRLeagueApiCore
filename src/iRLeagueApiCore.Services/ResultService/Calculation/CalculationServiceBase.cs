@@ -80,7 +80,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     protected static bool HardChargerEligible(ResultRowCalculationResult row)
     {
-        return true;
+        return row.QualifyingTime > TimeSpan.Zero;
     }
 
     /// <summary>
