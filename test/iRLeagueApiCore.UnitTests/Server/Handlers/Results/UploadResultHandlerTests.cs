@@ -224,6 +224,7 @@ public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAs
         foreach ((var testRow, var resultRow) in sessionResult.ResultRows.Zip(result.session_results.First().results))
         {
             testRow.AvgLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.average_lap / 10000D));
+            testRow.Car.Should().Be(resultRow.car_name);
             testRow.CarId.Should().Be(resultRow.car_id);
             testRow.CarNumber.ToString().Should().Be(resultRow.livery.car_number);
             testRow.ClassId.Should().Be(resultRow.car_class_id);

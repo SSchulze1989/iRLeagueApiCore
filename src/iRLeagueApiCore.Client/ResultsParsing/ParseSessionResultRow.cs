@@ -28,6 +28,8 @@ public sealed class ParseSessionResultRow
     public long qual_lap_time { get; set; }
     public int starting_position { get; set; }
     public int car_class_id { get; set; }
+    public string? car_name { get; set; }
+    public string? car_class_short_name { get; set; }
     public int club_id { get; set; }
     public string? club_name { get; set; }
     public string? club_shortname { get; set; }

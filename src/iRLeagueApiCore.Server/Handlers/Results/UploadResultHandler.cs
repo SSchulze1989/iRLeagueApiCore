@@ -245,8 +245,8 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         var leagueMember = await GetOrCreateMemberAsync(leagueId, data, cancellationToken);
         row.LeagueId = leagueId;
         row.AvgLapTime = ParseTime(data.average_lap);
-        row.Car = "";
-        row.CarClass = "";
+        row.Car = data.car_name;
+        row.CarClass = sessionData.car_classes.FirstOrDefault(x => x.car_class_id == data.car_class_id)?.short_name ?? string.Empty;
         row.CarId = data.car_id;
         row.CarNumber = int.TryParse(data.livery.car_number, out int carNumber) ? carNumber : -1; // Todo: change to string!
         row.ClassId = data.car_class_id;

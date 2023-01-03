@@ -56,4 +56,5 @@ public sealed class ParseSimSessionResult
     public ParseWeather weather { get; set; } = new();
     public ParseTrackState track_state { get; set; } = new();
     public ParseSessionResult[] session_results { get; set; } = Array.Empty<ParseSessionResult>();
+    public ParseCarClass[] car_classes { get; set; } = Array.Empty<ParseCarClass>();
 }
