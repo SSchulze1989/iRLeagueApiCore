@@ -42,18 +42,18 @@ public class ProtestsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
         return members;
     }
 
-    protected virtual async Task<ProtestModel?> MapToProtestModel(long leagueId, long protestId, CancellationToken cancellationToken)
+    protected virtual async Task<ProtestModel?> MapToProtestModel(long leagueId, long protestId, bool includeAuthor, CancellationToken cancellationToken)
     {
         return await dbContext.Protests
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ProtestId == protestId)
-            .Select(MapToProtestModelExpression)
+            .Select(MapToProtestModelExpression(includeAuthor))
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual Expression<Func<ProtestEntity, ProtestModel>> MapToProtestModelExpression => protest => new()
+    protected virtual Expression<Func<ProtestEntity, ProtestModel>> MapToProtestModelExpression(bool includeAutho = false) => protest => new()
     {
-        Author = new()
+        Author = includeAutho == false ? new() : new()
         {
             FirstName = protest.Author.Member.Firstname,
             LastName = protest.Author.Member.Lastname,

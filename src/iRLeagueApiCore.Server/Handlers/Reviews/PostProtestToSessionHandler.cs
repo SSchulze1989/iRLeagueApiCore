@@ -20,7 +20,7 @@ public class PostProtestToSessionHandler : ProtestsHandlerBase<PostProtestToSess
         postProtest = await MapToProtestEntity(request.LeagueId, request.User, request.Model, postProtest, cancellationToken);
         dbContext.Protests.Add(postProtest);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getProtest = await MapToProtestModel(request.LeagueId, postProtest.ProtestId, cancellationToken)
+        var getProtest = await MapToProtestModel(request.LeagueId, postProtest.ProtestId, includeAuthor: true, cancellationToken: cancellationToken)
             ?? throw new InvalidOperationException("Could not find created resource");
         return getProtest;
     }
