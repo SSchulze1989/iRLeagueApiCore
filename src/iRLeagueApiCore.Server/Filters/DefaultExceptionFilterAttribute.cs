@@ -28,5 +28,10 @@ public sealed class DefaultExceptionFilterAttribute : Attribute, IExceptionFilte
             _logger.LogInformation("Resource not found");
             context.Result = new NotFoundResult();
         }
+        if (context.Exception is UnauthorizedAccessException unauthorizedAccess)
+        {
+            _logger.LogInformation("Permission denied for user", context.HttpContext.User.Identity?.Name);
+            context.Result = new ForbidResult();
+        }
     }
 }

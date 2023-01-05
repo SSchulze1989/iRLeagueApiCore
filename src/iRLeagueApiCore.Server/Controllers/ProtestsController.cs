@@ -40,7 +40,8 @@ public class ProtestsController : LeagueApiController<ProtestsController>
     {
         _logger.LogInformation("[{Method}] all protests on event {EventId} from {LeagueName} by {UserName}", "Get",
             eventId, leagueName, GetUsername());
-        var request = new GetProtestsFromEventRequest(leagueId, eventId);
+        var leagueUser = new LeagueUser(leagueName, User);
+        var request = new GetProtestsFromEventRequest(leagueId, leagueUser, eventId);
         var getProtests = await mediator.Send(request, cancellationToken);
         _logger.LogInformation("Return {Count} entries for protests on event {EventId} from {LeagueName}",
             getProtests.Count(), eventId, leagueName);
