@@ -52,7 +52,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         {
             var sessionResultEntity = sessionResultEntities
                 .Where(x => x.SessionResultId != 0)
-                .FirstOrDefault(x => x.SessionResultId == sessionResult.SessionResultId);
+                .FirstOrDefault(x => x.SessionNr == sessionResult.SessionNr);
             if (sessionResultEntity == null)
             {
                 sessionResultEntity = await CreateScoredSessionResultEntity(sessionResult.ScoringId, cancellationToken);

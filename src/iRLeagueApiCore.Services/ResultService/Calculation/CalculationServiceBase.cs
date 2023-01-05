@@ -99,7 +99,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     /// <returns></returns>
     protected static IEnumerable<ResultRowCalculationResult> CombineResults<T>(IEnumerable<ResultRowCalculationResult> rows, Func<ResultRowCalculationResult, T> groupBy)
     {
-        var groupedRows = rows.Reverse().GroupBy(groupBy);
+        var groupedRows = rows.GroupBy(groupBy);
         var combined = new List<ResultRowCalculationResult>();
 
         foreach (var group in groupedRows.Where(x => x.Any()))
@@ -126,7 +126,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             combined.Add(row);
         }
 
-        return combined;
+        return combined.ToList();
     }
 
     private static IEnumerable<ResultRowCalculationResult> ApplyReviewPenalties(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<AcceptedReviewVoteCalculationData> reviewVotes)
