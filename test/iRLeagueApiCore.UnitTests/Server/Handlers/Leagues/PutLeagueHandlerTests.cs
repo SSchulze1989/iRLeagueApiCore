@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
@@ -27,7 +28,11 @@ public sealed class PutLeagueDbTestFixture : HandlersTestsBase<PutLeagueHandler,
     {
         var model = new PutLeagueModel()
         {
-            NameFull = "Put league test"
+            NameFull = "Put league test",
+            EnableProtests = true,
+            ProtestCoolDownPeriod = fixture.Create<TimeSpan>(),
+            ProtestsClosedAfter = fixture.Create<TimeSpan>(),
+            ProtestsPublic = fixture.Create<ProtestPublicSetting>(),
         };
         return new PutLeagueRequest(leagueId, DefaultUser(), model);
     }
@@ -37,6 +42,10 @@ public sealed class PutLeagueDbTestFixture : HandlersTestsBase<PutLeagueHandler,
         var expected = request.Model;
         result.Id.Should().Be(request.LeagueId);
         result.NameFull.Should().Be(expected.NameFull);
+        result.EnableProtests.Should().Be(request.Model.EnableProtests);
+        result.ProtestCoolDownPeriod.Should().Be(request.Model.ProtestCoolDownPeriod);
+        result.ProtestsClosedAfter.Should().Be(request.Model.ProtestsClosedAfter);
+        result.ProtestsPublic.Should().Be(request.Model.ProtestsPublic);
         AssertChanged(request.User, DateTime.UtcNow, result);
         base.DefaultAssertions(request, result, dbContext);
     }

@@ -39,6 +39,10 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         Id = x.Id,
         Name = x.Name,
         NameFull = x.NameFull,
+        EnableProtests = x.EnableProtests,
+        ProtestCoolDownPeriod = x.ProtestCoolDownPeriod,
+        ProtestsClosedAfter = x.ProtestsClosedAfter,
+        ProtestsPublic = x.ProtestsPublic,
         SeasonIds = x.Seasons
             .Select(season => season.SeasonId)
             .ToList(),
@@ -53,6 +57,10 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
     protected virtual LeagueEntity MapToLeagueEntity(long leagueId, LeagueUser user, PutLeagueModel putLeague, LeagueEntity leagueEntity)
     {
         leagueEntity.NameFull = putLeague.NameFull;
+        leagueEntity.EnableProtests = putLeague.EnableProtests;
+        leagueEntity.ProtestCoolDownPeriod = putLeague.ProtestCoolDownPeriod;
+        leagueEntity.ProtestsClosedAfter = putLeague.ProtestsClosedAfter;
+        leagueEntity.ProtestsPublic = putLeague.ProtestsPublic;
         leagueEntity.LastModifiedOn = DateTime.UtcNow;
         leagueEntity.LastModifiedByUserId = user.Id;
         leagueEntity.LastModifiedByUserName = user.Name;
