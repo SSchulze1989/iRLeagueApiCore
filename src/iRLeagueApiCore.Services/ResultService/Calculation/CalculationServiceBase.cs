@@ -114,6 +114,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 row.PenaltyPoints += groupRow.PenaltyPoints;
                 row.RacePoints += groupRow.RacePoints;
             }
+            row.StartPosition = group.Last().StartPosition;
             row.AvgLapTime = GetAverageLapValue(group, x => x.AvgLapTime, x => x.CompletedLaps);
             (_, row.FastestLapTime) = GetBestLapValue(group, x => x.MemberId, x => x.FastestLapTime);
             (_, row.QualifyingTime) = GetBestLapValue(group, x => x.MemberId, x => x.QualifyingTime);
