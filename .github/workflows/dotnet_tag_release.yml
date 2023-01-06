@@ -1,11 +1,12 @@
 name: .NET
 
 on:
-  pull_request:
-    branches: [ main ]
+  push:
+    tags: 
+      - "*"
 
 jobs:
-  build:
+  publish:
     env:
       BUILD_CONFIG: Release
       NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -25,3 +26,5 @@ jobs:
       run: dotnet build -c $BUILD_CONFIG --no-restore
     - name: Test
       run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
+    - name: Publish
+      run: dotnet nuget push **\*.nupkg -s github --skip-duplicate

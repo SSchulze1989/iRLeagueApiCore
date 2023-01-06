@@ -20,18 +20,7 @@ public sealed class DbTestFixture : IDisposable
     {
         Configuration = ((IConfigurationBuilder)(new ConfigurationBuilder()))
             .AddUserSecrets<DbTestFixture>()
-            .Build(); ;
-
-        // set up test database
-        //using (var dbContext = CreateStaticDbContext())
-        //{
-        //    dbContext.Database.EnsureDeleted();
-        //    dbContext.Database.EnsureCreated();
-
-        //    Populate(dbContext, random);
-        //    dbContext.SaveChanges();
-        //    _leagues = dbContext.Leagues.ToList();
-        //}
+            .Build();
     }
 
     public DbTestFixture()
@@ -42,7 +31,6 @@ public sealed class DbTestFixture : IDisposable
     public static LeagueDbContext CreateStaticDbContext()
     {
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-        var connectionString = Configuration["ConnectionStrings:ModelDb"];
 
         // use in memory database when no connection string present
         //optionsBuilder.UseMySQL(connectionString);
