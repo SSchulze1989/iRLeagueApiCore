@@ -27,4 +27,4 @@ jobs:
     - name: Test
       run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
     - name: Publish
-      run: dotnet nuget push **\*.nupkg -s github --skip-duplicate
+      run: dotnet nuget push **\*.nupkg --skip-duplicate
