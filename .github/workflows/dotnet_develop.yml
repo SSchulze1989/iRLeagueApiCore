@@ -11,7 +11,7 @@ jobs:
     env:
       BUILD_CONFIG: Debug
       TEST_USER: root
-      TEST_PASSWORD: root
+      TEST_PASSWORD: TestPass123
       TEST_DATABASE: TestDatabase
       TEST_PROJECT: test/iRLeagueApiCore.UnitTests
       NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
         source-url: https://nuget.pkg.github.com/SSchulze1989/index.json
