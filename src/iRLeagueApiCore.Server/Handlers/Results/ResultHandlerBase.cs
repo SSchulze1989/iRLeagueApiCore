@@ -27,7 +27,9 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
             ScoringId = sessionResult.ScoringId,
             SessionName = sessionResult.Name,
             SessionNr = sessionResult.SessionNr,
-            ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowModel()
+            ResultRows = sessionResult.ScoredResultRows
+                .OrderBy(x => x.FinalPosition)
+                .Select(row => new ResultRowModel()
             {
                 MemberId = row.MemberId,
                 Interval = new Interval(row.Interval),
