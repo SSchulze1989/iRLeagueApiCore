@@ -25,5 +25,3 @@ jobs:
       run: dotnet build -c $BUILD_CONFIG --no-restore
     - name: Test
       run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
-    - name: Publish
-      run: dotnet nuget push **\*.nupkg --skip-duplicate
