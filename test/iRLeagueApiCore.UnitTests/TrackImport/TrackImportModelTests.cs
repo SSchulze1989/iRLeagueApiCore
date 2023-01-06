@@ -1,46 +1,38 @@
-﻿using FluentAssertions;
-using iRLeagueApiCore.TrackImport.Models;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+﻿using iRLeagueApiCore.TrackImport.Models;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace iRLeagueApiCore.UnitTests.TrackImport
+namespace iRLeagueApiCore.UnitTests.TrackImport;
+
+public sealed class TrackImportModelTests
 {
-    public class TrackImportModelTests
+    [Fact]
+    public void ShouldReadDataFromJson()
     {
-        [Fact]
-        public void ShouldReadDataFromJson()
-        {
-            var data = testJson;
-            var imported = JsonSerializer.Deserialize<TrackImportModel[]>(data);
+        var data = testJson;
+        var imported = JsonSerializer.Deserialize<TrackImportModel[]>(data);
 
-            imported.Should().NotBeEmpty();
-            var firstTrack = imported[0];
-            firstTrack.ai_enabled.Should().BeFalse();
-            firstTrack.award_exempt.Should().BeTrue();
-            firstTrack.category.Should().Be("road");
-            firstTrack.category_id.Should().Be(2);
-            firstTrack.closes.Should().Be(DateTime.Parse("2018-10-31"));
-            firstTrack.config_name.Should().Be("Full Course");
-            firstTrack.corners_per_lap.Should().Be(7);
-            firstTrack.created.Should().BeCloseTo(DateTime.Parse("2006-04-04T19:10:00Z"), TimeSpan.FromDays(1));
-            firstTrack.free_with_subscription.Should().BeTrue();
-            firstTrack.fully_lit.Should().BeFalse();
-            firstTrack.grid_stalls.Should().Be(62);
-            firstTrack.has_opt_path.Should().BeFalse();
-            firstTrack.has_short_parade_lap.Should().BeTrue();
-            firstTrack.track_name.Should().Be("[Legacy] Lime Rock Park - 2008");
-            firstTrack.track_types.Should().HaveCount(1);
-            var trackType = firstTrack.track_types[0];
-            trackType.track_type.Should().Be("road");
-        }
+        imported.Should().NotBeEmpty();
+        var firstTrack = imported[0];
+        firstTrack.ai_enabled.Should().BeFalse();
+        firstTrack.award_exempt.Should().BeTrue();
+        firstTrack.category.Should().Be("road");
+        firstTrack.category_id.Should().Be(2);
+        firstTrack.closes.Should().Be(DateTime.Parse("2018-10-31"));
+        firstTrack.config_name.Should().Be("Full Course");
+        firstTrack.corners_per_lap.Should().Be(7);
+        firstTrack.created.Should().BeCloseTo(DateTime.Parse("2006-04-04T19:10:00Z"), TimeSpan.FromDays(1));
+        firstTrack.free_with_subscription.Should().BeTrue();
+        firstTrack.fully_lit.Should().BeFalse();
+        firstTrack.grid_stalls.Should().Be(62);
+        firstTrack.has_opt_path.Should().BeFalse();
+        firstTrack.has_short_parade_lap.Should().BeTrue();
+        firstTrack.track_name.Should().Be("[Legacy] Lime Rock Park - 2008");
+        firstTrack.track_types.Should().HaveCount(1);
+        var trackType = firstTrack.track_types[0];
+        trackType.track_type.Should().Be("road");
+    }
 
-        public static string testJson = @"[
+    public static string testJson = @"[
   {
     ""ai_enabled"": false,
     ""award_exempt"": true,
@@ -149,5 +141,4 @@ namespace iRLeagueApiCore.UnitTests.TrackImport
   }
 ]";
 
-    }
 }

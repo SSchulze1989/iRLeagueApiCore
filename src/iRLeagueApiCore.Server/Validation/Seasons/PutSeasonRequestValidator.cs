@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Seasons;
 
-public class PutSeasonRequestValidator : AbstractValidator<PutSeasonRequest>
+public sealed class PutSeasonRequestValidator : AbstractValidator<PutSeasonRequest>
 {
     private readonly LeagueDbContext dbContext;
 

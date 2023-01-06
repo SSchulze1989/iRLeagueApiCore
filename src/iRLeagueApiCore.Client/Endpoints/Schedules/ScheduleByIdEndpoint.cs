@@ -2,21 +2,19 @@
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
-using System.Net.Http;
 
-namespace iRLeagueApiCore.Client.Endpoints.Schedules
+namespace iRLeagueApiCore.Client.Endpoints.Schedules;
+
+internal class ScheduleByIdEndpoint : UpdateEndpoint<ScheduleModel, PutScheduleModel>, IScheduleByIdEndpoint
 {
-    internal class ScheduleByIdEndpoint : UpdateEndpoint<ScheduleModel, PutScheduleModel>, IScheduleByIdEndpoint
+    public ScheduleByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scheduleId) :
+        base(httpClientWrapper, routeBuilder)
     {
-        public ScheduleByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long scheduleId) : 
-            base(httpClientWrapper, routeBuilder)
-        {
-            RouteBuilder.AddParameter(scheduleId);
-        }
+        RouteBuilder.AddParameter(scheduleId);
+    }
 
-        public IPostGetAllEndpoint<EventModel, PostEventModel> Events()
-        {
-            return new EventsEndpoint(HttpClientWrapper, RouteBuilder);
-        }
+    public IPostGetAllEndpoint<EventModel, PostEventModel> Events()
+    {
+        return new EventsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

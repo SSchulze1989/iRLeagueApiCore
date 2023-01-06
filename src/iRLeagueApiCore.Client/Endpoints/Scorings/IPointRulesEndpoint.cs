@@ -1,8 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Client.Endpoints.Scorings
+namespace iRLeagueApiCore.Client.Endpoints.Scorings;
+
+public interface IPointRulesEndpoint : IPostEndpoint<PointRuleModel, PostPointRuleModel>, IWithIdEndpoint<IPointRuleByIdEndpoint>
 {
-    public interface IPointRulesEndpoint : IPostEndpoint<PointRuleModel, PostPointRuleModel>, IWithIdEndpoint<IPointRuleByIdEndpoint>
-    { 
-    }
 }

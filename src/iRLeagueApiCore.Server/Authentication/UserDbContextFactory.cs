@@ -1,26 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿namespace iRLeagueApiCore.Server.Authentication;
 
-namespace iRLeagueApiCore.Server.Authentication
+public sealed class UserDbContextFactory : IDbContextFactory<UserDbContext>
 {
-    public class UserDbContextFactory : IDbContextFactory<UserDbContext>
+    private readonly IConfiguration _configuration;
+
+    public UserDbContextFactory(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public UserDbContextFactory(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+    public UserDbContext CreateDbContext()
+    {
+        var dbConnectionString = _configuration.GetConnectionString("UserDb");
+        var optionsBuilder = new DbContextOptionsBuilder<UserDbContext>();
+        optionsBuilder.UseMySQL(dbConnectionString);
 
-        public UserDbContext CreateDbContext()
-        {
-            var dbConnectionString = _configuration.GetConnectionString("UserDb");
-            var optionsBuilder = new DbContextOptionsBuilder<UserDbContext>();
-            optionsBuilder.UseMySQL(dbConnectionString);
-
-            var dbContext = new UserDbContext(optionsBuilder.Options);
-            dbContext.Database.EnsureCreated();
-            return dbContext;
-        }
+        var dbContext = new UserDbContext(optionsBuilder.Options);
+        dbContext.Database.EnsureCreated();
+        return dbContext;
     }
 }

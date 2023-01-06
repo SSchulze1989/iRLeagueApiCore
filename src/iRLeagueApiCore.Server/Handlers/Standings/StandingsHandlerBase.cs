@@ -30,7 +30,7 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
             .Where(x => x.Schedule.SeasonId == seasonId)
             .OrderBy(x => x.Date)
             .ToListAsync(cancellationToken);
-        foreach(var standingRow in standings.SelectMany(x => x.StandingRows))
+        foreach (var standingRow in standings.SelectMany(x => x.StandingRows))
         {
             standingRow.ResultRows = events.Select(x => standingRow.ResultRows.FirstOrDefault(y => y?.EventId == x.EventId)).ToList();
         }
@@ -61,6 +61,7 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
                 MemberId = standingRow.MemberId,
                 StandingRowId = standingRow.StandingRowId,
                 Lastname = standingRow.Member == null ? string.Empty : standingRow.Member.Lastname,
+                LastIrating = standingRow.LastIrating,
                 LastPosition = standingRow.LastPosition,
                 LeadLaps = standingRow.LeadLaps,
                 LeadLapsChange = standingRow.LeadLapsChange,
@@ -74,6 +75,7 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
                 RacePointsChange = standingRow.RacePointsChange,
                 Races = standingRow.Races,
                 RacesCounted = standingRow.RacesCounted,
+                StartIrating = standingRow.StartIrating,
                 TeamColor = standingRow.Team == null ? string.Empty : standingRow.Team.TeamColor,
                 TeamId = standingRow.TeamId,
                 TeamName = standingRow.Team == null ? string.Empty : standingRow.Team.Name,

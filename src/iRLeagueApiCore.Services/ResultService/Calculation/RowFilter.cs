@@ -1,16 +1,8 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
-namespace iRLeagueApiCore.Services.ResultService.Calculation
+internal abstract class RowFilter<TRow>
 {
-    internal abstract class RowFilter<TRow>
-    {
-        public abstract IEnumerable<T> FilterRows<T>(IEnumerable<T> rows) where T : TRow;
+    public abstract IEnumerable<T> FilterRows<T>(IEnumerable<T> rows) where T : TRow;
 
-        public static RowFilter<TRow> Default() => new DefaultRowFilter<TRow>();
-    }
+    public static RowFilter<TRow> Default() => new DefaultRowFilter<TRow>();
 }

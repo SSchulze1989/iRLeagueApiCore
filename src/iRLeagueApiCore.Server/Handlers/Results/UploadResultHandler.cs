@@ -1,6 +1,5 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Server.Exceptions;
-using iRLeagueApiCore.Client.ResultsParsing;
+﻿using iRLeagueApiCore.Client.ResultsParsing;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using System.Text.Json;
 using System.Transactions;
@@ -9,7 +8,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record UploadResultRequest(long leagueId, long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
 
-public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
+public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
     IRequestHandler<UploadResultRequest, bool>
 {
     private readonly IResultCalculationQueue calculationQueue;
@@ -246,8 +245,8 @@ public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResult
         var leagueMember = await GetOrCreateMemberAsync(leagueId, data, cancellationToken);
         row.LeagueId = leagueId;
         row.AvgLapTime = ParseTime(data.average_lap);
-        row.Car = "";
-        row.CarClass = "";
+        row.Car = data.car_name;
+        row.CarClass = sessionData.car_classes.FirstOrDefault(x => x.car_class_id == data.car_class_id)?.short_name ?? string.Empty;
         row.CarId = data.car_id;
         row.CarNumber = int.TryParse(data.livery.car_number, out int carNumber) ? carNumber : -1; // Todo: change to string!
         row.ClassId = data.car_class_id;
@@ -259,7 +258,7 @@ public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResult
         row.Division = data.division;
         row.FastestLapTime = ParseTime(data.best_lap_time);
         row.FastLapNr = data.best_lap_num;
-        row.FinishPosition = data.position;
+        row.FinishPosition = data.position+1;
         row.Incidents = data.incidents;
         row.Interval = ParseInterval(data.interval, data.laps_complete, laps);
         row.IRacingId = data.cust_id.ToString();
@@ -281,7 +280,7 @@ public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResult
         row.PittedLaps = "";
         row.PointsEligible = true;
         row.PositionChange = data.position - data.starting_position;
-        row.QualifyingTime = ParseTime(data.qual_lap_time);
+        row.QualifyingTime = ParseTime(data.best_qual_lap_time);
         row.QualifyingTimeAt = data.best_qual_lap_at;
         row.SimSessionType = -1;
         row.StartPosition = data.starting_position + 1;
@@ -326,9 +325,9 @@ public class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResult
         return mappedResults;
     }
 
-    private static TimeSpan ParseTime(int value) => TimeSpan.FromSeconds(value / 10000D);
+    private static TimeSpan ParseTime(int value) => value < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(value / 10000D);
 
-    private static TimeSpan ParseTime(long value) => TimeSpan.FromSeconds(value / 10000D);
+    private static TimeSpan ParseTime(long value) => value < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(value / 10000D);
 
     private static TimeSpan ParseInterval(int value, int completedLaps, int sessionLaps)
     {

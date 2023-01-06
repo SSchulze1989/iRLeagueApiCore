@@ -97,46 +97,39 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 SessionNr = 999,
                 ResultKind = configurationEntity.ResultKind,
                 IsCombinedResult = true,
+                UseExternalSourcePoints = combinedScoring.UseExternalSourcePoints,
             };
             sessionConfiguration.SessionType = SessionType.Race;
             sessionConfiguration.SessionResultId = null;
-            sessionConfiguration = MapFromScoringEntity(combinedScoring, configurationEntity, sessionConfiguration, includeFilters: false);
+            sessionConfiguration = MapFromScoringEntity(combinedScoring, configurationEntity, sessionConfiguration, includePointFilters: false);
             sessionConfigurations.Add(sessionConfiguration);
         }
         return sessionConfigurations;
     }
 
     private static SessionCalculationConfiguration MapFromScoringEntity(ScoringEntity? scoring, ResultConfigurationEntity configurationEntity,
-        SessionCalculationConfiguration sessionConfiguration, bool includeFilters = true)
+        SessionCalculationConfiguration sessionConfiguration, bool includePointFilters = true)
     {
-        if (scoring == null)
-        {
-            return sessionConfiguration;
-        }
-        sessionConfiguration.PointRule = GetPointRuleFromEntity(scoring.PointsRule, configurationEntity, includeFilters: includeFilters);
+        sessionConfiguration.PointRule = GetPointRuleFromEntity(scoring?.PointsRule, configurationEntity, includePointFilters: includePointFilters);
         sessionConfiguration.MaxResultsPerGroup = configurationEntity.ResultsPerTeam;
-        sessionConfiguration.UseResultSetTeam = scoring.UseResultSetTeam;
-        sessionConfiguration.UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation;
-        sessionConfiguration.ScoringId = scoring.ScoringId;
+        sessionConfiguration.UseResultSetTeam = scoring?.UseResultSetTeam ?? false;
+        sessionConfiguration.UpdateTeamOnRecalculation = scoring?.UpdateTeamOnRecalculation ?? false;
+        sessionConfiguration.ScoringId = scoring?.ScoringId;
 
         return sessionConfiguration;
     }
 
     private static PointRule<ResultRowCalculationResult> GetPointRuleFromEntity(PointRuleEntity? pointsRuleEntity, ResultConfigurationEntity configurationEntity,
-        bool includeFilters = true)
+        bool includePointFilters = true)
     {
-        if (pointsRuleEntity is null)
-        {
-            return CalculationPointRuleBase.Default();
-        }
-
         CalculationPointRuleBase pointRule;
-        if (pointsRuleEntity.PointsPerPlace.Any() == true)
+
+        if (pointsRuleEntity?.PointsPerPlace.Any() == true)
         {
             pointRule = new PerPlacePointRule(PointsPerPlaceToDictionary<double>(pointsRuleEntity.PointsPerPlace
                 .Select(x => (double)x)));
         }
-        else if (pointsRuleEntity.MaxPoints > 0)
+        else if (pointsRuleEntity?.MaxPoints > 0)
         {
             pointRule = new MaxPointRule(pointsRuleEntity.MaxPoints, pointsRuleEntity.PointDropOff);
         }
@@ -145,12 +138,13 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             pointRule = new UseResultPointsPointRule();
         }
 
-        pointRule.PointSortOptions = pointsRuleEntity.PointsSortOptions;
-        pointRule.FinalSortOptions = pointsRuleEntity.FinalSortOptions;
-        if (includeFilters)
+        pointRule.PointSortOptions = pointsRuleEntity?.PointsSortOptions ?? Array.Empty<SortOptions>();
+        pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
+        pointRule.BonusPoints = pointsRuleEntity?.BonusPoints ?? new Dictionary<string, int>();
+        pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
+        if (includePointFilters)
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
-            pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
         }
 
         return pointRule;

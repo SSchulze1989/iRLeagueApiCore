@@ -1,6 +1,6 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Services.ResultService.Calculation;
-using AutoFixture.Dsl;
+using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Services.Tests.Extensions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
@@ -227,6 +227,7 @@ public sealed class MemberSessionCalculationServiceTests
             .Build<SessionCalculationConfiguration>()
             .With(x => x.LeagueId, leagueId)
             .With(x => x.SessionId, sessionId)
+            .With(x => x.IsCombinedResult, false)
             .Create();
     }
 

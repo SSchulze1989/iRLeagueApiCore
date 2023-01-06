@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Client.ResultsParsing
+﻿namespace iRLeagueApiCore.Client.ResultsParsing;
+
+public sealed class ParseCarInClass
 {
-    public sealed class ParseCarInClass
-    {
-        public int car_id { get; set; }
-    }
+    public int car_id { get; set; }
 }

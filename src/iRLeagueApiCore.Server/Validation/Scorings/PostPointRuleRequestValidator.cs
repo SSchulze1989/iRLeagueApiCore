@@ -1,15 +1,12 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Handlers.Scorings;
-using iRLeagueDatabaseCore.Models;
+﻿using iRLeagueApiCore.Server.Handlers.Scorings;
 
-namespace iRLeagueApiCore.Server.Validation.Scorings
+namespace iRLeagueApiCore.Server.Validation.Scorings;
+
+public sealed class PostPointRuleRequestValidator : AbstractValidator<PostPointRuleRequest>
 {
-    public class PostPointRuleRequestValidator : AbstractValidator<PostPointRuleRequest>
+    public PostPointRuleRequestValidator(PostPointRuleModelValidator modelValidator)
     {
-        public PostPointRuleRequestValidator(PostPointRuleModelValidator modelValidator)
-        {
-            RuleFor(x => x.Model)
-                .SetValidator(modelValidator);
-        }
+        RuleFor(x => x.Model)
+            .SetValidator(modelValidator);
     }
 }

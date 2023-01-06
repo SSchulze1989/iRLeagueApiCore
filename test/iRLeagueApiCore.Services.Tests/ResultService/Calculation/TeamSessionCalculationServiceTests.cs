@@ -45,7 +45,7 @@ public sealed class TeamSessionCalculationServiceTests
         var test = await sut.Calculate(data);
 
         test.ResultRows.Should().HaveCount(teamCount);
-        foreach(var teamRow in test.ResultRows)
+        foreach (var teamRow in test.ResultRows)
         {
             teamRow.ScoredMemberResultRowIds.Should().HaveCount(Math.Min(rowsPerTeam, groupRowCount));
             teamRow.ScoredMemberResultRowIds.OrderBy(x => x).Should()
@@ -84,7 +84,7 @@ public sealed class TeamSessionCalculationServiceTests
                 .OrderBy(x => x.FinalPosition)
                 .Take(groupRowCount);
             teamRow.AvgLapTime.Should().BeCloseTo(TimeSpan.FromSeconds(memberRows.Sum(x => x.AvgLapTime.TotalSeconds * x.CompletedLaps) / memberRows.Sum(x => x.CompletedLaps)), TimeSpan.FromMilliseconds(1));
-            teamRow.BonusPoints.Should().Be(memberRows.Sum(x => x.BonusPoints));
+            teamRow.BonusPoints.Should().Be(0);
             teamRow.CompletedLaps.Should().Be(memberRows.Sum(x => x.CompletedLaps));
             teamRow.FastestLapTime.Should().Be(memberRows.Min(x => x.FastestLapTime));
             teamRow.MemberId.Should().BeNull();
@@ -95,7 +95,7 @@ public sealed class TeamSessionCalculationServiceTests
             teamRow.LeadLaps.Should().Be(memberRows.Sum(x => x.LeadLaps));
             teamRow.PenaltyPoints.Should().Be(memberRows.Sum(x => x.PenaltyPoints));
             teamRow.QualifyingTime.Should().Be(memberRows.Min(x => x.QualifyingTime));
-            teamRow.RacePoints.Should().Be(memberRows.Sum(x => x.RacePoints));
+            teamRow.RacePoints.Should().Be(memberRows.Sum(x => x.RacePoints + x.BonusPoints));
         }
     }
 
@@ -116,7 +116,7 @@ public sealed class TeamSessionCalculationServiceTests
 
         var test = await sut.Calculate(data);
 
-        foreach(var row in test.ResultRows)
+        foreach (var row in test.ResultRows)
         {
             row.TotalPoints.Should().Be(row.RacePoints + row.BonusPoints - row.PenaltyPoints);
         }

@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.TrackImport.Models
+﻿namespace iRLeagueApiCore.TrackImport.Models;
+
+public struct TrackTypeImportModel
 {
-    public struct TrackTypeImportModel
-    {
-        public string track_type { get; set; }
-    }
+    public string track_type { get; set; }
 }

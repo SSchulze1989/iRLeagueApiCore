@@ -70,6 +70,8 @@ internal sealed class StandingRowCalculationResult
     public int Incidents { get; set; }
     public int IncidentsChange { get; set; }
     public int PositionChange { get; set; }
+    public int StartIrating { get; set; }
+    public int LastIrating { get; set; }
 
     public IList<ResultRowCalculationResult> ResultRows { get; set; } = new List<ResultRowCalculationResult>();
 }

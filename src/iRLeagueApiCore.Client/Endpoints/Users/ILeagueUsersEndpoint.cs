@@ -1,9 +1,8 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
 
-namespace iRLeagueApiCore.Client.Endpoints.Users
+namespace iRLeagueApiCore.Client.Endpoints.Users;
+
+public interface ILeagueUsersEndpoint : IGetAllEndpoint<LeagueUserModel>
 {
-    public interface ILeagueUsersEndpoint : IGetAllEndpoint<LeagueUserModel>
-    {
-        ILeagueUserByIdEndpoint WithId(string id);
-    }
+    ILeagueUserByIdEndpoint WithId(string id);
 }

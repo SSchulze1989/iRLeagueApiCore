@@ -1,6 +1,5 @@
-namespace iRLeagueApiCore.Client.Endpoints
+namespace iRLeagueApiCore.Client.Endpoints;
+
+public interface IUpdateEndpoint<TResult, TModel> : IGetEndpoint<TResult>, IPutEndpoint<TResult, TModel>, IDeleteEndpoint
 {
-    public interface IUpdateEndpoint<TResult, TModel> : IGetEndpoint<TResult>, IPutEndpoint<TResult, TModel>, IDeleteEndpoint
-    {
-    }
 }

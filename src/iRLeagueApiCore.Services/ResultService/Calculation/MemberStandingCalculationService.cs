@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
-using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -52,7 +51,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
     }
 
     private IEnumerable<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> CalculateMemberStandingRows(
-        Dictionary<long, IEnumerable<GroupedEventResult<long>>> previousMemberResults, 
+        Dictionary<long, IEnumerable<GroupedEventResult<long>>> previousMemberResults,
         Dictionary<long, GroupedEventResult<long>> currentMemberResult)
     {
         var memberIds = previousMemberResults.Keys.Concat(currentMemberResult.Keys).Distinct();
@@ -75,6 +74,8 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
             standingRow.CarClass = lastRow.CarClass;
             standingRow.ClassId = lastRow.ClassId;
             standingRow.TeamId = lastRow.TeamId;
+            standingRow.StartIrating = lastRow.SeasonStartIrating;
+            standingRow.LastIrating = lastRow.NewIrating;
 
             // accumulated data
             var previousStandingRow = new StandingRowCalculationResult(standingRow);

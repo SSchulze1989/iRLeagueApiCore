@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Common.Models.Members;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
 using System.Linq.Expressions;
@@ -113,12 +113,12 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
                 VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
                 VoteCategoryText = vote.VoteCategory.Text,
                 Description = vote.Description,
-                MemberAtFault = vote.MemberAtFault != null ? new MemberInfoModel()
+                MemberAtFault = vote.MemberAtFault == null ? null : new MemberInfoModel()
                 {
                     MemberId = vote.MemberAtFault.Id,
                     FirstName = vote.MemberAtFault.Firstname,
                     LastName = vote.MemberAtFault.Lastname,
-                } : default,
+                },
             }).ToList(),
             CreatedByUserId = comment.CreatedByUserId,
             CreatedByUserName = comment.CreatedByUserName,

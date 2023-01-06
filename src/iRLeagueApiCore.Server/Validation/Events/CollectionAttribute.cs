@@ -1,8 +1,5 @@
-﻿using System;
+﻿namespace iRLeagueApiCore.Server.Validation.Events;
 
-namespace iRLeagueApiCore.Server.Validation.Events
+internal class CollectionAttribute : Attribute
 {
-    internal class CollectionAttribute : Attribute
-    {
-    }
 }

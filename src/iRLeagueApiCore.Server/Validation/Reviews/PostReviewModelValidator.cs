@@ -1,40 +1,31 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Members;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace iRLeagueApiCore.Server.Validation.Reviews
+namespace iRLeagueApiCore.Server.Validation.Reviews;
+
+public sealed class PostReviewModelValidator : AbstractValidator<PostReviewModel>
 {
-    public class PostReviewModelValidator : AbstractValidator<PostReviewModel>
+    private readonly LeagueDbContext dbContext;
+
+    public PostReviewModelValidator(LeagueDbContext dbContext)
     {
-        private readonly LeagueDbContext dbContext;
+        this.dbContext = dbContext;
 
-        public PostReviewModelValidator(LeagueDbContext dbContext)
-        {
-            this.dbContext = dbContext;
+        RuleFor(x => x.InvolvedMembers)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage("At least one driver required")
+            .MustAsync(EachMemberIsValid)
+            .WithMessage("Member does not exist");
+        RuleFor(x => x.IncidentKind)
+            .NotEmpty()
+            .WithMessage("Incident Kind is required");
+    }
 
-            RuleFor(x => x.InvolvedMembers)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty()
-                .WithMessage("At least one driver required")
-                .MustAsync(EachMemberIsValid)
-                .WithMessage("Member does not exist");
-            RuleFor(x => x.IncidentKind)
-                .NotEmpty()
-                .WithMessage("Incident Kind is required");
-        }
-
-        private async Task<bool> EachMemberIsValid(IEnumerable<MemberInfoModel> members, CancellationToken cancellationToken)
-        {
-            var memberIds = members.Select(x => x.MemberId).ToList();
-            return await dbContext.Members
-                .AnyAsync(x => memberIds.Contains(x.Id), cancellationToken);
-        }
+    private async Task<bool> EachMemberIsValid(IEnumerable<MemberInfoModel> members, CancellationToken cancellationToken)
+    {
+        var memberIds = members.Select(x => x.MemberId).ToList();
+        return await dbContext.Members
+            .AnyAsync(x => memberIds.Contains(x.Id), cancellationToken);
     }
 }

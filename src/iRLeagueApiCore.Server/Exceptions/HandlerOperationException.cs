@@ -1,24 +1,22 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace iRLeagueApiCore.Server.Exceptions
+namespace iRLeagueApiCore.Server.Exceptions;
+
+public sealed class HandlerOperationException : InvalidOperationException
 {
-    public class HandlerOperationException : InvalidOperationException
+    public HandlerOperationException()
     {
-        public HandlerOperationException()
-        {
-        }
+    }
 
-        public HandlerOperationException(string message) : base(message)
-        {
-        }
+    public HandlerOperationException(string message) : base(message)
+    {
+    }
 
-        public HandlerOperationException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+    public HandlerOperationException(string message, Exception innerException) : base(message, innerException)
+    {
+    }
 
-        protected HandlerOperationException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
+    private HandlerOperationException(SerializationInfo info, StreamingContext context) : base(info, context)
+    {
     }
 }

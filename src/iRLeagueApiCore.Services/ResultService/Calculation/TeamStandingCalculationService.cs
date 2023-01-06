@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
-using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -45,7 +44,8 @@ internal sealed class TeamStandingCalculationService : StandingCalculationServic
             Name = config.DisplayName,
             SeasonId = config.SeasonId,
             StandingConfigId = config.StandingConfigId,
-            StandingRows = finalStandingRows
+            StandingRows = finalStandingRows,
+            IsTeamStanding = true
         };
         return Task.FromResult(standingResult);
     }

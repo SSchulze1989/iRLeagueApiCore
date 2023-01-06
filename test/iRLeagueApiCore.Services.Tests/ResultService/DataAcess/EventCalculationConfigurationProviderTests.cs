@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
 
 [Collection("DataAccessTests")]
-public class EventCalculationConfigurationProviderTests : DataAccessTestsBase
+public sealed class EventCalculationConfigurationProviderTests : DataAccessTestsBase
 {
     public EventCalculationConfigurationProviderTests()
     {

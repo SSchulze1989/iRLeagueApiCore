@@ -1,7 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.EmailService
+﻿namespace iRLeagueApiCore.Services.EmailService;
+
+public interface IEmailClient
 {
-    public interface IEmailClient
-    {
-        public Task SendNoReplyMailAsync(string email, string subject, string body);
-    }
+    public Task SendNoReplyMailAsync(string email, string subject, string body);
 }

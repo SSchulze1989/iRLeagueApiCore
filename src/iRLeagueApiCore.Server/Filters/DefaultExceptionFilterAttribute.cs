@@ -1,38 +1,37 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Controllers;
-using iRLeagueApiCore.Server.Exceptions;
+﻿using iRLeagueApiCore.Server.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 
-namespace iRLeagueApiCore.Server.Filters
+namespace iRLeagueApiCore.Server.Filters;
+
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+public sealed class DefaultExceptionFilterAttribute : Attribute, IExceptionFilter
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public sealed class DefaultExceptionFilterAttribute : Attribute, IExceptionFilter
+    private readonly ILogger<DefaultExceptionFilterAttribute> _logger;
+
+    public DefaultExceptionFilterAttribute(ILogger<DefaultExceptionFilterAttribute> logger)
     {
-        private readonly ILogger<DefaultExceptionFilterAttribute> _logger;
+        _logger = logger;
+    }
 
-        public DefaultExceptionFilterAttribute(ILogger<DefaultExceptionFilterAttribute> logger)
+    public void OnException(ExceptionContext context)
+    {
+        if (context.Exception is ValidationException validationException)
         {
-            _logger = logger;
+            _logger.LogInformation("Bad request - errors: {ValidationErrors}",
+                validationException.Errors.Select(x => x.ErrorMessage));
+            context.Result = validationException.ToActionResult();
+            return;
         }
-
-        public void OnException(ExceptionContext context)
+        if (context.Exception is ResourceNotFoundException notFoundException)
         {
-            if (context.Exception is ValidationException validationException)
-            {
-                _logger.LogInformation("Bad request - errors: {ValidationErrors}", 
-                    validationException.Errors.Select(x => x.ErrorMessage));
-                context.Result = validationException.ToActionResult();
-                return;
-            }
-            if (context.Exception is ResourceNotFoundException notFoundException)
-            {
-                _logger.LogInformation("Resource not found");
-                context.Result = new NotFoundResult();
-            }
+            _logger.LogInformation("Resource not found");
+            context.Result = new NotFoundResult();
+        }
+        if (context.Exception is UnauthorizedAccessException unauthorizedAccess)
+        {
+            _logger.LogInformation("Permission denied for user", context.HttpContext.User.Identity?.Name);
+            context.Result = new ForbidResult();
         }
     }
 }

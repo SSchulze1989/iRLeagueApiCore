@@ -1,5 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -18,7 +18,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             .OrderBy(x => x.FinalPosition);
         var teamRows = memberRows
             .GroupBy(x => x.TeamId)
-            .Where(x => x.Key != null)        
+            .Where(x => x.Key != null)
             .Select(x => GetTeamResultRow(x))
             .NotNull()
             .ToList();
@@ -45,24 +45,27 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             return null;
         }
         // 3. Accumulate results
-        var teamRow = new ResultRowCalculationResult(teamMemberRows.First())
+        var dataRow = teamMemberRows.First();
+        var teamRow = new ResultRowCalculationResult()
         {
+            TeamId = dataRow.TeamId,
+            TeamColor = dataRow.TeamColor,
+            TeamName = dataRow.TeamName,
             ScoredResultRowId = null,
             MemberId = null,
             Firstname = string.Empty,
             Lastname = string.Empty,
         };
-        foreach (var memberRow in teamMemberRows.Skip(1))
+        foreach (var memberRow in teamMemberRows)
         {
-            teamRow.StartPosition = Math.Min(teamRow.StartPosition, memberRow.StartPosition);
             teamRow.CompletedLaps += memberRow.CompletedLaps;
             teamRow.LeadLaps += memberRow.LeadLaps;
             teamRow.Incidents += memberRow.Incidents;
             teamRow.Interval += memberRow.Interval;
-            teamRow.RacePoints += memberRow.RacePoints;
-            teamRow.BonusPoints += memberRow.BonusPoints;
+            teamRow.RacePoints += memberRow.RacePoints + memberRow.BonusPoints;
             teamRow.PenaltyPoints += memberRow.PenaltyPoints;
         }
+        teamRow.StartPosition = teamMemberRows.Min(x => x.StartPosition);
         (_, teamRow.QualifyingTime) = GetBestLapValue(teamMemberRows, x => x.MemberId, x => x.QualifyingTime);
         (_, teamRow.FastestLapTime) = GetBestLapValue(teamMemberRows, x => x.MemberId, x => x.FastestLapTime);
         teamRow.AvgLapTime = GetAverageLapValue(teamMemberRows, x => x.AvgLapTime, x => x.CompletedLaps);

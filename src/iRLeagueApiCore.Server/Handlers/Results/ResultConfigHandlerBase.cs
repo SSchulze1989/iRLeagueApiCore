@@ -38,7 +38,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         resultConfigEntity.Name = postResultConfig.Name;
         resultConfigEntity.ResultKind = postResultConfig.ResultKind;
         resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
-        resultConfigEntity.StandingConfigurations = await MapToStandingConfigListAsync(resultConfigEntity.LeagueId, user, postResultConfig.StandingConfig, 
+        resultConfigEntity.StandingConfigurations = await MapToStandingConfigListAsync(resultConfigEntity.LeagueId, user, postResultConfig.StandingConfig,
             resultConfigEntity.StandingConfigurations, cancellationToken);
         resultConfigEntity.Scorings = await MapToScoringList(resultConfigEntity.LeagueId, user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
         resultConfigEntity.PointFilters = await MapToFilterOptionListAsync(resultConfigEntity.LeagueId, user, postResultConfig.FiltersForPoints,
@@ -49,7 +49,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return await Task.FromResult(resultConfigEntity);
     }
 
-    private async Task<ICollection<StandingConfigurationEntity>> MapToStandingConfigListAsync(long leagueId, LeagueUser user, StandingConfigModel? standingConfigModel, 
+    private async Task<ICollection<StandingConfigurationEntity>> MapToStandingConfigListAsync(long leagueId, LeagueUser user, StandingConfigModel? standingConfigModel,
         ICollection<StandingConfigurationEntity> standingConfigurationEntities, CancellationToken cancellationToken)
     {
         if (standingConfigModel is null)
@@ -78,7 +78,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     {
         foreach (var filterModel in filterModels)
         {
-            var filterOptionEntity = filterEntities
+            var filterOptionEntity = filterModel.FilterOptionId == 0 ? null : filterEntities
                 .FirstOrDefault(x => x.FilterOptionId == filterModel.FilterOptionId);
             if (filterOptionEntity is null)
             {
@@ -115,13 +115,13 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return Task.FromResult(filterOptionEntity);
     }
 
-    private async Task<ICollection<ScoringEntity>> MapToScoringList(long leagueId, LeagueUser user, ICollection<ScoringModel> scoringModels, 
+    private async Task<ICollection<ScoringEntity>> MapToScoringList(long leagueId, LeagueUser user, ICollection<ScoringModel> scoringModels,
         ICollection<ScoringEntity> scoringEntities, CancellationToken cancellationToken)
     {
         // Map votes
         foreach (var scoringModel in scoringModels)
         {
-            var scoringEntity = scoringEntities
+            var scoringEntity = scoringModel.Id == 0 ? null : scoringEntities
                 .FirstOrDefault(x => x.ScoringId == scoringModel.Id);
             if (scoringEntity == null)
             {
@@ -153,6 +153,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         scoringEntity.UpdateTeamOnRecalculation = scoringModel.UpdateTeamOnRecalculation;
         scoringEntity.PointsRule = scoringModel.PointRule is not null ? await MapToPointRuleEntityAsync(user, scoringModel.PointRule,
             scoringEntity.PointsRule ?? CreateVersionEntity(user, new PointRuleEntity() { LeagueId = scoringEntity.LeagueId }), cancellationToken) : null;
+        scoringEntity.UseExternalSourcePoints = scoringModel.UseSourcePoints;
         UpdateVersionEntity(user, scoringEntity);
         return await Task.FromResult(scoringEntity);
     }
@@ -219,6 +220,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             IsCombinedResult = scoring.IsCombinedResult,
             UpdateTeamOnRecalculation = scoring.UpdateTeamOnRecalculation,
             UseResultSetTeam = scoring.UseResultSetTeam,
+            UseSourcePoints = scoring.UseExternalSourcePoints,
             PointRule = scoring.PointsRule != null ? new PointRuleModel()
             {
                 BonusPoints = scoring.PointsRule.BonusPoints,

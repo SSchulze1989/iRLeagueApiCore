@@ -32,11 +32,11 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         {
             var @event = await dbContext.Events
                 .Where(x => x.LeagueId == result.LeagueId)
-                .FirstOrDefaultAsync(x => x.EventId == result.EventId)
+                .FirstOrDefaultAsync(x => x.EventId == result.EventId, cancellationToken)
                 ?? throw new InvalidOperationException($"No event with id {result.EventId} found");
             var season = await dbContext.Seasons
                 .Where(x => x.LeagueId == result.LeagueId)
-                .FirstOrDefaultAsync(x => x.SeasonId == result.SeasonId)
+                .FirstOrDefaultAsync(x => x.SeasonId == result.SeasonId, cancellationToken)
                 ?? throw new InvalidOperationException($"No season with id {result.SeasonId} found");
             var standingConfig = await dbContext.StandingConfigurations
                 .Where(x => x.LeagueId == result.LeagueId)
@@ -48,6 +48,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
                 Event = @event,
                 Name = result.Name,
                 StandingConfig = standingConfig,
+                IsTeamStanding = result.IsTeamStanding,
             };
             dbContext.Standings.Add(standing);
         }
@@ -57,7 +58,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
     private Task<StandingEntity> MapToStandingEntity(StandingCalculationResult result, StandingEntity entity, RequiredEntities requiredEntities,
         CancellationToken cancellationToken)
     {
-        foreach(var row in result.StandingRows)
+        foreach (var row in result.StandingRows)
         {
             StandingRowEntity? rowEntity = default;
             if (row.MemberId is not null)
@@ -112,10 +113,12 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             rowEntity.Wins = row.Wins;
             rowEntity.WinsChange = row.WinsChange;
             rowEntity.ResultRows = MapToStandingResultRowsList(result.LeagueId, row.ResultRows, rowEntity.ResultRows, requiredEntities);
+            rowEntity.StartIrating = row.StartIrating;
+            rowEntity.LastIrating = row.LastIrating;
         }
 
         var memberIds = result.StandingRows.Select(x => x.MemberId);
-        foreach(var row in entity.StandingRows.Where(x => memberIds.Contains(x.MemberId) == false))
+        foreach (var row in entity.StandingRows.Where(x => memberIds.Contains(x.MemberId) == false))
         {
             entity.StandingRows.Remove(row);
         }
@@ -123,10 +126,10 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
         return Task.FromResult(entity);
     }
 
-    private ICollection<StandingRows_ScoredResultRows> MapToStandingResultRowsList(long leagueId, IEnumerable<ResultRowCalculationResult> rowsData, 
+    private ICollection<StandingRows_ScoredResultRows> MapToStandingResultRowsList(long leagueId, IEnumerable<ResultRowCalculationResult> rowsData,
         ICollection<StandingRows_ScoredResultRows> rowsEntities, RequiredEntities requiredEntities)
     {
-        foreach(var row in rowsData.Where(x => x.ScoredResultRowId != null))
+        foreach (var row in rowsData.Where(x => x.ScoredResultRowId != null))
         {
             var rowEntity = rowsEntities
                 .Where(x => x.LeagueId == leagueId)
@@ -189,7 +192,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             .Where(x => x.EventId == eventId)
             .Where(x => standingConfigIds.Contains(x.StandingConfigId) == false)
             .ToListAsync(cancellationToken);
-        foreach(var standing in removeStandings)
+        foreach (var standing in removeStandings)
         {
             dbContext.Standings.Remove(standing);
         }

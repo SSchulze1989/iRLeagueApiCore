@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
 
 [Collection("DataAccessTests")]
-public class EventCalculationResultStoreTests : DataAccessTestsBase
+public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
 {
     [Fact]
     public async Task StoreCalculationResult_ShouldStoreNewResult_WhenResultNotExists()
@@ -107,7 +107,7 @@ public class EventCalculationResultStoreTests : DataAccessTestsBase
         await sut.StoreCalculationResult(result);
 
         var testResult = await dbContext.ScoredSessionResults
-            .SingleAsync(x => x.SessionResultId == removeRow.SessionResultId);
+            .SingleAsync(x => x.SessionNr == removeRowFromSessionResult.SessionNr);
         testResult.ScoredResultRows.Should().HaveSameCount(removeRowFromSessionResult.ResultRows);
         testResult.ScoredResultRows.Should().NotContain(x => x.ScoredResultRowId == removeRow.ScoredResultRowId);
     }
@@ -198,7 +198,7 @@ public class EventCalculationResultStoreTests : DataAccessTestsBase
             .Create();
     }
 
-    private EventCalculationResult GetCalculationResult(EventEntity @event, EventCalculationConfiguration config, 
+    private EventCalculationResult GetCalculationResult(EventEntity @event, EventCalculationConfiguration config,
         ScoredEventResultEntity? resultEntity = null, IEnumerable<LeagueMemberEntity>? members = null)
     {
         return fixture.Build<EventCalculationResult>()

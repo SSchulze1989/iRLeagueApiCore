@@ -1,13 +1,11 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 
-namespace iRLeagueApiCore.Server.Validation.Scorings
+namespace iRLeagueApiCore.Server.Validation.Scorings;
+
+public sealed class PutPointRuleModelValidator : AbstractValidator<PutPointRuleModel>
 {
-    public class PutPointRuleModelValidator : AbstractValidator<PutPointRuleModel>
+    public PutPointRuleModelValidator(PostPointRuleModelValidator parentValidator)
     {
-        public PutPointRuleModelValidator(PostPointRuleModelValidator parentValidator)
-        {
-            Include(parentValidator);
-        }
+        Include(parentValidator);
     }
 }

@@ -1,37 +1,37 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models.Members;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using iRLeagueApiCore.Common.Models;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace iRLeagueApiCore.Server.Handlers.Members
+namespace iRLeagueApiCore.Server.Handlers.Members;
+
+public class MembersHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
 {
-    public class MembersHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+    public MembersHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
+        base(logger, dbContext, validators)
     {
-        public MembersHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
-            base(logger, dbContext, validators)
-        {
-        }
-
-        protected async Task<IEnumerable<MemberInfoModel>> MapToMemberInfoListAsync(IEnumerable<long> memberIds, CancellationToken cancellationToken)
-        {
-            return await dbContext.Members
-                .Where(x => memberIds.Contains(x.Id))
-                .Select(MapToMemberInfoExpression)
-                .ToListAsync(cancellationToken);
-        }
-
-        protected Expression<Func<MemberEntity, MemberInfoModel>> MapToMemberInfoExpression => member => new MemberInfoModel()
-        {
-            MemberId = member.Id,
-            FirstName = member.Firstname,
-            LastName = member.Lastname,
-        };
     }
+
+    protected async Task<IEnumerable<MemberModel>> MapToMemberListAsync(long leagueId, IEnumerable<long> memberIds, CancellationToken cancellationToken)
+    {
+        return await dbContext.LeagueMembers
+            .Where(x => x.LeagueId == leagueId)
+            .Where(x => memberIds.Contains(x.MemberId))
+            .Select(MapToMemberModelExpression)
+            .ToListAsync(cancellationToken);
+    }
+
+    protected Expression<Func<MemberEntity, MemberInfoModel>> MapToMemberInfoExpression => member => new()
+    {
+        MemberId = member.Id,
+        FirstName = member.Firstname,
+        LastName = member.Lastname,
+    };
+
+    protected Expression<Func<LeagueMemberEntity, MemberModel>> MapToMemberModelExpression => member => new()
+    {
+        MemberId = member.Member.Id,
+        FirstName = member.Member.Firstname,
+        LastName= member.Member.Lastname,
+        IRacingId = member.Member.IRacingId,
+        TeamName = member.Team == null ? string.Empty : member.Team.Name,
+    };
 }
