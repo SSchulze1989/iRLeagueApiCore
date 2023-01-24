@@ -59,7 +59,7 @@ public sealed class HttpClientWrapper
 
     private async Task AddJWTTokenAsync(HttpRequestMessage request)
     {
-        var token = await tokenProvider.GetTokenAsync();
+        var token = await tokenProvider.GetAccessTokenAsync();
 
         if (string.IsNullOrEmpty(token) == false)
         {

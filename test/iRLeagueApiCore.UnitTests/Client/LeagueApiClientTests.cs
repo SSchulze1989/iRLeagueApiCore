@@ -31,7 +31,7 @@ public sealed class LeagueApiClientTests
 
         string token = null;
         var mockTokenStore = new Mock<ITokenStore>();
-        mockTokenStore.Setup(x => x.SetTokenAsync(It.IsAny<string>()))
+        mockTokenStore.Setup(x => x.SetAccessTokenAsync(It.IsAny<string>()))
             .Callback<string>(x => token = x);
 
         var httpClient = new HttpClient(messageHandler);
@@ -45,7 +45,7 @@ public sealed class LeagueApiClientTests
         token.Should().Be(testToken);
     }
 
-    [Fact(Skip = "Needs rework for id and access token")]
+    [Fact]
     public async Task ShouldSendAuthenticatedRequest()
     {
         AuthenticationHeaderValue authHeader = default;
@@ -59,7 +59,7 @@ public sealed class LeagueApiClientTests
             };
         });
         var mockTokenStore = new Mock<ITokenStore>();
-        mockTokenStore.Setup(x => x.GetTokenAsync())
+        mockTokenStore.Setup(x => x.GetAccessTokenAsync())
             .ReturnsAsync(testToken);
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);
@@ -87,11 +87,11 @@ public sealed class LeagueApiClientTests
 
         string token = testToken;
         var mockTokenStore = new Mock<ITokenStore>();
-        mockTokenStore.Setup(x => x.SetTokenAsync(It.IsAny<string>()))
+        mockTokenStore.Setup(x => x.SetAccessTokenAsync(It.IsAny<string>()))
             .Callback<string>(x => token = x);
-        mockTokenStore.Setup(x => x.ClearTokenAsync())
+        mockTokenStore.Setup(x => x.ClearTokensAsync())
             .Callback(() => token = null);
-        mockTokenStore.Setup(x => x.GetTokenAsync())
+        mockTokenStore.Setup(x => x.GetAccessTokenAsync())
             .ReturnsAsync(testToken);
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);

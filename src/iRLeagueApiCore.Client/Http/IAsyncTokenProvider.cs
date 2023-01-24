@@ -3,5 +3,6 @@
 public interface IAsyncTokenProvider
 {
     event EventHandler TokenChanged;
-    Task<string> GetTokenAsync();
+    Task<string> GetIdTokenAsync();
+    Task<string> GetAccessTokenAsync();
 }

@@ -16,21 +16,19 @@ public sealed class LeagueApiClient : ILeagueApiClient
 {
     private readonly ILogger<LeagueApiClient> logger;
     private readonly HttpClientWrapper httpClientWrapper;
-    private readonly ITokenStore idTokenStore;
-    private readonly ITokenStore accessTokenStore;
+    private readonly ITokenStore tokenStore;
 
     private string? CurrentLeagueName { get; set; }
 
-    public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, ITokenStore idTokenStore, JsonSerializerOptions jsonOptions)
+    public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, ITokenStore tokenStore, JsonSerializerOptions jsonOptions)
     {
         this.logger = logger;
-        accessTokenStore = new MemoryTokenStore();
-        httpClientWrapper = new HttpClientWrapper(httpClient, accessTokenStore, this, jsonOptions);
+        httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this, jsonOptions);
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        this.idTokenStore = idTokenStore;
+        this.tokenStore = tokenStore;
     }
 
-    public bool IsLoggedIn => idTokenStore.IsLoggedIn;
+    public bool IsLoggedIn => tokenStore.IsLoggedIn;
 
     public ILeagueByNameEndpoint? CurrentLeague { get; private set; }
     public ISeasonByIdEndpoint? CurrentSeason { get; private set; }
@@ -77,8 +75,8 @@ public sealed class LeagueApiClient : ILeagueApiClient
             // set authorization header
             string idToken = result.Content.IdToken;
             string accessToken = result.Content.AccessToken;
-            await idTokenStore.SetTokenAsync(idToken);
-            await accessTokenStore.SetTokenAsync(accessToken);
+            await tokenStore.SetIdTokenAsync(idToken);
+            await tokenStore.SetAccessTokenAsync(accessToken);
             return result;
         }
 
@@ -92,21 +90,21 @@ public sealed class LeagueApiClient : ILeagueApiClient
     /// <param name="idToken"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>Response containing access token</returns>
-    public async Task<ClientActionResult<AuthorizeResponse>> Authorize(string userName, string idToken, CancellationToken cancellationToken = default)
+    public async Task<ClientActionResult<AuthorizeResponse>> Authorize(string idToken, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Request access token for user {UserName}", userName);
+        logger.LogInformation("Request access token using id token");
 
         var requestUrl = "Authenticate/authorize";
         var body = new
         {
-            idToken = idToken 
+            idToken 
         };
         var result = await httpClientWrapper.PostAsClientActionResult<AuthorizeResponse>(requestUrl, body, cancellationToken);
 
         if (result.Success)
         {
-            string accessToken = result.Content.AccessToken;
-            await accessTokenStore.SetTokenAsync(accessToken);
+            string token = result.Content.AccessToken;
+            await tokenStore.SetAccessTokenAsync(token);
             return result;
         }
 
@@ -119,8 +117,7 @@ public sealed class LeagueApiClient : ILeagueApiClient
 
     public async Task LogOut()
     {
-        await idTokenStore.ClearTokenAsync();
-        await accessTokenStore.ClearTokenAsync();
+        await tokenStore.ClearTokensAsync();
         logger.LogInformation("User logged out");
     }
 

@@ -155,7 +155,7 @@ public sealed class HttpExtensionsTests
                 Content = content
             });
         var mockTokenProvider = new Mock<IAsyncTokenProvider>();
-        mockTokenProvider.Setup(x => x.GetTokenAsync())
+        mockTokenProvider.Setup(x => x.GetAccessTokenAsync())
             .ReturnsAsync(testToken);
         var client = new HttpClient(mockMessageHandler.Object);
         var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
