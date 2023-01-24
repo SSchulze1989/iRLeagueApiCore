@@ -26,6 +26,34 @@ public sealed class LeagueApiClient : ILeagueApiClient
         httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this, jsonOptions);
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         this.tokenStore = tokenStore;
+        tokenStore.TokenChanged += TokenStore_TokenChanged;
+        tokenStore.TokenExpired += TokenStore_TokenExpired;
+        TokenStore_TokenChanged(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Automatically reauthorize if token has expired
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void TokenStore_TokenExpired(object? sender, EventArgs e)
+    {
+        await Reauthorize();
+    }
+
+    /// <summary>
+    /// Reauthorize (if required) if the token has changed (e.g. when the token has been read from browser storage)
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void TokenStore_TokenChanged(object? sender, EventArgs e)
+    {
+        var idToken = await tokenStore.GetIdTokenAsync();
+        var accessToken = await tokenStore.GetAccessTokenAsync();
+        if (string.IsNullOrEmpty(idToken) == false && string.IsNullOrEmpty(accessToken))
+        {
+            await Reauthorize();
+        }
     }
 
     public bool IsLoggedIn => tokenStore.IsLoggedIn;
@@ -48,6 +76,13 @@ public sealed class LeagueApiClient : ILeagueApiClient
         return new TracksEndpoint(httpClientWrapper, new RouteBuilder());
     }
 
+    /// <summary>
+    /// Login with username and password
+    /// </summary>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Response with id and access token</returns>
     public async Task<ClientActionResult<LoginResponse>> LogIn(string username, string password, CancellationToken cancellationToken = default)
     {
         // request to login endpoint
@@ -66,8 +101,10 @@ public sealed class LeagueApiClient : ILeagueApiClient
         {
             logger.LogInformation("Log in successful!");
             // set authorization header
-            string token = result.Content.Token;
-            await tokenStore.SetTokenAsync(token);
+            string idToken = result.Content.IdToken;
+            string accessToken = result.Content.AccessToken;
+            await tokenStore.SetIdTokenAsync(idToken);
+            await tokenStore.SetAccessTokenAsync(accessToken);
             return result;
         }
 
@@ -75,9 +112,41 @@ public sealed class LeagueApiClient : ILeagueApiClient
         return result;
     }
 
+    /// <summary>
+    /// Get access token using a valid idToken
+    /// </summary>
+    /// <param name="idToken"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Response containing access token</returns>
+    public async Task<ClientActionResult<AuthorizeResponse>> Reauthorize(CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("Request access token using id token");
+
+        var requestUrl = "Authenticate/authorize";
+        var idToken = await tokenStore.GetIdTokenAsync();
+        var body = new
+        {
+            idToken 
+        };
+        var result = await httpClientWrapper.PostAsClientActionResult<AuthorizeResponse>(requestUrl, body, cancellationToken);
+
+        if (result.Success)
+        {
+            string token = result.Content.AccessToken;
+            await tokenStore.SetAccessTokenAsync(token);
+            return result;
+        }
+
+        logger.LogError("Access request failed: {Status}", result.Status);
+        await LogOut();
+        return result;
+    }
+
+
+
     public async Task LogOut()
     {
-        await tokenStore.ClearTokenAsync();
+        await tokenStore.ClearTokensAsync();
         logger.LogInformation("User logged out");
     }
 

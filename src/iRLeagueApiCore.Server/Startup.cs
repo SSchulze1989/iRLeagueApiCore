@@ -145,6 +145,7 @@ public sealed class Startup
             options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new TokenValidationParameters()
             {
+                ValidateLifetime = true,
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidAudience = Configuration["JWT:ValidAudience"],

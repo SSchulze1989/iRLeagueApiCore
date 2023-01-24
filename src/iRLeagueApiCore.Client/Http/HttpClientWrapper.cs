@@ -46,20 +46,33 @@ public sealed class HttpClientWrapper
         return await SendRequest(request, cancellationToken);
     }
 
-    public async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+    public async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken, bool isRetry = false)
     {
         await AddJWTTokenAsync(request);
         var result = await httpClient.SendAsync(request, cancellationToken);
         if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient != null)
         {
-            await apiClient.LogOut();
+            if (isRetry)
+            {
+                return result;
+            }
+
+            // try to reauthorize using saved id token
+            var reauthResult = await apiClient.Reauthorize(cancellationToken);
+            if (reauthResult.Success == false)
+            {
+                await apiClient.LogOut();
+                return result;
+            }
+
+            return await SendRequest(request, cancellationToken, isRetry: true);
         }
         return result;
     }
 
     private async Task AddJWTTokenAsync(HttpRequestMessage request)
     {
-        var token = await tokenProvider.GetTokenAsync();
+        var token = await tokenProvider.GetAccessTokenAsync();
 
         if (string.IsNullOrEmpty(token) == false)
         {

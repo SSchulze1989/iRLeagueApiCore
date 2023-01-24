@@ -17,6 +17,7 @@ public interface ILeagueApiClient
     ITracksEndpoint Tracks();
     ICustomEndpoint CustomEndpoint(string route);
     Task<ClientActionResult<LoginResponse>> LogIn(string username, string password, CancellationToken cancellationToken = default);
+    Task<ClientActionResult<AuthorizeResponse>> Reauthorize(CancellationToken cancellationToken = default);
     Task LogOut();
     void SetCurrentLeague(string leagueName);
     void SetCurrentSeason(string leagueName, long seasonId);
