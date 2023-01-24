@@ -1,8 +1,6 @@
 ﻿namespace iRLeagueApiCore.Client.Results;
-
-public struct LoginResponse
+public struct AuthorizeResponse
 {
-    public string IdToken { get; set; }
     public string AccessToken { get; set; }
     public DateTime Expires { get; set; }
 }
