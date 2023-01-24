@@ -26,6 +26,34 @@ public sealed class LeagueApiClient : ILeagueApiClient
         httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this, jsonOptions);
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         this.tokenStore = tokenStore;
+        tokenStore.TokenChanged += TokenStore_TokenChanged;
+        tokenStore.TokenExpired += TokenStore_TokenExpired;
+        TokenStore_TokenChanged(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Automatically reauthorize if token has expired
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void TokenStore_TokenExpired(object? sender, EventArgs e)
+    {
+        await Reauthorize();
+    }
+
+    /// <summary>
+    /// Reauthorize (if required) if the token has changed (e.g. when the token has been read from browser storage)
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void TokenStore_TokenChanged(object? sender, EventArgs e)
+    {
+        var idToken = await tokenStore.GetIdTokenAsync();
+        var accessToken = await tokenStore.GetAccessTokenAsync();
+        if (string.IsNullOrEmpty(idToken) == false && string.IsNullOrEmpty(accessToken))
+        {
+            await Reauthorize();
+        }
     }
 
     public bool IsLoggedIn => tokenStore.IsLoggedIn;

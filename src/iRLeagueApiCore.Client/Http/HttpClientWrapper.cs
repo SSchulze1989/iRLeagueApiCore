@@ -54,7 +54,6 @@ public sealed class HttpClientWrapper
         {
             if (isRetry)
             {
-                await apiClient.LogOut();
                 return result;
             }
 
