@@ -90,11 +90,12 @@ public sealed class LeagueApiClient : ILeagueApiClient
     /// <param name="idToken"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>Response containing access token</returns>
-    public async Task<ClientActionResult<AuthorizeResponse>> Authorize(string idToken, CancellationToken cancellationToken = default)
+    public async Task<ClientActionResult<AuthorizeResponse>> Reauthorize(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Request access token using id token");
 
         var requestUrl = "Authenticate/authorize";
+        var idToken = await tokenStore.GetIdTokenAsync();
         var body = new
         {
             idToken 

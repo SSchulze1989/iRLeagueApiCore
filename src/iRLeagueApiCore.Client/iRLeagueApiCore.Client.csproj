@@ -12,7 +12,7 @@
 		<OutputType>Library</OutputType>
 		<TargetFrameworks>net6.0</TargetFrameworks>
 		<PackageId>iRLeagueApiCore.Client</PackageId>
-		<Version>0.4.2-dev.1</Version>
+		<Version>0.4.2-dev.2</Version>
 		<Authors>Simon Schulze</Authors>
 		<Company>Simon Schulze</Company>
 		<PackageDescription>This package contains shared objects for all members of the iRLeagueDatabase-iRLeagueApi stack</PackageDescription>
