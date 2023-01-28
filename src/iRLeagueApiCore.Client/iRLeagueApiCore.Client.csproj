@@ -6,13 +6,14 @@
     <PackageReference Include="iRLeagueApiCore.Common" Version="0.4.2-dev.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
   </ItemGroup>
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<TargetFrameworks>net6.0</TargetFrameworks>
 		<PackageId>iRLeagueApiCore.Client</PackageId>
-		<Version>0.4.2-dev.3</Version>
+		<Version>0.4.2-dev.4</Version>
 		<Authors>Simon Schulze</Authors>
 		<Company>Simon Schulze</Company>
 		<PackageDescription>This package contains shared objects for all members of the iRLeagueDatabase-iRLeagueApi stack</PackageDescription>

@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Results;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -46,28 +47,47 @@ public sealed class HttpClientWrapper
         return await SendRequest(request, cancellationToken);
     }
 
-    public async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken, bool isRetry = false)
+    public async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        await AddJWTTokenAsync(request);
-        var result = await httpClient.SendAsync(request, cancellationToken);
-        if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient != null)
+        request.Options.TryGetValue(new HttpRequestOptionsKey<bool>("SkipAuth"), out bool skipAuth);
+        if (skipAuth == false)
         {
-            if (isRetry)
+            if (apiClient is not null)
             {
-                return result;
+                await apiClient.CheckLogin(cancellationToken);
             }
+            await AddJWTTokenAsync(request);
+        }
 
-            // try to reauthorize using saved id token
-            var reauthResult = await apiClient.Reauthorize(cancellationToken);
-            if (reauthResult.Success == false)
-            {
-                await apiClient.LogOut();
-                return result;
-            }
-
-            return await SendRequest(request, cancellationToken, isRetry: true);
+        var result = await httpClient.SendAsync(request, cancellationToken);
+        if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient is not null)
+        {
+            // logout on unauthorized answer -> means something is wrong with our tokens
+            await apiClient.LogOut();
         }
         return result;
+    }
+
+    public HttpRequestMessage CreateRequest(HttpMethod method, string uri, object? content, HttpRequestOptions? options = default)
+    {
+        var request = new HttpRequestMessage(method, new Uri(uri, UriKind.RelativeOrAbsolute));
+        if (options is not null)
+        {
+            foreach(var option in options)
+            {
+                request.Options.TryAdd(option.Key, option.Value);
+            }
+        }
+        if (content is not null)
+        {
+            request.Content = new StringContent(JsonSerializer.Serialize(content, jsonOptions), Encoding.UTF8, "application/json");
+        }
+        return request;
+    }
+
+    public async Task<ClientActionResult<T>> ConvertToClientActionResult<T>(HttpResponseMessage message, CancellationToken cancellationToken)
+    {
+        return await message.ToClientActionResultAsync<T>(jsonOptions, cancellationToken);
     }
 
     private async Task AddJWTTokenAsync(HttpRequestMessage request)
