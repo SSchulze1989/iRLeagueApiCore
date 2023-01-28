@@ -7,6 +7,8 @@ using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using Microsoft.Extensions.Logging;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -17,6 +19,7 @@ public sealed class LeagueApiClient : ILeagueApiClient
     private readonly ILogger<LeagueApiClient> logger;
     private readonly HttpClientWrapper httpClientWrapper;
     private readonly ITokenStore tokenStore;
+    private bool isAuthorizing;
 
     private string? CurrentLeagueName { get; set; }
 
@@ -27,19 +30,19 @@ public sealed class LeagueApiClient : ILeagueApiClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         this.tokenStore = tokenStore;
         tokenStore.TokenChanged += TokenStore_TokenChanged;
-        tokenStore.TokenExpired += TokenStore_TokenExpired;
+        //tokenStore.TokenExpired += TokenStore_TokenExpired;
         TokenStore_TokenChanged(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// Automatically reauthorize if token has expired
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private async void TokenStore_TokenExpired(object? sender, EventArgs e)
-    {
-        await Reauthorize();
-    }
+    ///// <summary>
+    ///// Automatically reauthorize if token has expired
+    ///// </summary>
+    ///// <param name="sender"></param>
+    ///// <param name="e"></param>
+    //private async void TokenStore_TokenExpired(object? sender, EventArgs e)
+    //{
+    //    await Reauthorize();
+    //}
 
     /// <summary>
     /// Reauthorize (if required) if the token has changed (e.g. when the token has been read from browser storage)
@@ -95,6 +98,7 @@ public sealed class LeagueApiClient : ILeagueApiClient
             username = username,
             password = password
         };
+        
         var result = await httpClientWrapper.PostAsClientActionResult<LoginResponse>(requestUrl, body, cancellationToken);
 
         if (result.Success)
@@ -118,31 +122,77 @@ public sealed class LeagueApiClient : ILeagueApiClient
     /// <param name="idToken"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>Response containing access token</returns>
-    public async Task<ClientActionResult<AuthorizeResponse>> Reauthorize(CancellationToken cancellationToken = default)
+    public async Task Reauthorize(CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Request access token using id token");
-
-        var requestUrl = "Authenticate/authorize";
-        var idToken = await tokenStore.GetIdTokenAsync();
-        var body = new
+        try
         {
-            idToken 
-        };
-        var result = await httpClientWrapper.PostAsClientActionResult<AuthorizeResponse>(requestUrl, body, cancellationToken);
+            isAuthorizing = true;
 
-        if (result.Success)
-        {
-            string token = result.Content.AccessToken;
-            await tokenStore.SetAccessTokenAsync(token);
-            return result;
+            logger.LogInformation("Request access token using id token");
+
+            var requestUrl = "Authenticate/authorize";
+            var idToken = await tokenStore.GetIdTokenAsync();
+            var body = new
+            {
+                idToken
+            };
+            var options = new HttpRequestOptions();
+            options.TryAdd("SkipAuth", true);
+            var request = httpClientWrapper.CreateRequest(HttpMethod.Post, requestUrl, body, options);
+            var response = await httpClientWrapper.SendRequest(request, cancellationToken);
+            var result = await httpClientWrapper.ConvertToClientActionResult<AuthorizeResponse>(response, cancellationToken);
+
+            if (result.Success)
+            {
+                string token = result.Content.AccessToken;
+                await tokenStore.SetAccessTokenAsync(token);
+                return;
+            }
+
+            logger.LogError("Access request failed: {Status}", result.Status);
+            await LogOut();
+            return;
         }
-
-        logger.LogError("Access request failed: {Status}", result.Status);
-        await LogOut();
-        return result;
+        finally
+        {
+            isAuthorizing = false;
+        }
     }
 
+    /// <summary>
+    /// Check the current login state and reauthorize if required
+    /// </summary>
+    /// <returns></returns>
+    public async Task CheckLogin(CancellationToken cancellationToken = default)
+    {
+        var idToken = await tokenStore.GetIdTokenAsync();
+        if (string.IsNullOrWhiteSpace(idToken))
+        {
+            // user not logged in
+            return;
+        }
 
+        if (isAuthorizing)
+        {
+            // wait until authorizing finished
+            var timeout = 5000;
+            await Task.WhenAny(Task.Run(() => { while (isAuthorizing) ; }), Task.Delay(timeout, cancellationToken));
+        }
+        // user logged in but has no access token -> get access through reauthorization
+        var accessToken = await tokenStore.GetAccessTokenAsync();
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            await Reauthorize(cancellationToken);
+        }
+
+        if (DateTime.UtcNow >= tokenStore.AccessTokenExpires)
+        {
+            // access token has expired -> reauthoriza
+            await Reauthorize(cancellationToken);
+        }
+
+        // Do nothing because login is valid
+    }
 
     public async Task LogOut()
     {
