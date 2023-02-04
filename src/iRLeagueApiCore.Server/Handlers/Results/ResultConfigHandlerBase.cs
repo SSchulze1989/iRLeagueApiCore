@@ -21,7 +21,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 .ThenInclude(x => x.Conditions)
             .Include(x => x.PointFilters)
                 .ThenInclude(x => x.Conditions)
-            .Include(x => x.StandingConfigurations)
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ResultConfigId == resultConfigId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -38,8 +37,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         resultConfigEntity.Name = postResultConfig.Name;
         resultConfigEntity.ResultKind = postResultConfig.ResultKind;
         resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
-        resultConfigEntity.StandingConfigurations = await MapToStandingConfigListAsync(resultConfigEntity.LeagueId, user, postResultConfig.StandingConfig,
-            resultConfigEntity.StandingConfigurations, cancellationToken);
         resultConfigEntity.Scorings = await MapToScoringList(resultConfigEntity.LeagueId, user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
         resultConfigEntity.PointFilters = await MapToFilterOptionListAsync(resultConfigEntity.LeagueId, user, postResultConfig.FiltersForPoints,
             resultConfigEntity.PointFilters, cancellationToken);
@@ -203,14 +200,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         DisplayName = resultConfig.DisplayName,
         ResultKind = resultConfig.ResultKind,
         ResultsPerTeam = resultConfig.ResultsPerTeam,
-        StandingConfig = resultConfig.StandingConfigurations.Select(standingConfig => new StandingConfigModel()
-        {
-            StandingConfigId = standingConfig.StandingConfigId,
-            Name = standingConfig.Name,
-            ResultKind = standingConfig.ResultKind,
-            UseCombinedResult = standingConfig.UseCombinedResult,
-            WeeksCounted = standingConfig.WeeksCounted,
-        }).FirstOrDefault(),
         Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()
         {
             Id = scoring.ScoringId,
