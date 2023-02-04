@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +21,10 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
 
     public async Task<IReadOnlyList<long>> GetStandingConfigIds(long seasonId, CancellationToken cancellationToken = default)
     {
-        var configIds = await dbContext.Seasons
+        var configIds = await dbContext.ChampSeasons
             .Where(x => x.SeasonId == seasonId)
-            .SelectMany(x => x.Schedules)
-            .SelectMany(x => x.Events)
-            .SelectMany(x => x.ResultConfigs)
-            .SelectMany(x => x.StandingConfigurations)
-            .Select(x => x.StandingConfigId)
+            .Where(x => x.StandingConfigId != null)
+            .Select(x => x.StandingConfigId.GetValueOrDefault())
             .Distinct()
             .ToListAsync(cancellationToken);
         return configIds;
@@ -44,14 +42,15 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
         }
         var config = DefaultStandingConfiguration(season, @event.EventId);
         var standingConfig = await GetConfigurationEntityAsync(standingConfigId, cancellationToken);
-        if (standingConfig is not null)
+        var champSeason = standingConfig?.ChampSeasons.FirstOrDefault(x => x.SeasonId == seasonId);
+        if (standingConfig is not null && champSeason is not null)
         {
             config.StandingConfigId = standingConfig.StandingConfigId;
-            config.ResultConfigId = standingConfig.ResultConfigurations.FirstOrDefault()?.ResultConfigId;
-            config.Name = standingConfig.ResultConfigurations.FirstOrDefault()?.Name ?? standingConfig.Name;
-            config.DisplayName = standingConfig.ResultConfigurations.FirstOrDefault()?.DisplayName ?? standingConfig.Name;
+            config.ResultConfigId = champSeason.ResultConfigurations.FirstOrDefault()?.ResultConfigId;
+            config.Name = champSeason.ResultConfigurations.FirstOrDefault()?.Name ?? standingConfig.Name;
+            config.DisplayName = champSeason.ResultConfigurations.FirstOrDefault()?.DisplayName ?? standingConfig.Name;
             config.UseCombinedResult = standingConfig.UseCombinedResult;
-            config.ResultKind = standingConfig.ResultConfigurations.FirstOrDefault()?.ResultKind ?? standingConfig.ResultKind;
+            config.ResultKind = champSeason.ResultConfigurations.FirstOrDefault()?.ResultKind ?? standingConfig.ResultKind;
             config.WeeksCounted = standingConfig.WeeksCounted;
         }
         return config;
@@ -66,7 +65,8 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
     private async Task<StandingConfigurationEntity?> GetConfigurationEntityAsync(long? standingConfigId, CancellationToken cancellationToken)
     {
         return await dbContext.StandingConfigurations
-            .Include(x => x.ResultConfigurations)
+            .Include(x => x.ChampSeasons)
+                .ThenInclude(x => x.ResultConfigurations)
             .FirstOrDefaultAsync(x => x.StandingConfigId == standingConfigId, cancellationToken: cancellationToken);
     }
 

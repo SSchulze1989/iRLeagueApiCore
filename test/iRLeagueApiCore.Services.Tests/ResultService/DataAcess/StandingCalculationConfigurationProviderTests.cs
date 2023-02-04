@@ -67,10 +67,15 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
     {
         var season = await GetFirstSeasonAsync();
         var @event = season.Schedules.First().Events.First();
+        var championship = await GetFirstChampionshipAsync();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var standingConfig = accessMockHelper.CreateStandingConfiguration(config);
-        config.StandingConfigurations.Add(standingConfig);
+        var champSeason = accessMockHelper.CreateChampSeason(championship, season);
+        var standingConfig = accessMockHelper.CreateStandingConfiguration(season.League);
+        dbContext.ChampSeasons.Add(champSeason);
+        dbContext.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.Add(config);
+        champSeason.StandingConfiguration = standingConfig;
+        champSeason.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
@@ -79,7 +84,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         test.LeagueId.Should().Be(season.LeagueId);
         test.SeasonId.Should().Be(season.SeasonId);
         test.EventId.Should().Be(@event.EventId);
-        test.ResultConfigId.Should().Be(config.ResultConfigId);
+        test.ResultConfigId.Should().Be(champSeason.ResultConfigurations.First().ResultConfigId);
         test.StandingConfigId.Should().Be(standingConfig.StandingConfigId);
     }
 
@@ -91,9 +96,18 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
     private async Task<SeasonEntity> GetFirstSeasonAsync()
     {
         return await dbContext.Seasons
+            .Include(x => x.League)
             .Include(x => x.Schedules)
                 .ThenInclude(x => x.Events)
                     .ThenInclude(x => x.ScoredEventResults)
+            .Include(x => x.ChampSeasons)
+            .FirstAsync();
+    }
+
+    private async Task<ChampionshipEntity> GetFirstChampionshipAsync()
+    {
+        return await dbContext.Championships
+            .Include(x => x.ChampSeasons)
             .FirstAsync();
     }
 }
