@@ -2,6 +2,6 @@
 
 namespace iRLeagueApiCore.Client.Endpoints.VoteCategories;
 
-public interface IVoteCategoriesEndpoint : IGetAllEndpoint<VoteCategoryModel>, IWithIdEndpoint<IVoteCategoryByIdEndpoint>
+public interface IVoteCategoriesEndpoint : IPostGetAllEndpoint<VoteCategoryModel, PostVoteCategoryModel>, IWithIdEndpoint<IVoteCategoryByIdEndpoint>
 {
 }
