@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public sealed class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
 {
     public ChampSeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
         base(logger, dbContext, validators)
@@ -14,6 +14,8 @@ public sealed class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THa
     protected virtual async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long leagueId, long champSeasonId, CancellationToken cancellationToken)
     {
         return await dbContext.ChampSeasons
+            .Include(x => x.StandingConfiguration)
+            .Include(x => x.ResultConfigurations)
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampSeasonId == champSeasonId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -50,7 +52,6 @@ public sealed class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THa
         return await dbContext.ChampSeasons
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampSeasonId == champSeasonId)
-            .OrderBy(x => x.Season.SeasonStart)
             .Select(MapToChampSeasonModelExpression)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -59,8 +60,10 @@ public sealed class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THa
     {
         ChampionshipId = champSeason.ChampionshipId,
         ChampSeasonId = champSeason.ChampSeasonId,
+        ChampionshipName = champSeason.Championship.Name,
         ResultConfigIds = champSeason.ResultConfigurations.Select(x => x.ResultConfigId).ToList(),
         SeasonId = champSeason.SeasonId,
+        SeasonName = champSeason.Season.SeasonName,
         StandingConfigId = champSeason.StandingConfigId,
     };
 }
