@@ -24,6 +24,7 @@ public sealed class GetLeagueVoteCategoriesHandler : VoteCategoriesHandlerBase<G
     {
         return await dbContext.VoteCategories
             .Where(x => x.LeagueId == leagueId)
+            .OrderBy(x => x.Index)
             .Select(MapToVoteCategoryModelExpression)
             .ToListAsync(cancellationToken);
     }
