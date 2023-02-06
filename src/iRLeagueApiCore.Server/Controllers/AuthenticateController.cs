@@ -126,7 +126,7 @@ public sealed class AuthenticateController : Controller
                 expiration = accessToken.ValidTo
             });
         }
-        catch (SecurityTokenValidationException ex)
+        catch (SecurityTokenValidationException)
         {
             _logger.LogWarning("Invalid token provided");
             return Unauthorized();
