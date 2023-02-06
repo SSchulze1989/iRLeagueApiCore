@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Any;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record PostVoteCategoryRequest(long LeagueId, LeagueUser User, PostVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
+public record PostVoteCategoryRequest(long LeagueId, PostVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
 
 public sealed class PostVoteCategoryHandler : VoteCategoriesHandlerBase<PostVoteCategoryHandler, PostVoteCategoryRequest>, 
     IRequestHandler<PostVoteCategoryRequest, VoteCategoryModel>
