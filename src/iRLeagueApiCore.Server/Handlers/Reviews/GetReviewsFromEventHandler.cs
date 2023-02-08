@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
+using iRLeagueApiCore.Server.Extensions;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
@@ -20,10 +21,14 @@ public sealed class GetReviewsFromEventHandler : ReviewsHandlerBase<GetReviewsFr
 
     private async Task<IEnumerable<ReviewModel>> MapToGetReviewsFromEventAsync(long leagueId, long EventId, bool includeComments, CancellationToken cancellationToken)
     {
-        return await dbContext.IncidentReviews
+        return (await dbContext.IncidentReviews
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.Session.EventId == EventId)
             .Select(MapToReviewModelExpression(includeComments))
-            .ToListAsync(cancellationToken);
+            .ToListAsync(cancellationToken))
+            .OrderBy(x => x.SessionNr)
+            .ThenBy(x => x.IncidentNr.PadNumbers())
+            .ThenBy(x => x.OnLap.PadNumbers())
+            .ThenBy(x => x.Corner.PadNumbers());
     }
 }
