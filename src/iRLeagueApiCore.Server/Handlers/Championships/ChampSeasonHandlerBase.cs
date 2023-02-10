@@ -24,8 +24,8 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
     protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(long leagueId, PostChampSeasonModel model, ChampSeasonEntity target, 
         CancellationToken cancellationToken)
     {
-        target.StandingConfiguration = await GetStandingConfigurationEntityAsync(leagueId, model.StandingConfigId, cancellationToken);
-        target.ResultConfigurations = await MapToResultConfigurationListAsync(leagueId, model.ResultConfigIds, target.ResultConfigurations, cancellationToken);
+        target.StandingConfiguration = await GetStandingConfigurationEntityAsync(leagueId, model.StandingConfig?.StandingConfigId, cancellationToken);
+        target.ResultConfigurations = await MapToResultConfigurationListAsync(leagueId, model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
         return await Task.FromResult(target);
     }
 
@@ -61,9 +61,22 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         ChampionshipId = champSeason.ChampionshipId,
         ChampSeasonId = champSeason.ChampSeasonId,
         ChampionshipName = champSeason.Championship.Name,
-        ResultConfigIds = champSeason.ResultConfigurations.Select(x => x.ResultConfigId).ToList(),
+        ResultConfigs = champSeason.ResultConfigurations.Select(config => new ResultConfigInfoModel()
+        {
+            LeagueId = champSeason.LeagueId,
+            ResultConfigId = config.ResultConfigId,
+            Name = config.Name,
+            DisplayName = config.DisplayName,
+        }).ToList(),
         SeasonId = champSeason.SeasonId,
         SeasonName = champSeason.Season.SeasonName,
-        StandingConfigId = champSeason.StandingConfigId,
+        StandingConfig = champSeason.StandingConfigId == null ? null : new StandingConfigModel()
+        {
+            StandingConfigId = champSeason.StandingConfigId.Value,
+            Name = champSeason.StandingConfiguration.Name,
+            ResultKind = champSeason.StandingConfiguration.ResultKind,
+            UseCombinedResult = champSeason.StandingConfiguration.UseCombinedResult,
+            WeeksCounted = champSeason.StandingConfiguration.WeeksCounted,
+        },
     };
 }

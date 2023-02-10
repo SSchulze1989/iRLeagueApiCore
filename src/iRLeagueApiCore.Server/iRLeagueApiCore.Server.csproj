@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.5.0-dev.4" CopyToOutputDirectory="lib/net6.0">
+	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.5.0-dev.6" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
     <PackageReference Include="iRLeagueDatabaseCore" Version="0.5.0-dev.4" />
 	<PackageReference Include="MediatR" Version="10.0.1" />
@@ -69,7 +69,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.5.0-dev.4</Version>
+		<Version>0.5.0-dev.5</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
