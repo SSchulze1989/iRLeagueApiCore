@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Client.Endpoints.Championships;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Standings;
 
 namespace iRLeagueApiCore.Client.Endpoints.Seasons;
@@ -11,4 +12,6 @@ public interface ISeasonByIdEndpoint : IUpdateEndpoint<SeasonModel, PutSeasonMod
     IGetAllEndpoint<SeasonEventResultModel> Results();
     IGetAllEndpoint<EventModel> Events();
     IGetAllEndpoint<StandingsModel> Standings();
+    ISeasonChampionshipsEndpoint Championships();
+    ISeasonChampSeasonsEndpoint ChampSeasons();
 }

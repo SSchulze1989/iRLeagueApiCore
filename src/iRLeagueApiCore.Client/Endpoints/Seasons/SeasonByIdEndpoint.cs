@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Results;
+﻿using iRLeagueApiCore.Client.Endpoints.Championships;
+using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
@@ -44,5 +45,15 @@ internal class SeasonByIdEndpoint : UpdateEndpoint<SeasonModel, PutSeasonModel>,
     IGetAllEndpoint<StandingsModel> ISeasonByIdEndpoint.Standings()
     {
         return new StandingsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    ISeasonChampionshipsEndpoint ISeasonByIdEndpoint.Championships()
+    {
+        return new ChampionshipsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    ISeasonChampSeasonsEndpoint ISeasonByIdEndpoint.ChampSeasons()
+    {
+        throw new NotImplementedException();
     }
 }

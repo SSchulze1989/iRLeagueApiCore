@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Members;
+﻿using iRLeagueApiCore.Client.Endpoints.Championships;
+using iRLeagueApiCore.Client.Endpoints.Members;
 using iRLeagueApiCore.Client.Endpoints.Protests;
 using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
@@ -29,4 +30,6 @@ public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     ITeamsEndpoint Teams();
     IMembersEndpoint Members();
     IVoteCategoriesEndpoint VoteCategories();
+    IChampionshipsEndpoint Championships();
+    IChampSeasonsEndpoint ChampSeasons();
 }
