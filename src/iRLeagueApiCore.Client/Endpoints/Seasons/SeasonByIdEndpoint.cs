@@ -54,6 +54,6 @@ internal class SeasonByIdEndpoint : UpdateEndpoint<SeasonModel, PutSeasonModel>,
 
     ISeasonChampSeasonsEndpoint ISeasonByIdEndpoint.ChampSeasons()
     {
-        throw new NotImplementedException();
+        return new ChampSeasonsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }
