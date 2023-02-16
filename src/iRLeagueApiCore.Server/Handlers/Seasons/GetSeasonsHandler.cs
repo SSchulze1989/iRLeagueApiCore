@@ -26,7 +26,7 @@ public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler, Get
     {
         return await dbContext.Seasons
             .Where(x => x.LeagueId == leagueId)
-            .OrderBy(x => x.SeasonStart)
+            .OrderByDescending(x => x.SeasonStart)
             .Select(MapToGetSeasonModelExpression)
             .ToListAsync(cancellationToken);
     }
