@@ -43,17 +43,13 @@ public class ChampionshipHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         ChampionshipId = championship.ChampionshipId,
         Name= championship.Name,
         DisplayName = championship.DisplayName,
-        Seasons = championship.ChampSeasons
-            .OrderByDescending(x => x.Season.SeasonStart)
-            .Select(champSeason => new ChampSeasonModel()
+        Seasons = championship.ChampSeasons.Select(champSeason => new ChampSeasonInfoModel()
         {
-            ChampSeasonId = champSeason.ChampSeasonId,
             ChampionshipId = championship.ChampionshipId,
             ChampionshipName = championship.Name,
+            ChampSeasonId = champSeason.ChampSeasonId,
             SeasonId = champSeason.SeasonId,
             SeasonName = champSeason.Season.SeasonName,
-            ResultConfigIds = champSeason.ResultConfigurations.Select(x => x.ResultConfigId).ToList(),
-            StandingConfigId = champSeason.StandingConfigId,
         }).ToList(),
     };
 }
