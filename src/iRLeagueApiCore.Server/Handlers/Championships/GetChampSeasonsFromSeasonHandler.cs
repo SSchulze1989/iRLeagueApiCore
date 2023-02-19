@@ -23,8 +23,7 @@ public sealed class GetChampSeasonFromSeasonHandler : ChampSeasonHandlerBase<Get
 
     private async Task<IEnumerable<ChampSeasonModel>> MapToChampSeasonModelsFromSeasonAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
     {
-        return await dbContext.ChampSeasons
-            .Where(x => x.LeagueId == leagueId)
+        return await ChampSeasonsQuery(leagueId)
             .Where(x => x.SeasonId == seasonId)
             .Select(MapToChampSeasonModelExpression)
             .ToListAsync(cancellationToken);

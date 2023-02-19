@@ -15,7 +15,8 @@ public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampions
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var deleteChampionship = await GetChampionshipEntityAsync(request.LeagueId, request.ChampionshipId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        dbContext.Remove(deleteChampionship);
+        // only archive championship instead of deleting
+        deleteChampionship.IsArchived = true;
         await dbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }

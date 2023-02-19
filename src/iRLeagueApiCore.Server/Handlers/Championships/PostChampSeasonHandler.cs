@@ -16,7 +16,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postChampSeason = await CreateChampSeasonEntityAsync(request.LeagueId, request.ChampionshipId, request.SeasonId, cancellationToken);
-        postChampSeason = await MapToChampSeasonEntityAsync(request.LeagueId, request.Model, postChampSeason, cancellationToken);
+        postChampSeason.IsActive = true;
         await dbContext.SaveChangesAsync(cancellationToken);
         var getChampSeason = await MapToChampSeasonModel(request.LeagueId, postChampSeason.ChampSeasonId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource not found");
@@ -25,6 +25,16 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
 
     private async Task<ChampSeasonEntity> CreateChampSeasonEntityAsync(long leagueId, long championshipId, long seasonId, CancellationToken cancellationToken)
     {
+        var champSeason = await dbContext.ChampSeasons
+            .Where(x => x.LeagueId == leagueId)
+            .Where(x => x.ChampionshipId == championshipId)
+            .Where(x => x.SeasonId == seasonId)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (champSeason is not null)
+        {
+            return champSeason;
+        }
+
         var championship = await dbContext.Championships
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampionshipId == championshipId)
@@ -35,7 +45,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             .Where(x => x.SeasonId == seasonId)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
-        var champSeason = new ChampSeasonEntity()
+        champSeason = new ChampSeasonEntity()
         {
             Championship = championship,
             Season = season,

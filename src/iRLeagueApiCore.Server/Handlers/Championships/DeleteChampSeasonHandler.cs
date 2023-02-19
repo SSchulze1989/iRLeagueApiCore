@@ -15,7 +15,7 @@ public sealed class DeleteChampSeasonHandler : ChampSeasonHandlerBase<DeleteCham
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var deleteChampSeason = await GetChampSeasonEntityAsync(request.LeagueId, request.ChampSeasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        dbContext.Remove(deleteChampSeason);
+        deleteChampSeason.IsActive = false;
         await dbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }

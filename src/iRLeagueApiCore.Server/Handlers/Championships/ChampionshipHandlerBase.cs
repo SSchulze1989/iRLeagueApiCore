@@ -34,6 +34,7 @@ public class ChampionshipHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return await dbContext.Championships
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampionshipId == championshipId)
+            .Where(x => x.IsArchived == false)
             .Select(MapToChampionshipModelExpression)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -43,7 +44,9 @@ public class ChampionshipHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         ChampionshipId = championship.ChampionshipId,
         Name= championship.Name,
         DisplayName = championship.DisplayName,
-        Seasons = championship.ChampSeasons.Select(champSeason => new ChampSeasonInfoModel()
+        Seasons = championship.ChampSeasons
+            .Where(x => x.IsActive)
+            .Select(champSeason => new ChampSeasonInfoModel()
         {
             ChampionshipId = championship.ChampionshipId,
             ChampionshipName = championship.Name,

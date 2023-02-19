@@ -13,15 +13,14 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
 
     protected virtual async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long leagueId, long champSeasonId, CancellationToken cancellationToken)
     {
-        return await dbContext.ChampSeasons
+        return await ChampSeasonsQuery(leagueId)
             .Include(x => x.StandingConfiguration)
             .Include(x => x.ResultConfigurations)
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampSeasonId == champSeasonId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(long leagueId, PostChampSeasonModel model, ChampSeasonEntity target, 
+    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(long leagueId, PutChampSeasonModel model, ChampSeasonEntity target, 
         CancellationToken cancellationToken)
     {
         target.StandingConfiguration = await GetStandingConfigurationEntityAsync(leagueId, model.StandingConfig?.StandingConfigId, cancellationToken);
@@ -49,11 +48,17 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
 
     protected async Task<ChampSeasonModel?> MapToChampSeasonModel(long leagueId, long champSeasonId, CancellationToken cancellationToken)
     {
-        return await dbContext.ChampSeasons
-            .Where(x => x.LeagueId == leagueId)
+        return await ChampSeasonsQuery(leagueId)
             .Where(x => x.ChampSeasonId == champSeasonId)
             .Select(MapToChampSeasonModelExpression)
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    protected IQueryable<ChampSeasonEntity> ChampSeasonsQuery(long leagueId)
+    {
+        return dbContext.ChampSeasons
+            .Where(x => x.LeagueId == leagueId)
+            .Where(x => x.IsActive);
     }
 
     protected virtual Expression<Func<ChampSeasonEntity, ChampSeasonModel>> MapToChampSeasonModelExpression => champSeason => new()
@@ -70,9 +75,9 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         }).ToList(),
         SeasonId = champSeason.SeasonId,
         SeasonName = champSeason.Season.SeasonName,
-        StandingConfig = champSeason.StandingConfigId == null ? null : new StandingConfigModel()
+        StandingConfig = champSeason.StandingConfiguration == null ? null : new StandingConfigModel()
         {
-            StandingConfigId = champSeason.StandingConfigId.Value,
+            StandingConfigId = champSeason.StandingConfiguration.StandingConfigId,
             Name = champSeason.StandingConfiguration.Name,
             ResultKind = champSeason.StandingConfiguration.ResultKind,
             UseCombinedResult = champSeason.StandingConfiguration.UseCombinedResult,
