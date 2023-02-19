@@ -103,7 +103,7 @@ public class ChampSeasonsController : LeagueApiController<ChampSeasonsController
         _logger.LogInformation("[{Method}] new champSeason for championship {ChampionshipId} to season {SeasonId} from {LeagueName} by {UserName}", "Post",
             leagueName, championshipId, seasonId, GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PostChampSeasonRequest(leagueId, championshipId, seasonId, postChampSeason);
+        var request = new PostChampSeasonRequest(leagueId, championshipId, seasonId, leagueUser, postChampSeason);
         var getChampSeason = await mediator.Send(request, cancellationToken);
         _logger.LogInformation("Return created entry for champSeasone {ChampSeasonId} from {LeagueName}", getChampSeason.ChampSeasonId, leagueName);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getChampSeason.ChampSeasonId }, getChampSeason);
