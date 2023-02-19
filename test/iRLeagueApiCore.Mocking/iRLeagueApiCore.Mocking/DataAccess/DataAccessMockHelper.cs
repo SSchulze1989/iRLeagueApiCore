@@ -4,7 +4,7 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
+namespace iRLeagueApiCore.Mocking.DataAccess;
 
 public sealed class DataAccessMockHelper
 {

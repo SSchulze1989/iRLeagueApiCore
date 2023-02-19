@@ -1,6 +1,6 @@
 ﻿using iRLeagueDatabaseCore.Models;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
+namespace iRLeagueApiCore.Mocking.DataAccess;
 
 public abstract class DataAccessTestsBase : IAsyncLifetime
 {
