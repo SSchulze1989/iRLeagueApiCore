@@ -10,11 +10,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 [Collection("DbTestFixture")]
 public sealed class PostReviewToSessionDbTestFixture : HandlersTestsBase<PostReviewToSessionHandler, PostReviewToSessionRequest, ReviewModel>
 {
-    public PostReviewToSessionDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PostReviewToSessionDbTestFixture() : base()
     {
     }
 
-    public static PostReviewModel TestReviewModel => new PostReviewModel()
+    public PostReviewModel TestReviewModel => new PostReviewModel()
     {
         FullDescription = "Full Description",
         Corner = "1",
@@ -24,8 +24,8 @@ public sealed class PostReviewToSessionDbTestFixture : HandlersTestsBase<PostRev
         TimeStamp = System.TimeSpan.FromMinutes(1.2),
         InvolvedMembers = new MemberInfoModel[]
         {
-                new MemberInfoModel() { MemberId = testMemberId},
-                new MemberInfoModel() { MemberId = testMemberId + 1},
+                new MemberInfoModel() { MemberId = TestMemberId},
+                new MemberInfoModel() { MemberId = TestMemberId + 1},
         },
         VoteResults = new VoteModel[0],
     };
@@ -37,13 +37,12 @@ public sealed class PostReviewToSessionDbTestFixture : HandlersTestsBase<PostRev
 
     private PostReviewToSessionRequest DefaultRequest(long leagueId, long reviewId)
     {
-
         return new PostReviewToSessionRequest(leagueId, reviewId, DefaultUser(), TestReviewModel);
     }
 
     protected override PostReviewToSessionRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testReviewId);
+        return DefaultRequest(TestLeagueId, TestReviewId);
     }
 
     protected override void DefaultAssertions(PostReviewToSessionRequest request, ReviewModel result, LeagueDbContext dbContext)
@@ -61,7 +60,10 @@ public sealed class PostReviewToSessionDbTestFixture : HandlersTestsBase<PostRev
         var reviewEntity = dbContext.IncidentReviews
             .SingleOrDefault(x => x.ReviewId == result.ReviewId);
         reviewEntity.Should().NotBeNull();
-        foreach ((var member, var expectedMember) in result.InvolvedMembers.OrderBy(x => x.MemberId).Zip(reviewEntity.InvolvedMembers.OrderBy(x => x.Id)))
+        foreach ((var member, var expectedMember) in result.InvolvedMembers
+            .OrderBy(x => x.MemberId)
+            .Zip(reviewEntity!.InvolvedMembers
+                .OrderBy(x => x.Id)))
         {
             AssertMemberInfo(expectedMember, member);
         }
@@ -83,13 +85,15 @@ public sealed class PostReviewToSessionDbTestFixture : HandlersTestsBase<PostRev
     }
 
     [Theory]
-    [InlineData(0, testReviewId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testReviewId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
     {
-        var request = DefaultRequest(leagueId, resultConfigId);
+        leagueId ??= TestLeagueId;
+        resultConfigId ??= TestResultConfigId;
+        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

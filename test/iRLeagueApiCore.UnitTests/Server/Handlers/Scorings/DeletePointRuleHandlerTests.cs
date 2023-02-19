@@ -8,7 +8,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 [Collection("DbTestFixture")]
 public sealed class DeletePointRuleDbTestFixture : HandlersTestsBase<DeletePointRuleHandler, DeletePointRuleRequest, MediatR.Unit>
 {
-    public DeletePointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeletePointRuleDbTestFixture() : base()
     {
     }
 
@@ -24,7 +24,7 @@ public sealed class DeletePointRuleDbTestFixture : HandlersTestsBase<DeletePoint
 
     protected override DeletePointRuleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testPointRuleId);
+        return DefaultRequest(TestLeagueId, TestPointRuleId);
     }
 
     protected override void DefaultAssertions(DeletePointRuleRequest request, MediatR.Unit result, LeagueDbContext dbContext)
@@ -42,13 +42,15 @@ public sealed class DeletePointRuleDbTestFixture : HandlersTestsBase<DeletePoint
     }
 
     [Theory]
-    [InlineData(0, testPointRuleId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testPointRuleId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFound(long leagueId, long pointRuleId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFound(long? leagueId, long? pointRuleId)
     {
-        var request = DefaultRequest(leagueId, pointRuleId);
+        leagueId ??= TestLeagueId;
+        pointRuleId ??= TestPointRuleId;
+        var request = DefaultRequest(leagueId.Value, pointRuleId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

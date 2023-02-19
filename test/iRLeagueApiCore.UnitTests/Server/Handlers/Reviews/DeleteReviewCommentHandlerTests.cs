@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 [Collection("DbTestFixture")]
 public sealed class DeleteReviewCommentDbTestFixture : HandlersTestsBase<DeleteReviewCommentHandler, DeleteReviewCommentRequest, Unit>
 {
-    public DeleteReviewCommentDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeleteReviewCommentDbTestFixture() : base()
     {
     }
 
@@ -27,7 +27,7 @@ public sealed class DeleteReviewCommentDbTestFixture : HandlersTestsBase<DeleteR
 
     protected override DeleteReviewCommentRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testCommentId);
+        return DefaultRequest(TestLeagueId, TestCommentId);
     }
 
     protected override void DefaultPreTestAssertions(DeleteReviewCommentRequest request, LeagueDbContext dbContext)
@@ -54,13 +54,15 @@ public sealed class DeleteReviewCommentDbTestFixture : HandlersTestsBase<DeleteR
     }
 
     [Theory]
-    [InlineData(0, testCommentId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testCommentId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
     {
-        var request = DefaultRequest(leagueId, resultConfigId);
+        leagueId ??= TestLeagueId;
+        resultConfigId ??= TestResultConfigId;
+        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

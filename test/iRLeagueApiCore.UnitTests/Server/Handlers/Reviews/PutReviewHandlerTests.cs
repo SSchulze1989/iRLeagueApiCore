@@ -10,11 +10,11 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 [Collection("DbTestFixture")]
 public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler, PutReviewRequest, ReviewModel>
 {
-    public PutReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PutReviewDbTestFixture() : base()
     {
     }
 
-    public static PutReviewModel TestReviewModel => new PutReviewModel()
+    public PutReviewModel TestReviewModel => new PutReviewModel()
     {
         FullDescription = "Full Description",
         Corner = "1",
@@ -24,8 +24,8 @@ public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler,
         TimeStamp = System.TimeSpan.FromMinutes(1.2),
         InvolvedMembers = new MemberInfoModel[]
         {
-                new MemberInfoModel() { MemberId = testMemberId},
-                new MemberInfoModel() { MemberId = testMemberId + 1},
+                new MemberInfoModel() { MemberId = TestMemberId},
+                new MemberInfoModel() { MemberId = TestMemberId + 1},
         },
         VoteResults = new[]
         {
@@ -33,7 +33,7 @@ public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler,
                     Id = 1,
                     VoteCategoryId = testVoteCategory,
                     Description = "Vote Description",
-                    MemberAtFault = new MemberInfoModel() { MemberId = testMemberId }
+                    MemberAtFault = new MemberInfoModel() { MemberId = TestMemberId }
                 },
             },
     };
@@ -51,7 +51,7 @@ public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler,
 
     protected override PutReviewRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testReviewId);
+        return DefaultRequest(TestLeagueId, TestReviewId);
     }
 
     protected override void DefaultAssertions(PutReviewRequest request, ReviewModel result, LeagueDbContext dbContext)
@@ -78,9 +78,9 @@ public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler,
         base.DefaultAssertions(request, result, dbContext);
     }
 
-    private void AssertMemberInfo(MemberInfoModel expected, MemberInfoModel result)
+    private void AssertMemberInfo(MemberInfoModel? expected, MemberInfoModel? result)
     {
-        result.MemberId.Should().Be(expected.MemberId);
+        result?.MemberId.Should().Be(expected?.MemberId);
     }
 
     private void AssertVote(VoteModel expected, VoteModel result)
@@ -101,13 +101,15 @@ public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler,
     }
 
     [Theory]
-    [InlineData(0, testReviewId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testReviewId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
     {
-        var request = DefaultRequest(leagueId, resultConfigId);
+        leagueId ??= TestLeagueId;
+        resultConfigId ??= TestResultConfigId;
+        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

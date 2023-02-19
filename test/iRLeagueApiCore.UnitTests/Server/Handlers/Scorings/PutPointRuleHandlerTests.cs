@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 [Collection("DbTestFixture")]
 public sealed class PutPointRuleDbTestFixture : HandlersTestsBase<PutPointRuleHandler, PutPointRuleRequest, PointRuleModel>
 {
-    public PutPointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PutPointRuleDbTestFixture() : base()
     {
     }
 
@@ -36,7 +36,7 @@ public sealed class PutPointRuleDbTestFixture : HandlersTestsBase<PutPointRuleHa
 
     protected override PutPointRuleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testPointRuleId);
+        return DefaultRequest(TestLeagueId, TestPointRuleId);
     }
 
     protected override void DefaultAssertions(PutPointRuleRequest request, PointRuleModel result, LeagueDbContext dbContext)
@@ -61,13 +61,15 @@ public sealed class PutPointRuleDbTestFixture : HandlersTestsBase<PutPointRuleHa
     }
 
     [Theory]
-    [InlineData(0, testPointRuleId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testPointRuleId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFound(long leagueId, long pointRuleId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFound(long? leagueId, long? pointRuleId)
     {
-        var request = DefaultRequest(leagueId, pointRuleId);
+        leagueId ??= TestLeagueId;
+        pointRuleId ??= TestPointRuleId;
+        var request = DefaultRequest(leagueId.Value, pointRuleId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

@@ -22,7 +22,7 @@ public sealed class AdminDbTestFixture
     const string TestUserName = "TestRoleUser";
     const string TestRoleName = LeagueRoles.Member;
     const string TestLeagueName = "TestLeague";
-    string TestLeagueRoleName = LeagueRoles.GetLeagueRoleName(TestLeagueName, TestRoleName);
+    string TestLeagueRoleName = LeagueRoles.GetLeagueRoleName(TestLeagueName, TestRoleName) ?? string.Empty;
 
     public AdminDbTestFixture()
     {

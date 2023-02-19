@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 [Collection("DbTestFixture")]
 public sealed class DeleteScoringDbTestFixture : HandlersTestsBase<DeleteScoringHandler, DeleteScoringRequest, Unit>
 {
-    public DeleteScoringDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeleteScoringDbTestFixture() : base()
     {
     }
 
@@ -23,7 +23,7 @@ public sealed class DeleteScoringDbTestFixture : HandlersTestsBase<DeleteScoring
         return DefaultRequest();
     }
 
-    private DeleteScoringRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = testScoringId)
+    private DeleteScoringRequest DefaultRequest(long leagueId, long scoringId)
     {
         return new DeleteScoringRequest(leagueId, scoringId);
     }
@@ -40,13 +40,15 @@ public sealed class DeleteScoringDbTestFixture : HandlersTestsBase<DeleteScoring
     }
 
     [Theory]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(0, testScoringId)]
-    [InlineData(testLeagueId, 42)]
-    [InlineData(42, testScoringId)]
-    public async Task HandleNotFoundAsync(long leagueId, long scoringId)
+    [InlineData(defaultId, 0)]
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 42)]
+    [InlineData(42, defaultId)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? scoringId)
     {
-        var request = DefaultRequest(leagueId, scoringId);
+        leagueId ??= TestLeagueId;
+        scoringId ??= TestScoringId;
+        var request = DefaultRequest(leagueId.Value, scoringId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

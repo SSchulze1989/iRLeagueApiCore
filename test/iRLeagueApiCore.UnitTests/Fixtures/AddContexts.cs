@@ -25,8 +25,8 @@ public static class AddContexts
     public static T AddMemberControllerContext<T>(T controller) where T : Controller
     {
         var user = User;
-        var identity = (ClaimsIdentity)user.Identity;
-        identity.AddClaim(new Claim(ClaimTypes.Role, $"{"TestLeague".ToLower()}:{LeagueRoles.Member}"));
+        var identity = (ClaimsIdentity?)user.Identity;
+        identity?.AddClaim(new Claim(ClaimTypes.Role, $"{"TestLeague".ToLower()}:{LeagueRoles.Member}"));
         controller.ControllerContext = new ControllerContext()
         {
             HttpContext = new DefaultHttpContext() { User = user }
@@ -38,8 +38,8 @@ public static class AddContexts
     public static T AddLeagueAdminControllerContext<T>(T controller, string leagueName) where T : Controller
     {
         var user = User;
-        var identity = (ClaimsIdentity)user.Identity;
-        identity.AddClaim(new Claim(ClaimTypes.Role, $"{leagueName.ToLower()}:{LeagueRoles.Admin}"));
+        var identity = (ClaimsIdentity?)user.Identity;
+        identity?.AddClaim(new Claim(ClaimTypes.Role, $"{leagueName.ToLower()}:{LeagueRoles.Admin}"));
         controller.ControllerContext = new ControllerContext()
         {
             HttpContext = new DefaultHttpContext() { User = user }
@@ -51,8 +51,8 @@ public static class AddContexts
     public static T AddAdminControllerContext<T>(T controller) where T : Controller
     {
         var user = User;
-        var identity = (ClaimsIdentity)user.Identity;
-        identity.AddClaim(new Claim(ClaimTypes.Role, UserRoles.Admin));
+        var identity = (ClaimsIdentity?)user.Identity;
+        identity?.AddClaim(new Claim(ClaimTypes.Role, UserRoles.Admin));
         controller.ControllerContext = new ControllerContext()
         {
             HttpContext = new DefaultHttpContext() { User = user }

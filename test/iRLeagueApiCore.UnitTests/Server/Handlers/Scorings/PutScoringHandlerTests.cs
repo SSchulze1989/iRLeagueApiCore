@@ -12,7 +12,7 @@ public sealed class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandle
 {
     private const string NewScoringName = "New scoring Name";
 
-    public PutScoringDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PutScoringDbTestFixture() : base()
     {
     }
 
@@ -34,7 +34,7 @@ public sealed class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandle
 
     protected override PutScoringRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testScoringId);
+        return DefaultRequest(TestLeagueId, TestScoringId);
     }
 
     protected override void DefaultAssertions(PutScoringRequest request, ScoringModel result, LeagueDbContext dbContext)
@@ -67,13 +67,15 @@ public sealed class PutScoringDbTestFixture : HandlersTestsBase<PutScoringHandle
     }
 
     [Theory]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(0, testScoringId)]
-    [InlineData(testLeagueId, 42)]
-    [InlineData(42, testScoringId)]
-    public async Task HandleNotFoundAsync(long leagueId, long scoringId)
+    [InlineData(defaultId, 0)]
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 42)]
+    [InlineData(42, defaultId)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? scoringId)
     {
-        var request = DefaultRequest(leagueId, scoringId);
+        leagueId ??= TestLeagueId;
+        scoringId ??= TestScoringId;
+        var request = DefaultRequest(leagueId.Value, scoringId.Value);
         await Assert.ThrowsAsync<ResourceNotFoundException>(async () => await HandleSpecialAsync(request, null));
     }
 }

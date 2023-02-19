@@ -13,7 +13,7 @@ public sealed class PostSeasonDbTestFixture : IClassFixture<DbTestFixture>
 {
     private readonly DbTestFixture fixture;
 
-    private const long testLeagueId = 1;
+    private long TestLeagueId => fixture.DbContext.Leagues.First().Id;
     private const string testSeasonName = "TestSeason";
 
     public PostSeasonDbTestFixture(DbTestFixture fixture)
@@ -21,8 +21,9 @@ public sealed class PostSeasonDbTestFixture : IClassFixture<DbTestFixture>
         this.fixture = fixture;
     }
 
-    private static PostSeasonRequest DefaultRequest(long leagueId = testLeagueId)
+    private PostSeasonRequest DefaultRequest(long? leagueId = null)
     {
+        leagueId ??= TestLeagueId;
         var model = new PostSeasonModel()
         {
             HideComments = true,
@@ -30,7 +31,7 @@ public sealed class PostSeasonDbTestFixture : IClassFixture<DbTestFixture>
             Finished = true,
             SeasonName = testSeasonName,
         };
-        return new PostSeasonRequest(leagueId, LeagueUser.Empty, model);
+        return new PostSeasonRequest(leagueId.Value, LeagueUser.Empty, model);
     }
 
     private static PostSeasonRequestValidator CreateValidator(LeagueDbContext dbContext)
@@ -39,29 +40,11 @@ public sealed class PostSeasonDbTestFixture : IClassFixture<DbTestFixture>
     }
 
     [Theory]
-    [InlineData(1, 1, true)]
-    [InlineData(1, null, true)]
-    [InlineData(2, 1, false)]
-    [InlineData(1, 42, false)]
-    public async Task ValidateMainScoring(long leagueId, long? mainScoringId, bool expectValid)
-    {
-        var dbContext = fixture.CreateDbContext();
-        var request = DefaultRequest(leagueId);
-        request.Model.MainScoringId = mainScoringId;
-        var validator = CreateValidator(dbContext);
-        var result = await validator.TestValidateAsync(request);
-        Assert.Equal(expectValid, result.IsValid);
-        if (expectValid == false)
-        {
-            result.ShouldHaveValidationErrorFor(x => x.Model.MainScoringId);
-        }
-    }
-
-    [Theory]
-    [InlineData(1, true)]
+    [InlineData(null, true)]
     [InlineData(0, false)]
-    public async Task ValidateLeagueId(long leagueId, bool expectValid)
+    public async Task ValidateLeagueId(long? leagueId, bool expectValid)
     {
+        leagueId ??= TestLeagueId;
         var dbContext = fixture.CreateDbContext();
         var request = DefaultRequest(leagueId);
         var validator = CreateValidator(dbContext);

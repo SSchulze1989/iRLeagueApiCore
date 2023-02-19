@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;
 [Collection("DbTestFixture")]
 public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHandler, GetSchedulesRequest, IEnumerable<ScheduleModel>>
 {
-    public GetSchedulesDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetSchedulesDbTestFixture() : base()
     {
     }
 
@@ -20,7 +20,7 @@ public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHa
 
     protected override GetSchedulesRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(TestLeagueId);
     }
 
     private GetSchedulesRequest DefaultRequest(long leagueId)
@@ -30,7 +30,7 @@ public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHa
 
     protected override void DefaultAssertions(GetSchedulesRequest request, IEnumerable<ScheduleModel> result, LeagueDbContext dbContext)
     {
-        foreach (var dbSchedule in dbContext.Schedules.Where(x => x.LeagueId == testLeagueId))
+        foreach (var dbSchedule in dbContext.Schedules.Where(x => x.LeagueId == TestLeagueId))
         {
             Assert.Contains(result, x => x.ScheduleId == dbSchedule.ScheduleId);
         }

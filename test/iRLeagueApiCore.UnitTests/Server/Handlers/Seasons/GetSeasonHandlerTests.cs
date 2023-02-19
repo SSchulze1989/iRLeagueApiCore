@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 [Collection("DbTestFixture")]
 public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, SeasonModel>
 {
-    public GetSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetSeasonDbTestFixture() : base()
     {
     }
 
@@ -21,10 +21,10 @@ public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler,
 
     protected override GetSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(TestLeagueId, TestSeasonId);
     }
 
-    private GetSeasonRequest DefaultRequest(long leagueId = testLeagueId, long seasonId = testSeasonId)
+    private GetSeasonRequest DefaultRequest(long leagueId, long seasonId)
     {
         return new GetSeasonRequest(leagueId, seasonId);
     }
@@ -33,7 +33,7 @@ public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler,
     {
         var testSeason = dbContext.Seasons
             .Include(x => x.Schedules)
-            .SingleOrDefault(x => x.SeasonId == request.SeasonId);
+            .First(x => x.SeasonId == request.SeasonId);
         result.LeagueId.Should().Be(request.LeagueId);
         result.SeasonId.Should().Be(request.SeasonId);
         result.Finished.Should().Be(testSeason.Finished);

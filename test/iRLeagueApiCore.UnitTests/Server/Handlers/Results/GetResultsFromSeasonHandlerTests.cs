@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 [Collection("DbTestFixture")]
 public sealed class GetResultsFromSeasonDbTestFixture : HandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
 {
-    public GetResultsFromSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetResultsFromSeasonDbTestFixture() : base()
     {
     }
 
@@ -23,7 +23,7 @@ public sealed class GetResultsFromSeasonDbTestFixture : HandlersTestsBase<GetRes
         return DefaultRequest();
     }
 
-    private GetResultsFromSeasonRequest DefaultRequest(long leagueId = testLeagueId, long seasonId = testSeasonId)
+    private GetResultsFromSeasonRequest DefaultRequest(long leagueId, long seasonId)
     {
         return new GetResultsFromSeasonRequest(leagueId, seasonId);
     }
@@ -50,13 +50,15 @@ public sealed class GetResultsFromSeasonDbTestFixture : HandlersTestsBase<GetRes
     }
 
     [Theory]
-    [InlineData(0, testSeasonId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testSeasonId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task HandleNotFoundAsync(long leagueId, long seasonId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? seasonId)
     {
-        var request = DefaultRequest(leagueId, seasonId);
+        leagueId ??= TestLeagueId;
+        seasonId ??= TestSeasonId;
+        var request = DefaultRequest(leagueId.Value, seasonId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 }

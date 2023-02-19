@@ -11,17 +11,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 [Collection("DbTestFixture")]
 public sealed class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
 {
-    public PutResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PutResultConfigDbTestFixture() : base()
     {
     }
 
-    protected override PutResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutResultConfigRequest> validator = null)
+    protected override PutResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutResultConfigRequest>? validator = null)
     {
         return new PutResultConfigHandler(logger, dbContext,
             new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() });
     }
 
-    private PutResultConfigRequest DefaultRequest(long leagueId = testLeagueId, long resultConfigId = testResultConfigId)
+    private PutResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
     {
         var PutResultConfig = new PutResultConfigModel()
         {
@@ -34,7 +34,7 @@ public sealed class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultCo
 
     protected override PutResultConfigRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testResultConfigId);
+        return DefaultRequest(TestLeagueId, TestResultConfigId);
     }
 
     protected override void DefaultAssertions(PutResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
@@ -55,15 +55,17 @@ public sealed class PutResultConfigDbTestFixture : HandlersTestsBase<PutResultCo
     }
 
     [Theory]
-    [InlineData(0, testResultConfigId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testResultConfigId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
     {
-        using var dbContext = dbFixture.CreateDbContext();
+        leagueId ??= TestLeagueId;
+        resultConfigId ??= TestResultConfigId;
+        using var dbContext = accessMockHelper.CreateMockDbContext();
         var handler = CreateTestHandler(dbContext);
-        var request = DefaultRequest(leagueId, resultConfigId);
+        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
         var act = () => handler.Handle(request, default);
         await act.Should().ThrowAsync<ResourceNotFoundException>();
     }

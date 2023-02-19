@@ -11,7 +11,7 @@ public sealed class PostSeasonDbTestFixture : HandlersTestsBase<PostSeasonHandle
 {
     private const string testSeasonName = "TestSeason";
 
-    public PostSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PostSeasonDbTestFixture() : base()
     {
     }
 
@@ -22,10 +22,10 @@ public sealed class PostSeasonDbTestFixture : HandlersTestsBase<PostSeasonHandle
 
     protected override PostSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(TestLeagueId);
     }
 
-    private PostSeasonRequest DefaultRequest(long leagueId = testLeagueId)
+    private PostSeasonRequest DefaultRequest(long leagueId)
     {
         var model = new PostSeasonModel()
         {

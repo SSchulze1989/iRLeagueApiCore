@@ -12,7 +12,7 @@ public sealed class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHa
 {
     private const string testSeasonName = "TestSeason";
 
-    public DeleteSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeleteSeasonDbTestFixture() : base()
     {
     }
 
@@ -23,10 +23,10 @@ public sealed class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHa
 
     protected override DeleteSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testSeasonId);
+        return DefaultRequest(TestLeagueId, TestSeasonId);
     }
 
-    private DeleteSeasonRequest DefaultRequest(long leagueId = testLeagueId, long seasonId = testSeasonId)
+    private DeleteSeasonRequest DefaultRequest(long leagueId, long seasonId)
     {
 
         return new DeleteSeasonRequest(leagueId, seasonId);

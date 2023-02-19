@@ -77,7 +77,7 @@ public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAs
             var newMember = await dbContext.Members
             .FirstOrDefaultAsync(x => x.IRacingId == newMemberRow.cust_id.ToString());
             newMember.Should().NotBeNull();
-            newMember.Firstname.Should().Be(name.Firstname);
+            newMember!.Firstname.Should().Be(name.Firstname);
             newMember.Lastname.Should().Be(name.Lastname);
         }
     }

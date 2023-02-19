@@ -16,7 +16,7 @@ public sealed class IdentityFixture
         UserName = "TestUser"
     };
     public readonly string testRole = LeagueRoles.Organizer;
-    public string testLeagueRoleName => LeagueRoles.GetLeagueRoleName(testLeague, testRole);
+    public string testLeagueRoleName => LeagueRoles.GetLeagueRoleName(testLeague, testRole) ?? string.Empty;
     public IdentityRole testLeagueRole => new IdentityRole(testLeagueRoleName);
     public readonly string[] inRoles = new string[]
     {

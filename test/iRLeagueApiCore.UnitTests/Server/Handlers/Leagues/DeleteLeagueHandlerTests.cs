@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 [Collection("DbTestFixture")]
 public sealed class DeleteLeagueDbTestFixture : HandlersTestsBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
 {
-    public DeleteLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeleteLeagueDbTestFixture() : base()
     {
     }
 
@@ -20,7 +20,7 @@ public sealed class DeleteLeagueDbTestFixture : HandlersTestsBase<DeleteLeagueHa
 
     protected override DeleteLeagueRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(dbContext.Leagues.First().Id);
     }
 
     protected override void DefaultPreTestAssertions(DeleteLeagueRequest request, LeagueDbContext dbContext)

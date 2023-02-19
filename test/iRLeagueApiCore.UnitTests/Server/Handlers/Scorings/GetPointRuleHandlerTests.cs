@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 [Collection("DbTestFixture")]
 public sealed class GetPointRuleDbTestFixture : HandlersTestsBase<GetPointRuleHandler, GetPointRuleRequest, PointRuleModel>
 {
-    public GetPointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetPointRuleDbTestFixture() : base()
     {
     }
 
@@ -25,15 +25,15 @@ public sealed class GetPointRuleDbTestFixture : HandlersTestsBase<GetPointRuleHa
 
     protected override GetPointRuleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testPointRuleId);
+        return DefaultRequest(TestLeagueId, TestPointRuleId);
     }
 
     protected override void DefaultAssertions(GetPointRuleRequest request, PointRuleModel result, LeagueDbContext dbContext)
     {
         var testPointRule = dbContext.PointRules
-            .SingleOrDefault(x => x.PointRuleId == request.PointRuleId);
+            .First(x => x.PointRuleId == request.PointRuleId);
         result.PointRuleId.Should().Be(request.PointRuleId);
-        result.BonusPoints.Should().BeEquivalentTo(testPointRule.BonusPoints);
+        result.BonusPoints.Should().BeEquivalentTo(testPointRule!.BonusPoints);
         result.FinalSortOptions.Should().BeEquivalentTo(testPointRule.FinalSortOptions);
         result.LeagueId.Should().Be(request.LeagueId);
         result.MaxPoints.Should().Be(testPointRule.MaxPoints);
@@ -51,13 +51,15 @@ public sealed class GetPointRuleDbTestFixture : HandlersTestsBase<GetPointRuleHa
     }
 
     [Theory]
-    [InlineData(0, testPointRuleId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testPointRuleId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFound(long leagueId, long pointRuleId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFound(long? leagueId, long? pointRuleId)
     {
-        var request = DefaultRequest(leagueId, pointRuleId);
+        leagueId ??= TestLeagueId;
+        pointRuleId ??= TestPointRuleId;
+        var request = DefaultRequest(leagueId.Value, pointRuleId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

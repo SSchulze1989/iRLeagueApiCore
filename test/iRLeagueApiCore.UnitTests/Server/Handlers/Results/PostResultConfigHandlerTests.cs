@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 [Collection("DbTestFixture")]
 public sealed class PostResultConfigDbTestFixture : HandlersTestsBase<PostResultConfigHandler, PostResultConfigRequest, ResultConfigModel>
 {
-    public PostResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PostResultConfigDbTestFixture() : base()
     {
     }
 
@@ -27,7 +27,7 @@ public sealed class PostResultConfigDbTestFixture : HandlersTestsBase<PostResult
             DisplayName = "TestResultConfig DisplayName",
             ResultsPerTeam = 10,
         };
-        return new PostResultConfigRequest(testLeagueId, DefaultUser(), postResultConfig);
+        return new PostResultConfigRequest(TestLeagueId, DefaultUser(), postResultConfig);
     }
 
     protected override void DefaultAssertions(PostResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
@@ -57,10 +57,11 @@ public sealed class PostResultConfigDbTestFixture : HandlersTestsBase<PostResult
     public async Task Handle_ShouldSetSourceResultConfig_WhenIdIsNotNull()
     {
         var request = DefaultRequest();
-        request.Model.SourceResultConfig = new() { ResultConfigId = testResultConfigId };
+        request.Model.SourceResultConfig = new() { ResultConfigId = TestResultConfigId };
         await HandleSpecialAsync(request, async (request, model, dbContext) =>
         {
-            model.SourceResultConfig.ResultConfigId.Should().Be(testResultConfigId);
+            model.SourceResultConfig.Should().NotBeNull();
+            model.SourceResultConfig!.ResultConfigId.Should().Be(TestResultConfigId);
             var sourceConfig = await dbContext.ResultConfigurations.FirstAsync(x => x.ResultConfigId == model.SourceResultConfig.ResultConfigId);
             model.SourceResultConfig.DisplayName.Should().Be(sourceConfig.DisplayName);
             model.SourceResultConfig.Name.Should().Be(sourceConfig.Name);

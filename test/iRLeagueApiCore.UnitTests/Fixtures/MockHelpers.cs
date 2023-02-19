@@ -26,7 +26,7 @@ public static class MockHelpers
         return mgr;
     }
 
-    public static Mock<RoleManager<TRole>> MockRoleManager<TRole>(IRoleStore<TRole> store = null) where TRole : class
+    public static Mock<RoleManager<TRole>> MockRoleManager<TRole>(IRoleStore<TRole>? store = null) where TRole : class
     {
         store ??= new Mock<IRoleStore<TRole>>().Object;
         var roles = new List<IRoleValidator<TRole>>();
@@ -35,7 +35,7 @@ public static class MockHelpers
             new IdentityErrorDescriber(), null);
     }
 
-    public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser> store = null) where TUser : class
+    public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser>? store = null) where TUser : class
     {
         store ??= new Mock<IUserStore<TUser>>().Object;
         var options = new Mock<IOptions<IdentityOptions>>();
@@ -58,7 +58,7 @@ public static class MockHelpers
         return userManager;
     }
 
-    public static RoleManager<TRole> TestRoleManager<TRole>(IRoleStore<TRole> store = null) where TRole : class
+    public static RoleManager<TRole> TestRoleManager<TRole>(IRoleStore<TRole>? store = null) where TRole : class
     {
         store ??= new Mock<IRoleStore<TRole>>().Object;
         var roles = new List<IRoleValidator<TRole>>
@@ -75,14 +75,7 @@ public static class MockHelpers
     {
         var normalizerFunc = new Func<string, string>(i =>
         {
-            if (i == null)
-            {
-                return null;
-            }
-            else
-            {
-                return Convert.ToBase64String(Encoding.UTF8.GetBytes(i)).ToUpperInvariant();
-            }
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(i)).ToUpperInvariant();
         });
         var lookupNormalizer = new Mock<ILookupNormalizer>();
         lookupNormalizer.Setup(i => i.NormalizeName(It.IsAny<string>())).Returns(normalizerFunc);
@@ -119,9 +112,9 @@ public static class MockHelpers
     /// <param name="result">Result that should be returned from <see cref="IMediator.Send(object, System.Threading.CancellationToken)"/></param>
     /// <param name="throws">If set a call to <see cref="IMediator.Send(object, System.Threading.CancellationToken)"/> will throw the provided Exception instead</param>
     /// <returns>Configured <see cref="IMediator"/></returns>
-    public static IMediator TestMediator<TRequest, TResult>(Expression<Func<TRequest, bool>> match = default,
-        TResult result = default, Exception throws = default)
-        where TRequest : IRequest<TResult>
+    public static IMediator TestMediator<TRequest, TResult>(Expression<Func<TRequest, bool>>? match = default,
+        TResult? result = default, Exception? throws = default)
+        where TRequest : IRequest<TResult?>
     {
         match ??= x => true;
         var mockMediator = new Mock<IMediator>();

@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 [Collection("DbTestFixture")]
 public sealed class PostPointRuleDbTestFixture : HandlersTestsBase<PostPointRuleHandler, PostPointRuleRequest, PointRuleModel>
 {
-    public PostPointRuleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PostPointRuleDbTestFixture() : base()
     {
     }
 
@@ -36,7 +36,7 @@ public sealed class PostPointRuleDbTestFixture : HandlersTestsBase<PostPointRule
 
     protected override PostPointRuleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testPointRuleId);
+        return DefaultRequest(TestLeagueId, TestPointRuleId);
     }
 
     protected override void DefaultAssertions(PostPointRuleRequest request, PointRuleModel result, LeagueDbContext dbContext)

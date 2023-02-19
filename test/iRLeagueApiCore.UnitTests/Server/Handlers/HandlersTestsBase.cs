@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
@@ -14,34 +15,32 @@ using System.Security.Claims;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers;
 
-public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFixture<DbTestFixture>
+public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAccessTestsBase
     where THandler : IRequestHandler<TRequest, TResult>
     where TRequest : class, IRequest<TResult>
 {
-    protected readonly Fixture fixture;
-    protected readonly DbTestFixture dbFixture;
     protected readonly ILogger<THandler> logger;
 
-    protected const long testLeagueId = 1;
+    protected const object? defaultId = null;
+
+    protected long TestLeagueId => dbContext.Leagues.First().Id;
     protected const string testLeagueName = "TestLeague";
-    protected const long testSeasonId = 1;
-    protected const long testScoringId = 1;
-    protected const long testScheduleId = 1;
-    protected const long testResultId = 1;
-    protected const long testPointRuleId = 1;
-    protected const long testResultConfigId = 1;
-    protected const long testReviewId = 1;
-    protected const long testMemberId = 1;
-    protected const long testCommentId = 1;
-    protected const long testVoteCategory = 1;
+    protected long TestSeasonId => dbContext.Seasons.First().SeasonId;
+    protected long TestScoringId => dbContext.Scorings.First().ScoringId;
+    protected long TestScheduleId => dbContext.Schedules.First().ScheduleId;
+    protected long TestResultId => dbContext.ScoredEventResults.First().ResultId;
+    protected long TestPointRuleId => dbContext.PointRules.First().PointRuleId;
+    protected long TestResultConfigId => dbContext.ResultConfigurations.First().ResultConfigId;
+    protected long TestReviewId => dbContext.IncidentReviews.First().ReviewId;
+    protected long TestMemberId => dbContext.Members.First().Id;
+    protected long TestCommentId => dbContext.ReviewComments.First().CommentId;
+    protected long testVoteCategory = 1;
     protected const string testUserName = "TestUser";
     protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
     protected static IEnumerable<string> testLeagueRoles = new string[] { LeagueRoles.Member };
 
-    public HandlersTestsBase(DbTestFixture dbFixture)
+    public HandlersTestsBase()
     {
-        fixture = new();
-        this.dbFixture = dbFixture;
         logger = Mock.Of<ILogger<THandler>>();
     }
 
@@ -91,12 +90,9 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFix
     }
 
     protected virtual ClaimsPrincipal DefaultPrincipal(string leagueName = testLeagueName, string userName = testUserName,
-        string userId = testUserId, IEnumerable<string> roles = default)
+        string userId = testUserId, IEnumerable<string>? roles = default)
     {
-        if (roles == null)
-        {
-            roles = testLeagueRoles;
-        }
+        roles ??= testLeagueRoles;
         var builder = StaticIdentityBuilders.BuildPrincipal()
             .WithName(userName)
             .WithIdentifier(userId);
@@ -108,7 +104,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFix
     }
 
     protected virtual LeagueUser DefaultUser(string leagueName = testLeagueName, string userName = testUserName,
-        string userId = testUserId, IEnumerable<string> roles = default)
+        string userId = testUserId, IEnumerable<string>? roles = default)
     {
         return new LeagueUser(leagueName, DefaultPrincipal(leagueName, userName, userId, roles));
     }
@@ -120,7 +116,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFix
     /// <returns><typeparamref name="TResult"/> Result of the handle method</returns>
     public virtual async Task<TResult> ShouldHandleDefault()
     {
-        using var dbContext = dbFixture.CreateDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext();
 
         var request = DefaultRequest();
         var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
@@ -136,7 +132,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFix
     /// Run the <see cref="IRequestHandler{TRequest, TResonse}.Handle"/> method and assert throwing <see cref="ResourceNotFoundException"/>
     /// </summary>
     /// <param name="request">Request for a not existing resource</param>
-    public async Task HandleNotFoundRequestAsync(TRequest request = null)
+    public async Task HandleNotFoundRequestAsync(TRequest? request = null)
     {
         request ??= DefaultRequest();
         var act = async () => await HandleSpecialAsync(request, null);
@@ -150,10 +146,10 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFix
     /// <param name="request">Request for a not existing resource</param>
     /// <param name="assertions">Assertions to be performed</param>
     /// <returns></returns>
-    public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext> assertions,
-        Action<TRequest, LeagueDbContext> preTestAssertions = default)
+    public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext>? assertions,
+        Action<TRequest, LeagueDbContext>? preTestAssertions = default)
     {
-        using var dbContext = dbFixture.CreateDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext();
 
         var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
 
@@ -169,7 +165,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : IClassFix
     /// </summary
     public virtual async Task ShouldHandleValidationFailed()
     {
-        using var dbContext = dbFixture.CreateDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext();
         var mockValidator = MockHelpers.MockValidator<TRequest>();
         mockValidator.Setup(x => x.Validate(It.IsAny<TRequest>()))
             .Returns(ValidationFailed());

@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 [Collection("DbTestFixture")]
 public sealed class GetSeasonsDbTestFixture : HandlersTestsBase<GetSeasonsHandler, GetSeasonsRequest, IEnumerable<SeasonModel>>
 {
-    public GetSeasonsDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetSeasonsDbTestFixture() : base()
     {
     }
 
@@ -20,7 +20,7 @@ public sealed class GetSeasonsDbTestFixture : HandlersTestsBase<GetSeasonsHandle
 
     protected override GetSeasonsRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(TestLeagueId);
     }
 
     private GetSeasonsRequest DefaultRequest(long leagueId)

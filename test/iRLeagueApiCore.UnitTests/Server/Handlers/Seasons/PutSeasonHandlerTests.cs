@@ -11,7 +11,7 @@ public sealed class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler,
 {
     private const string testSeasonName = "TestSeason";
 
-    public PutSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PutSeasonDbTestFixture() : base()
     {
     }
 
@@ -22,10 +22,10 @@ public sealed class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler,
 
     protected override PutSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(TestLeagueId, TestSeasonId);
     }
 
-    private PutSeasonRequest DefaultRequest(long leagueId = testLeagueId, long seasonId = testSeasonId)
+    private PutSeasonRequest DefaultRequest(long leagueId, long seasonId)
     {
         var model = new PutSeasonModel()
         {

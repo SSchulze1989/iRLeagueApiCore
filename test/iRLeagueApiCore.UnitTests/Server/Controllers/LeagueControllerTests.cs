@@ -25,6 +25,7 @@ public sealed class LeagueDbTestFixture : IClassFixture<DbTestFixture>
     {
         Fixture = fixture;
         MockLogger = new Mock<ILogger<LeaguesController>>().Object;
+        Output = output;
     }
 
     private LeaguesController CreateController(IMediator mediator)

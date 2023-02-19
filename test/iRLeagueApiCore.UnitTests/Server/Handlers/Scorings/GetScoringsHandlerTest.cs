@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Scorings;
 [Collection("DbTestFixture")]
 public sealed class GetScoringsHandlerTest : HandlersTestsBase<GetScoringsHandler, GetScoringsRequest, IEnumerable<ScoringModel>>
 {
-    public GetScoringsHandlerTest(DbTestFixture fixture) : base(fixture)
+    public GetScoringsHandlerTest() : base()
     {
     }
 
@@ -20,10 +20,10 @@ public sealed class GetScoringsHandlerTest : HandlersTestsBase<GetScoringsHandle
 
     protected override GetScoringsRequest DefaultRequest()
     {
-        return DefaultRequest();
+        return DefaultRequest(TestLeagueId);
     }
 
-    private GetScoringsRequest DefaultRequest(long leagueId = testLeagueId, long scoringId = 0)
+    private GetScoringsRequest DefaultRequest(long leagueId)
     {
         return new GetScoringsRequest(leagueId);
     }

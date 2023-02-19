@@ -10,17 +10,17 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 [Collection("DbTestFixture")]
 public sealed class PutReviewCommentDbTestFixture : HandlersTestsBase<PutReviewCommentHandler, PutReviewCommentRequest, ReviewCommentModel>
 {
-    public PutReviewCommentDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PutReviewCommentDbTestFixture() : base()
     {
     }
 
-    private static PutReviewCommentModel TestReviewComment => new PutReviewCommentModel()
+    private PutReviewCommentModel TestReviewComment => new PutReviewCommentModel()
     {
         Text = "Test Comment",
         Votes = new[] { new VoteModel()
             {
                 Description = "Test Vote",
-                MemberAtFault = new MemberInfoModel() { MemberId = testMemberId},
+                MemberAtFault = new MemberInfoModel() { MemberId = TestMemberId},
             } },
     };
 
@@ -37,7 +37,7 @@ public sealed class PutReviewCommentDbTestFixture : HandlersTestsBase<PutReviewC
 
     protected override PutReviewCommentRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testCommentId);
+        return DefaultRequest(TestLeagueId, TestCommentId);
     }
 
     protected override void DefaultAssertions(PutReviewCommentRequest request, ReviewCommentModel result, LeagueDbContext dbContext)
@@ -61,9 +61,9 @@ public sealed class PutReviewCommentDbTestFixture : HandlersTestsBase<PutReviewC
         AssertMemberInfo(expected.MemberAtFault, result.MemberAtFault);
     }
 
-    private void AssertMemberInfo(MemberInfoModel expected, MemberInfoModel result)
+    private void AssertMemberInfo(MemberInfoModel? expected, MemberInfoModel? result)
     {
-        result.MemberId.Should().Be(expected.MemberId);
+        result?.MemberId.Should().Be(expected?.MemberId);
     }
 
     [Fact]
@@ -73,13 +73,15 @@ public sealed class PutReviewCommentDbTestFixture : HandlersTestsBase<PutReviewC
     }
 
     [Theory]
-    [InlineData(0, testCommentId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testCommentId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
     {
-        var request = DefaultRequest(leagueId, resultConfigId);
+        leagueId ??= TestLeagueId;
+        resultConfigId ??= TestResultConfigId;
+        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

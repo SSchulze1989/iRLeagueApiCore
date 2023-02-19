@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;
 [Collection("DbTestFixture")]
 public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteScheduleHandler, DeleteScheduleRequest, Unit>
 {
-    public DeleteScheduleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeleteScheduleDbTestFixture() : base()
     {
     }
 
@@ -20,10 +20,10 @@ public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteSchedu
 
     protected override DeleteScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testScheduleId);
+        return DefaultRequest(TestLeagueId, TestScheduleId);
     }
 
-    private DeleteScheduleRequest DefaultRequest(long leagueId = testLeagueId, long scheduleId = testScheduleId)
+    private DeleteScheduleRequest DefaultRequest(long leagueId, long scheduleId)
     {
         return new DeleteScheduleRequest(leagueId, scheduleId);
     }
@@ -53,13 +53,15 @@ public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteSchedu
     }
 
     [Theory]
-    [InlineData(0, testScheduleId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testScheduleId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task HandleNotFoundAsync(long leagueId, long scheduleId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(42, defaultId)]
+    [InlineData(defaultId, 42)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? scheduleId)
     {
-        var request = DefaultRequest(leagueId, scheduleId);
+        leagueId ??= TestLeagueId;
+        scheduleId ??= TestScheduleId;
+        var request = DefaultRequest(leagueId.Value, scheduleId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 }

@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 [Collection("DbTestFixture")]
 public sealed class GetLeagueDbTestFixture : HandlersTestsBase<GetLeagueHandler, GetLeagueRequest, LeagueModel>
 {
-    public GetLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetLeagueDbTestFixture() : base()
     {
     }
 
@@ -20,7 +20,7 @@ public sealed class GetLeagueDbTestFixture : HandlersTestsBase<GetLeagueHandler,
 
     protected override GetLeagueRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(dbContext.Leagues.First().Id);
     }
 
     private GetLeagueRequest DefaultRequest(long leagueId)

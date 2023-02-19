@@ -12,7 +12,7 @@ public sealed class TrackImportModelTests
         var imported = JsonSerializer.Deserialize<TrackImportModel[]>(data);
 
         imported.Should().NotBeEmpty();
-        var firstTrack = imported[0];
+        var firstTrack = imported![0];
         firstTrack.ai_enabled.Should().BeFalse();
         firstTrack.award_exempt.Should().BeTrue();
         firstTrack.category.Should().Be("road");
@@ -28,7 +28,7 @@ public sealed class TrackImportModelTests
         firstTrack.has_short_parade_lap.Should().BeTrue();
         firstTrack.track_name.Should().Be("[Legacy] Lime Rock Park - 2008");
         firstTrack.track_types.Should().HaveCount(1);
-        var trackType = firstTrack.track_types[0];
+        var trackType = firstTrack.track_types![0];
         trackType.track_type.Should().Be("road");
     }
 
