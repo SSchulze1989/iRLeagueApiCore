@@ -39,8 +39,12 @@ public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler,
         result.Finished.Should().Be(testSeason.Finished);
         result.HideComments.Should().Be(testSeason.HideCommentsBeforeVoted);
         result.ScheduleIds.Should().BeEquivalentTo(testSeason.Schedules.Select(x => x.ScheduleId));
-        result.SeasonEnd.Should().Be(testSeason.SeasonEnd);
-        result.SeasonStart.Should().Be(testSeason.SeasonStart);
+        result.SeasonEnd.Should().Be(testSeason.Schedules.SelectMany(x => x.Events)
+            .OrderBy(x => x.Date)
+            .Last().Date);
+        result.SeasonStart.Should().Be(testSeason.Schedules.SelectMany(x => x.Events)
+            .OrderBy(x => x.Date)
+            .First().Date);
         result.SeasonName.Should().Be(testSeason.SeasonName);
         AssertVersion(testSeason, result);
         base.DefaultAssertions(request, result, dbContext);
