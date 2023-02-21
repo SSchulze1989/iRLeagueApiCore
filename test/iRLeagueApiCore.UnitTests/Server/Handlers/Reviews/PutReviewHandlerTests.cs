@@ -8,12 +8,8 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler, PutReviewRequest, ReviewModel>
+public sealed class PutReviewHandlerTests : ReviewsHandlersTestsBase<PutReviewHandler, PutReviewRequest, ReviewModel>
 {
-    public PutReviewDbTestFixture() : base()
-    {
-    }
-
     public PutReviewModel TestReviewModel => new PutReviewModel()
     {
         FullDescription = "Full Description",
@@ -24,14 +20,14 @@ public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler,
         TimeStamp = System.TimeSpan.FromMinutes(1.2),
         InvolvedMembers = new MemberInfoModel[]
         {
-                new MemberInfoModel() { MemberId = TestMemberId},
-                new MemberInfoModel() { MemberId = TestMemberId + 1},
+                new MemberInfoModel() { MemberId = TestMemberId },
+                new MemberInfoModel() { MemberId = TestMemberId2 },
         },
         VoteResults = new[]
         {
                 new VoteModel() {
-                    Id = 1,
-                    VoteCategoryId = testVoteCategory,
+                    Id = TestReviewVoteId,
+                    VoteCategoryId = TestVoteCategory,
                     Description = "Vote Description",
                     MemberAtFault = new MemberInfoModel() { MemberId = TestMemberId }
                 },
@@ -105,11 +101,11 @@ public sealed class PutReviewDbTestFixture : HandlersTestsBase<PutReviewHandler,
     [InlineData(defaultId, 0)]
     [InlineData(42, defaultId)]
     [InlineData(defaultId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? reviewId)
     {
         leagueId ??= TestLeagueId;
-        resultConfigId ??= TestResultConfigId;
-        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
+        reviewId ??= TestReviewId;
+        var request = DefaultRequest(leagueId.Value, reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

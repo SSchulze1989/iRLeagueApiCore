@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Identity.Test;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public sealed class GetResultConfigDbTestFixture : HandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
+public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
 {
-    public GetResultConfigDbTestFixture() : base()
+    public GetResultConfigHandlerTests() : base()
     {
     }
 

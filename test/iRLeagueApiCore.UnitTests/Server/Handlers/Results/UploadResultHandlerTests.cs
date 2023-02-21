@@ -2,6 +2,7 @@
 using FluentValidation;
 using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.UnitTests.Extensions;
@@ -13,24 +14,18 @@ using Microsoft.Extensions.Logging;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAsyncLifetime
+public sealed class UploadResultHandlerTests : DataAccessTestsBase
 {
-    private readonly Fixture fixture;
-    private readonly LeagueDbContext dbContext;
     private readonly IResultCalculationQueue calculationQueue;
     private readonly ILogger<UploadResultHandler> logger;
 
-    public UploadResultHandlerTests(DbTestFixture dbFixture)
+    private long TestLeagueId => dbContext.Leagues.First().Id;
+    private long TestEventId => dbContext.Events.First().EventId;
+
+    public UploadResultHandlerTests() : base()
     {
-        fixture = new();
-        dbContext = dbFixture.CreateDbContext();
         calculationQueue = Mock.Of<IResultCalculationQueue>();
         logger = Mock.Of<ILogger<UploadResultHandler>>();
-    }
-
-    public async Task InitializeAsync()
-    {
-        await Task.CompletedTask;
     }
 
     [Fact]
@@ -68,7 +63,7 @@ public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAs
         var result = await CreateFakeResult(false, false, 1);
         result.session_results.First().results = result.session_results.First().results.Concat(newMemberRows).ToArray();
         var sut = CreateSut();
-        var request = CreateRequest(1, 1, result);
+        var request = CreateRequest(TestLeagueId, TestEventId, result);
 
         await sut.Handle(request, default);
 
@@ -397,10 +392,5 @@ public sealed class UploadResultHandlerTests : IClassFixture<DbTestFixture>, IAs
     private string GetMemberFullName(MemberEntity member)
     {
         return $"{member.Firstname} {member.Firstname}";
-    }
-
-    public async Task DisposeAsync()
-    {
-        await dbContext.DisposeAsync();
     }
 }

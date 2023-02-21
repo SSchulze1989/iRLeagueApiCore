@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public sealed class GetResultDbTestFixture : HandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
+public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
 {
-    public GetResultDbTestFixture() : base()
+    public GetResultHandlerTests() : base()
     {
     }
 
@@ -80,7 +80,7 @@ public sealed class GetResultDbTestFixture : HandlersTestsBase<GetResultHandler,
     {
         Assert.Equal(expected.ScoringId, test.ScoringId);
         Assert.Equal(expected.LeagueId, test.LeagueId);
-        AssertResultRowData(expected.ResultRows.First(), test.ScoredResultRows.First());
+        AssertResultRowData(expected.ResultRows.OrderBy(x => x.FinalPosition).First(), test.ScoredResultRows.OrderBy(x => x.FinalPosition).First());
     }
 
     private void AssertResultRowData(ResultRowModel expected, ScoredResultRowEntity test)

@@ -9,12 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewCommentHandler, GetReviewCommentRequest, ReviewCommentModel>
+public sealed class GetReviewCommentHandlerTests : ReviewsHandlersTestsBase<GetReviewCommentHandler, GetReviewCommentRequest, ReviewCommentModel>
 {
-    public GetReviewCommentDbTestFixture() : base()
-    {
-    }
-
     protected override GetReviewCommentHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetReviewCommentRequest> validator)
     {
         return new GetReviewCommentHandler(logger, dbContext, new[] { validator });
@@ -84,11 +80,11 @@ public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewC
     [InlineData(defaultId, 0)]
     [InlineData(42, defaultId)]
     [InlineData(defaultId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? commentId)
     {
         leagueId ??= TestLeagueId;
-        resultConfigId ??= TestResultConfigId;
-        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
+        commentId ??= TestCommentId;
+        var request = DefaultRequest(leagueId.Value, commentId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

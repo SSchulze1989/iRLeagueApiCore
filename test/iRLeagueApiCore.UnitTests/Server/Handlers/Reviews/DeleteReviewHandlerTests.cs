@@ -8,9 +8,9 @@ using MediatR;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHandler, DeleteReviewRequest, Unit>
+public sealed class DeleteReviewHandlerTests : ReviewsHandlersTestsBase<DeleteReviewHandler, DeleteReviewRequest, Unit>
 {
-    public DeleteReviewDbTestFixture() : base()
+    public DeleteReviewHandlerTests() : base()
     {
     }
 
@@ -56,11 +56,11 @@ public sealed class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHa
     [InlineData(defaultId, 0)]
     [InlineData(42, defaultId)]
     [InlineData(defaultId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? reviewId)
     {
         leagueId ??= TestLeagueId;
-        resultConfigId ??= TestResultConfigId;
-        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
+        reviewId ??= TestReviewId;
+        var request = DefaultRequest(leagueId.Value, reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

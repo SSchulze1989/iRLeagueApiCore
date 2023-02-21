@@ -7,9 +7,9 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public sealed class GetResultsFromSeasonDbTestFixture : HandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
+public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
 {
-    public GetResultsFromSeasonDbTestFixture() : base()
+    public GetResultsFromSeasonHandlerTests() : base()
     {
     }
 

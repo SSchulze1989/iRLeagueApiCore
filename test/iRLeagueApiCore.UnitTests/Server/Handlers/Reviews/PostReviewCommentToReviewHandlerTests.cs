@@ -8,12 +8,8 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class PostReviewCommentToReviewDbTestFixture : HandlersTestsBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
+public sealed class PostReviewCommentToReviewHandlerTests : ReviewsHandlersTestsBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
 {
-    public PostReviewCommentToReviewDbTestFixture() : base()
-    {
-    }
-
     private PutReviewCommentModel TestReviewComment => new PutReviewCommentModel()
     {
         Text = "Test Comment",
@@ -77,11 +73,11 @@ public sealed class PostReviewCommentToReviewDbTestFixture : HandlersTestsBase<P
     [InlineData(defaultId, 0)]
     [InlineData(42, defaultId)]
     [InlineData(defaultId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? reviewId)
     {
         leagueId ??= TestLeagueId;
-        resultConfigId ??= TestResultConfigId;
-        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
+        reviewId ??= TestReviewId;
+        var request = DefaultRequest(leagueId.Value, reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

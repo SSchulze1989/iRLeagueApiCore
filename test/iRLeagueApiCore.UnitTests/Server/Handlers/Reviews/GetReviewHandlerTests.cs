@@ -9,12 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler, GetReviewRequest, ReviewModel>
+public sealed class GetReviewHandlerTests : ReviewsHandlersTestsBase<GetReviewHandler, GetReviewRequest, ReviewModel>
 {
-    public GetReviewDbTestFixture() : base()
-    {
-    }
-
     protected override GetReviewHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetReviewRequest> validator)
     {
         return new GetReviewHandler(logger, dbContext, new[] { validator });
