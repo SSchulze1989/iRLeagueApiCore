@@ -52,7 +52,7 @@ public sealed class DeleteLeagueDbTestFixture : HandlersTestsBase<DeleteLeagueHa
 
     [Theory]
     [InlineData(0)]
-    [InlineData(42)]
+    [InlineData(-42)]
     public async Task HandleNotFoundAsync(long leagueId)
     {
         var request = DefaultRequest(leagueId);

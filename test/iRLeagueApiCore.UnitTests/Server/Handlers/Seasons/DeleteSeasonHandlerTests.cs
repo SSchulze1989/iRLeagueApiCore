@@ -57,8 +57,8 @@ public sealed class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHa
     [Theory]
     [InlineData(0, 1)]
     [InlineData(1, 0)]
-    [InlineData(42, 1)]
-    [InlineData(1, 42)]
+    [InlineData(-42, 1)]
+    [InlineData(1, -42)]
     public async Task HandleNotFound(long leagueId, long seasonId)
     {
         var request = DefaultRequest(leagueId, seasonId);

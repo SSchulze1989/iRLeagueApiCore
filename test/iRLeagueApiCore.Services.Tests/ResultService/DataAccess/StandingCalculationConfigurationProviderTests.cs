@@ -10,7 +10,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
 {
     [Theory]
     [InlineData(default(long))]
-    [InlineData(42)]
+    [InlineData(-42)]
     public async Task GetConfiguration_ShouldProvideEmptyConfiguration_WhenEventDoesNotExist(long? eventId)
     {
         var season = await GetFirstSeasonAsync();

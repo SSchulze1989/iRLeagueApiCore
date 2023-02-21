@@ -54,8 +54,8 @@ public sealed class DeleteReviewHandlerTests : ReviewsHandlersTestsBase<DeleteRe
     [Theory]
     [InlineData(0, defaultId)]
     [InlineData(defaultId, 0)]
-    [InlineData(42, defaultId)]
-    [InlineData(defaultId, 42)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
     public async Task ShouldHandleNotFoundAsync(long? leagueId, long? reviewId)
     {
         leagueId ??= TestLeagueId;

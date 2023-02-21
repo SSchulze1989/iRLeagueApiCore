@@ -42,7 +42,7 @@ public sealed class GetLeagueDbTestFixture : HandlersTestsBase<GetLeagueHandler,
 
     [Theory]
     [InlineData(0)]
-    [InlineData(42)]
+    [InlineData(-42)]
     public async Task HandleNotFoundAsync(long leagueId)
     {
         var request = DefaultRequest(leagueId);

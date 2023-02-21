@@ -65,8 +65,8 @@ public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler,
     [Theory]
     [InlineData(0, 1)]
     [InlineData(1, 0)]
-    [InlineData(1, 42)]
-    [InlineData(42, 1)]
+    [InlineData(1, -42)]
+    [InlineData(-42, 1)]
     public async Task HandleNotFound(long leagueId, long seasonId)
     {
         var request = DefaultRequest(leagueId, seasonId);

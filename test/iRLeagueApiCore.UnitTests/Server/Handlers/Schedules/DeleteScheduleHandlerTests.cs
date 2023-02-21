@@ -55,8 +55,8 @@ public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteSchedu
     [Theory]
     [InlineData(0, defaultId)]
     [InlineData(defaultId, 0)]
-    [InlineData(42, defaultId)]
-    [InlineData(defaultId, 42)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
     public async Task HandleNotFoundAsync(long? leagueId, long? scheduleId)
     {
         leagueId ??= TestLeagueId;
