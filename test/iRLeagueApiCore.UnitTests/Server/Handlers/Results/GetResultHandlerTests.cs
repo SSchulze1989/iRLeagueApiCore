@@ -73,7 +73,7 @@ public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHan
     private void AssertEventResultData(EventResultModel expected, ScoredEventResultEntity test)
     {
         Assert.Equal(expected.LeagueId, test.LeagueId);
-        AssertSessionResultData(expected.SessionResults.First(), test.ScoredSessionResults.First());
+        AssertSessionResultData(expected.SessionResults.OrderBy(x => x.SessionNr).First(), test.ScoredSessionResults.OrderBy(x => x.SessionNr).First());
     }
 
     private void AssertSessionResultData(ResultModel expected, ScoredSessionResultEntity test)

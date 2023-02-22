@@ -50,7 +50,7 @@ public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHa
 
     [Theory]
     [InlineData(0)]
-    [InlineData(43)]
+    [InlineData(-43)]
     public async Task HandleNotFoundAsync(long leagueId)
     {
         var request = DefaultRequest(leagueId);

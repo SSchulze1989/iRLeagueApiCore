@@ -59,8 +59,8 @@ public sealed class PostScheduleDbTestFixture : HandlersTestsBase<PostScheduleHa
     [Theory]
     [InlineData(0, defaultId)]
     [InlineData(defaultId, 0)]
-    [InlineData(43, defaultId)]
-    [InlineData(defaultId, 43)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
     public async Task HandleNotFoundAsync(long? leagueId, long? seasonId)
     {
         leagueId ??= TestLeagueId;

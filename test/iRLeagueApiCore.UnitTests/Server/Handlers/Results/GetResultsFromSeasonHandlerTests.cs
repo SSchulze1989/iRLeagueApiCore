@@ -20,7 +20,7 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
 
     protected override GetResultsFromSeasonRequest DefaultRequest()
     {
-        return DefaultRequest();
+        return DefaultRequest(TestLeagueId, TestSeasonId);
     }
 
     private GetResultsFromSeasonRequest DefaultRequest(long leagueId, long seasonId)

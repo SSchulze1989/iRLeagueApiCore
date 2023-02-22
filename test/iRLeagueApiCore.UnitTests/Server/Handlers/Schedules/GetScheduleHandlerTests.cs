@@ -59,8 +59,8 @@ public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHand
     [Theory]
     [InlineData(0, defaultId)]
     [InlineData(defaultId, 0)]
-    [InlineData(43, defaultId)]
-    [InlineData(defaultId, 43)]
+    [InlineData(-43, defaultId)]
+    [InlineData(defaultId, -43)]
     public async Task HandleNotFoundAsync(long? leagueId, long? scheduleId)
     {
         leagueId ??= TestLeagueId;
