@@ -11,7 +11,7 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
 {
     private const string testScheduleName = "TestSchedule";
 
-    public PutScheduleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PutScheduleDbTestFixture() : base()
     {
     }
 
@@ -22,10 +22,10 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
 
     protected override PutScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testScheduleId);
+        return DefaultRequest(TestLeagueId, TestScheduleId);
     }
 
-    private PutScheduleRequest DefaultRequest(long leagueId = testLeagueId, long scheduleId = testScheduleId)
+    private PutScheduleRequest DefaultRequest(long leagueId, long scheduleId)
     {
         var model = new PutScheduleModel()
         {
@@ -57,13 +57,15 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
     }
 
     [Theory]
-    [InlineData(0, testScheduleId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(43, testScheduleId)]
-    [InlineData(testLeagueId, 43)]
-    public async Task HandleNotFoundAsync(long leagueId, long scheduleId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-43, defaultId)]
+    [InlineData(defaultId, -43)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? scheduleId)
     {
-        var request = DefaultRequest(leagueId, scheduleId);
+        leagueId ??= TestLeagueId;
+        scheduleId ??= TestScheduleId;
+        var request = DefaultRequest(leagueId.Value, scheduleId.Value);
         await base.HandleNotFoundRequestAsync(request);
     }
 }

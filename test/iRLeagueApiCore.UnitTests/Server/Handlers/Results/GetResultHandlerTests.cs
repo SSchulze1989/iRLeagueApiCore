@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public sealed class GetResultDbTestFixture : HandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
+public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
 {
-    public GetResultDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetResultHandlerTests() : base()
     {
     }
 
@@ -21,10 +21,10 @@ public sealed class GetResultDbTestFixture : HandlersTestsBase<GetResultHandler,
 
     protected override GetResultRequest DefaultRequest()
     {
-        return DefaultRequest();
+        return DefaultRequest(TestLeagueId, TestResultId);
     }
 
-    private GetResultRequest DefaultRequest(long leagueId = testLeagueId, long resultId = testResultId)
+    private GetResultRequest DefaultRequest(long leagueId, long resultId)
     {
         return new GetResultRequest(leagueId, resultId);
     }
@@ -58,27 +58,29 @@ public sealed class GetResultDbTestFixture : HandlersTestsBase<GetResultHandler,
     }
 
     [Theory]
-    [InlineData(0, testResultId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testResultId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task HandleNotFoundAsync(long leagueId, long resultId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? resultId)
     {
-        var request = DefaultRequest(leagueId, resultId);
+        leagueId ??= TestLeagueId;
+        resultId ??= TestResultId;
+        var request = DefaultRequest(leagueId.Value, resultId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 
     private void AssertEventResultData(EventResultModel expected, ScoredEventResultEntity test)
     {
         Assert.Equal(expected.LeagueId, test.LeagueId);
-        AssertSessionResultData(expected.SessionResults.First(), test.ScoredSessionResults.First());
+        AssertSessionResultData(expected.SessionResults.OrderBy(x => x.SessionNr).First(), test.ScoredSessionResults.OrderBy(x => x.SessionNr).First());
     }
 
     private void AssertSessionResultData(ResultModel expected, ScoredSessionResultEntity test)
     {
         Assert.Equal(expected.ScoringId, test.ScoringId);
         Assert.Equal(expected.LeagueId, test.LeagueId);
-        AssertResultRowData(expected.ResultRows.First(), test.ScoredResultRows.First());
+        AssertResultRowData(expected.ResultRows.OrderBy(x => x.FinalPosition).First(), test.ScoredResultRows.OrderBy(x => x.FinalPosition).First());
     }
 
     private void AssertResultRowData(ResultRowModel expected, ScoredResultRowEntity test)

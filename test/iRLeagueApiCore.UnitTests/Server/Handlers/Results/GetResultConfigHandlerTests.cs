@@ -8,26 +8,28 @@ using Microsoft.AspNetCore.Identity.Test;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public sealed class GetResultConfigDbTestFixture : HandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
+public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
 {
-    public GetResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetResultConfigHandlerTests() : base()
     {
     }
 
-    protected override GetResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultConfigRequest> validator = null)
+
+
+    protected override GetResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultConfigRequest>? validator = null)
     {
         return new GetResultConfigHandler(logger, dbContext,
             new IValidator<GetResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<GetResultConfigRequest>() });
     }
 
-    private GetResultConfigRequest DefaultRequest(long leagueId = testLeagueId, long resultConfigId = testResultConfigId)
+    private GetResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
     {
         return new GetResultConfigRequest(leagueId, resultConfigId);
     }
 
     protected override GetResultConfigRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testResultConfigId);
+        return DefaultRequest(TestLeagueId, TestResultConfigId);
     }
 
     protected override void DefaultAssertions(GetResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
@@ -37,7 +39,7 @@ public sealed class GetResultConfigDbTestFixture : HandlersTestsBase<GetResultCo
         resultConfigEntity.Should().NotBeNull();
         result.LeagueId.Should().Be(request.LeagueId);
         result.ResultConfigId.Should().Be(request.ResultConfigId);
-        result.Name.Should().Be(resultConfigEntity.Name);
+        result.Name.Should().Be(resultConfigEntity!.Name);
         result.DisplayName.Should().Be(resultConfigEntity.DisplayName);
         result.ResultsPerTeam.Should().Be(resultConfigEntity.ResultsPerTeam);
         base.DefaultAssertions(request, result, dbContext);
@@ -50,13 +52,15 @@ public sealed class GetResultConfigDbTestFixture : HandlersTestsBase<GetResultCo
     }
 
     [Theory]
-    [InlineData(0, testResultConfigId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testResultConfigId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
     {
-        var request = DefaultRequest(leagueId, resultConfigId);
+        leagueId ??= TestLeagueId;
+        resultConfigId ??= TestResultConfigId;
+        var request = DefaultRequest(leagueId!.Value, resultConfigId!.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

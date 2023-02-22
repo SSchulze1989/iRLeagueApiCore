@@ -4,7 +4,7 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
+namespace iRLeagueApiCore.Mocking.DataAccess;
 
 public sealed class DataAccessMockHelper
 {
@@ -94,6 +94,7 @@ public sealed class DataAccessMockHelper
     public IEnumerable<MemberEntity> CreateMembers(int count = 10)
     {
         return fixture.Build<MemberEntity>()
+            .With(x => x.IRacingId, () => fixture.Create<int>().ToString())
             .Without(x => x.AcceptedReviewVotes)
             .Without(x => x.CleanestDriverResults)
             .Without(x => x.CommentReviewVotes)
@@ -317,6 +318,25 @@ public sealed class DataAccessMockHelper
             .Without(x => x.InvolvedMembers)
             .Without(x => x.ReviewPenaltys)
             .Create()).ToList();
+    }
+
+    public IEnumerable<ReviewCommentEntity> CreateComments(IncidentReviewEntity review)
+    {
+        return fixture.Build<ReviewCommentEntity>()
+            .With(x => x.Review, review)
+            .With(x => x.ReviewCommentVotes, () => CreateCommentVotes().ToList())
+            .Without(x => x.Replies)
+            .Without(x => x.ReplyToComment)
+            .CreateMany(2);
+    }
+
+    public IEnumerable<ReviewCommentVoteEntity> CreateCommentVotes()
+    {
+        return fixture.Build<ReviewCommentVoteEntity>()
+            .Without(x => x.MemberAtFault)
+            .Without(x => x.VoteCategory)
+            .Without(x => x.Comment)
+            .CreateMany();
     }
 
     public IPostprocessComposer<AcceptedReviewVoteEntity> AcceptedReviewVoteBuilder()

@@ -9,7 +9,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 [Collection("DbTestFixture")]
 public sealed class GetLeaguesDbTestFixture : HandlersTestsBase<GetLeaguesHandler, GetLeaguesRequest, IEnumerable<LeagueModel>>
 {
-    public GetLeaguesDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetLeaguesDbTestFixture() : base()
     {
     }
 

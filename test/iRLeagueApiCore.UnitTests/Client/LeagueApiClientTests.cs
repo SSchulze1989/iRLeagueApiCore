@@ -29,7 +29,7 @@ public sealed class LeagueApiClientTests
             })),
         });
 
-        string token = null;
+        string token = string.Empty;
         var mockTokenStore = new Mock<ITokenStore>();
         mockTokenStore.Setup(x => x.SetAccessTokenAsync(It.IsAny<string>()))
             .Callback<string>(x => token = x);
@@ -37,7 +37,7 @@ public sealed class LeagueApiClientTests
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);
 
-        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object, default);
+        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
 
         var result = await apiClient.LogIn("testUser", "testPassword");
 
@@ -48,7 +48,7 @@ public sealed class LeagueApiClientTests
     [Fact]
     public async Task ShouldSendAuthenticatedRequest()
     {
-        AuthenticationHeaderValue authHeader = default;
+        AuthenticationHeaderValue? authHeader = default;
         var messageHandler = MockHelpers.TestMessageHandler(x =>
         {
             authHeader = x.Headers.Authorization;
@@ -64,7 +64,7 @@ public sealed class LeagueApiClientTests
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);
 
-        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object, default);
+        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
         await apiClient.Leagues().Get();
 
         Assert.Equal("bearer", authHeader?.Scheme, ignoreCase: true);
@@ -74,7 +74,7 @@ public sealed class LeagueApiClientTests
     [Fact]
     public async Task ShouldNotSendAuthenticatedRequestAfterLogOut()
     {
-        AuthenticationHeaderValue authHeader = default;
+        AuthenticationHeaderValue? authHeader = default;
         var messageHandler = MockHelpers.TestMessageHandler(x =>
         {
             authHeader = x.Headers.Authorization;
@@ -90,13 +90,13 @@ public sealed class LeagueApiClientTests
         mockTokenStore.Setup(x => x.SetAccessTokenAsync(It.IsAny<string>()))
             .Callback<string>(x => token = x);
         mockTokenStore.Setup(x => x.ClearTokensAsync())
-            .Callback(() => token = null);
+            .Callback(() => token = string.Empty);
         mockTokenStore.Setup(x => x.GetAccessTokenAsync())
             .ReturnsAsync(testToken);
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);
 
-        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object, default);
+        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
         await apiClient.LogOut();
         await apiClient.Leagues().Get();
 

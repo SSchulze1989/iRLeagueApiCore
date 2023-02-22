@@ -1,7 +1,7 @@
 ﻿using AutoFixture.Dsl;
 using System.Linq.Expressions;
 
-namespace iRLeagueApiCore.Services.Tests.Extensions;
+namespace iRLeagueApiCore.Mocking.Extensions;
 
 public static class AutoFixtureExtensions
 {

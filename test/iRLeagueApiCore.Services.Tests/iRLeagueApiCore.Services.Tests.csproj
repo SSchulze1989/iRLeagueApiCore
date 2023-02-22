@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Services\iRLeagueApiCore.Services.csproj" />
+    <ProjectReference Include="..\iRLeagueApiCore.Mocking\iRLeagueApiCore.Mocking\iRLeagueApiCore.Mocking.csproj" />
   </ItemGroup>
 
 </Project>

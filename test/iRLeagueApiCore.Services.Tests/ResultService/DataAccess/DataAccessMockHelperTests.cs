@@ -1,7 +1,8 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Mocking.DataAccess;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
+namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
 [Collection("DataAccessTests")]
 public sealed class DataAccessMockHelperTests

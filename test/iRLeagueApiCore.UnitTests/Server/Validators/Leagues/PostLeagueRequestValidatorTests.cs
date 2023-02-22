@@ -1,6 +1,7 @@
 ﻿using FluentValidation.TestHelper;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
+using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.Server.Validation.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
@@ -12,8 +13,9 @@ public sealed class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture
 {
     private readonly DbTestFixture fixture;
     private const string testLeagueName = "ValidationLeague123_-";
-    private const string existingLeagueName = "TestLeague";
     private const string testLeagueNameFull = "Full test league name";
+
+    private string ExistingLeagueName => fixture.DbContext.Leagues.First().Name;
 
     public PostLeagueRequestDbTestFixture(DbTestFixture fixture)
     {
@@ -27,7 +29,7 @@ public sealed class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture
             Name = name,
             NameFull = testLeagueNameFull,
         };
-        return new PostLeagueRequest(null, model);
+        return new PostLeagueRequest(LeagueUser.Empty, model);
     }
 
     private static PostLeagueRequestValidator CreateValidator(LeagueDbContext dbContext)
@@ -47,14 +49,15 @@ public sealed class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture
 
     [Theory]
     [InlineData("1league", true)] // number at beginning: ok
-    [InlineData(existingLeagueName, false)] // league name exists
+    [InlineData(null, false)] // league name exists
     [InlineData("1337", false)] // only numbers
     [InlineData("123.league.de", false)] // no dots
     [InlineData("sh", false)] // too short
     [InlineData("abcdefghiklmnopqrstuvwxyzabcdefghiklmnopqrstuvwxyzabcdefghiklmnopqrstuvwxyzabcdefghiklmnopqrstuvwxyz", false)] // too long
     [InlineData("league name", false)] // invalid character: space
-    public async Task ValidateName(string leagueName, bool isValid)
+    public async Task ValidateName(string? leagueName, bool isValid)
     {
+        leagueName ??= ExistingLeagueName;
         using var dbContext = fixture.CreateDbContext();
         var request = DefaultRequest(leagueName);
         var validator = CreateValidator(dbContext);

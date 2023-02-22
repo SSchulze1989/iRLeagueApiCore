@@ -8,9 +8,9 @@ using MediatR;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHandler, DeleteReviewRequest, Unit>
+public sealed class DeleteReviewHandlerTests : ReviewsHandlersTestsBase<DeleteReviewHandler, DeleteReviewRequest, Unit>
 {
-    public DeleteReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeleteReviewHandlerTests() : base()
     {
     }
 
@@ -27,7 +27,7 @@ public sealed class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHa
 
     protected override DeleteReviewRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testReviewId);
+        return DefaultRequest(TestLeagueId, TestReviewId);
     }
 
     protected override void DefaultAssertions(DeleteReviewRequest request, Unit result, LeagueDbContext dbContext)
@@ -52,13 +52,15 @@ public sealed class DeleteReviewDbTestFixture : HandlersTestsBase<DeleteReviewHa
     }
 
     [Theory]
-    [InlineData(0, testReviewId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testReviewId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? reviewId)
     {
-        var request = DefaultRequest(leagueId, resultConfigId);
+        leagueId ??= TestLeagueId;
+        reviewId ??= TestReviewId;
+        var request = DefaultRequest(leagueId.Value, reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 
