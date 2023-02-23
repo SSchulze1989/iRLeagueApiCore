@@ -24,7 +24,6 @@ public sealed class UsersController : LeagueApiController<UsersController>
         _logger.LogInformation("[{Method}] all users from {LeagueName} by {Username}", "Get", leagueName, User.Identity?.Name);
         var request = new GetUserListRequest(leagueName);
         var result = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} entries for users from {LeagueName}", result.Count(), leagueName);
         return Ok(result);
     }
 
@@ -37,7 +36,6 @@ public sealed class UsersController : LeagueApiController<UsersController>
         _logger.LogInformation("[{Method}] user {UserId} from {LeagueName} by {Username}", "Get", id, leagueName, User.Identity?.Name);
         var request = new GetLeagueUserRequest(leagueName, id);
         var result = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for league user {UserId} from {LeagueName}", id, leagueName);
         return Ok(result);
     }
 
@@ -54,14 +52,12 @@ public sealed class UsersController : LeagueApiController<UsersController>
             // if the user requests its own info --> return private user data
             var request = new GetPrivateUserRequest(id);
             result = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return private data for users {UserId}", id);
         }
         else
         {
             // else get public user data
             var request = new GetUserRequest(id);
             result = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Return public data for users {UserId}", id);
         }
         return Ok(result);
     }
@@ -80,7 +76,6 @@ public sealed class UsersController : LeagueApiController<UsersController>
         }
         var request = new PutUserRequest(id, putUser);
         var result = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return updated data for user {UserId}", id);
         return Ok(result);
     }
 
@@ -93,7 +88,6 @@ public sealed class UsersController : LeagueApiController<UsersController>
             model.SearchKeys, User.Identity?.Name);
         var request = new SearchUsersByNameRequest(model.SearchKeys.ToArray());
         var result = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} entries for search", result.Count());
         return Ok(result);
     }
 
@@ -108,7 +102,6 @@ public sealed class UsersController : LeagueApiController<UsersController>
             role.RoleName, id, leagueName, User.Identity?.Name);
         var request = new AddLeagueRoleRequest(leagueName, id, role.RoleName);
         var result = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return league user data for {UserId} from {LeagueName}", id, leagueName);
         return Ok(result);
     }
 
@@ -123,7 +116,6 @@ public sealed class UsersController : LeagueApiController<UsersController>
             role.RoleName, id, leagueName, User.Identity?.Name);
         var request = new RemoveLeagueRoleRequest(leagueName, id, role.RoleName);
         var result = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return league user data for {UserId} from {LeagueName}", id, leagueName);
         return Ok(result);
     }
 }

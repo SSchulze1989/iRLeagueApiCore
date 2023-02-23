@@ -23,12 +23,8 @@ public sealed class SeasonsController : LeagueApiController<SeasonsController>
     public async Task<ActionResult<IEnumerable<SeasonModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] all seasons from {LeagueName} by {UserName}", "Get", leagueName,
-            GetUsername());
         var request = new GetSeasonsRequest(leagueId);
         var getSeasons = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} season entries from {LeagueName}", getSeasons.Count(),
-            leagueName);
         return Ok(getSeasons);
     }
 
@@ -38,11 +34,8 @@ public sealed class SeasonsController : LeagueApiController<SeasonsController>
     public async Task<ActionResult<SeasonModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Get",
-            id, leagueName, GetUsername());
         var request = new GetSeasonRequest(leagueId, id);
         var getSeason = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
         return Ok(getSeason);
     }
 
@@ -51,11 +44,8 @@ public sealed class SeasonsController : LeagueApiController<SeasonsController>
     [Route("Current")]
     public async Task<ActionResult<SeasonModel>> GetCurrent([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] current season from {LeagueName} by {UserName}", "Get",
-            leagueName, GetUsername());
         var request = new GetCurrentSeasonRequest(leagueId);
         var getSeason = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
         return Ok(getSeason);
     }
 
@@ -65,12 +55,9 @@ public sealed class SeasonsController : LeagueApiController<SeasonsController>
     public async Task<ActionResult<SeasonModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromBody] PostSeasonModel postSeason, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] new season to {LeagueName} by {UserName}", "Post", leagueName,
-            GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
         var request = new PostSeasonRequest(leagueId, leagueUser, postSeason);
         var getSeason = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return created entry for season {SeasonId} from {LeagueName}", getSeason.SeasonId, leagueName);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getSeason.SeasonId }, getSeason);
     }
 
@@ -80,13 +67,9 @@ public sealed class SeasonsController : LeagueApiController<SeasonsController>
     public async Task<ActionResult<SeasonModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, [FromBody] PutSeasonModel putSeason, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Put",
-            leagueName, id, GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
         var request = new PutSeasonRequest(leagueId, leagueUser, id, putSeason);
         var getSeason = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for season {SeasonId} from {LeagueName}", leagueName,
-            getSeason.SeasonId);
         return Ok(getSeason);
     }
 
@@ -96,12 +79,8 @@ public sealed class SeasonsController : LeagueApiController<SeasonsController>
     public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] season {SeasonId} from {LeagueName} by {UserName}", "Delete",
-            id, leagueName,
-            GetUsername());
         var request = new DeleteSeasonRequest(leagueId, id);
         await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Deleted season {SeasonId} from {LeagueName}", id, leagueName);
         return NoContent();
     }
 }

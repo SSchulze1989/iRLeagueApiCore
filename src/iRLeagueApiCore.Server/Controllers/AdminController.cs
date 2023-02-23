@@ -26,15 +26,12 @@ public sealed class AdminController : LeagueApiController<AdminController>
     {
         try
         {
-            _logger.LogInformation("Get list of users for {LeagueName} by {UserName}", leagueName, GetUsername());
             var request = new ListUsersRequest(leagueName);
             var getUsers = await mediator.Send(request, cancellationToken);
             if (getUsers.Count() == 0)
             {
-                _logger.LogInformation("No users found in {LeagueName}", leagueName);
                 return NotFound();
             }
-            _logger.LogInformation("Return {Count} user entries for {LeagueName}", getUsers.Count(), leagueName);
             return Ok(getUsers);
         }
         catch (ValidationException ex)
