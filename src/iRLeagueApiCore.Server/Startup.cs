@@ -1,5 +1,6 @@
 using iRLeagueApiCore.Common.Converters;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -220,6 +221,7 @@ public sealed class Startup
                 diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
                 diagnosticContext.Set("RemoteIpAddress", httpContext.Connection.RemoteIpAddress);
                 diagnosticContext.Set("UserName", httpContext.User.Identity?.Name ?? "");
+                diagnosticContext.Set("UserId", httpContext.User.GetUserId());
             };
         });
 
