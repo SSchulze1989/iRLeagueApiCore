@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using iRLeagueApiCore.Common.Converters;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
@@ -167,6 +168,14 @@ public sealed class Startup
             options.Password.RequireLowercase = true;
         });
 
+        services.AddMemoryCache();
+        services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        services.AddInMemoryRateLimiting();
+
         services.AddTrackImporter();
 
         services.AddMediatR(Assembly.GetExecutingAssembly());
@@ -206,6 +215,8 @@ public sealed class Startup
         app.UseFileServer();
 
         app.UseRouting();
+
+        app.UseIpRateLimiting();
 
         app.UseSerilogRequestLogging(options =>
         {
