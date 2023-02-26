@@ -168,13 +168,13 @@ public sealed class Startup
             options.Password.RequireLowercase = true;
         });
 
-        // services.AddMemoryCache();
-        // services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
-        // services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-        // services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-        // services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-        // services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-        // services.AddInMemoryRateLimiting();
+        services.AddMemoryCache();
+        services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        services.AddInMemoryRateLimiting();
 
         services.AddTrackImporter();
 
@@ -216,7 +216,7 @@ public sealed class Startup
 
         app.UseRouting();
 
-        // app.UseIpRateLimiting();
+        app.UseIpRateLimiting();
 
         app.UseSerilogRequestLogging(options =>
         {
