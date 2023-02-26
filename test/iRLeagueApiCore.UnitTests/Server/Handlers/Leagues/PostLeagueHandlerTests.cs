@@ -12,7 +12,7 @@ public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandle
 {
     private const string postLeagueName = "PostLeague";
 
-    public PostLeagueDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PostLeagueDbTestFixture() : base()
     {
     }
 

@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Extensions;
 using iRLeagueDatabaseCore.Models;
@@ -7,25 +8,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 
-public sealed class DbTestFixture : IDisposable
+public sealed class DbTestFixture : DataAccessTestsBase
 {
-    private static IConfiguration Configuration { get; }
-    private readonly Fixture fixture;
-
-    private static readonly int Seed = 12345;
     public static string ClientUserName => "TestClient";
     public static string ClientGuid => "6a6a6e09-f4b7-4ccb-a8ae-f2fc85d897dd";
-
-    static DbTestFixture()
-    {
-        Configuration = ((IConfigurationBuilder)(new ConfigurationBuilder()))
-            .AddUserSecrets<DbTestFixture>()
-            .Build();
-    }
+    public LeagueDbContext DbContext => dbContext;
 
     public DbTestFixture()
     {
-        fixture = new();
     }
 
     public static LeagueDbContext CreateStaticDbContext()
@@ -42,13 +32,7 @@ public sealed class DbTestFixture : IDisposable
 
     public LeagueDbContext CreateDbContext()
     {
-        var dbContext = CreateStaticDbContext();
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-
-        var random = new Random(Seed);
-        Populate(dbContext, random);
-        dbContext.SaveChanges();
+        var dbContext = accessMockHelper.CreateMockDbContext();
         return dbContext;
     }
 

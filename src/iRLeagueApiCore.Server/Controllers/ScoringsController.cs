@@ -30,11 +30,8 @@ public sealed class ScoringsController : LeagueApiController<ScoringsController>
     {
         try
         {
-            _logger.LogInformation("Get scorings from {LeagueName} by {UserName}", leagueName,
-                GetUsername());
             var request = new GetScoringsRequest(leagueId);
             var getScorings = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Returning {Count} entries for scorings from {LeagueName}", getScorings.Count(), leagueName);
             return Ok(getScorings);
         }
         catch (ValidationException ex)
@@ -64,11 +61,8 @@ public sealed class ScoringsController : LeagueApiController<ScoringsController>
     {
         try
         {
-            _logger.LogInformation("Get scoring {ScoringId} from {LeagueName} by {UserName}", id, leagueName,
-                GetUsername());
             var request = new GetScoringRequest(leagueId, id);
             var getScoring = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Returning entry for scoring {ScoringId} from {LeagueName}", id, leagueName);
             return Ok(getScoring);
         }
         catch (ValidationException ex)
@@ -100,12 +94,9 @@ public sealed class ScoringsController : LeagueApiController<ScoringsController>
     {
         try
         {
-            _logger.LogInformation("Put scoring {ScoringId} inside {LeagueName} by {UserName}", leagueName,
-                id, GetUsername());
             var leagueUser = new LeagueUser(leagueName, User);
             var request = new PutScoringRequest(leagueId, id, leagueUser, model);
             var getScoring = await mediator.Send(request, cancellationToken);
-            _logger.LogInformation("Returning entry for scoring {ScoringId} from {LeagueName}", getScoring.Id, leagueName);
             return Ok(getScoring);
         }
         catch (ValidationException ex)
@@ -136,8 +127,6 @@ public sealed class ScoringsController : LeagueApiController<ScoringsController>
     {
         try
         {
-            _logger.LogInformation("Delete scoring {ScoringId} from {LeagueName} by {UserName}", leagueName,
-                id, GetUsername());
             var request = new DeleteScoringRequest(leagueId, id);
             await mediator.Send(request, cancellationToken);
             return NoContent();

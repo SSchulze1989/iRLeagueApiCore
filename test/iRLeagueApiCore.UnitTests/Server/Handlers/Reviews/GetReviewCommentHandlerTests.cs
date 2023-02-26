@@ -9,12 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewCommentHandler, GetReviewCommentRequest, ReviewCommentModel>
+public sealed class GetReviewCommentHandlerTests : ReviewsHandlersTestsBase<GetReviewCommentHandler, GetReviewCommentRequest, ReviewCommentModel>
 {
-    public GetReviewCommentDbTestFixture(DbTestFixture fixture) : base(fixture)
-    {
-    }
-
     protected override GetReviewCommentHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetReviewCommentRequest> validator)
     {
         return new GetReviewCommentHandler(logger, dbContext, new[] { validator });
@@ -28,7 +24,7 @@ public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewC
 
     protected override GetReviewCommentRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testCommentId);
+        return DefaultRequest(TestLeagueId, TestCommentId);
     }
 
     protected override void DefaultAssertions(GetReviewCommentRequest request, ReviewCommentModel result, LeagueDbContext dbContext)
@@ -38,7 +34,7 @@ public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewC
                 .ThenInclude(x => x.MemberAtFault)
             .SingleOrDefault(x => x.CommentId == request.CommentId);
         commentEntity.Should().NotBeNull();
-        AssertReviewComment(commentEntity, result);
+        AssertReviewComment(commentEntity!, result);
         base.DefaultAssertions(request, result, dbContext);
     }
 
@@ -65,11 +61,12 @@ public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewC
         AssertMemberInfo(expected.MemberAtFault, result.MemberAtFault);
     }
 
-    private void AssertMemberInfo(MemberEntity expected, MemberInfoModel result)
+    private void AssertMemberInfo(MemberEntity? expected, MemberInfoModel? result)
     {
-        result.MemberId.Should().Be(expected.Id);
-        result.FirstName.Should().Be(expected.Firstname);
-        result.LastName.Should().Be(expected.Lastname);
+
+        result?.MemberId.Should().Be(expected?.Id);
+        result?.FirstName.Should().Be(expected?.Firstname);
+        result?.LastName.Should().Be(expected?.Lastname);
     }
 
     [Fact]
@@ -79,13 +76,15 @@ public sealed class GetReviewCommentDbTestFixture : HandlersTestsBase<GetReviewC
     }
 
     [Theory]
-    [InlineData(0, testCommentId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testCommentId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long resultConfigId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? commentId)
     {
-        var request = DefaultRequest(leagueId, resultConfigId);
+        leagueId ??= TestLeagueId;
+        commentId ??= TestCommentId;
+        var request = DefaultRequest(leagueId.Value, commentId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

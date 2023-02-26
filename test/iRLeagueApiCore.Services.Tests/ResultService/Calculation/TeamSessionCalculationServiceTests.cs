@@ -2,7 +2,7 @@
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Services.Tests.Extensions;
+using iRLeagueApiCore.Mocking.Extensions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 

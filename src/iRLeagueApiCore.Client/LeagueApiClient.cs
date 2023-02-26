@@ -23,7 +23,7 @@ public sealed class LeagueApiClient : ILeagueApiClient
 
     private string? CurrentLeagueName { get; set; }
 
-    public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, ITokenStore tokenStore, JsonSerializerOptions jsonOptions)
+    public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, ITokenStore tokenStore, JsonSerializerOptions? jsonOptions = null)
     {
         this.logger = logger;
         httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this, jsonOptions);

@@ -27,11 +27,8 @@ public sealed class EventsController : LeagueApiController<EventsController>
     public async Task<ActionResult<EventModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, [FromQuery] bool includeDetails = false, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] event {EventId} from {LeagueName} by {UserName}", "Get",
-            id, leagueName, GetUsername());
         var request = new GetEventRequest(leagueId, id, includeDetails);
         var getEvent = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for event {EventId} from {LeagueName}", getEvent.Id, leagueName);
         return Ok(getEvent);
     }
 
@@ -41,12 +38,8 @@ public sealed class EventsController : LeagueApiController<EventsController>
     public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long scheduleId, [FromQuery] bool includeDetails = false, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] all sessions in schedule {ScheduleId} from {LeagueName} by {UserName}", "Get",
-            scheduleId, leagueName, GetUsername());
         var request = new GetEventsFromScheduleRequest(leagueId, scheduleId, includeDetails);
         var getEvents = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} entries for events in schedule {ScheduleId} from {LeagueName}",
-            getEvents.Count(), scheduleId, leagueName);
         return Ok(getEvents);
     }
 
@@ -56,12 +49,8 @@ public sealed class EventsController : LeagueApiController<EventsController>
     public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long seasonId, [FromQuery] bool includeDetails = false, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] all sessions in season {SeasonId} from {LeagueName} by {UserName}", "Get",
-            seasonId, leagueName, GetUsername());
         var request = new GetEventsFromSeasonRequest(leagueId, seasonId, includeDetails);
         var getSessions = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} entries for events in season {SeasonId} from {LeagueName}",
-            getSessions.Count(), seasonId, leagueName);
         return Ok(getSessions);
     }
 
@@ -71,12 +60,9 @@ public sealed class EventsController : LeagueApiController<EventsController>
     public async Task<ActionResult<EventModel>> PostToSchedule([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long scheduleId, [FromBody] PostEventModel postEvent, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] new event to schedule {ScheduleId} in {LeagueName} by {UserName}", "Post",
-            scheduleId, leagueName, GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
         var request = new PostEventToScheduleRequest(leagueId, scheduleId, leagueUser, postEvent);
         var getEvent = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return created entry for event {EventId} from {LeagueName}", getEvent.Id, leagueName);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getEvent.Id }, getEvent);
     }
 
@@ -86,12 +72,9 @@ public sealed class EventsController : LeagueApiController<EventsController>
     public async Task<ActionResult<EventModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, [FromBody] PutEventModel putEvent, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] event {EventId} from {LeagueName} by {UserName}", "Put",
-            id, leagueName, GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
         var request = new PutEventRequest(leagueId, id, leagueUser, putEvent);
         var getEvent = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for event {EventId} from {LeagueName}", getEvent.Id, leagueName);
         return Ok(getEvent);
     }
 
@@ -101,11 +84,8 @@ public sealed class EventsController : LeagueApiController<EventsController>
     public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] event {EventId} from {LeagueName} by {UserName}", "Delete",
-            id, leagueName, GetUsername());
         var request = new DeleteEventRequest(leagueId, id);
         await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Deleted event {EventId} from {LeagueName}", id, leagueName);
         return NoContent();
     }
 }

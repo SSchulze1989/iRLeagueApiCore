@@ -18,10 +18,8 @@ public sealed class TracksController : LeagueApiController<TracksController>
     [Route("")]
     public async Task<ActionResult<IEnumerable<TrackGroupModel>>> Get(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[{Method}] Track list by {UserName}", "Get", GetUsername());
         var request = new GetTracksRequest();
         var getTracks = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Returning {Count} entries for Tracks", getTracks.Count());
         return Ok(getTracks);
     }
 
@@ -29,10 +27,8 @@ public sealed class TracksController : LeagueApiController<TracksController>
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> ImportTracks([FromBody] IracingAuthModel authData, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[{Method}] Command to import tracks from iracing api", "Post");
         var request = new ImportTracksCommand(authData);
         await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Track update succesfull");
         return Ok();
     }
 }

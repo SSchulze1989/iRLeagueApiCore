@@ -37,10 +37,10 @@ public sealed class EndpointsTests
     {
         var content = new StringContent(JsonConvert.SerializeObject(null));
         string requestUrl = "";
-        HttpMethod requestMethod = default;
+        HttpMethod? requestMethod = default;
         var httpMessageHandler = MockHelpers.TestMessageHandler(x =>
         {
-            requestUrl = x.RequestUri.AbsoluteUri;
+            requestUrl = x.RequestUri?.AbsoluteUri ?? string.Empty;
             requestMethod = x.Method;
             return new HttpResponseMessage()
             {

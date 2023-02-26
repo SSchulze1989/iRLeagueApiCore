@@ -21,11 +21,8 @@ public sealed class PointRulesController : LeagueApiController<PointRulesControl
     public async Task<ActionResult<PointRuleModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[{Method}] pointRule {PointRuleId} from {LeagueName} by {UserName}", "Get", id, leagueName,
-                GetUsername());
         var request = new GetPointRuleRequest(leagueId, id);
         var getPointRule = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Returning entry for pointRule {PointRuleId} from {LeagueName}", getPointRule.PointRuleId, leagueName);
         return Ok(getPointRule);
     }
 
@@ -35,12 +32,9 @@ public sealed class PointRulesController : LeagueApiController<PointRulesControl
     public async Task<ActionResult<PointRuleModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, PostPointRuleModel postPointRule,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[{Method}] new pointRule to {LeagueName} by {UserName}", "Post", leagueName,
-            GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
         var request = new PostPointRuleRequest(leagueId, leagueUser, postPointRule);
         var getPointRule = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return created entry for pointRule {PointRuleId} from {LeagueName}", getPointRule.PointRuleId, leagueName);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getPointRule.PointRuleId }, getPointRule);
     }
 
@@ -50,9 +44,7 @@ public sealed class PointRulesController : LeagueApiController<PointRulesControl
     public async Task<ActionResult<PointRuleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
         [FromBody] PutPointRuleModel putPointRule, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[{Method}] pointRule {PointRuleId} from {LeagueName} by {UserName}", "Put", id, leagueName,
-            GetUsername());
-        var leagueUser = new LeagueUser(leagueName, User);
+                var leagueUser = new LeagueUser(leagueName, User);
         var request = new PutPointRuleRequest(leagueId, id, leagueUser, putPointRule);
         var getPointRule = await mediator.Send(request, cancellationToken);
         _logger.LogInformation("Return entry for pointRule {PointRuleId} from {LeagueName}", getPointRule.PointRuleId, leagueName);
@@ -65,12 +57,8 @@ public sealed class PointRulesController : LeagueApiController<PointRulesControl
     public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[{Method}] pointRule {PointRuleId} from {LeagueName} by {UserName}", "Delete",
-            id, leagueName,
-            GetUsername());
         var request = new DeletePointRuleRequest(leagueId, id);
         await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Deleted pointRule {PointRuleId} from {LeagueName}", id, leagueName);
         return NoContent();
     }
 }

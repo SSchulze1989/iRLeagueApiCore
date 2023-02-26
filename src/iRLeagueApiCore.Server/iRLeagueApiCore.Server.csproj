@@ -18,6 +18,7 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
 	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.5.0-dev.14" CopyToOutputDirectory="lib/net6.0">

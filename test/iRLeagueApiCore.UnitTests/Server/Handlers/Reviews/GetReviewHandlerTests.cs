@@ -9,12 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
 [Collection("DbTestFixture")]
-public sealed class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler, GetReviewRequest, ReviewModel>
+public sealed class GetReviewHandlerTests : ReviewsHandlersTestsBase<GetReviewHandler, GetReviewRequest, ReviewModel>
 {
-    public GetReviewDbTestFixture(DbTestFixture fixture) : base(fixture)
-    {
-    }
-
     protected override GetReviewHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetReviewRequest> validator)
     {
         return new GetReviewHandler(logger, dbContext, new[] { validator });
@@ -27,7 +23,7 @@ public sealed class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler,
 
     protected override GetReviewRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testReviewId);
+        return DefaultRequest(TestLeagueId, TestReviewId);
     }
 
     protected override void DefaultAssertions(GetReviewRequest request, ReviewModel result, LeagueDbContext dbContext)
@@ -43,7 +39,7 @@ public sealed class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler,
                     .ThenInclude(x => x.MemberAtFault)
             .SingleOrDefault(x => x.ReviewId == request.ReviewId);
         reviewEntity.Should().NotBeNull();
-        result.SeasonId.Should().Be(reviewEntity.Session.Event.Schedule.SeasonId);
+        result.SeasonId.Should().Be(reviewEntity!.Session.Event.Schedule.SeasonId);
         result.ReviewComments.Should().HaveSameCount(reviewEntity.Comments);
         foreach ((var comment, var expected) in result.ReviewComments.Zip(reviewEntity.Comments))
         {
@@ -73,14 +69,14 @@ public sealed class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler,
     {
         result.Id.Should().Be(expected.ReviewVoteId);
         result.Description.Should().Be(expected.Description);
-        AssertMemberInfo(expected.MemberAtFault, result.MemberAtFault);
+        AssertMemberInfo(expected.MemberAtFault, result.MemberAtFault!);
     }
 
-    private void AssertMemberInfo(MemberEntity expected, MemberInfoModel result)
+    private void AssertMemberInfo(MemberEntity? expected, MemberInfoModel? result)
     {
-        result.MemberId.Should().Be(expected.Id);
-        result.FirstName.Should().Be(expected.Firstname);
-        result.LastName.Should().Be(expected.Lastname);
+        result?.MemberId.Should().Be(expected?.Id);
+        result?.FirstName.Should().Be(expected?.Firstname);
+        result?.LastName.Should().Be(expected?.Lastname);
     }
 
     [Fact]
@@ -90,13 +86,15 @@ public sealed class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler,
     }
 
     [Theory]
-    [InlineData(0, testReviewId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testReviewId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task ShouldHandleNotFoundAsync(long leagueId, long reviewId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
+    public async Task ShouldHandleNotFoundAsync(long? leagueId, long? reviewId)
     {
-        var request = DefaultRequest(leagueId, reviewId);
+        leagueId ??= TestLeagueId;
+        reviewId ??= TestReviewId;
+        var request = DefaultRequest(leagueId.Value, reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 
@@ -109,10 +107,10 @@ public sealed class GetReviewDbTestFixture : HandlersTestsBase<GetReviewHandler,
     [Fact]
     public async Task ShouldNotIncludeCommentsWhenFalse()
     {
-        var request = DefaultRequest(testLeagueId, testReviewId, false);
+        var request = DefaultRequest(TestLeagueId, TestReviewId, false);
         await HandleSpecialAsync(request, (request, model, context) =>
         {
-            model.ReviewId.Should().Be(testReviewId);
+            model.ReviewId.Should().Be(TestReviewId);
             model.VoteResults.Should().NotBeEmpty();
             model.ReviewComments.Should().BeEmpty();
         });

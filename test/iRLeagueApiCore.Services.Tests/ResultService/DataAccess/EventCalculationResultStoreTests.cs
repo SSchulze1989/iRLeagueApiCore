@@ -1,11 +1,12 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
+namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
 [Collection("DataAccessTests")]
 public sealed class EventCalculationResultStoreTests : DataAccessTestsBase

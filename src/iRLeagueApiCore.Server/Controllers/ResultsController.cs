@@ -31,12 +31,8 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long resultId,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[{Method}] result {ResultId} in {LeagueName} by {UserName}",
-            "Get", resultId, leagueName, GetUsername());
         var request = new GetResultRequest(leagueId, resultId);
         var getResult = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for result {ResultId} from {LeagueName}",
-            getResult.ResultId, leagueName);
         return Ok(getResult);
     }
 
@@ -54,12 +50,8 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     public async Task<ActionResult<IEnumerable<SeasonEventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long seasonId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] all results from season {SeasonId} in {LeagueName} by {UserName}",
-            "Get", seasonId, leagueName, GetUsername());
         var request = new GetResultsFromSeasonRequest(leagueId, seasonId);
         var getResults = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} entries for result from season {SeasonId} in {LeagueName}",
-            getResults.Count(), seasonId, leagueName);
         return Ok(getResults);
     }
 
@@ -77,12 +69,8 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long eventId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] all results from event {EventId} in {LeagueName} by {UserName}",
-            "Get", eventId, leagueName, GetUsername());
         var request = new GetResultsFromEventRequest(leagueId, eventId);
         var getResults = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} entries for result from event {EventId} in {LeagueName}",
-            getResults.Count(), eventId, leagueName);
         return Ok(getResults);
     }
 
@@ -91,11 +79,8 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     public async Task<ActionResult> DeleteFromEvent([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] all results from event {EventId} in {LeagueName} by {UserName}",
-            "Delete", eventId, leagueName, GetUsername());
         var request = new DeleteResultRequest(leagueId, eventId);
         var getResults = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Deleted results from event {EventId} in {LeagueName}", eventId, leagueName);
         return NoContent();
     }
 
@@ -114,8 +99,6 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     public async Task<ActionResult<bool>> UploadResult([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
         [FromBody] ParseSimSessionResult result, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] raw results for event {EventId} in {LeagueName} by {UserName}", "Post",
-            eventId, leagueName, GetUsername());
         var request = new UploadResultRequest(leagueId, eventId, result);
         var success = await mediator.Send(request, cancellationToken);
         if (success)
@@ -134,8 +117,6 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     public async Task<ActionResult<bool>> TriggerResultCalculation([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] trigger result calculation for event {EventId} in {LeagueName} by {UserName}", "Post",
-            eventId, leagueName, GetUsername());
         var request = new TriggerResultCalculationCommand(leagueId, eventId);
         await mediator.Send(request, cancellationToken);
         return Ok(true);

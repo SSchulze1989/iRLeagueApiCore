@@ -1,6 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.Tests.Extensions;
+﻿namespace iRLeagueApiCore.Mocking.Extensions;
 
-internal static class EnumeratorExtensions
+public static class EnumeratorExtensions
 {
     /// <summary>
     /// Returns <see cref="IEnumerator{T}.Current" and calls <see cref="IEnumerator{T}.MoveNext()"/>
