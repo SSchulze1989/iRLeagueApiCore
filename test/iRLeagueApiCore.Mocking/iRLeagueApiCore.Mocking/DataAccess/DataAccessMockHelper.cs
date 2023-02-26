@@ -358,7 +358,7 @@ public sealed class DataAccessMockHelper
     public IEnumerable<ChampionshipEntity> CreateChampionships(LeagueEntity league)
     {
         return ChampionshipEntityBuilder(league)
-            .CreateMany(1);
+            .CreateMany(2);
     }
 
     public IPostprocessComposer<ChampSeasonEntity> ChampSeasonEntityBuilder(ChampionshipEntity championship, SeasonEntity season)
@@ -369,9 +369,9 @@ public sealed class DataAccessMockHelper
             .With(x => x.Championship, championship)
             .With(x => x.SeasonId, season.SeasonId)
             .With(x => x.Season, season)
-            .Without(x => x.ResultConfigurations)
-            .Without(x => x.StandingConfigId)
-            .Without(x => x.StandingConfiguration)
+            .With(x => x.StandingConfiguration, () => CreateStandingConfiguration(championship.League))
+            .With(x => x.ResultConfigurations, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(1).ToList())
+            .With(x => x.IsActive, true)
             .Without(x => x.Standings)
             .Without(x => x.EventResults);
     }

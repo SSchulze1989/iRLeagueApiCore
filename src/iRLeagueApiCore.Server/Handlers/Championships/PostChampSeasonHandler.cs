@@ -65,13 +65,16 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
 
         championship.ChampSeasons.Add(champSeason);
         season.ChampSeasons.Add(champSeason);
-        dbContext.ChampSeasons.Add(champSeason);
+        //dbContext.ChampSeasons.Add(champSeason);
         return champSeason;
     }
 
     private async Task<StandingConfigurationEntity> CreateOrCopyStandingConfigEntity(LeagueUser user, long leagueId, long? prevStandingConfigId, CancellationToken cancellationToken)
     {
-        var target = CreateVersionEntity(user, new StandingConfigurationEntity());
+        var target = CreateVersionEntity(user, new StandingConfigurationEntity()
+        {
+            LeagueId = leagueId,
+        });
         var source = await dbContext.StandingConfigurations
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.StandingConfigId == prevStandingConfigId)
