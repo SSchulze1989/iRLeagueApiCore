@@ -154,6 +154,18 @@ public sealed class MemberStandingCalculationServiceTests
         test.StandingRows.Should().BeEquivalentTo(testOrder);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldSetChampSeasonId()
+    {
+        var data = GetCalculationData();
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId).Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        test.ChampSeasonId.Should().Be(config.ChampSeasonId);
+    }
+
     private MemberStandingCalculationService CreateSut(StandingCalculationConfiguration config)
     {
         if (config != null)
@@ -165,7 +177,7 @@ public sealed class MemberStandingCalculationServiceTests
 
     private StandingCalculationData GetCalculationData()
     {
-        return fixture.Create<StandingCalculationData>();
+        return CalculationDataBuilder().Create();
     }
 
     private IPostprocessComposer<StandingCalculationData> CalculationDataBuilder(int nEvents = 3, int nRacesPerEvent = 3, bool hasCombinedResult = false)

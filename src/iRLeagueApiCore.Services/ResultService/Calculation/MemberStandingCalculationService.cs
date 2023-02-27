@@ -44,6 +44,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
             EventId = config.EventId,
             Name = config.DisplayName,
             SeasonId = config.SeasonId,
+            ChampSeasonId = config.ChampSeasonId,
             StandingConfigId = config.StandingConfigId,
             StandingRows = finalStandingRows
         };
