@@ -10,17 +10,10 @@ public sealed class DataAccessMockHelper
 {
     private readonly Fixture fixture = new();
 
-    public DataAccessMockHelper()
-    {
-        using var dbContext = CreateMockDbContext();
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-    }
-
-    public LeagueDbContext CreateMockDbContext()
+    public LeagueDbContext CreateMockDbContext(string dbName)
     {
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-        optionsBuilder.UseInMemoryDatabase(databaseName: "TestDatabase")
+        optionsBuilder.UseInMemoryDatabase(databaseName: dbName)
            .UseLazyLoadingProxies();
         var dbContext = new LeagueDbContext(optionsBuilder.Options);
 
@@ -371,6 +364,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.Season, season)
             .With(x => x.StandingConfiguration, () => CreateStandingConfiguration(championship.League))
             .With(x => x.ResultConfigurations, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(1).ToList())
+            //.Without(x => x.ResultConfigurations)
             .With(x => x.IsActive, true)
             .Without(x => x.Standings)
             .Without(x => x.EventResults);

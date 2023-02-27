@@ -17,7 +17,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
         AddMultipleScoredEventResults(events, null, prevCount + 1);
         await dbContext.SaveChangesAsync();
-        var config = CreateStandingConfiguration(season, events.ElementAt(prevCount), null);
+        var config = CreateStandingConfiguration(season, events.ElementAt(prevCount));
         var sut = CreateSut();
 
         var test = await sut.GetData(config);
@@ -38,11 +38,13 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
     {
         var prevCount = 2;
         var season = await GetFirstSeasonAsync();
+        var championship = await dbContext.Championships.FirstAsync();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, season);
         var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
         AddMultipleScoredEventResults(events, null, prevCount + 1);
         await dbContext.SaveChangesAsync();
         var @event = events.ElementAt(prevCount);
-        var config = CreateStandingConfiguration(season, @event, null);
+        var config = CreateStandingConfiguration(season, @event, champSeason);
         var sut = CreateSut();
 
         var test = await sut.GetData(config);
@@ -57,6 +59,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
     private async Task<SeasonEntity> GetFirstSeasonAsync()
     {
         return await dbContext.Seasons
+            .Include(x => x.League)
             .Include(x => x.Schedules)
                 .ThenInclude(x => x.Events)
                     .ThenInclude(x => x.ScoredEventResults)
@@ -73,13 +76,14 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         }
     }
 
-    private StandingCalculationConfiguration CreateStandingConfiguration(SeasonEntity season, EventEntity @event, ResultConfigurationEntity? config)
+    private StandingCalculationConfiguration CreateStandingConfiguration(SeasonEntity season, EventEntity @event, 
+        ChampSeasonEntity? champSeason = null)
     {
         return fixture.Build<StandingCalculationConfiguration>()
             .With(x => x.LeagueId, season.LeagueId)
             .With(x => x.SeasonId, season.SeasonId)
             .With(x => x.EventId, @event.EventId)
-            .With(x => x.ResultConfigId, config?.ResultConfigId)
+            .With(x => x.ResultConfigs, champSeason?.ResultConfigurations.Select(x => x.ResultConfigId) ?? Array.Empty<long>())
             .With(x => x.WeeksCounted, 2)
             .Create();
     }

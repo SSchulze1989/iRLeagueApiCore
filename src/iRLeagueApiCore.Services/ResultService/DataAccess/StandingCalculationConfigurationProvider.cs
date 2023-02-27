@@ -46,7 +46,7 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
         if (standingConfig is not null && champSeason is not null)
         {
             config.StandingConfigId = standingConfig.StandingConfigId;
-            config.ResultConfigId = champSeason.ResultConfigurations.FirstOrDefault()?.ResultConfigId;
+            config.ResultConfigs = champSeason.ResultConfigurations.Select(x => x.ResultConfigId);
             config.Name = champSeason.ResultConfigurations.FirstOrDefault()?.Name ?? standingConfig.Name;
             config.DisplayName = champSeason.ResultConfigurations.FirstOrDefault()?.DisplayName ?? standingConfig.Name;
             config.UseCombinedResult = standingConfig.UseCombinedResult;

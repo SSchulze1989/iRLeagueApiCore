@@ -21,7 +21,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         test.LeagueId.Should().Be(0);
         test.SeasonId.Should().Be(0);
         test.EventId.Should().Be(0);
-        test.ResultConfigId.Should().BeNull();
+        test.ResultConfigs.Should().BeEmpty();
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         test.LeagueId.Should().Be(season.LeagueId);
         test.SeasonId.Should().Be(season.SeasonId);
         test.EventId.Should().Be(@event.EventId);
-        test.ResultConfigId.Should().BeNull();
+        test.ResultConfigs.Should().BeEmpty();
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         test.LeagueId.Should().Be(season.LeagueId);
         test.SeasonId.Should().Be(season.SeasonId);
         test.EventId.Should().Be(latestEvent.EventId);
-        test.ResultConfigId.Should().BeNull();
+        test.ResultConfigs.Should().BeEmpty();
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         dbContext.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.Add(config);
         champSeason.StandingConfiguration = standingConfig;
-        champSeason.ResultConfigurations.Add(config);
+        champSeason.ResultConfigurations = new[] { config };
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
@@ -85,7 +85,33 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         test.LeagueId.Should().Be(season.LeagueId);
         test.SeasonId.Should().Be(season.SeasonId);
         test.EventId.Should().Be(@event.EventId);
-        test.ResultConfigId.Should().Be(champSeason.ResultConfigurations.First().ResultConfigId);
+        test.ResultConfigs.Should().HaveCount(1);
+        test.ResultConfigs.First().Should().Be(champSeason.ResultConfigurations.First().ResultConfigId);
+        test.StandingConfigId.Should().Be(standingConfig.StandingConfigId);
+    }
+
+    [Fact]
+    public async Task GetConfiguration_ShouldProvideConfiguration_WithMultipleResultConfigurations()
+    {
+        var season = await GetFirstSeasonAsync();
+        var @event = season.Schedules.First().Events.First();
+        var championship = await GetFirstChampionshipAsync();
+        int configCount = 2;
+        var configs = accessMockHelper.ConfigurationBuilder(@event).CreateMany(configCount);
+        var champSeason = accessMockHelper.CreateChampSeason(championship, season);
+        var standingConfig = accessMockHelper.CreateStandingConfiguration(season.League);
+        dbContext.ChampSeasons.Add(champSeason);
+        dbContext.StandingConfigurations.Add(standingConfig);
+        dbContext.ResultConfigurations.AddRange(configs);
+        champSeason.StandingConfiguration = standingConfig;
+        champSeason.ResultConfigurations = configs.ToList();
+        await dbContext.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfiguration(season.SeasonId, @event.EventId, standingConfig.StandingConfigId);
+
+        test.ResultConfigs.Should().HaveCount(configCount);
+        test.ResultConfigs.First().Should().Be(champSeason.ResultConfigurations.First().ResultConfigId);
         test.StandingConfigId.Should().Be(standingConfig.StandingConfigId);
     }
 

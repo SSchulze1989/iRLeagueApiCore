@@ -32,7 +32,7 @@ public sealed class DbTestFixture : DataAccessTestsBase
 
     public LeagueDbContext CreateDbContext()
     {
-        var dbContext = accessMockHelper.CreateMockDbContext();
+        var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         return dbContext;
     }
 

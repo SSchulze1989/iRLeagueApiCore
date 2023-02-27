@@ -18,9 +18,9 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
         var currentEvent = await GetCurrentEventEntityAsync(config.EventId, cancellationToken)
             ?? throw new InvalidOperationException($"No season with id {config.EventId} found");
         // 2. Load all results from events prior to configured event
-        var previousResults = await GetPreviousResultsAsync(season.SeasonId, config.ResultConfigId, currentEvent.Date, cancellationToken);
+        var previousResults = await GetPreviousResultsAsync(season.SeasonId, config.ResultConfigs, currentEvent.Date, cancellationToken);
         // 3. Load results from latest event
-        var currentResults = await GetCurrentEventResultAsync(currentEvent.EventId, config.ResultConfigId, cancellationToken);
+        var currentResults = await GetCurrentEventResultAsync(currentEvent.EventId, config.ResultConfigs, cancellationToken);
         if (currentResults is null)
         {
             return null;
@@ -51,7 +51,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
             .FirstOrDefaultAsync(x => x.EventId == eventId, cancellationToken);
     }
 
-    private async Task<IEnumerable<EventCalculationResult>> GetPreviousResultsAsync(long seasonId, long? resultConfigId, DateTime? date, CancellationToken cancellationToken)
+    private async Task<IEnumerable<EventCalculationResult>> GetPreviousResultsAsync(long seasonId, IEnumerable<long> resultConfigIds, DateTime? date, CancellationToken cancellationToken)
     {
         if (date is null)
         {
@@ -60,18 +60,18 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
 
         return await dbContext.ScoredEventResults
             .Where(x => x.Event.Schedule.SeasonId == seasonId)
-            .Where(x => x.ResultConfigId == resultConfigId)
+            .Where(x => resultConfigIds.Contains(x.ResultConfigId.GetValueOrDefault()))
             .OrderBy(x => x.Event.Date)
             .Where(x => x.Event.Date < date.Value)
             .Select(MapToEventResultCalculationResultExpression)
             .ToListAsync(cancellationToken);
     }
 
-    private async Task<EventCalculationResult?> GetCurrentEventResultAsync(long eventId, long? resultConfigId, CancellationToken cancellationToken)
+    private async Task<EventCalculationResult?> GetCurrentEventResultAsync(long eventId, IEnumerable<long> resultConfigIds, CancellationToken cancellationToken)
     {
         return await dbContext.ScoredEventResults
             .Where(x => x.Event.EventId == eventId)
-            .Where(x => x.ResultConfigId == resultConfigId)
+            .Where(x => resultConfigIds.Contains(x.ResultConfigId.GetValueOrDefault()))
             .Select(MapToEventResultCalculationResultExpression)
             .FirstOrDefaultAsync(cancellationToken);
     }
