@@ -106,6 +106,28 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
     }
 
     [Fact]
+    public async Task GetConfiguration_ShouldReturnConfiguration_WithChampSeasonId()
+    {
+        var @event = await dbContext.Events
+            .Include(x => x.Schedule)
+                .ThenInclude(x => x.Season)
+            .Include(x => x.Sessions)
+            .FirstAsync();
+        var championship = await dbContext.Championships.FirstAsync();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        var config = accessMockHelper.CreateConfiguration(@event);
+        champSeason.ResultConfigurations = new[] { config };
+        dbContext.ChampSeasons.Add(champSeason);
+        dbContext.ResultConfigurations.Add(config);
+        await dbContext.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
+
+        test.ChampSeasonId.Should().Be(champSeason.ChampSeasonId);
+    }
+
+    [Fact]
     public async Task GetConfiguration_ShouldReturnConfiguration_WhenResultConfigIsNotNull()
     {
         var @event = await dbContext.Events
