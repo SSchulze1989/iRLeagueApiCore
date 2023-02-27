@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity.Test;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-[Collection("DbTestFixture")]
 public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
 {
     public PutResultConfigHandlerTests() : base()

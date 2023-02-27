@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
-[Collection("DataAccessTests")]
 public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
 {
     [Fact]

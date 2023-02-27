@@ -8,7 +8,6 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Leagues;
 
-[Collection("DbTestFixture")]
 public sealed class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture>
 {
     private readonly DbTestFixture fixture;

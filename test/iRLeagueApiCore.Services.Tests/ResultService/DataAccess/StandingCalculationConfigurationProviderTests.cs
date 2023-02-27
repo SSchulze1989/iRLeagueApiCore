@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
-[Collection("DataAccessTests")]
 public sealed class StandingCalculationConfigurationProviderTests : DataAccessTestsBase
 {
     [Theory]

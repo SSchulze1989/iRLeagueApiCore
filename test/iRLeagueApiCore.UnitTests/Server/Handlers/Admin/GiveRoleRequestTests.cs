@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Admin;
 
-[Collection("DbTestFixture")]
 public sealed class GiveRoleRequestTests : IClassFixture<IdentityFixture>
 {
     private readonly IdentityFixture fixture;

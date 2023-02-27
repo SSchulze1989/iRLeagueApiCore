@@ -7,7 +7,6 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 
-[Collection("DbTestFixture")]
 public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandler, PostLeagueRequest, LeagueModel>
 {
     private const string postLeagueName = "PostLeague";

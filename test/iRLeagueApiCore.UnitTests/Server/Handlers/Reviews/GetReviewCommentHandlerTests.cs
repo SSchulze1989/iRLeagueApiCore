@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
-[Collection("DbTestFixture")]
 public sealed class GetReviewCommentHandlerTests : ReviewsHandlersTestsBase<GetReviewCommentHandler, GetReviewCommentRequest, ReviewCommentModel>
 {
     protected override GetReviewCommentHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetReviewCommentRequest> validator)
