@@ -115,7 +115,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
     }
 
     [Fact]
-    public async Task GetConfiguration_ShouldProvideConfiguration_WithChampSeasonId()
+    public async Task GetConfiguration_ShouldProvideConfiguration_WithChampSeason()
     {
         var season = await GetFirstSeasonAsync();
         var @event = season.Schedules.First().Events.First();
@@ -134,6 +134,8 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         var test = await sut.GetConfiguration(season.SeasonId, @event.EventId, standingConfig.StandingConfigId);
 
         test.ChampSeasonId.Should().Be(champSeason.ChampSeasonId);
+        test.Name.Should().Be(champSeason.Championship.Name);
+        test.DisplayName.Should().Be(champSeason.Championship.DisplayName);
     }
 
     private StandingCalculationConfigurationProvider CreateSut()
