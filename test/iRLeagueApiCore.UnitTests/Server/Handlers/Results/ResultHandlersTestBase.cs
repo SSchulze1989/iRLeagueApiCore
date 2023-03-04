@@ -22,10 +22,6 @@ public abstract class ResultHandlersTestsBase<THandler, TRequest, TResult> :
             var result = accessMockHelper.CreateScoredResult(@event, resultConfig);
             dbContext.Add(result);
         }
-        //var resultConfig = accessMockHelper.CreateConfiguration(@event);
-        //dbContext.ResultConfigurations.Add(resultConfig);
-        //var result = accessMockHelper.CreateScoredResult(@event, resultConfig);
-        //dbContext.ScoredEventResults.Add(result);
 
         await dbContext.SaveChangesAsync();
     }

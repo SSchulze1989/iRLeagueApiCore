@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Contracts;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
@@ -20,6 +21,7 @@ public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTests
     {
         base.DefaultAssertions(request, result, dbContext);
         var champSeasons = dbContext.ChampSeasons
+            .Where(x => x.IsActive)
             .Where(x => x.SeasonId == request.SeasonId);
         var resultConfig = champSeasons.SelectMany(x => x.ResultConfigurations);
         result.Should().HaveSameCount(resultConfig);
@@ -29,5 +31,14 @@ public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTests
     public override Task<IEnumerable<ResultConfigModel>> ShouldHandleDefault()
     {
         return base.ShouldHandleDefault();
+    }
+
+    [Fact]
+    public async Task ShouldHandle_WhenChampSeasonIsInactive()
+    {
+        var inActiveChampSeason = await dbContext.ChampSeasons.LastAsync();
+        inActiveChampSeason.IsActive = false;
+        await dbContext.SaveChangesAsync();
+        await base.ShouldHandleDefault();
     }
 }

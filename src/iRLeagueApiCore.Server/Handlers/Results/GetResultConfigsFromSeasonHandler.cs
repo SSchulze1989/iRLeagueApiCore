@@ -24,6 +24,7 @@ public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResu
         return await dbContext.ChampSeasons
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SeasonId == seasonId)
+            .Where(x => x.IsActive)
             .SelectMany(x => x.ResultConfigurations)
             .Select(MapToResultConfigModelExpression)
             .ToListAsync(cancellationToken);
