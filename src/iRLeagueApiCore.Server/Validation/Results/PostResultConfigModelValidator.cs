@@ -6,7 +6,8 @@ public sealed class PostResultConfigModelValidator : AbstractValidator<PostResul
 {
     public PostResultConfigModelValidator()
     {
-        RuleFor(x => x.Name).NotEmpty();
-        RuleFor(x => x.DisplayName).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty()
+            .WithMessage("Name must not be empty");
+        //RuleFor(x => x.DisplayName).NotEmpty();
     }
 }

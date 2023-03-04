@@ -14,6 +14,7 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
     protected virtual async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long leagueId, long champSeasonId, CancellationToken cancellationToken)
     {
         return await ChampSeasonsQuery(leagueId)
+            .Include(x => x.Championship)
             .Include(x => x.StandingConfiguration)
             .Include(x => x.ResultConfigurations)
             .Where(x => x.ChampSeasonId == champSeasonId)
@@ -23,6 +24,8 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
     protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(long leagueId, PutChampSeasonModel model, ChampSeasonEntity target, 
         CancellationToken cancellationToken)
     {
+        target.Championship.Name = model.ChampionshipName;
+        target.Championship.DisplayName = model.ChampionshipDisplayName;
         target.StandingConfiguration = await GetStandingConfigurationEntityAsync(leagueId, model.StandingConfig?.StandingConfigId, cancellationToken);
         target.ResultConfigurations = await MapToResultConfigurationListAsync(leagueId, model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
         return await Task.FromResult(target);
@@ -66,6 +69,7 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         ChampionshipId = champSeason.ChampionshipId,
         ChampSeasonId = champSeason.ChampSeasonId,
         ChampionshipName = champSeason.Championship.Name,
+        ChampionshipDisplayName = champSeason.Championship.DisplayName,
         ResultConfigs = champSeason.ResultConfigurations.Select(config => new ResultConfigInfoModel()
         {
             LeagueId = champSeason.LeagueId,
