@@ -16,12 +16,12 @@ public sealed class PutChampSeasonHandlerTests : ChampionshipHandlersTestsBase<P
         throw new NotImplementedException();
     }
 
-    private PutChampSeasonRequest DefaultRequest(long leagueId, long champSeasonId)
-    {
-        var resultConfigId = dbContext.StandingConfigurations.First().StandingConfigId;
-        var model = fixture.Build<PutChampSeasonModel>()
-            .With(x => x.ResultConfigs, fixture.Build<ResultConfigInfoModel>()
-                .With(x => x.ResultConfigId, resultConfigId).CreateMany(1).ToList());
-        return new(leagueId, champSeasonId);
-    }
+    //private PutChampSeasonRequest DefaultRequest(long leagueId, long champSeasonId)
+    //{
+    //    var resultConfigId = dbContext.StandingConfigurations.First().StandingConfigId;
+    //    var model = fixture.Build<PutChampSeasonModel>()
+    //        .With(x => x.ResultConfigs, fixture.Build<ResultConfigInfoModel>()
+    //            .With(x => x.ResultConfigId, resultConfigId).CreateMany(1).ToList());
+    //    return new(leagueId, champSeasonId, model);
+    //}
 }

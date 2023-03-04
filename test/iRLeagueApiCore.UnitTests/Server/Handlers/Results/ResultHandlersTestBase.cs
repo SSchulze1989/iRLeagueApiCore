@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
@@ -11,11 +12,20 @@ public abstract class ResultHandlersTestsBase<THandler, TRequest, TResult> :
     {
         await base.InitializeAsync();
         // Create results
-        var @event = dbContext.Events.First();
-        var resultConfig = accessMockHelper.CreateConfiguration(@event);
-        dbContext.ResultConfigurations.Add(resultConfig);
-        var result = accessMockHelper.CreateScoredResult(@event, resultConfig);
-        dbContext.ScoredEventResults.Add(result);
+        var @event = await dbContext.Events.FirstAsync();
+        var season = await dbContext.Seasons.FirstAsync();
+        var championships = await dbContext.Championships.ToListAsync();
+        var champSeasons = championships.Select(x => accessMockHelper.CreateChampSeason(x, season)).ToList();
+        dbContext.AddRange(champSeasons);
+        foreach(var resultConfig in champSeasons.SelectMany(x => x.ResultConfigurations))
+        {
+            var result = accessMockHelper.CreateScoredResult(@event, resultConfig);
+            dbContext.Add(result);
+        }
+        //var resultConfig = accessMockHelper.CreateConfiguration(@event);
+        //dbContext.ResultConfigurations.Add(resultConfig);
+        //var result = accessMockHelper.CreateScoredResult(@event, resultConfig);
+        //dbContext.ScoredEventResults.Add(result);
 
         await dbContext.SaveChangesAsync();
     }

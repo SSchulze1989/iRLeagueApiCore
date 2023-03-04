@@ -32,7 +32,8 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
         base.DefaultAssertions(request, result, dbContext);
         var seasonResults = dbContext.ScoredEventResults
             .Where(x => x.LeagueId == request.LeagueId)
-            .Where(x => x.Event.Schedule.SeasonId == request.SeasonId);
+            .Where(x => x.Event.Schedule.SeasonId == request.SeasonId)
+            .GroupBy(x => x.EventId);
         Assert.Equal(seasonResults.Count(), result.Count());
     }
 
