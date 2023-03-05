@@ -92,6 +92,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
     {
         EventCalculationConfiguration configuration = new();
         var configId = configEntity?.ResultConfigId;
+        var championship = champSeason?.Championship;
         configuration.EventId = eventEntity.EventId;
         configuration.LeagueId = eventEntity.LeagueId;
         configuration.ResultId = await dbContext.ScoredEventResults
@@ -102,7 +103,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
         configuration.ChampSeasonId = champSeason?.ChampSeasonId;
         configuration.ResultConfigId = configId;
         configuration.SourceResultConfigId = configEntity?.SourceResultConfigId;
-        configuration.DisplayName = champSeason?.Championship.DisplayName ?? configEntity?.DisplayName ?? "Default";
+        configuration.DisplayName = (string.IsNullOrWhiteSpace(championship?.DisplayName) ? championship?.Name : championship.DisplayName) ?? string.Empty;
         configuration.SessionResultConfigurations = await sessionConfigurationProvider.GetConfigurations(eventEntity, configEntity, cancellationToken);
         return configuration;
     }
