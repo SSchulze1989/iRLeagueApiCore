@@ -7,18 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostResultConfigHandler, PostResultConfigRequest, ResultConfigModel>
+public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostResultConfigToChampSeasonHandler, PostResultConfigToChampSeasonRequest, ResultConfigModel>
 {
     public PostResultConfigHandlerTests() : base()
     {
     }
 
-    protected override PostResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostResultConfigRequest> validator)
+    protected override PostResultConfigToChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostResultConfigToChampSeasonRequest> validator)
     {
-        return new PostResultConfigHandler(logger, dbContext, new IValidator<PostResultConfigRequest>[] { validator });
+        return new PostResultConfigToChampSeasonHandler(logger, dbContext, new IValidator<PostResultConfigToChampSeasonRequest>[] { validator });
     }
 
-    protected override PostResultConfigRequest DefaultRequest()
+    protected override PostResultConfigToChampSeasonRequest DefaultRequest()
     {
         var postResultConfig = new PostResultConfigModel()
         {
@@ -26,10 +26,10 @@ public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostR
             DisplayName = "TestResultConfig DisplayName",
             ResultsPerTeam = 10,
         };
-        return new PostResultConfigRequest(TestLeagueId, DefaultUser(), postResultConfig);
+        return new PostResultConfigToChampSeasonRequest(TestLeagueId, TestChampSeasonId, DefaultUser(), postResultConfig);
     }
 
-    protected override void DefaultAssertions(PostResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
+    protected override void DefaultAssertions(PostResultConfigToChampSeasonRequest request, ResultConfigModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
         result.LeagueId.Should().Be(request.LeagueId);

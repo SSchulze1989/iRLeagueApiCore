@@ -50,13 +50,13 @@ public sealed class ResultConfigsController : LeagueApiController<ResultConfigsC
     }
 
     [HttpPost]
-    [Route("")]
+    [Route("/{leagueName}/ChampSeasons/{champSeasonId:long}/ResultConfigs")]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult<ResultConfigModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+    public async Task<ActionResult<ResultConfigModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long champSeasonId,
         [FromBody] PostResultConfigModel postResultConfig, CancellationToken cancellationToken)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PostResultConfigRequest(leagueId, leagueUser, postResultConfig);
+        var request = new PostResultConfigToChampSeasonRequest(leagueId, champSeasonId, leagueUser, postResultConfig);
         var getResultConfig = await mediator.Send(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getResultConfig.ResultConfigId }, getResultConfig);
     }

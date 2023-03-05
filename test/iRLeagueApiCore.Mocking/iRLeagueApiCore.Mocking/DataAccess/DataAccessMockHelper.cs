@@ -234,7 +234,7 @@ public sealed class DataAccessMockHelper
                     .Without(x => x.ResultConfiguration)
                     .Create())
                 .ToList())
-            .Without(x => x.ChampSeasons)
+            .Without(x => x.ChampSeason)
             .Without(x => x.League)
             .Without(x => x.PointFilters)
             .Without(x => x.ResultFilters)

@@ -8,6 +8,8 @@ public abstract class ResultHandlersTestsBase<THandler, TRequest, TResult> :
     where THandler : IRequestHandler<TRequest, TResult>
     where TRequest : class, IRequest<TResult>
 {
+    protected long TestChampSeasonId => dbContext.ChampSeasons.First().ChampSeasonId;
+
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();

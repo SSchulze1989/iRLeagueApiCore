@@ -187,14 +187,14 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     {
         LeagueId = resultConfig.LeagueId,
         ResultConfigId = resultConfig.ResultConfigId,
-        ChampSeasonId = resultConfig.ChampSeasons.Any() ? resultConfig.ChampSeasons.First().ChampSeasonId : null,
-        ChampionshipName = resultConfig.ChampSeasons.Any() ? resultConfig.ChampSeasons.First().Championship.Name : string.Empty,
+        ChampSeasonId = resultConfig.ChampSeasonId,
+        ChampionshipName = resultConfig.ChampSeason.Championship.Name,
         SourceResultConfig = resultConfig.SourceResultConfig != null
             ? new ResultConfigInfoModel()
             {
                 ResultConfigId = resultConfig.SourceResultConfig.ResultConfigId,
-                ChampSeasonId = resultConfig.SourceResultConfig.ChampSeasons.Any() ? resultConfig.ChampSeasons.First().ChampSeasonId : null,
-                ChampionshipName = resultConfig.SourceResultConfig.ChampSeasons.Any() ? resultConfig.ChampSeasons.First().Championship.Name : string.Empty,
+                ChampSeasonId = resultConfig.SourceResultConfig.ChampSeasonId,
+                ChampionshipName = resultConfig.SourceResultConfig.ChampSeason.Championship.Name,
                 DisplayName = resultConfig.SourceResultConfig.DisplayName,
                 LeagueId = resultConfig.SourceResultConfig.LeagueId,
                 Name = resultConfig.SourceResultConfig.Name,
