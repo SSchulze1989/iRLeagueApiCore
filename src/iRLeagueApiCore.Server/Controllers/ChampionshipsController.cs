@@ -34,11 +34,8 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     public async Task<ActionResult<ChampionshipModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] championship {ChampionshipId} from {LeagueName} by {UserName}", "Get",
-            id, leagueName, GetUsername());
         var request = new GetChampionshipRequest(leagueId, id);
         var getChampionship = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for championship {ChampionshipId} from {LeagueName}", getChampionship.ChampionshipId, leagueName);
         return Ok(getChampionship);
     }
 
@@ -54,11 +51,8 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     [Route("")]
     public async Task<ActionResult<IEnumerable<ChampionshipModel>>> GetFromLeague([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] all championships from {LeagueName} by {UserName}", "Get",
-            leagueName, GetUsername());
         var request = new GetChampionshipsFromLeagueRequest(leagueId);
         var getChampionships = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return {Count} entries for championships from {LeagueName}", getChampionships.Count(), leagueName);
         return Ok(getChampionships);
     }
 
@@ -75,12 +69,9 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     public async Task<ActionResult<ChampionshipModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, [FromBody] PostChampionshipModel postChampionship,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] new championship to {LeagueName} by {UserName}", "Post",
-            leagueName, GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
         var request = new PostChampionshipRequest(leagueId, leagueUser, postChampionship);
         var getChampionship = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return created entry for championshipe {ChampionshipId} from {LeagueName}", getChampionship.ChampionshipId, leagueName);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getChampionship.ChampionshipId }, getChampionship);
     }
 
@@ -99,12 +90,9 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     public async Task<ActionResult<ChampionshipModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
     [FromRoute] long id, [FromBody] PutChampionshipModel putChampionship, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] championship {ChampionshipId} from {LeagueName} by {UserName}", "Put",
-            id, leagueName, GetUsername());
         var leagueUser = new LeagueUser(leagueName, User);
         var request = new PutChampionshipRequest(leagueId, id, leagueUser, putChampionship);
         var getChampionship = await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Return entry for championship {ChampionshipId} from {LeagueName}", getChampionship.ChampionshipId, leagueName);
         return Ok(getChampionship);
     }
 
@@ -122,11 +110,8 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
         [FromRoute] long id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] championship {ChampionshipId} from {LeagueName} by {UserName}", "Delete",
-            id, leagueName, GetUsername());
         var request = new DeleteChampionshipRequest(leagueId, id);
         await mediator.Send(request, cancellationToken);
-        _logger.LogInformation("Deleted championship {ChampionshipId} from {LeagueName}", id, leagueName);
         return NoContent();
     }
 }

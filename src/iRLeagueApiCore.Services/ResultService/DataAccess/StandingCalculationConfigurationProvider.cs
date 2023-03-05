@@ -24,6 +24,7 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
         var configIds = await dbContext.ChampSeasons
             .Where(x => x.SeasonId == seasonId)
             .Where(x => x.StandingConfigId != null)
+            .Where(x => x.IsActive)
             .Select(x => x.StandingConfigId.GetValueOrDefault())
             .Distinct()
             .ToListAsync(cancellationToken);
@@ -45,11 +46,12 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
         var champSeason = standingConfig?.ChampSeasons.FirstOrDefault(x => x.SeasonId == seasonId);
         if (standingConfig is not null && champSeason is not null)
         {
+            var championship = champSeason.Championship;
             config.ChampSeasonId = standingConfig.ChampSeasons.FirstOrDefault(x => x.SeasonId == seasonId)?.ChampSeasonId;
             config.StandingConfigId = standingConfig.StandingConfigId;
             config.ResultConfigs = champSeason.ResultConfigurations.Select(x => x.ResultConfigId);
             config.Name = champSeason.Championship.Name;
-            config.DisplayName = champSeason.Championship.DisplayName;
+            config.DisplayName = string.IsNullOrWhiteSpace(championship.DisplayName) ? championship.Name : championship.DisplayName;
             config.UseCombinedResult = standingConfig.UseCombinedResult;
             config.ResultKind = champSeason.ResultConfigurations.FirstOrDefault()?.ResultKind ?? standingConfig.ResultKind;
             config.WeeksCounted = standingConfig.WeeksCounted;

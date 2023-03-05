@@ -66,7 +66,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         var scorings = configurationEntity.Scorings
             .Where(x => x.IsCombinedResult == false)
             .OrderBy(x => x.Index);
-        var raceIndex = 0;
+        var raceIndex = scorings.Count() - eventEntity.Sessions.Count(x => x.SessionType == SessionType.Race);
         var sessionConfigurations = new List<SessionCalculationConfiguration>();
         foreach ((var session, var index) in eventEntity.Sessions
             .OrderBy(x => x.SessionNr)

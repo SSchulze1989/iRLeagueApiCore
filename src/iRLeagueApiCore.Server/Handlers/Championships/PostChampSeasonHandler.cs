@@ -42,9 +42,15 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             .Where(x => x.ChampionshipId == championshipId)
             .Include(x => x.ChampSeasons)
                 .ThenInclude(x => x.ResultConfigurations)
+            .Include(x => x.ChampSeasons)
+                .ThenInclude(x => x.Season)
+                    .ThenInclude(x => x.Schedules)
+                        .ThenInclude(x => x.Events)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var season = await dbContext.Seasons
+            .Include(x => x.ChampSeasons)
+                .ThenInclude(x => x.ResultConfigurations)
             .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SeasonId == seasonId)
             .FirstOrDefaultAsync(cancellationToken)
@@ -56,11 +62,15 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             IsActive = true,
         });
         var prevChampSeason = championship.ChampSeasons
-            .LastOrDefault();
+            .Select(x => new {ChampSeason = x, Events = x.Season.Schedules.SelectMany(x => x.Events)})
+            .Where(x => x.Events.Any())
+            .OrderByDescending(x => x.Events.Select(x => x.Date).Where(x => x < DateTime.UtcNow).Max())
+            .Select(x => x.ChampSeason)
+            .FirstOrDefault();
 
         // find previous season settings and copy
         champSeason.StandingConfiguration = await CreateOrCopyStandingConfigEntity(user, leagueId, prevChampSeason?.StandingConfigId, cancellationToken);
-        champSeason.ResultConfigurations = await CopyResultConfigurationEntities(user, leagueId, prevChampSeason?.ResultConfigurations.Select(x => x.ResultConfigId), cancellationToken);
+        champSeason.ResultConfigurations = await CopyResultConfigurationEntities(user, leagueId, champSeason, prevChampSeason?.ResultConfigurations.Select(x => x.ResultConfigId), cancellationToken);
         UpdateVersionEntity(user, champSeason);
 
         championship.ChampSeasons.Add(champSeason);
@@ -107,10 +117,15 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         return target;
     }
 
-    private PointRuleEntity CopyPointRuleEntity(LeagueUser user, PointRuleEntity source)
+    private PointRuleEntity? CopyPointRuleEntity(LeagueUser user, PointRuleEntity? source)
     {
+        if (source is null)
+        {
+            return null;
+        }
         var target = CreateVersionEntity(user, new PointRuleEntity()
         {
+            League = source.League,
             BonusPoints = source.BonusPoints,
             FinalSortOptions = source.FinalSortOptions,
             MaxPoints = source.MaxPoints,
@@ -141,7 +156,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         return target;
     }
 
-    private ResultConfigurationEntity CopyResultConfigurationEntity(LeagueUser user, ResultConfigurationEntity source)
+    private ResultConfigurationEntity CopyResultConfigurationEntity(LeagueUser user, ChampSeasonEntity currentChampSeason, ResultConfigurationEntity source)
     {
         var target = CreateVersionEntity(user, new ResultConfigurationEntity() 
         {
@@ -149,7 +164,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             Name = source.Name,
             ResultKind = source.ResultKind,
             ResultsPerTeam = source.ResultsPerTeam,
-            SourceResultConfigId= source.SourceResultConfigId,
+            SourceResultConfig = GetSourceResultConfigurationEntity(currentChampSeason, source),
             ResultFilters = source.ResultFilters.Select(x => CopyFilterOptionEntity(user, x)).ToList(),
             PointFilters = source.PointFilters.Select(x => CopyFilterOptionEntity(user, x)).ToList(),
             Scorings = source.Scorings.Select(x => CopyScoringEntity(user, x)).ToList(),
@@ -158,7 +173,22 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         return target;
     }
 
-    private async Task<ICollection<ResultConfigurationEntity>> CopyResultConfigurationEntities(LeagueUser user, long leagueId, IEnumerable<long>? prevResultConfigIds,
+    private ResultConfigurationEntity? GetSourceResultConfigurationEntity(ChampSeasonEntity currentChampSeason, ResultConfigurationEntity config)
+    {
+        if (config.SourceResultConfig is null)
+        {
+            return null;
+        }
+        var availableConfigs = currentChampSeason.Season.ChampSeasons.SelectMany(x => x.ResultConfigurations);
+        var sourceConfig = availableConfigs.FirstOrDefault(x => x.ResultConfigId == config.SourceResultConfigId)
+            ?? availableConfigs
+                .Where(x => x.Name == config.SourceResultConfig.Name)
+                .Where(x => x.ChampSeason.Championship.Name == config.SourceResultConfig.ChampSeason.Championship.Name)
+                .FirstOrDefault();
+        return sourceConfig;
+    }
+
+    private async Task<ICollection<ResultConfigurationEntity>> CopyResultConfigurationEntities(LeagueUser user, long leagueId, ChampSeasonEntity targetChampSeason, IEnumerable<long>? prevResultConfigIds,
         CancellationToken cancellationToken)
     {
         if (prevResultConfigIds is null)
@@ -169,7 +199,14 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         var resultConfigs = await dbContext.ResultConfigurations
             .Where(x => x.LeagueId == leagueId)
             .Where(x => prevResultConfigIds.Contains(x.ResultConfigId))
+            .Include(x => x.League)
+            .Include(x => x.ChampSeason)
+                .ThenInclude(x => x.Season)
+            .Include(x => x.ChampSeason)
+                .ThenInclude(x => x.Championship)
             .Include(x => x.SourceResultConfig)
+                .ThenInclude(x => x.ChampSeason)
+                    .ThenInclude(x => x.Championship)
             .Include(x => x.PointFilters)
                 .ThenInclude(x => x.Conditions)
             .Include(x => x.Scorings)
@@ -177,7 +214,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             .Include(x => x.ResultFilters)
                 .ThenInclude(x => x.Conditions)
             .ToListAsync(cancellationToken);
-        return resultConfigs;
+        return resultConfigs.Select(x => CopyResultConfigurationEntity(user, targetChampSeason, x)).ToList();
     }
 
 }
