@@ -17,6 +17,10 @@ public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampions
             ?? throw new ResourceNotFoundException();
         // only archive championship instead of deleting
         deleteChampionship.IsArchived = true;
+        foreach(var champSeason in deleteChampionship.ChampSeasons)
+        {
+            champSeason.IsActive = false;
+        }
         await dbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }

@@ -74,6 +74,8 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         {
             LeagueId = champSeason.LeagueId,
             ResultConfigId = config.ResultConfigId,
+            ChampSeasonId = champSeason.ChampSeasonId,
+            ChampionshipName = champSeason.Championship.Name,
             Name = config.Name,
             DisplayName = config.DisplayName,
         }).ToList(),

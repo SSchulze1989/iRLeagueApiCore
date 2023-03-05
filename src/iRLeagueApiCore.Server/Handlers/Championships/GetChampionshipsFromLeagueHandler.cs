@@ -24,6 +24,7 @@ public sealed class GetChampionshipsFromLeagueHandler : ChampionshipHandlerBase<
     {
         return await dbContext.Championships
             .Where(x => x.LeagueId == leagueId)
+            .Where(x => x.IsArchived == false)
             .Select(MapToChampionshipModelExpression)
             .ToListAsync(cancellationToken);
     }

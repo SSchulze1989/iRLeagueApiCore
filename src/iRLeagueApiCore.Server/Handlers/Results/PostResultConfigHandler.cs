@@ -17,7 +17,7 @@ public sealed class PostResultConfigHandler : ResultConfigHandlerBase<PostResult
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postResultConfig = await CreateResultConfigEntity(request.LeagueId, request.User, cancellationToken);
-        postResultConfig = await MapToResultConfigEntityAsync(request.User, request.Model, postResultConfig, cancellationToken);
+        postResultConfig = await MapToResultConfigEntityAsync(request.LeagueId, request.User, request.Model, postResultConfig, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         var getResultConfig = await MapToResultConfigModel(postResultConfig.LeagueId, postResultConfig.ResultConfigId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");

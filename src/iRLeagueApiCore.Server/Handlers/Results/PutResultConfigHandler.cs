@@ -18,7 +18,7 @@ public sealed class PutResultConfigHandler : ResultConfigHandlerBase<PutResultCo
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putResultConfig = await GetResultConfigEntity(request.LeagueId, request.ResultConfigId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        putResultConfig = await MapToResultConfigEntityAsync(request.User, request.Model, putResultConfig, cancellationToken);
+        putResultConfig = await MapToResultConfigEntityAsync(request.LeagueId, request.User, request.Model, putResultConfig, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         var getResultConfig = await MapToResultConfigModel(putResultConfig.LeagueId, putResultConfig.ResultConfigId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
