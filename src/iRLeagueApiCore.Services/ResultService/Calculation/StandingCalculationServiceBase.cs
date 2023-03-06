@@ -66,7 +66,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
     public abstract Task<StandingCalculationResult> Calculate(StandingCalculationData data);
 
     protected static IComparable GetEventOrderValue<T>(GroupedEventResult<T> eventResult) where T : notnull
-        => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints);
+        => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints + result.ResultRow.BonusPoints);
 
     protected StandingRowCalculationResult AccumulateTotalPoints(StandingRowCalculationResult row)
     {
@@ -133,7 +133,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
     protected static IOrderedEnumerable<T> SortStandingRows<T>(IEnumerable<T> rows, Func<T, StandingRowCalculationResult> standingRowSelector)
     {
         return rows
-            .OrderByDescending(x => standingRowSelector(x).TotalPoints + standingRowSelector(x).BonusPoints)
+            .OrderByDescending(x => standingRowSelector(x).TotalPoints)
             .ThenBy(x => standingRowSelector(x).PenaltyPoints)
             .ThenByDescending(x => standingRowSelector(x).Wins)
             .ThenBy(x => standingRowSelector(x).Incidents);
