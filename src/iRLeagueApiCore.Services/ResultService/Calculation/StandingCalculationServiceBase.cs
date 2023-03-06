@@ -133,7 +133,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
     protected static IOrderedEnumerable<T> SortStandingRows<T>(IEnumerable<T> rows, Func<T, StandingRowCalculationResult> standingRowSelector)
     {
         return rows
-            .OrderByDescending(x => standingRowSelector(x).TotalPoints)
+            .OrderByDescending(x => standingRowSelector(x).TotalPoints + standingRowSelector(x).BonusPoints)
             .ThenBy(x => standingRowSelector(x).PenaltyPoints)
             .ThenByDescending(x => standingRowSelector(x).Wins)
             .ThenBy(x => standingRowSelector(x).Incidents);
