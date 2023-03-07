@@ -21,22 +21,40 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(long leagueId, PutChampSeasonModel model, ChampSeasonEntity target, 
+    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(long leagueId, LeagueUser user, PutChampSeasonModel model, ChampSeasonEntity target, 
         CancellationToken cancellationToken)
     {
         target.Championship.Name = model.ChampionshipName;
         target.Championship.DisplayName = model.ChampionshipDisplayName;
-        target.StandingConfiguration = await GetStandingConfigurationEntityAsync(leagueId, model.StandingConfig?.StandingConfigId, cancellationToken);
+        target.StandingConfiguration = await MapToStandingConfigurationAsync(leagueId, user, model.StandingConfig, cancellationToken);
         target.ResultConfigurations = await MapToResultConfigurationListAsync(leagueId, model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
         return await Task.FromResult(target);
     }
 
-    protected async Task<StandingConfigurationEntity?> GetStandingConfigurationEntityAsync(long leagueId, long? standingConfigId, CancellationToken cancellationToken)
+    protected async Task<StandingConfigurationEntity?> MapToStandingConfigurationAsync(long leagueId, LeagueUser user, StandingConfigModel? model, CancellationToken cancellationToken)
     {
-        return await dbContext.StandingConfigurations
+        if (model is null)
+        {
+            return null;
+        }
+
+        var entity =  await dbContext.StandingConfigurations
             .Where(x => x.LeagueId == leagueId)
-            .Where(x => x.StandingConfigId == standingConfigId)
+            .Where(x => x.StandingConfigId == model.StandingConfigId && model.StandingConfigId != 0)
             .FirstOrDefaultAsync(cancellationToken);
+        if (entity is null)
+        {
+            entity = CreateVersionEntity(user, new StandingConfigurationEntity()
+            {
+                LeagueId = leagueId,
+            });
+        }
+        entity.Name = model.Name;
+        entity.ResultKind = model.ResultKind;
+        entity.UseCombinedResult = model.UseCombinedResult;
+        entity.WeeksCounted = model.WeeksCounted;
+        UpdateVersionEntity(user, entity);
+        return entity;
     }
 
     protected async Task<ICollection<ResultConfigurationEntity>> MapToResultConfigurationListAsync(long leagueId, IEnumerable<long> resultConfigId, 

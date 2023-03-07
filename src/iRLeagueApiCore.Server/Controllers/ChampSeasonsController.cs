@@ -112,7 +112,8 @@ public class ChampSeasonsController : LeagueApiController<ChampSeasonsController
     public async Task<ActionResult<ChampSeasonModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
     [FromRoute] long id, [FromBody] PutChampSeasonModel putChampSeason, CancellationToken cancellationToken = default)
     {
-        var request = new PutChampSeasonRequest(leagueId, id, putChampSeason);
+        var leagueUser = new LeagueUser(leagueName, User);
+        var request = new PutChampSeasonRequest(leagueId, id, leagueUser, putChampSeason);
         var getChampSeason = await mediator.Send(request, cancellationToken);
         return Ok(getChampSeason);
     }

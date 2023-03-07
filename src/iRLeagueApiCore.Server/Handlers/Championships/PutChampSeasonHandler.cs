@@ -1,8 +1,9 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public record PutChampSeasonRequest(long LeagueId, long ChampSeasonId, PutChampSeasonModel Model) : IRequest<ChampSeasonModel>;
+public record PutChampSeasonRequest(long LeagueId, long ChampSeasonId, LeagueUser User, PutChampSeasonModel Model) : IRequest<ChampSeasonModel>;
 
 public sealed class PutChampSeasonHandler : ChampSeasonHandlerBase<PutChampSeasonHandler, PutChampSeasonRequest>,
     IRequestHandler<PutChampSeasonRequest, ChampSeasonModel>
@@ -17,7 +18,7 @@ public sealed class PutChampSeasonHandler : ChampSeasonHandlerBase<PutChampSeaso
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putChampSeason = await GetChampSeasonEntityAsync(request.LeagueId, request.ChampSeasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        putChampSeason = await MapToChampSeasonEntityAsync(request.LeagueId, request.Model, putChampSeason, cancellationToken);
+        putChampSeason = await MapToChampSeasonEntityAsync(request.LeagueId, request.User, request.Model, putChampSeason, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         var getChampSeason = await MapToChampSeasonModel(request.LeagueId, putChampSeason.ChampSeasonId, cancellationToken)
             ?? throw new InvalidOperationException("Updated resource not found");
