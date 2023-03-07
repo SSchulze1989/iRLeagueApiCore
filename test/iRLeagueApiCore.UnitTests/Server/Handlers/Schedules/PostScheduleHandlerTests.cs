@@ -11,7 +11,7 @@ public sealed class PostScheduleDbTestFixture : HandlersTestsBase<PostScheduleHa
 {
     private const string testScheduleName = "TestSchedule";
 
-    public PostScheduleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public PostScheduleDbTestFixture() : base()
     {
     }
 
@@ -22,10 +22,10 @@ public sealed class PostScheduleDbTestFixture : HandlersTestsBase<PostScheduleHa
 
     protected override PostScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testSeasonId);
+        return DefaultRequest(TestLeagueId, TestSeasonId);
     }
 
-    private PostScheduleRequest DefaultRequest(long leagueId = testLeagueId, long seasonId = testSeasonId)
+    private PostScheduleRequest DefaultRequest(long leagueId, long seasonId)
     {
         var model = new PostScheduleModel()
         {
@@ -57,13 +57,15 @@ public sealed class PostScheduleDbTestFixture : HandlersTestsBase<PostScheduleHa
     }
 
     [Theory]
-    [InlineData(0, testSeasonId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(43, testSeasonId)]
-    [InlineData(testLeagueId, 43)]
-    public async Task HandleNotFoundAsync(long leagueId, long seasonId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? seasonId)
     {
-        var request = DefaultRequest(leagueId, seasonId);
+        leagueId ??= TestLeagueId;
+        seasonId ??= TestSeasonId;
+        var request = DefaultRequest(leagueId.Value, seasonId.Value);
         await base.HandleNotFoundRequestAsync(request);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using iRLeagueDatabaseCore.Models;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
+namespace iRLeagueApiCore.Mocking.DataAccess;
 
 public abstract class DataAccessTestsBase : IAsyncLifetime
 {
@@ -16,12 +16,12 @@ public abstract class DataAccessTestsBase : IAsyncLifetime
         fixture.Register(() => dbContext);
     }
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         await accessMockHelper.PopulateBasicTestSet(dbContext);
     }
 
-    public async Task DisposeAsync()
+    public virtual async Task DisposeAsync()
     {
         await dbContext.DisposeAsync();
     }

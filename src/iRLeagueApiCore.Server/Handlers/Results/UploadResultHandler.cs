@@ -161,6 +161,13 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
             };
             dbContext.LeagueMembers.Add(leagueMember);
         }
+        else
+        {
+            // update member name
+            var (firstname, lastname) = GetFirstnameLastname(row.display_name ?? string.Empty);
+            leagueMember.Member.Firstname = firstname;
+            leagueMember.Member.Lastname = lastname;
+        }
         return leagueMember;
     }
 

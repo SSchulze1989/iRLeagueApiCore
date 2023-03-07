@@ -24,9 +24,10 @@ public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler, Get
 
     private async Task<IEnumerable<SeasonModel>> GetSeasonsEntityAsync(long leagueId, CancellationToken cancellationToken)
     {
-        return await dbContext.Seasons
+        return (await dbContext.Seasons
             .Where(x => x.LeagueId == leagueId)
             .Select(MapToGetSeasonModelExpression)
-            .ToListAsync();
+            .ToListAsync(cancellationToken))
+            .OrderBy(x => x.SeasonStart);
     }
 }

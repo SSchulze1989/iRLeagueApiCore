@@ -26,8 +26,8 @@ public sealed class HttpExtensionsTests
         var result = await testMessage.ToClientActionResultAsync<TestContent>(default);
         Assert.True(result.Success);
         Assert.Equal("Success", result.Status);
-        Assert.Equal(testString, result.Content.String);
-        Assert.Equal(testValue, result.Content.Value);
+        Assert.Equal(testString, result.Content?.String);
+        Assert.Equal(testValue, result.Content?.Value);
     }
 
     [Fact]
@@ -130,8 +130,8 @@ public sealed class HttpExtensionsTests
         var result = await request.AsClientActionResultAsync<TestContent>(default);
         Assert.True(result.Success);
         Assert.Equal("Success", result.Status);
-        Assert.Equal(testString, result.Content.String);
-        Assert.Equal(testValue, result.Content.Value);
+        Assert.Equal(testString, result.Content?.String);
+        Assert.Equal(testValue, result.Content?.Value);
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public sealed class HttpExtensionsTests
                 Content = content
             });
         var mockTokenProvider = new Mock<IAsyncTokenProvider>();
-        mockTokenProvider.Setup(x => x.GetTokenAsync())
+        mockTokenProvider.Setup(x => x.GetAccessTokenAsync())
             .ReturnsAsync(testToken);
         var client = new HttpClient(mockMessageHandler.Object);
         var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
@@ -259,6 +259,6 @@ public sealed class HttpExtensionsTests
 
     private class WrongContent
     {
-        public string WrongString { get; set; }
+        public string WrongString { get; set; } = string.Empty;
     }
 }

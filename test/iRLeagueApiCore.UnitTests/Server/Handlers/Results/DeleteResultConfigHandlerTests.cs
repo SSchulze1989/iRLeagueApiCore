@@ -6,9 +6,9 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
 [Collection("DbTestFixture")]
-public sealed class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
+public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
 {
-    public DeleteResultConfigDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public DeleteResultConfigHandlerTests() : base()
     {
     }
 
@@ -24,7 +24,7 @@ public sealed class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteRe
 
     protected override DeleteResultConfigRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testResultConfigId);
+        return DefaultRequest(TestLeagueId, TestResultConfigId);
     }
 
     protected override void DefaultAssertions(DeleteResultConfigRequest request, MediatR.Unit result, LeagueDbContext dbContext)
@@ -43,13 +43,15 @@ public sealed class DeleteResultConfigDbTestFixture : HandlersTestsBase<DeleteRe
     }
 
     [Theory]
-    [InlineData(0, testResultId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(42, testResultId)]
-    [InlineData(testLeagueId, 42)]
-    public async Task HandleNotFoundAsync(long leagueId, long resultId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-42, defaultId)]
+    [InlineData(defaultId, -42)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? resultId)
     {
-        var request = DefaultRequest(leagueId, resultId);
+        leagueId ??= TestLeagueId;
+        resultId ??= TestResultId;
+        var request = DefaultRequest(leagueId.Value, resultId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

@@ -3,6 +3,8 @@
 public interface ITokenStore : IAsyncTokenProvider
 {
     bool IsLoggedIn { get; }
-    Task SetTokenAsync(string token);
-    Task ClearTokenAsync();
+    DateTime AccessTokenExpires { get; }
+    Task SetIdTokenAsync(string token);
+    Task SetAccessTokenAsync(string token);
+    Task ClearTokensAsync();
 }

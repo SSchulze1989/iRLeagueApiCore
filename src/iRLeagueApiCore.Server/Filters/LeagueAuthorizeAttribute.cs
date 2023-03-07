@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Serilog;
+using System.Diagnostics;
 using System.Security.Principal;
 
 namespace iRLeagueApiCore.Server.Filters;
@@ -15,10 +17,12 @@ namespace iRLeagueApiCore.Server.Filters;
 public sealed class LeagueAuthorizeAttribute : ActionFilterAttribute
 {
     private readonly ILogger<LeagueAuthorizeAttribute> _logger;
+    private readonly IDiagnosticContext diagnosticContext;
 
-    public LeagueAuthorizeAttribute(ILogger<LeagueAuthorizeAttribute> logger)
+    public LeagueAuthorizeAttribute(ILogger<LeagueAuthorizeAttribute> logger, IDiagnosticContext diagnosticContext)
     {
         _logger = logger;
+        this.diagnosticContext = diagnosticContext;
     }
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -35,7 +39,7 @@ public sealed class LeagueAuthorizeAttribute : ActionFilterAttribute
         var user = context.HttpContext.User;
         var userName = (user.Identity != null && user.Identity.IsAuthenticated) ? user.Identity.Name : "Anonymous";
 
-        _logger.LogInformation("Authorizing request for {UserName} on {leagueName}", userName, leagueName);
+        // _logger.LogDebug("Authorizing request for {UserName} on {leagueName}", userName, leagueName);
 
         // check if specific league role required
         var requireLeagueRoleAttribute = context.ActionDescriptor.EndpointMetadata

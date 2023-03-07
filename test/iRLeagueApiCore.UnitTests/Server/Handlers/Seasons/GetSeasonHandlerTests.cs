@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 [Collection("DbTestFixture")]
 public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler, GetSeasonRequest, SeasonModel>
 {
-    public GetSeasonDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetSeasonDbTestFixture() : base()
     {
     }
 
@@ -21,10 +21,10 @@ public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler,
 
     protected override GetSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId);
+        return DefaultRequest(TestLeagueId, TestSeasonId);
     }
 
-    private GetSeasonRequest DefaultRequest(long leagueId = testLeagueId, long seasonId = testSeasonId)
+    private GetSeasonRequest DefaultRequest(long leagueId, long seasonId)
     {
         return new GetSeasonRequest(leagueId, seasonId);
     }
@@ -33,14 +33,18 @@ public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler,
     {
         var testSeason = dbContext.Seasons
             .Include(x => x.Schedules)
-            .SingleOrDefault(x => x.SeasonId == request.SeasonId);
+            .First(x => x.SeasonId == request.SeasonId);
         result.LeagueId.Should().Be(request.LeagueId);
         result.SeasonId.Should().Be(request.SeasonId);
         result.Finished.Should().Be(testSeason.Finished);
         result.HideComments.Should().Be(testSeason.HideCommentsBeforeVoted);
         result.ScheduleIds.Should().BeEquivalentTo(testSeason.Schedules.Select(x => x.ScheduleId));
-        result.SeasonEnd.Should().Be(testSeason.SeasonEnd);
-        result.SeasonStart.Should().Be(testSeason.SeasonStart);
+        result.SeasonEnd.Should().Be(testSeason.Schedules.SelectMany(x => x.Events)
+            .OrderBy(x => x.Date)
+            .Last().Date);
+        result.SeasonStart.Should().Be(testSeason.Schedules.SelectMany(x => x.Events)
+            .OrderBy(x => x.Date)
+            .First().Date);
         result.SeasonName.Should().Be(testSeason.SeasonName);
         AssertVersion(testSeason, result);
         base.DefaultAssertions(request, result, dbContext);
@@ -61,8 +65,8 @@ public sealed class GetSeasonDbTestFixture : HandlersTestsBase<GetSeasonHandler,
     [Theory]
     [InlineData(0, 1)]
     [InlineData(1, 0)]
-    [InlineData(1, 42)]
-    [InlineData(42, 1)]
+    [InlineData(1, -42)]
+    [InlineData(-42, 1)]
     public async Task HandleNotFound(long leagueId, long seasonId)
     {
         var request = DefaultRequest(leagueId, seasonId);

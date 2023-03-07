@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;
 [Collection("DbTestFixture")]
 public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHandler, GetScheduleRequest, ScheduleModel>
 {
-    public GetScheduleDbTestFixture(DbTestFixture fixture) : base(fixture)
+    public GetScheduleDbTestFixture() : base()
     {
     }
 
@@ -21,10 +21,10 @@ public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHand
 
     protected override GetScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(testLeagueId, testScheduleId);
+        return DefaultRequest(TestLeagueId, TestScheduleId);
     }
 
-    private GetScheduleRequest DefaultRequest(long leagueId = testLeagueId, long scheduleId = testScheduleId)
+    private GetScheduleRequest DefaultRequest(long leagueId, long scheduleId)
     {
         return new GetScheduleRequest(leagueId, scheduleId);
     }
@@ -37,7 +37,7 @@ public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHand
             .Include(x => x.Events)
             .SingleOrDefault(x => x.ScheduleId == result.ScheduleId);
         scheduleEntity.Should().NotBeNull();
-        result.Name.Should().Be(scheduleEntity.Name);
+        result.Name.Should().Be(scheduleEntity!.Name);
         result.EventIds.Should().BeEquivalentTo(scheduleEntity.Events.Select(x => x.EventId));
         result.SeasonId.Should().Be(scheduleEntity.SeasonId);
         AssertVersion(scheduleEntity, result);
@@ -57,13 +57,15 @@ public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHand
     }
 
     [Theory]
-    [InlineData(0, testScheduleId)]
-    [InlineData(testLeagueId, 0)]
-    [InlineData(43, testScheduleId)]
-    [InlineData(testLeagueId, 43)]
-    public async Task HandleNotFoundAsync(long leagueId, long scheduleId)
+    [InlineData(0, defaultId)]
+    [InlineData(defaultId, 0)]
+    [InlineData(-43, defaultId)]
+    [InlineData(defaultId, -43)]
+    public async Task HandleNotFoundAsync(long? leagueId, long? scheduleId)
     {
-        var request = DefaultRequest(leagueId, scheduleId);
+        leagueId ??= TestLeagueId;
+        scheduleId ??= TestScheduleId;
+        var request = DefaultRequest(leagueId.Value, scheduleId.Value);
         await base.HandleNotFoundRequestAsync(request);
     }
 }

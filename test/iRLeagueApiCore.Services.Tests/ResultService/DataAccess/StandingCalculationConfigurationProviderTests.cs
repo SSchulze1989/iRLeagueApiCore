@@ -1,15 +1,16 @@
-﻿using iRLeagueApiCore.Services.ResultService.DataAccess;
+﻿using iRLeagueApiCore.Mocking.DataAccess;
+using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace iRLeagueApiCore.Services.Tests.ResultService.DataAcess;
+namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
 [Collection("DataAccessTests")]
 public sealed class StandingCalculationConfigurationProviderTests : DataAccessTestsBase
 {
     [Theory]
     [InlineData(default(long))]
-    [InlineData(42)]
+    [InlineData(-42)]
     public async Task GetConfiguration_ShouldProvideEmptyConfiguration_WhenEventDoesNotExist(long? eventId)
     {
         var season = await GetFirstSeasonAsync();

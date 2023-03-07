@@ -40,25 +40,6 @@ public sealed class PutSeasonDbTestFixture : IClassFixture<DbTestFixture>
     }
 
     [Theory]
-    [InlineData(1, 1, true)]
-    [InlineData(1, null, true)]
-    [InlineData(2, 1, false)]
-    [InlineData(1, 42, false)]
-    public async Task ValidateMainScoring(long leagueId, long? mainScoringId, bool expectValid)
-    {
-        using var dbContext = fixture.CreateDbContext();
-        var request = DefaultRequest(leagueId);
-        request.Model.MainScoringId = mainScoringId;
-        var validator = CreateValidator(dbContext);
-        var result = await validator.TestValidateAsync(request);
-        Assert.Equal(expectValid, result.IsValid);
-        if (expectValid == false)
-        {
-            result.ShouldHaveValidationErrorFor(x => x.Model.MainScoringId);
-        }
-    }
-
-    [Theory]
     [InlineData(1, true)]
     [InlineData(0, false)]
     public async Task ValidateLeagueId(long leagueId, bool expectValid)

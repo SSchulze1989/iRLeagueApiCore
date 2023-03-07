@@ -2,7 +2,7 @@
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Services.Tests.Extensions;
+using iRLeagueApiCore.Mocking.Extensions;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 

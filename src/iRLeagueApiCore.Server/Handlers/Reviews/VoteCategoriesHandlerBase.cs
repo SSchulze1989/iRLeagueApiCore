@@ -25,7 +25,15 @@ public class VoteCategoriesHandlerBase<THandler, TRequest> : HandlerBase<THandle
             .ToListAsync(cancellationToken);
     }
 
-    protected virtual async Task<VoteCategoryModel?> MapToVoteCategoryModels(long leagueId, long catId, CancellationToken cancellationToken)
+    protected virtual async Task<VoteCategoryEntity> MapToVoteCategoryEntityAsync(PostVoteCategoryModel model, VoteCategoryEntity target, CancellationToken cancellationToken)
+    {
+        target.DefaultPenalty = model.DefaultPenalty;
+        target.Index = model.Index;
+        target.Text = model.Text;
+        return await Task.FromResult(target);
+    }
+
+    protected virtual async Task<VoteCategoryModel?> MapToVoteCategoryModel(long leagueId, long catId, CancellationToken cancellationToken)
     {
         return await dbContext.VoteCategories
             .Where(x => x.LeagueId == leagueId)
