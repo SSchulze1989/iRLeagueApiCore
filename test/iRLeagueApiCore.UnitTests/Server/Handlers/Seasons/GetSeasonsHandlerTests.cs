@@ -6,7 +6,6 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 
-[Collection("DbTestFixture")]
 public sealed class GetSeasonsDbTestFixture : HandlersTestsBase<GetSeasonsHandler, GetSeasonsRequest, IEnumerable<SeasonModel>>
 {
     public GetSeasonsDbTestFixture() : base()

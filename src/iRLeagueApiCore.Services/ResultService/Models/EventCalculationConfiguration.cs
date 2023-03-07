@@ -8,6 +8,7 @@ internal sealed class EventCalculationConfiguration
     /// Id of existing result data (if result has been calculated before)
     /// </summary>
     public long? ResultId { get; set; }
+    public long? ChampSeasonId { get; set; }
     public long? ResultConfigId { get; set; }
     public long? SourceResultConfigId { get; set; }
 

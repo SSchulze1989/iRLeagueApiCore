@@ -131,6 +131,8 @@ public class EventHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReque
         {
             LeagueId = config.LeagueId,
             ResultConfigId = config.ResultConfigId,
+            ChampSeasonId = config.ChampSeasonId,
+            ChampionshipName = config.ChampSeason.Championship.Name,
             Name = config.Name,
             DisplayName = config.DisplayName,
         }).ToList(),

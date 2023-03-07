@@ -7,7 +7,6 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
-[Collection("DbTestFixture")]
 public sealed class PostReviewCommentToReviewHandlerTests : ReviewsHandlersTestsBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
 {
     private PutReviewCommentModel TestReviewComment => new PutReviewCommentModel()

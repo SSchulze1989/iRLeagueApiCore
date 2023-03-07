@@ -38,6 +38,8 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
             .Select(x => x.TeamId)
             .OfType<long>(), cancellationToken);
         entity.Name = result.Name;
+        entity.ChampSeason = await dbContext.ChampSeasons
+            .FirstOrDefaultAsync(x => x.ChampSeasonId == result.ChampSeasonId);
         entity.ScoredSessionResults = await MapToScoredSessionResults(result.SessionResults, entity.ScoredSessionResults,
             requiredEntities, cancellationToken);
 

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
-[Collection("DataAccessTests")]
 public sealed class EventCalculationConfigurationProviderTests : DataAccessTestsBase
 {
     public EventCalculationConfigurationProviderTests()
@@ -104,6 +103,28 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         test.DisplayName.Should().Be("Default");
         test.ResultConfigId.Should().BeNull();
         test.SessionResultConfigurations.Should().HaveSameCount(@event.Sessions);
+    }
+
+    [Fact]
+    public async Task GetConfiguration_ShouldReturnConfiguration_WithChampSeasonId()
+    {
+        var @event = await dbContext.Events
+            .Include(x => x.Schedule)
+                .ThenInclude(x => x.Season)
+            .Include(x => x.Sessions)
+            .FirstAsync();
+        var championship = await dbContext.Championships.FirstAsync();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        var config = accessMockHelper.CreateConfiguration(@event);
+        champSeason.ResultConfigurations = new[] { config };
+        dbContext.ChampSeasons.Add(champSeason);
+        dbContext.ResultConfigurations.Add(config);
+        await dbContext.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
+
+        test.ChampSeasonId.Should().Be(champSeason.ChampSeasonId);
     }
 
     [Fact]

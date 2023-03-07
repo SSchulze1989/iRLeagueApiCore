@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Handlers.Results;
 
 namespace iRLeagueApiCore.Server.Validation.Results;
 
-public sealed class PostResultConfigRequestValidator : AbstractValidator<PostResultConfigRequest>
+public sealed class PostResultConfigRequestValidator : AbstractValidator<PostResultConfigToChampSeasonRequest>
 {
     private readonly LeagueDbContext dbContext;
 

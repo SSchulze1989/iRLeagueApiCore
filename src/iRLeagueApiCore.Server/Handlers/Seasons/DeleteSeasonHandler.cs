@@ -20,9 +20,17 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
     private async Task DeleteSeasonEntity(long leagueId, long seasonId, CancellationToken cancellationToken)
     {
         var deleteSeason = await dbContext.Seasons
+            .Include(x => x.ChampSeasons)
+                .ThenInclude(x => x.ResultConfigurations)
+                    .ThenInclude(x => x.PointFilters)
+            .Include(x => x.ChampSeasons)
+                .ThenInclude(x => x.ResultConfigurations)
+                    .ThenInclude(x => x.ResultFilters)
             .Where(x => x.LeagueId == leagueId)
             .SingleOrDefaultAsync(x => x.SeasonId == seasonId)
             ?? throw new ResourceNotFoundException();
+        dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations).SelectMany(x => x.PointFilters));
+        dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations).SelectMany(x => x.ResultFilters));
         dbContext.Seasons.Remove(deleteSeason);
     }
 }

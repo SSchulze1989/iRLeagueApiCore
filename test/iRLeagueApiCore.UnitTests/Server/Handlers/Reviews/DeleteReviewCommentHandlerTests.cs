@@ -7,7 +7,6 @@ using MediatR;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Reviews;
 
-[Collection("DbTestFixture")]
 public sealed class DeleteReviewCommentHandlerTests : ReviewsHandlersTestsBase<DeleteReviewCommentHandler, DeleteReviewCommentRequest, Unit>
 {
     public DeleteReviewCommentHandlerTests() : base()

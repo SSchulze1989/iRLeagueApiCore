@@ -21,9 +21,9 @@
     <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.4.2" CopyToOutputDirectory="lib/net6.0">
+	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.5.0-dev.19" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.4.2" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.5.0-dev.8" />
 	<PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
@@ -70,7 +70,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.4.2</Version>
+		<Version>0.5.0-dev.7</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 

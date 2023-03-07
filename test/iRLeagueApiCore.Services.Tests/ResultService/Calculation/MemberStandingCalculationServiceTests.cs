@@ -1,6 +1,7 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
+using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 
@@ -153,6 +154,18 @@ public sealed class MemberStandingCalculationServiceTests
         test.StandingRows.Should().BeEquivalentTo(testOrder);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldSetChampSeasonId()
+    {
+        var data = GetCalculationData();
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId).Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        test.ChampSeasonId.Should().Be(config.ChampSeasonId);
+    }
+
     private MemberStandingCalculationService CreateSut(StandingCalculationConfiguration config)
     {
         if (config != null)
@@ -164,7 +177,7 @@ public sealed class MemberStandingCalculationServiceTests
 
     private StandingCalculationData GetCalculationData()
     {
-        return fixture.Create<StandingCalculationData>();
+        return CalculationDataBuilder().Create();
     }
 
     private IPostprocessComposer<StandingCalculationData> CalculationDataBuilder(int nEvents = 3, int nRacesPerEvent = 3, bool hasCombinedResult = false)
@@ -185,12 +198,13 @@ public sealed class MemberStandingCalculationServiceTests
         return fixture.Build<SessionCalculationResult>();
     }
 
-    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId, long? resultConfigId = null)
+    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId, 
+        ChampSeasonEntity? champSeason = null)
     {
         return fixture.Build<StandingCalculationConfiguration>()
             .With(x => x.LeagueId, leagueId)
             .With(x => x.EventId, eventId)
-            .With(x => x.ResultConfigId, resultConfigId);
+            .With(x => x.ResultConfigs, champSeason?.ResultConfigurations.Select(x => x.ResultConfigId) ?? Array.Empty<long>());
     }
 
     private IPostprocessComposer<ResultRowCalculationResult> TestRowBuilder()

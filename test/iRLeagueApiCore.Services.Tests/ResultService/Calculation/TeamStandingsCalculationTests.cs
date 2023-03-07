@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
+using iRLeagueDatabaseCore.Models;
 using System.Diagnostics;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
@@ -190,12 +191,13 @@ public sealed class TeamStandingCalculationServiceTests
         return fixture.Build<SessionCalculationResult>();
     }
 
-    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId, long? resultConfigId = null)
+    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId, 
+        ChampSeasonEntity? champSeason = null)
     {
         return fixture.Build<StandingCalculationConfiguration>()
             .With(x => x.LeagueId, leagueId)
             .With(x => x.EventId, eventId)
-            .With(x => x.ResultConfigId, resultConfigId);
+            .With(x => x.ResultConfigs, champSeason?.ResultConfigurations.Select(x => x.ResultConfigId) ?? Array.Empty<long>());
     }
 
     private IPostprocessComposer<ResultRowCalculationResult> TestRowBuilder()
