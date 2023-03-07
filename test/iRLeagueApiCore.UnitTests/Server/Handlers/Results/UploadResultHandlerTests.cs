@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-[Collection("DbTestFixture")]
 public sealed class UploadResultHandlerTests : DataAccessTestsBase
 {
     private readonly IResultCalculationQueue calculationQueue;

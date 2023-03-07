@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
-[Collection("DbTestFixture")]
 public sealed class AdminDbTestFixture
 {
     readonly ILogger<AdminController> _mockLogger = new Mock<ILogger<AdminController>>().Object;

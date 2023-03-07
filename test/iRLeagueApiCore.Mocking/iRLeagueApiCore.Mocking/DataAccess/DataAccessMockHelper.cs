@@ -10,17 +10,10 @@ public sealed class DataAccessMockHelper
 {
     private readonly Fixture fixture = new();
 
-    public DataAccessMockHelper()
-    {
-        using var dbContext = CreateMockDbContext();
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-    }
-
-    public LeagueDbContext CreateMockDbContext()
+    public LeagueDbContext CreateMockDbContext(string dbName)
     {
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-        optionsBuilder.UseInMemoryDatabase(databaseName: "TestDatabase")
+        optionsBuilder.UseInMemoryDatabase(databaseName: dbName)
            .UseLazyLoadingProxies();
         var dbContext = new LeagueDbContext(optionsBuilder.Options);
 
@@ -50,6 +43,9 @@ public sealed class DataAccessMockHelper
         var events = CreateEvents(schedule);
         schedule.Events = events.ToList();
 
+        var championships = CreateChampionships(league);
+        league.Championships = championships.ToList();
+
         foreach (var @event in events)
         {
             var result = CreateResult(@event, leagueMembers);
@@ -75,6 +71,8 @@ public sealed class DataAccessMockHelper
             .Without(x => x.Scorings)
             .Without(x => x.Seasons)
             .Without(x => x.Teams)
+            .Without(x => x.Championships)
+            .Without(x => x.StandingConfigs)
             .Create();
     }
 
@@ -88,6 +86,7 @@ public sealed class DataAccessMockHelper
             .Without(x => x.Schedules)
             .Without(x => x.Standings)
             .Without(x => x.StatisticSets)
+            .Without(x => x.ChampSeasons)
             .Create();
     }
 
@@ -235,8 +234,8 @@ public sealed class DataAccessMockHelper
                     .Without(x => x.ResultConfiguration)
                     .Create())
                 .ToList())
+            .Without(x => x.ChampSeason)
             .Without(x => x.League)
-            .Without(x => x.StandingConfigurations)
             .Without(x => x.PointFilters)
             .Without(x => x.ResultFilters)
             .Without(x => x.SourceResultConfigId)
@@ -249,11 +248,13 @@ public sealed class DataAccessMockHelper
             .Create();
     }
 
-    public StandingConfigurationEntity CreateStandingConfiguration(ResultConfigurationEntity? resultConfig)
+    public StandingConfigurationEntity CreateStandingConfiguration(LeagueEntity league)
     {
         return fixture.Build<StandingConfigurationEntity>()
-            .With(x => x.ResultConfigurations, (new[] { resultConfig }).NotNull().ToList())
+            .With(x => x.LeagueId, league.Id)
+            .With(x => x.League, league)
             .Without(x => x.Standings)
+            .Without(x => x.ChampSeasons)
             .Create();
     }
 
@@ -278,6 +279,7 @@ public sealed class DataAccessMockHelper
                 .ToList())
             .With(x => x.ResultConfig, config)
             .With(x => x.ResultConfigId, config?.ResultConfigId)
+            .Without(x => x.ChampSeason)
             .Create();
     }
 
@@ -337,6 +339,40 @@ public sealed class DataAccessMockHelper
             .Without(x => x.VoteCategory)
             .Without(x => x.Comment)
             .CreateMany();
+    }
+
+    public IPostprocessComposer<ChampionshipEntity> ChampionshipEntityBuilder(LeagueEntity league)
+    {
+        return fixture.Build<ChampionshipEntity>()
+            .With(x => x.League, league)
+            .Without(x => x.ChampSeasons);
+    }
+
+    public IEnumerable<ChampionshipEntity> CreateChampionships(LeagueEntity league)
+    {
+        return ChampionshipEntityBuilder(league)
+            .CreateMany(2);
+    }
+
+    public IPostprocessComposer<ChampSeasonEntity> ChampSeasonEntityBuilder(ChampionshipEntity championship, SeasonEntity season)
+    {
+        return fixture.Build<ChampSeasonEntity>()
+            .With(x => x.LeagueId, championship.LeagueId)
+            .With(x => x.ChampionshipId, championship.ChampionshipId)
+            .With(x => x.Championship, championship)
+            .With(x => x.SeasonId, season.SeasonId)
+            .With(x => x.Season, season)
+            .With(x => x.StandingConfiguration, () => CreateStandingConfiguration(championship.League))
+            .With(x => x.ResultConfigurations, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(1).ToList())
+            .With(x => x.IsActive, true)
+            .Without(x => x.Standings)
+            .Without(x => x.EventResults);
+    }
+
+    public ChampSeasonEntity CreateChampSeason(ChampionshipEntity championship, SeasonEntity season)
+    {
+        return ChampSeasonEntityBuilder(championship, season)
+            .Create();
     }
 
     public IPostprocessComposer<AcceptedReviewVoteEntity> AcceptedReviewVoteBuilder()

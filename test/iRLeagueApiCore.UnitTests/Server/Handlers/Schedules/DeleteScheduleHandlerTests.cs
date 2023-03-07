@@ -6,7 +6,6 @@ using MediatR;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;
 
-[Collection("DbTestFixture")]
 public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteScheduleHandler, DeleteScheduleRequest, Unit>
 {
     public DeleteScheduleDbTestFixture() : base()

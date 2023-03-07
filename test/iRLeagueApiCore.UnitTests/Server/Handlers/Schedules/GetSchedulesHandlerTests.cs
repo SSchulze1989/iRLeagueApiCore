@@ -6,7 +6,6 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;
 
-[Collection("DbTestFixture")]
 public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHandler, GetSchedulesRequest, IEnumerable<ScheduleModel>>
 {
     public GetSchedulesDbTestFixture() : base()

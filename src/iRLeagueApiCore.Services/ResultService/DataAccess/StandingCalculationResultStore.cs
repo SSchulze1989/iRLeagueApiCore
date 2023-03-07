@@ -46,18 +46,20 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             {
                 Season = season,
                 Event = @event,
-                Name = result.Name,
                 StandingConfig = standingConfig,
-                IsTeamStanding = result.IsTeamStanding,
             };
             dbContext.Standings.Add(standing);
         }
         return standing;
     }
 
-    private Task<StandingEntity> MapToStandingEntity(StandingCalculationResult result, StandingEntity entity, RequiredEntities requiredEntities,
+    private async Task<StandingEntity> MapToStandingEntity(StandingCalculationResult result, StandingEntity entity, RequiredEntities requiredEntities,
         CancellationToken cancellationToken)
     {
+        entity.ChampSeason = await dbContext.ChampSeasons
+            .FirstOrDefaultAsync(x => x.ChampSeasonId == result.ChampSeasonId, cancellationToken);
+        entity.Name = result.Name;
+        entity.IsTeamStanding = result.IsTeamStanding;
         foreach (var row in result.StandingRows)
         {
             StandingRowEntity? rowEntity = default;
@@ -123,7 +125,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             entity.StandingRows.Remove(row);
         }
 
-        return Task.FromResult(entity);
+        return entity;
     }
 
     private ICollection<StandingRows_ScoredResultRows> MapToStandingResultRowsList(long leagueId, IEnumerable<ResultRowCalculationResult> rowsData,

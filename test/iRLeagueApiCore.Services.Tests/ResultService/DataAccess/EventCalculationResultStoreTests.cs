@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
-[Collection("DataAccessTests")]
 public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
 {
     [Fact]
@@ -150,6 +149,31 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
             sourceResultEntity.ScoredSessionResults.Single().ScoredResultRows.Select(x => x.ScoredResultRowId).Take(2));
     }
 
+    [Fact]
+    public async Task StoreCalculationResult_ShouldStoreResult_WithChampSeason()
+    {
+        var @event = await GetFirstEventEntity();
+        var championship = await dbContext.Championships.FirstAsync();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        var configEntity = accessMockHelper.CreateConfiguration(@event);
+        var config = GetConfiguration(@event, configEntity);
+        var result = GetCalculationResult(@event, config);
+        result.ChampSeasonId = champSeason.ChampSeasonId;
+        dbContext.ChampSeasons.Add(champSeason);
+        dbContext.ResultConfigurations.Add(configEntity);
+        await dbContext.SaveChangesAsync();
+        var sut = CreateSut();
+
+        await sut.StoreCalculationResult(result);
+
+        var test = await dbContext.ScoredEventResults
+            .Where(x => x.EventId == @event.EventId)
+            .Where(x => x.ResultConfigId == configEntity.ResultConfigId)
+            .FirstOrDefaultAsync();
+        test.Should().NotBeNull();
+        test!.ChampSeasonId.Should().Be(champSeason.ChampSeasonId);
+    }
+
     private EventCalculationResultStore CreateSut()
     {
         return fixture.Create<EventCalculationResultStore>();
@@ -158,7 +182,8 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
     private async Task<EventEntity> GetFirstEventEntity()
     {
         return await dbContext.Events
-            .Include(x => x.Schedule.Season.League)
+            .Include(x => x.Schedule.Season)
+                .ThenInclude(x => x.League)
             .Include(x => x.Sessions)
                 .ThenInclude(x => x.IncidentReviews)
             .Include(x => x.ScoredEventResults)

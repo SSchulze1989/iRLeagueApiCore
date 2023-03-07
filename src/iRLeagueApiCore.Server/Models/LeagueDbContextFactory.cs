@@ -16,7 +16,6 @@ public sealed class LeagueDbContextFactory : IDbContextFactory<LeagueDbContext>
         optionsBuilder.UseMySQL(dbConnectionString);
 
         var dbContext = new LeagueDbContext(optionsBuilder.Options);
-        dbContext.Database.Migrate();
         return dbContext;
     }
 }

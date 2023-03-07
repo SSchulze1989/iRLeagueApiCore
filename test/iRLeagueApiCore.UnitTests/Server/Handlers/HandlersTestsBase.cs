@@ -121,7 +121,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAcces
     /// <returns><typeparamref name="TResult"/> Result of the handle method</returns>
     public virtual async Task<TResult> ShouldHandleDefault()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
 
         var request = DefaultRequest();
         var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
@@ -154,7 +154,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAcces
     public virtual async Task<TResult> HandleSpecialAsync(TRequest request, Action<TRequest, TResult, LeagueDbContext>? assertions,
         Action<TRequest, LeagueDbContext>? preTestAssertions = default)
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
 
         var handler = CreateTestHandler(dbContext, MockHelpers.TestValidator<TRequest>());
 
@@ -170,7 +170,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAcces
     /// </summary
     public virtual async Task ShouldHandleValidationFailed()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         var mockValidator = MockHelpers.MockValidator<TRequest>();
         mockValidator.Setup(x => x.Validate(It.IsAny<TRequest>()))
             .Returns(ValidationFailed());

@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-[Collection("DbTestFixture")]
 public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHandler, GetResultRequest, EventResultModel>
 {
     public GetResultHandlerTests() : base()

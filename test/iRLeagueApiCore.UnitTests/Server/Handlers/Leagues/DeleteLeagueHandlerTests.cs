@@ -6,7 +6,6 @@ using MediatR;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 
-[Collection("DbTestFixture")]
 public sealed class DeleteLeagueDbTestFixture : HandlersTestsBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
 {
     public DeleteLeagueDbTestFixture() : base()

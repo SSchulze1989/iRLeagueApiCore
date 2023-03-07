@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
-[Collection("DbTestFixture")]
 public sealed class LeagueDbTestFixture : IClassFixture<DbTestFixture>
 {
     DbTestFixture Fixture { get; }

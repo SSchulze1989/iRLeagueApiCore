@@ -5,7 +5,6 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-[Collection("DbTestFixture")]
 public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
 {
     public DeleteResultConfigHandlerTests() : base()

@@ -4,27 +4,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.DataAccess;
 
-[Collection("DataAccessTests")]
-public sealed class DataAccessMockHelperTests
+public sealed class DataAccessMockHelperTests : IAsyncLifetime
 {
+    private readonly string databaseName = Guid.NewGuid().ToString();
     private readonly DataAccessMockHelper accessMockHelper = new();
 
     [Fact]
     public async Task PopulateBasicTestsSet_ShouldNotThrow()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
     }
 
     [Fact]
     public async Task PopulateBasicTestSet_ShouldNotLoseDataBetweenContexts()
     {
-        using (var dbContext = accessMockHelper.CreateMockDbContext())
+        using (var dbContext = accessMockHelper.CreateMockDbContext(databaseName))
         {
             await accessMockHelper.PopulateBasicTestSet(dbContext);
         }
 
-        using (var dbContext = accessMockHelper.CreateMockDbContext())
+        using (var dbContext = accessMockHelper.CreateMockDbContext(databaseName))
         {
             dbContext.Leagues.Should().HaveCount(1);
         }
@@ -33,7 +33,7 @@ public sealed class DataAccessMockHelperTests
     [Fact]
     public async Task PopulateBasicTestSet_ShouldHaveCorrectNavigationProperties()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
 
         var session = await dbContext.Sessions
@@ -48,7 +48,7 @@ public sealed class DataAccessMockHelperTests
     [Fact]
     public async Task PopulateBasicTestSet_EventsShouldHaveRawResults()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
 
         var events = await dbContext.Events
@@ -64,7 +64,7 @@ public sealed class DataAccessMockHelperTests
     [Fact]
     public async Task PopulateBasicTestSet_SomeLeagueMembersShouldHaveTeam()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
 
         var leagueMembers = await dbContext.LeagueMembers
@@ -77,7 +77,7 @@ public sealed class DataAccessMockHelperTests
     [Fact]
     public async Task PopulateBasicTestSet_ResultShouldHaveSessionResults()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
 
         var result = await dbContext.EventResults
@@ -90,7 +90,7 @@ public sealed class DataAccessMockHelperTests
     [Fact]
     public async Task PopulateBasicTestSet_SessionsShouldHaveAtLeastOneReview()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
 
         var sessions = await dbContext.Sessions
@@ -106,7 +106,7 @@ public sealed class DataAccessMockHelperTests
     [Fact]
     public async Task PopulateBasicTestSet_ShouldHaveVoteCategories()
     {
-        using var dbContext = accessMockHelper.CreateMockDbContext();
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
 
         var voteCategories = await dbContext.VoteCategories
@@ -122,7 +122,7 @@ public sealed class DataAccessMockHelperTests
         long pointRuleId;
         int scoringCount;
 
-        using (var dbContext = accessMockHelper.CreateMockDbContext())
+        using (var dbContext = accessMockHelper.CreateMockDbContext(databaseName))
         {
             await accessMockHelper.PopulateBasicTestSet(dbContext);
 
@@ -140,7 +140,7 @@ public sealed class DataAccessMockHelperTests
             await dbContext.SaveChangesAsync();
         }
 
-        using (var dbContext = accessMockHelper.CreateMockDbContext())
+        using (var dbContext = accessMockHelper.CreateMockDbContext(databaseName))
         {
             var config = await dbContext.ResultConfigurations
                 .Include(x => x.Scorings)
@@ -148,5 +148,19 @@ public sealed class DataAccessMockHelperTests
 
             config.Scorings.Should().HaveCount(scoringCount);
         }
+    }
+
+    public async Task InitializeAsync()
+    {
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
+        dbContext.Database.EnsureCreated();
+        await Task.CompletedTask;
+    }
+
+    public async Task DisposeAsync()
+    {
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
+        dbContext.Database.EnsureDeleted();
+        await Task.CompletedTask;
     }
 }

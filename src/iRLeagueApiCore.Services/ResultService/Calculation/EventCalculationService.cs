@@ -26,6 +26,7 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
         EventCalculationResult result = new(data);
         result.ResultId = config.ResultId;
         result.ResultConfigId = config.ResultConfigId;
+        result.ChampSeasonId = config.ChampSeasonId;
         result.Name = config.DisplayName;
         List<SessionCalculationResult> sessionResults = new();
         foreach (var sessionConfig in config.SessionResultConfigurations.Where(x => x.IsCombinedResult == false).OrderBy(x => x.SessionNr))
