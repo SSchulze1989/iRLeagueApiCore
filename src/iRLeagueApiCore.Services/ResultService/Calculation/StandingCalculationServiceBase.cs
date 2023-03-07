@@ -66,7 +66,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
     public abstract Task<StandingCalculationResult> Calculate(StandingCalculationData data);
 
     protected static IComparable GetEventOrderValue<T>(GroupedEventResult<T> eventResult) where T : notnull
-        => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints);
+        => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints + result.ResultRow.BonusPoints);
 
     protected StandingRowCalculationResult AccumulateTotalPoints(StandingRowCalculationResult row)
     {
