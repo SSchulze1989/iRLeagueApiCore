@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Authentication;
+using iRLeagueApiCore.Server.Handlers.Users;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +16,7 @@ using System.Text.Json;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [ApiController]
+[TypeFilter(typeof(DefaultExceptionFilterAttribute))]
 [Route("[controller]")]
 public sealed class AuthenticateController : Controller
 {
@@ -141,30 +143,13 @@ public sealed class AuthenticateController : Controller
     [Route("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-        _logger.LogInformation("Registering new user {UserName}", model.Username);
-        var userExists = await userManager.FindByNameAsync(model.Username);
-        if (userExists != null)
+        var request = new RegisterUserRequest(model);
+        var status = await mediator.Send(request);
+        if (status.result.Succeeded)
         {
-            _logger.LogInformation("User {UserName} already exists", model.Username);
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+            return CreatedAtAction(nameof(UsersController.GetUser), nameof(UsersController), status.user.UserId, status.user);
         }
-
-        ApplicationUser user = new ApplicationUser()
-        {
-            Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.Username
-        };
-        var result = await userManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
-        {
-            _logger.LogError("Failed to add user {UserName} due to errors: {Errors}", model.Username, result.Errors
-                .Select(x => $"{x.Code}: {x.Description}"));
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
-        }
-
-        _logger.LogInformation("User {UserName} created succesfully", model.Username);
-        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
     }
 
     [HttpPost]
