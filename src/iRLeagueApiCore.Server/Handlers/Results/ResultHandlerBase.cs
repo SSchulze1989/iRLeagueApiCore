@@ -21,6 +21,7 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         TrackId = result.Event.TrackId.GetValueOrDefault(),
         TrackName = result.Event.Track.TrackGroup.TrackName,
         ConfigName = result.Event.Track.ConfigName,
+        StrengthOfField = result.Event.SimSessionDetails.Any() ? result.Event.SimSessionDetails.First().EventStrengthOfField : 0,
         SessionResults = result.ScoredSessionResults.Select(sessionResult => new ResultModel()
         {
             LeagueId = sessionResult.LeagueId,
