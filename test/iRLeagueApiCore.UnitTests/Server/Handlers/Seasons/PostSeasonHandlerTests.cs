@@ -60,7 +60,7 @@ public sealed class PostSeasonDbTestFixture : HandlersTestsBase<PostSeasonHandle
 
     [Theory]
     [InlineData(0)]
-    [InlineData(42)]
+    [InlineData(-42)]
     public async Task HandleNotFound(long leagueId)
     {
         var request = DefaultRequest(leagueId);
