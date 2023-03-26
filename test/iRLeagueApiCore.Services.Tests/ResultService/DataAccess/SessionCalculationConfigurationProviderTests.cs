@@ -351,6 +351,74 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         }
     }
 
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideColumnValueRowFilter_WhenConfigured()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var condition = fixture.Build<FilterConditionEntity>()
+            .With(x => x.FilterType, FilterType.ColumnProperty)
+            .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
+            .Without(x => x.FilterOption)
+            .Create();
+        var filter = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Create();
+        config.ResultFilters.Add(filter);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var testFilter = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as ColumnValueRowFilter;
+            testFilter.Should().NotBeNull();
+            testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
+            testFilter.Comparator.Should().Be(condition.Comparator);
+            testFilter.FilterValues.Should().BeEquivalentTo(condition.FilterValues);
+            testFilter.Action.Should().Be(condition.Action);
+        }
+    }
+
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideMemberRowFilter_WhenConfigured()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var condition = fixture.Build<FilterConditionEntity>()
+            .With(x => x.FilterType, FilterType.Member)
+            .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
+            .Without(x => x.FilterOption)
+            .Create();
+        var filter = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Create();
+        config.ResultFilters.Add(filter);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var testFilter = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as MemberRowFilter;
+            testFilter.Should().NotBeNull();
+            testFilter!.MemberIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
+            testFilter.Action.Should().Be(condition.Action);
+        }
+    }
+
     private SessionCalculationConfigurationProvider CreateSut()
     {
         return fixture.Create<SessionCalculationConfigurationProvider>();
