@@ -153,8 +153,8 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     private static IEnumerable<RowFilter<ResultRowCalculationResult>> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
     {
         return pointFilters.Select(x => x.Conditions.FirstOrDefault())
-            .NotNull()
-            .Select(x => new ColumnValueRowFilter(x.ColumnPropertyName, x.Comparator, x.FilterValues, x.Action));
+            .Select(GetRowFilterFromCondition)
+            .NotNull();
     }
 
     private static IReadOnlyDictionary<int, T> PointsPerPlaceToDictionary<T>(IEnumerable<T> points)
@@ -162,5 +162,15 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return points
             .Select((x, i) => new { pos = i + 1, value = x })
             .ToDictionary(k => k.pos, v => v.value);
+    }
+
+    private static RowFilter<ResultRowCalculationResult>? GetRowFilterFromCondition(FilterConditionEntity? condition)
+    {
+        return condition?.FilterType switch
+        {
+            FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, condition.FilterValues, condition.Action),
+            FilterType.Member => new MemberRowFilter(condition.FilterValues, condition.Action),
+            _ => null,
+        };
     }
 }

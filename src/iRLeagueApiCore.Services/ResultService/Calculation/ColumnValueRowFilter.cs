@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
-internal class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
+internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
 {
     public ColumnValueRowFilter(string propertyName, ComparatorType comparator, IEnumerable<string> values, MatchedValueAction action)
     {
