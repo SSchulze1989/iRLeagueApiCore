@@ -70,7 +70,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.5.1</Version>
+		<Version>0.5.2-dev.1</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
