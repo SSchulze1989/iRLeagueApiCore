@@ -5,39 +5,32 @@ using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues;
 
-public sealed class LeaguesEndpoint : ILeaguesEndpoint
+public sealed class LeaguesEndpoint : EndpointBase, ILeaguesEndpoint
 {
-    private readonly HttpClientWrapper httpClientWrapper;
-    private readonly RouteBuilder routeBuilder;
-
-    private string QueryUrl => routeBuilder.Build();
-
-    public LeaguesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder)
+    public LeaguesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
     {
-        this.httpClientWrapper = httpClientWrapper;
-        this.routeBuilder = routeBuilder;
         routeBuilder.AddEndpoint("Leagues");
     }
 
     async Task<ClientActionResult<IEnumerable<LeagueModel>>> IGetEndpoint<IEnumerable<LeagueModel>>.Get(CancellationToken cancellationToken)
     {
-        return await httpClientWrapper.GetAsClientActionResult<IEnumerable<LeagueModel>>(QueryUrl, cancellationToken);
+        return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<LeagueModel>>(QueryUrl, cancellationToken);
     }
 
     async Task<ClientActionResult<LeagueModel>> ILeaguesEndpoint.Post(PostLeagueModel model, CancellationToken cancellationToken)
     {
-        return await httpClientWrapper.PostAsClientActionResult<LeagueModel>(QueryUrl, model, cancellationToken);
+        return await HttpClientWrapper.PostAsClientActionResult<LeagueModel>(QueryUrl, model, cancellationToken);
     }
 
     ILeagueByIdEndpoint ILeaguesEndpoint.WithId(long leagueId)
     {
-        return new LeagueByIdEndpoint(httpClientWrapper, routeBuilder, leagueId);
+        return new LeagueByIdEndpoint(HttpClientWrapper, RouteBuilder, leagueId);
     }
 
     ILeagueByNameEndpoint ILeaguesEndpoint.WithName(string leagueName)
     {
-        var withNameBuilder = routeBuilder.Copy();
+        var withNameBuilder = RouteBuilder.Copy();
         withNameBuilder.RemoveLast();
-        return new LeagueByNameEndpoint(httpClientWrapper, withNameBuilder, leagueName);
+        return new LeagueByNameEndpoint(HttpClientWrapper, withNameBuilder, leagueName);
     }
 }

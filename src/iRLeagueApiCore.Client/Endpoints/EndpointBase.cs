@@ -3,7 +3,7 @@ using iRLeagueApiCore.Client.QueryBuilder;
 
 namespace iRLeagueApiCore.Client.Endpoints;
 
-public class EndpointBase
+public class EndpointBase : IEndpoint
 {
     protected HttpClientWrapper HttpClientWrapper { get; }
     protected RouteBuilder RouteBuilder { get; }
@@ -14,5 +14,10 @@ public class EndpointBase
     {
         HttpClientWrapper = httpClient;
         RouteBuilder = routeBuilder.Copy();
+    }
+
+    void IEndpoint.WithParameters(Func<IParameterBuilder, IParameterBuilder> parameterBuilder)
+    {
+        RouteBuilder.WithParameters(parameterBuilder);
     }
 }
