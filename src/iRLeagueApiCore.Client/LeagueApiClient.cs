@@ -6,7 +6,9 @@ using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
+using iRLeagueApiCore.Common.Models.Users;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
@@ -198,6 +200,15 @@ public sealed class LeagueApiClient : ILeagueApiClient
     {
         await tokenStore.ClearTokensAsync();
         logger.LogInformation("User logged out");
+    }
+
+    public async Task<ClientActionResult<bool>> Register(RegisterModel body, CancellationToken cancellationToken = default)
+    {
+        var requestUrl = "authenticate/register";
+        var request = httpClientWrapper.CreateRequest(HttpMethod.Post, requestUrl, body);
+        var response = await httpClientWrapper.SendRequest(request, cancellationToken);
+        var result = await httpClientWrapper.ConvertToClientActionResult<bool>(response, cancellationToken);
+        return result;
     }
 
     public void SetCurrentLeague(string leagueName)

@@ -4,6 +4,7 @@ using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Tracks;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Results;
+using iRLeagueApiCore.Common.Models.Users;
 
 namespace iRLeagueApiCore.Client;
 
@@ -20,6 +21,7 @@ public interface ILeagueApiClient
     Task Reauthorize(CancellationToken cancellationToken = default);
     Task CheckLogin(CancellationToken cancellationToken = default);
     Task LogOut();
+    Task<ClientActionResult<bool>> Register(RegisterModel user, CancellationToken cancellationToken = default);
     void SetCurrentLeague(string leagueName);
     void SetCurrentSeason(string leagueName, long seasonId);
 }

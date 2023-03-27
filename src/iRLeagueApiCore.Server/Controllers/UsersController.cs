@@ -118,4 +118,17 @@ public sealed class UsersController : LeagueApiController<UsersController>
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
     }
+
+    [HttpPost]
+    [Route("{id}/confirm/{cofirmationToken}")]
+    public async Task<ActionResult<bool>> ConfirmEmail([FromRoute] string userId, [FromRoute] string confirmationToken, CancellationToken cancellationToken = default)
+    {
+        var request = new ConfirmEmailRequest(userId, confirmationToken);
+        var (success, _) = await mediator.Send(request, cancellationToken);
+        if (success)
+        {
+            return Ok();
+        }
+        return BadRequest();
+    }
 }
