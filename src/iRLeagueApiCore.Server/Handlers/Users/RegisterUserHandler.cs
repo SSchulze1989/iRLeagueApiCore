@@ -68,38 +68,4 @@ public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, Registe
         var body = GenerateMailBody(user, token, linkTemplate);
         await emailClient.SendNoReplyMailAsync(user.Email, subject, body);
     }
-
-    private async Task<string> GetEmailConfirmationToken(ApplicationUser user)
-    {
-        return await userManager.GenerateEmailConfirmationTokenAsync(user);
-    }
-
-    private string GenerateMailBody(ApplicationUser user, string emailConfirmationToken, string linkTemplate)
-    {
-        var confirmUrl = GenerateEmailConfirmationLink(user.Id, emailConfirmationToken, linkTemplate);
-        var body = $"""
-            <p>Hello {user.UserName},</p>
-            <p>Thank you for your registration with <a href="https://irleaguemanager.net">iRLeagueManager.net</a> to bring your league results hosting to the next level!</p>
-            <p>
-                To finish activation of your account we only need you to confirm your email adress by clicking the link below:<br/>
-                <a href="{confirmUrl}">{confirmUrl}</a>
-            </p>
-            <p>After you finished the confirmation you can log into your account with your username and the password that you set when you registered on the webpage.</p>
-            <small>
-                In case you got this mail even if you did not register with yourself on iRLeagueManager.net or any connected service, please just ignore it.<br/>
-                For further questions please contact <a href="mailto:simon@irleaguemanager.net">simon@irleaguemanager.net</a><br/>
-                Please do not reply to this mail.
-            </small>
-            """;
-        return body;
-    }
-
-    private string GenerateEmailConfirmationLink(string userId, string token, string template)
-    {
-        var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-        var url = template
-            .Replace("{userId}", userId)
-            .Replace("{token}", encodedToken);
-        return url;
-    }
 }

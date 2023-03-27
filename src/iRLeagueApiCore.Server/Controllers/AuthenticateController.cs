@@ -53,7 +53,7 @@ public sealed class AuthenticateController : Controller
         {
             if (user.EmailConfirmed == false)
             {
-                return Unauthorized(new UnauthorizedResponse{
+                return Unauthorized(new UnauthorizedResponse() {
                     Status = "MailConfirm",
                     Errors = new object[] { "Missing email confirmation" },
                 });
@@ -62,12 +62,20 @@ public sealed class AuthenticateController : Controller
             var idToken = await CreateIdToken(user, userAgent);
             if (idToken is null)
             {
-                return Unauthorized();
+                return Unauthorized(new UnauthorizedResponse()
+                {
+                    Status = "Login failed",
+                    Errors = new object[] { "Could not generate id token" },
+                });
             }
             var accessToken = await CreateAccessTokenAsync(user);
             if (accessToken is null)
             {
-                return Unauthorized();
+                return Unauthorized(new UnauthorizedResponse()
+                {
+                    Status = "Login failed",
+                    Errors = new object[] { "Could not generate access token" },
+                });
             }
 
             _logger.LogInformation("User {UserName} logged in until {ValidTo}", user.UserName, idToken.ValidTo);
@@ -89,7 +97,11 @@ public sealed class AuthenticateController : Controller
             _logger.LogInformation("User {UserName} credentials do not match", model.Username);
         }
 
-        return Unauthorized();
+        return Unauthorized(new UnauthorizedResponse()
+        {
+            Status = "Wrong username or password",
+            Errors = Array.Empty<object>(),
+        });
     }
 
     [HttpPost]

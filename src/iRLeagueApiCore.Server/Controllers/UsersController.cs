@@ -6,6 +6,7 @@ using iRLeagueApiCore.Server.Handlers.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Cryptography.Xml;
 using System.Text;
 
 namespace iRLeagueApiCore.Server.Controllers;
@@ -133,5 +134,19 @@ public sealed class UsersController : LeagueApiController<UsersController>
             return Ok();
         }
         return BadRequest();
+    }
+
+    [HttpPost]
+    [Route("ResendConfirmation")]
+    public async Task<ActionResult> ResendConfirmationEmail([FromBody] string email, [FromQuery] string? linkTemplate = null, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(linkTemplate))
+        {
+            var baseUri = $"https://{Request.Host.Value}";
+            linkTemplate = $$"""{{baseUri}}/users/{userId}/confirm/{token}""";
+        }
+        var request = new SendConfirmationEmailRequest(email, linkTemplate);
+        await mediator.Send(request, cancellationToken);
+        return Ok();
     }
 }
