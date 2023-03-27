@@ -5,6 +5,8 @@ using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace iRLeagueApiCore.Server.Controllers;
 
@@ -120,10 +122,11 @@ public sealed class UsersController : LeagueApiController<UsersController>
     }
 
     [HttpPost]
-    [Route("{id}/confirm/{cofirmationToken}")]
+    [Route("{userId}/confirm/{confirmationToken}")]
     public async Task<ActionResult<bool>> ConfirmEmail([FromRoute] string userId, [FromRoute] string confirmationToken, CancellationToken cancellationToken = default)
     {
-        var request = new ConfirmEmailRequest(userId, confirmationToken);
+        var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(confirmationToken));
+        var request = new ConfirmEmailRequest(userId, decodedToken);
         var (success, _) = await mediator.Send(request, cancellationToken);
         if (success)
         {

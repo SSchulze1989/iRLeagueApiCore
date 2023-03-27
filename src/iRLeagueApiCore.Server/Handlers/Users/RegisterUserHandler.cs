@@ -8,7 +8,7 @@ using System.Text;
 
 namespace iRLeagueApiCore.Server.Handlers.Users;
 
-public record RegisterUserRequest(RegisterModel Model, string LinkTemplate = "") : IRequest<(UserModel? user, IdentityResult result)>;
+public record RegisterUserRequest(RegisterModel Model, string LinkTemplate) : IRequest<(UserModel? user, IdentityResult result)>;
 
 public enum UserRegistrationStatus
 {
@@ -96,10 +96,6 @@ public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, Registe
 
     private string GenerateEmailConfirmationLink(string userId, string token, string template)
     {
-        if (string.IsNullOrEmpty(template))
-        {
-            template = "https://irleaguemanager.net/member/{userId}/confirm/{token}";
-        }
         var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         var url = template
             .Replace("{userId}", userId)

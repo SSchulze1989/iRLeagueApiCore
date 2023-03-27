@@ -141,13 +141,18 @@ public sealed class AuthenticateController : Controller
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterModel model)
+    public async Task<IActionResult> Register([FromBody] RegisterModel model, [FromQuery] string? linkTemplate = null)
     {
-        var request = new RegisterUserRequest(model);
+        if (string.IsNullOrWhiteSpace(linkTemplate))
+        {
+            var baseUri = $"https://{Request.Host.Value}";
+            linkTemplate = $$"""{{baseUri}}/users/{userId}/confirm/{token}""";
+        }
+        var request = new RegisterUserRequest(model, linkTemplate);
         var status = await mediator.Send(request);
         if (status.result.Succeeded)
         {
-            return CreatedAtAction(nameof(UsersController.GetUser), nameof(UsersController), status.user.UserId, status.user);
+            return CreatedAtAction(nameof(UsersController.GetUser), nameof(UsersController), new { id = status.user.UserId }, status.user);
         }
         return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
     }
