@@ -17,6 +17,11 @@ public sealed class UsersEndpoint : GetAllEndpoint<LeagueUserModel>, IUsersEndpo
         return new UserByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
 
+    IPostEndpoint<object, string> IUsersEndpoint.ResendConfirmation()
+    {
+        return new ResendConfirmationEmailEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
     IPostEndpoint<IEnumerable<UserModel>, SearchModel> IUsersEndpoint.Search()
     {
         return new SearchEndpoint(HttpClientWrapper, RouteBuilder);
