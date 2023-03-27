@@ -35,36 +35,34 @@ public static class HttpExtensions
                     }
                 case HttpStatusCode.Unauthorized:
                     {
+                        var response = await httpResponse.Content.ReadFromJsonAsync<UnauthorizedResponse>(options: jsonOptions, cancellationToken: cancellationToken);
                         status = "Unauthorized";
-                        errors = new object[0];
+                        message = response.Status ?? string.Empty;
+                        errors = response.Errors ?? Array.Empty<object>();
                         break;
                     }
                 case HttpStatusCode.Forbidden:
                     {
                         status = "Forbidden";
-                        errors = new object[0];
+                        errors = Array.Empty<object>();
                         break;
                     }
                 case HttpStatusCode.NotFound:
                     {
                         status = "Not Found";
-                        errors = new object[0];
+                        errors = Array.Empty<object>();
                         break;
                     }
                 case HttpStatusCode.MethodNotAllowed:
                     {
                         status = "Method Not Allowed";
                         message = $"Method {httpResponse.RequestMessage?.Method.Method} not allowed on {httpResponse.RequestMessage?.RequestUri}";
-                        errors = new object[0];
+                        errors = Array.Empty<object>();
                         break;
                     }
                 case HttpStatusCode.InternalServerError:
                     {
-#if NETCOREAPP
                         var response = await httpResponse.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
-#else
-                            var response = await httpResponse.Content.ReadAsStringAsync();
-#endif
                         status = "Internal server Error";
                         message = response;
                         errors = new object[] { "Internal server Error " };
@@ -73,7 +71,7 @@ public static class HttpExtensions
                 default:
                     status = "Unknown Response";
                     message = "";
-                    errors = new object[0];
+                    errors = Array.Empty<object>();
                     break;
             }
             return new ClientActionResult<T>(false, status, message, default, httpResponse.StatusCode, requestUrl, errors);

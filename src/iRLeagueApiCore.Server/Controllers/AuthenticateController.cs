@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
+using iRLeagueApiCore.Common.Responses;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Authentication;
@@ -50,6 +51,14 @@ public sealed class AuthenticateController : Controller
         var user = await userManager.FindByNameAsync(model.Username);
         if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
         {
+            if (user.EmailConfirmed == false)
+            {
+                return Unauthorized(new UnauthorizedResponse{
+                    Status = "MailConfirm",
+                    Errors = new object[] { "Missing email confirmation" },
+                });
+            }
+
             var idToken = await CreateIdToken(user, userAgent);
             if (idToken is null)
             {
