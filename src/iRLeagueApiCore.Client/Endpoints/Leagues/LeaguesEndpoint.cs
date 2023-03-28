@@ -9,7 +9,7 @@ public sealed class LeaguesEndpoint : EndpointBase, ILeaguesEndpoint
 {
     public LeaguesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
     {
-        routeBuilder.AddEndpoint("Leagues");
+        RouteBuilder.AddEndpoint("Leagues");
     }
 
     async Task<ClientActionResult<IEnumerable<LeagueModel>>> IGetEndpoint<IEnumerable<LeagueModel>>.Get(CancellationToken cancellationToken)

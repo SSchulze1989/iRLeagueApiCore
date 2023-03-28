@@ -45,7 +45,7 @@ public sealed class UsersController : LeagueApiController<UsersController>
     [HttpGet]
     [Authorize]
     [Route("{id}")]
-    public async Task<ActionResult<UserModel>> GetUser([FromRoute] string id, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserModel>> GetUser([FromRoute] string id, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("[{Method}] user {UserId} by {Username}", "Get", id, User.Identity?.Name);
         var currentUserId = User.GetUserId()!;
@@ -131,9 +131,9 @@ public sealed class UsersController : LeagueApiController<UsersController>
         var (success, _) = await mediator.Send(request, cancellationToken);
         if (success)
         {
-            return Ok();
+            return Ok(true);
         }
-        return BadRequest();
+        return BadRequest(false);
     }
 
     [HttpPost]
@@ -147,6 +147,6 @@ public sealed class UsersController : LeagueApiController<UsersController>
         }
         var request = new SendConfirmationEmailRequest(email, linkTemplate);
         await mediator.Send(request, cancellationToken);
-        return Ok();
+        return NoContent();
     }
 }

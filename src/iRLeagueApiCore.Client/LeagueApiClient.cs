@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Endpoints;
 using iRLeagueApiCore.Client.Endpoints.Leagues;
+using iRLeagueApiCore.Client.Endpoints.Register;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Tracks;
 using iRLeagueApiCore.Client.Endpoints.Users;
@@ -202,15 +203,6 @@ public sealed class LeagueApiClient : ILeagueApiClient
         logger.LogInformation("User logged out");
     }
 
-    public async Task<ClientActionResult<bool>> Register(RegisterModel body, CancellationToken cancellationToken = default)
-    {
-        var requestUrl = "authenticate/register";
-        var request = httpClientWrapper.CreateRequest(HttpMethod.Post, requestUrl, body);
-        var response = await httpClientWrapper.SendRequest(request, cancellationToken);
-        var result = await httpClientWrapper.ConvertToClientActionResult<bool>(response, cancellationToken);
-        return result;
-    }
-
     public void SetCurrentLeague(string leagueName)
     {
         CurrentLeagueName = leagueName;
@@ -236,5 +228,10 @@ public sealed class LeagueApiClient : ILeagueApiClient
     ICustomEndpoint ILeagueApiClient.CustomEndpoint(string route)
     {
         return new CustomEndpoint(httpClientWrapper, new(), route);
+    }
+
+    IAuthenticateEndpoint ILeagueApiClient.Authenticate()
+    {
+        return new AuthenticateEndpoint(httpClientWrapper, new());
     }
 }

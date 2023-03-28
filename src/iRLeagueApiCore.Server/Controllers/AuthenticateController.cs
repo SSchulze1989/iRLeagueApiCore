@@ -173,7 +173,7 @@ public sealed class AuthenticateController : Controller
         var status = await mediator.Send(request);
         if (status.result.Succeeded)
         {
-            return CreatedAtAction(nameof(UsersController.GetUser), nameof(UsersController), new { id = status.user.UserId }, status.user);
+            return CreatedAtAction(nameof(UsersController.GetUser), "Users", new { id = status.user.UserId }, status.user);
         }
         return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
     }
