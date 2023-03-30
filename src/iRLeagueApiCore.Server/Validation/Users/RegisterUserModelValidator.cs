@@ -20,6 +20,18 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserRequest>
             .MustAsync(UsernameUnique)
             .WithMessage("Username already exists");
 
+        RuleFor(x => x.Model.Firstname)
+            .NotEmpty()
+            .WithMessage("Firstname may not be empty")
+            .Must(x => x.IndexOfAny(new[] { ';', '!', ',', '$', '&', '§', '"', '/', '{', '}', '[', ']', '\\' }) == -1)
+            .WithMessage("Firstname may not contain special characters");
+
+        RuleFor(x => x.Model.Lastname)
+            .NotEmpty()
+            .WithMessage("Lastname may not be empty")
+            .Must(x => x.IndexOfAny(new[] { ';', '!', ',', '$', '&', '§', '"', '/', '{', '}', '[', ']', '\\' }) == -1)
+            .WithMessage("Lastname may not contain special characters");
+
         RuleFor(x => x.Model.Email)
             .EmailAddress()
             .MustAsync(EmailAddressUnique)

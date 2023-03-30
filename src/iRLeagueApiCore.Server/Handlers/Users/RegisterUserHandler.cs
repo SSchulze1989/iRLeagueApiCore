@@ -40,12 +40,7 @@ public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, Registe
             return (null, IdentityResult.Failed(userManager.ErrorDescriber.DuplicateUserName(model.Username)));
         }
 
-        ApplicationUser user = new()
-        {
-            Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.Username
-        };
+        var user = CreateApplicationUser(model);
         var result = await userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded)
         {

@@ -32,6 +32,19 @@ public class UsersHandlerBase<THandler, TRequest>
         return await userManager.FindByIdAsync(userId);
     }
 
+    protected ApplicationUser CreateApplicationUser(RegisterModel model)
+    {
+        var fullname = GetUserFullName(model.Firstname, model.Lastname);
+        var user = new ApplicationUser()
+        {
+            UserName = model.Username,
+            FullName = fullname,
+            Email = model.Email,
+            SecurityStamp = Guid.NewGuid().ToString(),
+        };
+        return user;
+    }
+
     protected UserModel MapToUserModel(ApplicationUser user, UserModel model)
     {
         (var firstname, var lastname) = GetUserFirstnameLastname(user.FullName);
