@@ -7,4 +7,5 @@ public interface IUsersEndpoint
 {
     IUserByIdEndpoint WithId(string id);
     IPostEndpoint<IEnumerable<UserModel>, SearchModel> Search();
+    IPostEndpoint<object, string> ResendConfirmation();
 }

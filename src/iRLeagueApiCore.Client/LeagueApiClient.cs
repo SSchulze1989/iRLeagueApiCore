@@ -1,12 +1,15 @@
 ﻿using iRLeagueApiCore.Client.Endpoints;
 using iRLeagueApiCore.Client.Endpoints.Leagues;
+using iRLeagueApiCore.Client.Endpoints.Register;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Tracks;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
+using iRLeagueApiCore.Common.Models.Users;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
@@ -225,5 +228,10 @@ public sealed class LeagueApiClient : ILeagueApiClient
     ICustomEndpoint ILeagueApiClient.CustomEndpoint(string route)
     {
         return new CustomEndpoint(httpClientWrapper, new(), route);
+    }
+
+    IAuthenticateEndpoint ILeagueApiClient.Authenticate()
+    {
+        return new AuthenticateEndpoint(httpClientWrapper, new());
     }
 }

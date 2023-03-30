@@ -54,22 +54,22 @@ public sealed class PasswordResetHandler : IRequestHandler<PasswordResetRequest,
     private static string GenerateMailBody(ApplicationUser user, string token, string linkTemplate)
     {
         var resetUrl = GeneratePasswordResetUrl(user.Id, token, linkTemplate);
-        StringBuilder sb = new();
-        sb.Append($@"
-<p>Dear User,</p>
-<p>For your account with the username ""{ user.UserName}"" a password reset was requested.
-If you posted this request pleas use the following link to complete the process and set a new password:</p>
-<a href=""{resetUrl}"">{resetUrl}</a>
-<p>If you did not post this request you can ignore this mail.</p>
-<p>Please do not reply to this mail. Messages send to the sender of this mail will not be processed</p>");
-        return sb.ToString();
+        var body = $"""
+            <p>Dear User,</p>
+            <p>For your account with the username "{user.UserName}" a password reset was requested.
+            If you posted this request pleas use the following link to complete the process and set a new password:</p>
+            <a href="{resetUrl}">{resetUrl}</a>
+            <p>If you did not post this request you can ignore this mail.</p>
+            <p>Please do not reply to this mail. Messages send to the sender of this mail will not be processed</p>
+            """;
+        return body;
     }
 
     private static string GeneratePasswordResetUrl(string userId, string token, string template)
     {
         if (string.IsNullOrWhiteSpace(template))
         {
-            template = "https://irleaguemanager.net/app/member/{userId}/SetPassword/{token}";
+            template = "https://irleaguemanager.net/member/{userId}/SetPassword/{token}";
         }
         var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         var url = template

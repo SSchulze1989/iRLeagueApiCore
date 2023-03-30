@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>f8b50589-89e6-49b7-9dca-793830174a9e</UserSecretsId>
 	<ImplicitUsings>enable</ImplicitUsings>
+	<LangVersion>11</LangVersion>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -21,7 +22,7 @@
     <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.5.2" CopyToOutputDirectory="lib/net6.0">
+	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.6.0-dev.3" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
     <PackageReference Include="iRLeagueDatabaseCore" Version="0.5.2" />
 	<PackageReference Include="MediatR" Version="10.0.1" />
@@ -70,7 +71,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.5.2</Version>
+		<Version>0.6.0-dev.7</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
