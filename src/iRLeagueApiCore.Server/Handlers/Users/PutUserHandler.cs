@@ -28,6 +28,7 @@ public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserReq
     {
         user.FullName = GetUserFullName(model.Firstname, model.Lastname);
         user.Email = model.Email;
+        user.HideFullName = model.HideFirstnameLastname;
         return user;
     }
 }

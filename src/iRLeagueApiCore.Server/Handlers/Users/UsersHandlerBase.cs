@@ -40,6 +40,7 @@ public class UsersHandlerBase<THandler, TRequest>
             UserName = model.Username,
             FullName = fullname,
             Email = model.Email,
+            HideFullName = false,
             SecurityStamp = Guid.NewGuid().ToString(),
         };
         return user;
@@ -50,15 +51,19 @@ public class UsersHandlerBase<THandler, TRequest>
         (var firstname, var lastname) = GetUserFirstnameLastname(user.FullName);
         model.UserId = user.Id;
         model.UserName = user.UserName;
-        model.Firstname = firstname;
-        model.Lastname = lastname;
+        model.Firstname = user.HideFullName ? string.Empty : firstname;
+        model.Lastname = user.HideFullName ? string.Empty : lastname;
         return model;
     }
 
     protected PrivateUserModel MapToPrivateUserModel(ApplicationUser user, PrivateUserModel model)
     {
         MapToUserModel(user, model);
+        (var firstname, var lastname) = GetUserFirstnameLastname(user.FullName);
+        model.Firstname = firstname;
+        model.Lastname = lastname;
         model.Email = user.Email;
+        model.HideFirstnameLastname = user.HideFullName;
         return model;
     }
 
