@@ -225,9 +225,9 @@ public sealed class LeagueApiClient : ILeagueApiClient
         CurrentSeason = CurrentLeague.Seasons().WithId(seasonId);
     }
 
-    ICustomEndpoint ILeagueApiClient.CustomEndpoint(string route)
+    ICustomEndpoint<T> ILeagueApiClient.CustomEndpoint<T>(string route)
     {
-        return new CustomEndpoint(httpClientWrapper, new(), route);
+        return new CustomEndpoint<T>(httpClientWrapper, new(), route);
     }
 
     IAuthenticateEndpoint ILeagueApiClient.Authenticate()

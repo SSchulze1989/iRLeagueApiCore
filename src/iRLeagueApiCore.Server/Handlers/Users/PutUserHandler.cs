@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record PutUserRequest(string UserId, PutUserModel Model) : IRequest<PrivateUserModel>;
 
-public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, IRequestHandler<PutUserRequest, UserModel>
+public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, IRequestHandler<PutUserRequest, PrivateUserModel>
 {
     private readonly UserDbContext userDbContext;
 
@@ -16,7 +16,7 @@ public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserReq
         this.userDbContext = userDbContext;
     }
 
-    public async Task<UserModel> Handle(PutUserRequest request, CancellationToken cancellationToken)
+    public async Task<PrivateUserModel> Handle(PutUserRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var user = await GetUserEntityAsync(request.UserId, cancellationToken)

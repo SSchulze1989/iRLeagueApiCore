@@ -17,7 +17,7 @@ public interface ILeagueApiClient
     ILeaguesEndpoint Leagues();
     IUsersEndpoint Users();
     ITracksEndpoint Tracks();
-    ICustomEndpoint CustomEndpoint(string route);
+    ICustomEndpoint<T> CustomEndpoint<T>(string route);
     Task<ClientActionResult<LoginResponse>> LogIn(string username, string password, CancellationToken cancellationToken = default);
     Task Reauthorize(CancellationToken cancellationToken = default);
     Task CheckLogin(CancellationToken cancellationToken = default);
