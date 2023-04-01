@@ -4,7 +4,7 @@ using iRLeagueApiCore.Client.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints;
 
-public sealed class CustomEndpoint : UpdateEndpoint<object, object>, ICustomEndpoint
+public sealed class CustomEndpoint<T> : UpdateEndpoint<T, object>, ICustomEndpoint<T>
 {
     private string Route { get; }
 
@@ -15,18 +15,18 @@ public sealed class CustomEndpoint : UpdateEndpoint<object, object>, ICustomEndp
         Route = route;
     }
 
-    async Task<ClientActionResult<object>> IPostEndpoint<object, object>.Post(object model, CancellationToken cancellationToken)
+    async Task<ClientActionResult<T>> IPostEndpoint<T, object>.Post(object model, CancellationToken cancellationToken)
     {
-        return await HttpClientWrapper.PostAsClientActionResult<object>(QueryUrl, model, cancellationToken);
+        return await HttpClientWrapper.PostAsClientActionResult<T>(QueryUrl, model, cancellationToken);
     }
 
-    async Task<ClientActionResult<object>> IPostEndpoint<object>.Post(CancellationToken cancellationToken)
+    async Task<ClientActionResult<T>> IPostEndpoint<T>.Post(CancellationToken cancellationToken)
     {
-        return await HttpClientWrapper.PostAsClientActionResult<object>(QueryUrl, null, cancellationToken);
+        return await HttpClientWrapper.PostAsClientActionResult<T>(QueryUrl, null, cancellationToken);
     }
 
-    async Task<ClientActionResult<IEnumerable<object>>> ICustomEndpoint.GetAll(CancellationToken cancellationToken)
+    async Task<ClientActionResult<IEnumerable<T>>> ICustomEndpoint<T>.GetAll(CancellationToken cancellationToken)
     {
-        return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<object>>(QueryUrl, cancellationToken);
+        return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<T>>(QueryUrl, cancellationToken);
     }
 }

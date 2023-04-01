@@ -14,15 +14,11 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
 
     protected virtual LeagueEntity MapToLeagueEntity(LeagueUser user, PostLeagueModel postLeague, LeagueEntity leagueEntity)
     {
-        var createdOn = DateTime.UtcNow;
         leagueEntity.Name = postLeague.Name;
         leagueEntity.NameFull = postLeague.NameFull;
-        leagueEntity.CreatedOn = createdOn;
-        leagueEntity.LastModifiedOn = createdOn;
-        leagueEntity.CreatedByUserId = user.Id;
-        leagueEntity.LastModifiedByUserId = user.Id;
-        leagueEntity.CreatedByUserName = user.Name;
-        leagueEntity.LastModifiedByUserName = user.Name;
+        leagueEntity.LeaguePublic = postLeague.LeaguePublic;
+        CreateVersionEntity(user, leagueEntity);
+        UpdateVersionEntity(user, leagueEntity);
         return leagueEntity;
     }
 
@@ -61,9 +57,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         leagueEntity.ProtestCoolDownPeriod = putLeague.ProtestCoolDownPeriod;
         leagueEntity.ProtestsClosedAfter = putLeague.ProtestsClosedAfter;
         leagueEntity.ProtestsPublic = putLeague.ProtestsPublic;
-        leagueEntity.LastModifiedOn = DateTime.UtcNow;
-        leagueEntity.LastModifiedByUserId = user.Id;
-        leagueEntity.LastModifiedByUserName = user.Name;
+        leagueEntity.LeaguePublic = putLeague.LeaguePublic;
+        UpdateVersionEntity(user, leagueEntity);
         return leagueEntity;
     }
 }

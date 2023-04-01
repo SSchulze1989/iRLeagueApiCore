@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Server.Controllers;
+using iRLeagueApiCore.Server.Handlers.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -16,22 +17,31 @@ public sealed class DefaultExceptionFilterAttribute : Attribute, IExceptionFilte
 
     public void OnException(ExceptionContext context)
     {
-        if (context.Exception is ValidationException validationException)
+        context.Result = context.Exception switch
         {
-            _logger.LogInformation("Bad request - errors: {ValidationErrors}",
-                validationException.Errors.Select(x => x.ErrorMessage));
-            context.Result = validationException.ToActionResult();
-            return;
-        }
-        if (context.Exception is ResourceNotFoundException notFoundException)
-        {
-            _logger.LogInformation("Resource not found");
-            context.Result = new NotFoundResult();
-        }
-        if (context.Exception is UnauthorizedAccessException unauthorizedAccess)
-        {
-            _logger.LogInformation("Permission denied for user", context.HttpContext.User.Identity?.Name);
-            context.Result = new ForbidResult();
-        }
+            ValidationException ex => ValidationActionResult(ex),
+            ResourceNotFoundException ex => ResourceNotFoundActionResult(ex),
+            UnauthorizedAccessException ex => UnauthorizedActionResult(ex, context.HttpContext),
+            _ => context.Result
+        };
+    }
+
+    private IActionResult ValidationActionResult(ValidationException validationException)
+    {
+        _logger.LogInformation("Bad request - errors: {ValidationErrors}",
+                    validationException.Errors.Select(x => x.ErrorMessage));
+        return validationException.ToActionResult();
+    }
+
+    private IActionResult ResourceNotFoundActionResult(ResourceNotFoundException notFoundException)
+    {
+        _logger.LogInformation("Resource not found");
+        return new NotFoundResult();
+    }
+
+    private IActionResult UnauthorizedActionResult(UnauthorizedAccessException unauthorizedAccess, HttpContext context)
+    {
+        _logger.LogInformation("Permission denied for user", context.User.Identity?.Name);
+        return new ForbidResult();
     }
 }

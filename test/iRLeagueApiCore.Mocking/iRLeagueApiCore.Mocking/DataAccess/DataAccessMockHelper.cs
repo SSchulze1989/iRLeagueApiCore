@@ -64,6 +64,7 @@ public sealed class DataAccessMockHelper
     public LeagueEntity CreateLeague()
     {
         return fixture.Build<LeagueEntity>()
+            .With(x => x.LeaguePublic, LeaguePublicSetting.PublicListed)
             .Without(x => x.VoteCategories)
             .Without(x => x.LeagueMembers)
             .Without(x => x.PointRules)

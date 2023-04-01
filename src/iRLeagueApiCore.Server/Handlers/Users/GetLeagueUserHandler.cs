@@ -8,7 +8,7 @@ public record GetLeagueUserRequest(string LeagueName, string UserId) : IRequest<
 public sealed class GetLeagueUserHandler : UsersHandlerBase<GetLeagueUserHandler, GetLeagueUserRequest>, IRequestHandler<GetLeagueUserRequest, LeagueUserModel>
 {
     public GetLeagueUserHandler(ILogger<GetLeagueUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<GetLeagueUserRequest>> validators) : base(logger, userDbContext, userManager, validators)
+        IEnumerable<IValidator<GetLeagueUserRequest>> validators) : base(logger, userManager, validators)
     {
     }
 

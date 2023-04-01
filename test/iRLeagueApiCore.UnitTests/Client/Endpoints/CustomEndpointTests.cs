@@ -10,6 +10,6 @@ public sealed class CustomEndpointTests
         var route = "CustomEndpoint/parameter?queryParam=1";
         var expected = $"{EndpointsTests.BaseUrl}{route}";
 
-        await EndpointsTests.TestRequestUrl<ICustomEndpoint>(expected, x => new CustomEndpoint(x, new(), route), x => x.Get());
+        await EndpointsTests.TestRequestUrl<ICustomEndpoint<object>>(expected, x => new CustomEndpoint<object>(x, new(), route), x => x.Get());
     }
 }

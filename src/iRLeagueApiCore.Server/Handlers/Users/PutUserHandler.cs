@@ -6,14 +6,17 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record PutUserRequest(string UserId, PutUserModel Model) : IRequest<PrivateUserModel>;
 
-public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, IRequestHandler<PutUserRequest, UserModel>
+public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest>, IRequestHandler<PutUserRequest, PrivateUserModel>
 {
+    private readonly UserDbContext userDbContext;
+
     public PutUserHandler(ILogger<PutUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<PutUserRequest>> validators) : base(logger, userDbContext, userManager, validators)
+        IEnumerable<IValidator<PutUserRequest>> validators) : base(logger, userManager, validators)
     {
+        this.userDbContext = userDbContext;
     }
 
-    public async Task<UserModel> Handle(PutUserRequest request, CancellationToken cancellationToken)
+    public async Task<PrivateUserModel> Handle(PutUserRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var user = await GetUserEntityAsync(request.UserId, cancellationToken)
@@ -28,6 +31,13 @@ public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserReq
     {
         user.FullName = GetUserFullName(model.Firstname, model.Lastname);
         user.Email = model.Email;
+        user.HideFullName = model.HideFirstnameLastname;
         return user;
+    }
+
+    private async Task<ApplicationUser?> GetUserEntityAsync(string? userId, CancellationToken cancellationToken)
+    {
+        return await userDbContext.Users
+            .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
     }
 }

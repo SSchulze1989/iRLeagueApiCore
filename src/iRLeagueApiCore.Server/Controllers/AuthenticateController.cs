@@ -1,7 +1,9 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
+using iRLeagueApiCore.Common.Responses;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Authentication;
+using iRLeagueApiCore.Server.Handlers.Users;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +17,7 @@ using System.Text.Json;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [ApiController]
+[TypeFilter(typeof(DefaultExceptionFilterAttribute))]
 [Route("[controller]")]
 public sealed class AuthenticateController : Controller
 {
@@ -48,15 +51,31 @@ public sealed class AuthenticateController : Controller
         var user = await userManager.FindByNameAsync(model.Username);
         if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
         {
+            if (user.EmailConfirmed == false)
+            {
+                return Unauthorized(new UnauthorizedResponse() {
+                    Status = "MailConfirm",
+                    Errors = new object[] { "Missing email confirmation" },
+                });
+            }
+
             var idToken = await CreateIdToken(user, userAgent);
             if (idToken is null)
             {
-                return Unauthorized();
+                return Unauthorized(new UnauthorizedResponse()
+                {
+                    Status = "Login failed",
+                    Errors = new object[] { "Could not generate id token" },
+                });
             }
             var accessToken = await CreateAccessTokenAsync(user);
             if (accessToken is null)
             {
-                return Unauthorized();
+                return Unauthorized(new UnauthorizedResponse()
+                {
+                    Status = "Login failed",
+                    Errors = new object[] { "Could not generate access token" },
+                });
             }
 
             _logger.LogInformation("User {UserName} logged in until {ValidTo}", user.UserName, idToken.ValidTo);
@@ -78,7 +97,11 @@ public sealed class AuthenticateController : Controller
             _logger.LogInformation("User {UserName} credentials do not match", model.Username);
         }
 
-        return Unauthorized();
+        return Unauthorized(new UnauthorizedResponse()
+        {
+            Status = "Wrong username or password",
+            Errors = Array.Empty<object>(),
+        });
     }
 
     [HttpPost]
@@ -139,32 +162,20 @@ public sealed class AuthenticateController : Controller
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterModel model)
+    public async Task<IActionResult> Register([FromBody] RegisterModel model, [FromQuery] string? linkTemplate = null)
     {
-        _logger.LogInformation("Registering new user {UserName}", model.Username);
-        var userExists = await userManager.FindByNameAsync(model.Username);
-        if (userExists != null)
+        if (string.IsNullOrWhiteSpace(linkTemplate))
         {
-            _logger.LogInformation("User {UserName} already exists", model.Username);
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+            var baseUri = $"https://{Request.Host.Value}";
+            linkTemplate = $$"""{{baseUri}}/users/{userId}/confirm/{token}""";
         }
-
-        ApplicationUser user = new ApplicationUser()
+        var request = new RegisterUserRequest(model, linkTemplate);
+        var status = await mediator.Send(request);
+        if (status.result.Succeeded)
         {
-            Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.Username
-        };
-        var result = await userManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
-        {
-            _logger.LogError("Failed to add user {UserName} due to errors: {Errors}", model.Username, result.Errors
-                .Select(x => $"{x.Code}: {x.Description}"));
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+            return CreatedAtAction(nameof(UsersController.GetUser), "Users", new { id = status.user.UserId }, status.user);
         }
-
-        _logger.LogInformation("User {UserName} created succesfully", model.Username);
-        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
     }
 
     [HttpPost]

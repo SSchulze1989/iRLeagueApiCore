@@ -9,8 +9,8 @@ public record GetUserRequest(string UserId) : IRequest<UserModel>;
 public sealed class GetUserHandler : UsersHandlerBase<GetUserHandler, GetUserRequest>,
     IRequestHandler<GetUserRequest, UserModel>
 {
-    public GetUserHandler(ILogger<GetUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<GetUserRequest>> validators) : base(logger, userDbContext, userManager, validators)
+    public GetUserHandler(ILogger<GetUserHandler> logger, UserManager<ApplicationUser> userManager,
+        IEnumerable<IValidator<GetUserRequest>> validators) : base(logger, userManager, validators)
     {
     }
 

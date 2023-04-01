@@ -18,6 +18,11 @@ public sealed class UserByIdEndpoint : EndpointBase, IUserByIdEndpoint, ILeagueU
         return new AddRoleEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
+    IPostEndpoint<object> IUserByIdEndpoint.ConfirmEmail(string token)
+    {
+        return new ConfirmEmailEndpoint(HttpClientWrapper, RouteBuilder, token);
+    }
+
     async Task<ClientActionResult<UserModel>> IGetEndpoint<UserModel>.Get(CancellationToken cancellationToken)
     {
         return await HttpClientWrapper.GetAsClientActionResult<UserModel>(QueryUrl, cancellationToken);
