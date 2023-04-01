@@ -9,22 +9,14 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 public class UsersHandlerBase<THandler, TRequest>
 {
     protected readonly ILogger<THandler> _logger;
-    protected readonly UserDbContext userDbContext;
     protected readonly UserManager<ApplicationUser> userManager;
     protected IEnumerable<IValidator<TRequest>> validators;
 
-    public UsersHandlerBase(ILogger<THandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager, IEnumerable<IValidator<TRequest>> validators)
+    public UsersHandlerBase(ILogger<THandler> logger, UserManager<ApplicationUser> userManager, IEnumerable<IValidator<TRequest>> validators)
     {
         _logger = logger;
         this.userManager = userManager;
-        this.userDbContext = userDbContext;
         this.validators = validators;
-    }
-
-    protected async Task<ApplicationUser?> GetUserEntityAsync(string? userId, CancellationToken cancellationToken)
-    {
-        return await userDbContext.Users
-            .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
     }
 
     protected async Task<ApplicationUser?> GetUserAsync(string? userId)
@@ -40,6 +32,7 @@ public class UsersHandlerBase<THandler, TRequest>
             UserName = model.Username,
             FullName = fullname,
             Email = model.Email,
+            HideFullName = false,
             SecurityStamp = Guid.NewGuid().ToString(),
         };
         return user;
@@ -50,15 +43,19 @@ public class UsersHandlerBase<THandler, TRequest>
         (var firstname, var lastname) = GetUserFirstnameLastname(user.FullName);
         model.UserId = user.Id;
         model.UserName = user.UserName;
-        model.Firstname = firstname;
-        model.Lastname = lastname;
+        model.Firstname = user.HideFullName ? string.Empty : firstname;
+        model.Lastname = user.HideFullName ? string.Empty : lastname;
         return model;
     }
 
     protected PrivateUserModel MapToPrivateUserModel(ApplicationUser user, PrivateUserModel model)
     {
         MapToUserModel(user, model);
+        (var firstname, var lastname) = GetUserFirstnameLastname(user.FullName);
+        model.Firstname = firstname;
+        model.Lastname = lastname;
         model.Email = user.Email;
+        model.HideFirstnameLastname = user.HideFullName;
         return model;
     }
 

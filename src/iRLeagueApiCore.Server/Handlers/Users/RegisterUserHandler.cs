@@ -23,7 +23,7 @@ public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, Registe
     private readonly IEmailClient emailClient;
 
     public RegisterUserHandler(ILogger<RegisterUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<RegisterUserRequest>> validators, IEmailClient emailClient) : base(logger, userDbContext, userManager, validators)
+        IEnumerable<IValidator<RegisterUserRequest>> validators, IEmailClient emailClient) : base(logger, userManager, validators)
     {
         this.emailClient = emailClient;
     }

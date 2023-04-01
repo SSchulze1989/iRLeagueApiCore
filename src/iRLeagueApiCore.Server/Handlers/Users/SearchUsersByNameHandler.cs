@@ -9,9 +9,12 @@ public record SearchUsersByNameRequest(string[] SearchKeys) : IRequest<IEnumerab
 public sealed class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNameHandler, SearchUsersByNameRequest>,
     IRequestHandler<SearchUsersByNameRequest, IEnumerable<UserModel>>
 {
+    private readonly UserDbContext userDbContext;
+
     public SearchUsersByNameHandler(ILogger<SearchUsersByNameHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<SearchUsersByNameRequest>> validators) : base(logger, userDbContext, userManager, validators)
+        IEnumerable<IValidator<SearchUsersByNameRequest>> validators) : base(logger, userManager, validators)
     {
+        this.userDbContext = userDbContext;
     }
 
     public async Task<IEnumerable<UserModel>> Handle(SearchUsersByNameRequest request, CancellationToken cancellationToken)

@@ -12,7 +12,7 @@ public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEma
     private readonly IEmailClient emailClient;
 
     public SendConfirmationEmailHandler(ILogger<SendConfirmationEmailHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<SendConfirmationEmailRequest>> validators, IEmailClient emailClient) : base(logger, userDbContext, userManager, validators)
+        IEnumerable<IValidator<SendConfirmationEmailRequest>> validators, IEmailClient emailClient) : base(logger, userManager, validators)
     {
         this.emailClient = emailClient;
     }

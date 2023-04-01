@@ -21,6 +21,7 @@ public sealed class GetLeaguesHandler : LeagueHandlerBase<GetLeaguesHandler, Get
     public async Task<IEnumerable<LeagueModel>> MapToGetLeagueModelsAsync(CancellationToken cancellationToken)
     {
         return await dbContext.Leagues
+            .Where(x => x.LeaguePublic == Common.Enums.LeaguePublicSetting.PublicListed)
             .Select(MapToGetLeagueModelExpression)
             .ToListAsync(cancellationToken);
     }
