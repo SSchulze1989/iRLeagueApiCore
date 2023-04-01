@@ -9,22 +9,14 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 public class UsersHandlerBase<THandler, TRequest>
 {
     protected readonly ILogger<THandler> _logger;
-    protected readonly UserDbContext userDbContext;
     protected readonly UserManager<ApplicationUser> userManager;
     protected IEnumerable<IValidator<TRequest>> validators;
 
-    public UsersHandlerBase(ILogger<THandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager, IEnumerable<IValidator<TRequest>> validators)
+    public UsersHandlerBase(ILogger<THandler> logger, UserManager<ApplicationUser> userManager, IEnumerable<IValidator<TRequest>> validators)
     {
         _logger = logger;
         this.userManager = userManager;
-        this.userDbContext = userDbContext;
         this.validators = validators;
-    }
-
-    protected async Task<ApplicationUser?> GetUserEntityAsync(string? userId, CancellationToken cancellationToken)
-    {
-        return await userDbContext.Users
-            .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
     }
 
     protected async Task<ApplicationUser?> GetUserAsync(string? userId)

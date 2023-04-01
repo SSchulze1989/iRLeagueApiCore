@@ -9,8 +9,8 @@ public record GetUserListRequest(string LeagueName) : IRequest<IEnumerable<Leagu
 public sealed class GetUserListHandler : UsersHandlerBase<GetUserListHandler, GetUserListRequest>,
     IRequestHandler<GetUserListRequest, IEnumerable<LeagueUserModel>>
 {
-    public GetUserListHandler(ILogger<GetUserListHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<GetUserListRequest>> validators) : base(logger, userDbContext, userManager, validators)
+    public GetUserListHandler(ILogger<GetUserListHandler> logger, UserManager<ApplicationUser> userManager,
+        IEnumerable<IValidator<GetUserListRequest>> validators) : base(logger, userManager, validators)
     {
     }
 

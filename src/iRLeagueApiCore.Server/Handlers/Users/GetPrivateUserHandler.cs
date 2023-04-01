@@ -9,7 +9,7 @@ public record GetPrivateUserRequest(string UserId) : IRequest<PrivateUserModel>;
 public sealed class GetPrivateUserHandler : UsersHandlerBase<GetPrivateUserHandler, GetPrivateUserRequest>, IRequestHandler<GetPrivateUserRequest, PrivateUserModel>
 {
     public GetPrivateUserHandler(ILogger<GetPrivateUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<GetPrivateUserRequest>> validators) : base(logger, userDbContext, userManager, validators)
+        IEnumerable<IValidator<GetPrivateUserRequest>> validators) : base(logger, userManager, validators)
     {
     }
 

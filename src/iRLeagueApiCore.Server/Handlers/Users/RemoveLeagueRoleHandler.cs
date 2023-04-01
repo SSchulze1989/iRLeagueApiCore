@@ -10,7 +10,7 @@ public sealed class RemoveLeagueRoleHandler : UsersHandlerBase<RemoveLeagueRoleH
     IRequestHandler<RemoveLeagueRoleRequest, LeagueUserModel>
 {
     public RemoveLeagueRoleHandler(ILogger<RemoveLeagueRoleHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
-        IEnumerable<IValidator<RemoveLeagueRoleRequest>> validators) : base(logger, userDbContext, userManager, validators)
+        IEnumerable<IValidator<RemoveLeagueRoleRequest>> validators) : base(logger, userManager, validators)
     {
     }
 
