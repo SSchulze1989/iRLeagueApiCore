@@ -57,6 +57,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
     protected virtual LeagueEntity MapToLeagueEntity(long leagueId, LeagueUser user, PutLeagueModel putLeague, LeagueEntity leagueEntity)
     {
         leagueEntity.NameFull = putLeague.NameFull;
+        leagueEntity.Description = putLeague.Description;
+        leagueEntity.DescriptionPlain = putLeague.DescriptionPlain;
         leagueEntity.EnableProtests = putLeague.EnableProtests;
         leagueEntity.ProtestCoolDownPeriod = putLeague.ProtestCoolDownPeriod;
         leagueEntity.ProtestsClosedAfter = putLeague.ProtestsClosedAfter;
