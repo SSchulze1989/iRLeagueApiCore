@@ -17,6 +17,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         leagueEntity.Name = postLeague.Name;
         leagueEntity.NameFull = postLeague.NameFull;
         leagueEntity.LeaguePublic = postLeague.LeaguePublic;
+        leagueEntity.Description = postLeague.Description;
+        leagueEntity.DescriptionPlain = postLeague.DescriptionPlain;
         CreateVersionEntity(user, leagueEntity);
         UpdateVersionEntity(user, leagueEntity);
         return leagueEntity;
@@ -35,6 +37,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         Id = x.Id,
         Name = x.Name,
         NameFull = x.NameFull,
+        Description = x.Description,
+        DescriptionPlain = x.DescriptionPlain,
         EnableProtests = x.EnableProtests,
         ProtestCoolDownPeriod = x.ProtestCoolDownPeriod,
         ProtestsClosedAfter = x.ProtestsClosedAfter,
@@ -53,6 +57,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
     protected virtual LeagueEntity MapToLeagueEntity(long leagueId, LeagueUser user, PutLeagueModel putLeague, LeagueEntity leagueEntity)
     {
         leagueEntity.NameFull = putLeague.NameFull;
+        leagueEntity.Description = putLeague.Description;
+        leagueEntity.DescriptionPlain = putLeague.DescriptionPlain;
         leagueEntity.EnableProtests = putLeague.EnableProtests;
         leagueEntity.ProtestCoolDownPeriod = putLeague.ProtestCoolDownPeriod;
         leagueEntity.ProtestsClosedAfter = putLeague.ProtestsClosedAfter;
