@@ -17,6 +17,11 @@ internal sealed class ChampionshipByIdEndpoint : UpdateEndpoint<ChampionshipMode
         return new ChampSeasonsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
+    async Task<ClientActionResult<ChampSeasonModel>> IGetEndpoint<ChampSeasonModel>.Get(CancellationToken cancellationToken)
+    {
+        return await HttpClientWrapper.GetAsClientActionResult<ChampSeasonModel>(QueryUrl, cancellationToken);
+    }
+
     async Task<ClientActionResult<ChampSeasonModel>> IPostEndpoint<ChampSeasonModel, PostChampSeasonModel>.Post(PostChampSeasonModel model, CancellationToken cancellationToken)
     {
         return await HttpClientWrapper.PostAsClientActionResult<ChampSeasonModel>(QueryUrl, model, cancellationToken);

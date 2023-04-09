@@ -77,6 +77,25 @@ public class ChampSeasonsController : LeagueApiController<ChampSeasonsController
     }
 
     /// <summary>
+    /// Get a single champseason from a season and championship
+    /// </summary>
+    /// <param name="leagueName"></param>
+    /// <param name="leagueId"></param>
+    /// <param name="championshipId"></param>
+    /// <param name="seasonId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpGet]
+    [Route("/{leagueName}/Seasons/{seasonId:long}/Championships/{championshipId:long}")]
+    public async Task<ActionResult<ChampSeasonModel>> GetFromSeasonAndChampionship([FromRoute] string leagueName, [FromFilter] long leagueId, 
+        [FromRoute] long championshipId, [FromRoute] long seasonId, CancellationToken cancellationToken = default)
+    {
+        var request = new GetChampSeasonFromSeasonChampionshipRequest(leagueId, seasonId, championshipId);
+        var getChampSeason = await mediator.Send(request, cancellationToken);
+        return Ok(getChampSeason);
+    }
+
+    /// <summary>
     /// Post a new champSeason for a championship to the selected season
     /// </summary>
     /// <param name="leagueName"></param>
