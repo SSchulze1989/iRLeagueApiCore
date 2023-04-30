@@ -47,7 +47,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
 
     [HttpPost]
     [Route("")]
-    [Authorize(Roles = UserRoles.User)]
+    [Authorize]
     public async Task<ActionResult<LeagueModel>> Post([FromBody] PostLeagueModel postLeague, CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(string.Empty, User);
