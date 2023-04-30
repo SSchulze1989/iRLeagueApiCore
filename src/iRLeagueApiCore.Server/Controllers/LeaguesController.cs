@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -26,10 +27,10 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("{id:long}")]
-    public async Task<ActionResult<LeagueModel>> Get([FromRoute] long id, CancellationToken cancellationToken = default)
+    [Route("{leagueId:long}")]
+    public async Task<ActionResult<LeagueModel>> Get([FromRoute] long leagueId, CancellationToken cancellationToken = default)
     {
-        var request = new GetLeagueRequest(id);
+        var request = new GetLeagueRequest(leagueId);
         var getLeague = await mediator.Send(request, cancellationToken);
         return Ok(getLeague);
     }
@@ -45,8 +46,8 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     }
 
     [HttpPost]
-    [Authorize(Roles = UserRoles.Admin)]
     [Route("")]
+    [Authorize(Roles = UserRoles.User)]
     public async Task<ActionResult<LeagueModel>> Post([FromBody] PostLeagueModel postLeague, CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(string.Empty, User);
@@ -56,22 +57,24 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     }
 
     [HttpPut]
-    [Authorize(Roles = UserRoles.Admin)]
-    [Route("{id}")]
-    public async Task<ActionResult<LeagueModel>> Put([FromRoute] long id, [FromBody] PutLeagueModel putLeague, CancellationToken cancellationToken = default)
+    [Route("{leagueId}")]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    public async Task<ActionResult<LeagueModel>> Put([FromRoute] long leagueId, [FromBody] PutLeagueModel putLeague, CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(string.Empty, User);
-        var request = new PutLeagueRequest(id, leagueUser, putLeague);
+        var request = new PutLeagueRequest(leagueId, leagueUser, putLeague);
         var getLeague = await mediator.Send(request, cancellationToken);
         return Ok(getLeague);
     }
 
     [HttpDelete]
-    [Authorize(Roles = UserRoles.Admin)]
-    [Route("{id}")]
-    public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken cancellationToken = default)
+    [Route("{leagueId}")]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    public async Task<ActionResult> Delete([FromRoute] long leagueId, CancellationToken cancellationToken = default)
     {
-        var request = new DeleteLeagueRequest(id);
+        var request = new DeleteLeagueRequest(leagueId);
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }
