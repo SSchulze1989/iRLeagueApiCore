@@ -1,16 +1,19 @@
-﻿using iRLeagueApiCore.Server.Handlers.Leagues;
+﻿using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace iRLeagueApiCore.Server.Validation.Leagues;
 
 public sealed class PostLeagueRequestValidator : AbstractValidator<PostLeagueRequest>
 {
     private const int maxLeagues = 3;
-    private readonly LeagueDbContext dbContext;
+    private UserManager<ApplicationUser> userManager;
 
-    public PostLeagueRequestValidator(PostLeagueModelValidator modelValidator, LeagueDbContext dbContext)
+    public PostLeagueRequestValidator(PostLeagueModelValidator modelValidator, UserManager<ApplicationUser> userManager)
     {
-        this.dbContext = dbContext;
+        this.userManager = userManager;
+
         RuleFor(x => x.Model)
             .SetValidator(modelValidator);
         RuleFor(x => x.User)
@@ -20,9 +23,12 @@ public sealed class PostLeagueRequestValidator : AbstractValidator<PostLeagueReq
 
     private async Task<bool> HaveLessThanMaximumAllowedLeagues(LeagueUser user, CancellationToken cancellationToken)
     {
-        var userLeagueCount = await dbContext.Leagues
-            .Where(x => x.CreatedByUserId == user.Id)
-            .CountAsync(cancellationToken);
+        var applicationUser = await userManager.FindByIdAsync(user.Id)
+            ?? throw new InvalidOperationException("Could not find user for this request");
+        var userLeagueCount = (await userManager
+            .GetRolesAsync(applicationUser))
+            .Where(x => x.Contains(LeagueRoles.Owner))
+            .Count();
         return userLeagueCount < maxLeagues;
     }
 }

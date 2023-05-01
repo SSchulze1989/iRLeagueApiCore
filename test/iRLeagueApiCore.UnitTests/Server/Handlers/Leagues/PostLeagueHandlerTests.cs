@@ -1,9 +1,12 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Test;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;
 
@@ -56,5 +59,12 @@ public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandle
     public override async Task ShouldHandleValidationFailed()
     {
         await base.ShouldHandleValidationFailed();
+    }
+
+    private static UserManager<ApplicationUser> GetTestUserManager()
+    {
+        var users = new[] { new ApplicationUser() { UserName = testUserName, Id = testUserId } };
+        var userStore = MockHelpers.TestUserStore(users);
+        return MockHelpers.TestUserManager(userStore);
     }
 }

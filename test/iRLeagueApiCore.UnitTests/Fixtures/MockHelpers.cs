@@ -58,6 +58,27 @@ public static class MockHelpers
         return userManager;
     }
 
+    public static IUserStore<T> TestUserStore<T>(IEnumerable<T>? users = null) where T : IdentityUser
+    {
+        users ??= Array.Empty<T>();
+        var userStoreList = new List<T>(users);
+        var store = new Mock<IUserStore<T>>();
+        store.Setup(x => x.FindByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns((string id, CancellationToken cancellationToken) =>
+                userStoreList.FirstOrDefault(x => x.Id == id));
+        store.Setup(x => x.CreateAsync(It.IsAny<T>(), It.IsAny<CancellationToken>()))
+            .Returns((T user, CancellationToken cancellationToken) =>
+            {
+                if (userStoreList.Any(x => x.UserName == user.UserName))
+                {
+                    return IdentityResult.Failed(new[] { new IdentityErrorDescriber().DuplicateUserName(user.UserName) });
+                }
+                userStoreList.Add(user);
+                return IdentityResult.Success;
+            });
+        return store.Object;
+    }
+
     public static RoleManager<TRole> TestRoleManager<TRole>(IRoleStore<TRole>? store = null) where TRole : class
     {
         store ??= new Mock<IRoleStore<TRole>>().Object;
