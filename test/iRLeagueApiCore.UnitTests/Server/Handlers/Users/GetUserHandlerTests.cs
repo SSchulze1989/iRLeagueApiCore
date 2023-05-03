@@ -13,8 +13,9 @@ public sealed class GetUserHandlerTests : UserHandlerTestsBase<GetUserHandler, G
     [Fact]
     public async Task ShouldReturn_WhenExists()
     {
-        var testUser = fixture.Create<ApplicationUser>();
-        var userManager = TestUserManager(new[] { testUser });
+        var testUser = UserBuilder().Create();
+        identityFixture.Users.Add(testUser);
+        var userManager = identityFixture.UserManager;
         var request = new GetUserRequest(testUser.Id);
         var sut = new GetUserHandler(logger, userManager, validators);
 
@@ -30,7 +31,8 @@ public sealed class GetUserHandlerTests : UserHandlerTestsBase<GetUserHandler, G
     {
         var testUser = UserBuilder().Create();
         var (firstname, lastname) = GetFirstnameLastname(testUser.FullName);
-        var userManager = TestUserManager(new[] { testUser });
+        identityFixture.Users.Add(testUser);
+        var userManager = identityFixture.UserManager;
         var request = new GetUserRequest(testUser.Id);
         var sut = new GetUserHandler(logger, userManager, validators);
 
@@ -48,8 +50,8 @@ public sealed class GetUserHandlerTests : UserHandlerTestsBase<GetUserHandler, G
     public async Task ShouldReturn_FirstnameAndLastnameEmpty_WhenNotPublic()
     {
         var testUser = UserBuilder().Create();
-        var (firstname, lastname) = GetFirstnameLastname(testUser.FullName);
-        var userManager = TestUserManager(new[] { testUser });
+        identityFixture.Users.Add(testUser);
+        var userManager = identityFixture.UserManager;
         var request = new GetUserRequest(testUser.Id);
         var sut = new GetUserHandler(logger, userManager, validators);
 

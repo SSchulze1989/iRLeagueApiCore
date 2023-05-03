@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Dsl;
 using FluentValidation;
+using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.AspNetCore.Identity;
@@ -26,10 +27,6 @@ public abstract class UserHandlerTestsBase<THandler, TRequest> : IClassFixture<I
     {
         users ??= fixture.CreateMany<ApplicationUser>();
         var manager = MockHelpers.MockUserManager<ApplicationUser>();
-        manager.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-            .ReturnsAsync((string id) => users.FirstOrDefault(x => x.Id == id)!);
-        manager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((string name) => users.FirstOrDefault(x => x.UserName == name)!);
         return manager.Object;
     }
 
@@ -48,5 +45,21 @@ public abstract class UserHandlerTestsBase<THandler, TRequest> : IClassFixture<I
     {
         var parts = fullName?.Split(';');
         return (parts?.ElementAtOrDefault(0), parts?.ElementAtOrDefault(1));
+    }
+
+    protected ApplicationUser CreateTestUser()
+    {
+        var user = UserBuilder().Create();
+        identityFixture.Users.Add(user);
+        return user;
+    }
+
+    protected IdentityRole CreateTestRole(string leagueName)
+    {
+        var roleName = LeagueRoles.GetLeagueRoleName(leagueName, LeagueRoles.Admin);
+        var role = new IdentityRole(roleName);
+        role.NormalizedName = MockHelpers.MockLookupNormalizer().NormalizeName(roleName);
+        identityFixture.Roles.Add(role.Id, role);
+        return role;
     }
 }

@@ -4,11 +4,14 @@ using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Server.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.Test;
+using static Microsoft.AspNetCore.Identity.Test.MockHelpers;
+using System.Data;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 
-public sealed class IdentityFixture
+public sealed class IdentityFixture : IAsyncLifetime
 {
     public readonly string testLeague = "TestLeague";
     public readonly ApplicationUser validUser = new ApplicationUser()
@@ -23,6 +26,26 @@ public sealed class IdentityFixture
             LeagueRoles.Member,
             LeagueRoles.Steward
     };
+    public UserManager<ApplicationUser> UserManager { get; init; }
+    public RoleManager<IdentityRole> RoleManager { get; init; }
+    public IUserRoleStore<ApplicationUser> UserRoleStore { get; init; }
+    public IUserStore<ApplicationUser> UserStore { get; init; }
+    public IRoleStore<IdentityRole> RoleStore { get; init; }
+    public List<ApplicationUser> Users { get; init; }
+    public Dictionary<string, IdentityRole> Roles { get; init; }
+    public Dictionary<ApplicationUser, List<IdentityRole>> UserRoles { get; init; }
+
+    public IdentityFixture()
+    {
+        Users = new();
+        Roles = new();
+        UserRoles = new();
+        UserStore = TestUserStore(Users);
+        RoleStore = TestRoleStore(Roles);
+        UserRoleStore = TestUserRoleStore(UserStore, RoleStore, UserRoles);
+        UserManager = TestUserManager(UserRoleStore);
+        RoleManager = TestRoleManager(RoleStore);
+    }
 
     [Fact]
     public async Task TestDefaultSetup()
@@ -71,6 +94,16 @@ public sealed class IdentityFixture
                 new ValidationFailure("Property1", "Message1"),
                 new ValidationFailure("Property2", "Message2")
         });
+    }
+
+    public async Task InitializeAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    public async Task DisposeAsync()
+    {
+        await Task.CompletedTask;
     }
 }
 

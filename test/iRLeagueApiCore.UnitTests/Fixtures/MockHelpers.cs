@@ -343,9 +343,14 @@ public static class MockHelpers
             return roleStore.GetRoleNameAsync(role, cancellationToken);
         }
 
-        public Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken)
+        public async Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var userRoles = userRolesStore.GetOrDefault(user);
+            if (userRoles is null)
+            {
+                return new List<string>();
+            }
+            return await Task.FromResult(userRoles.Select(x => x.Name).ToList());
         }
 
         public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken)
