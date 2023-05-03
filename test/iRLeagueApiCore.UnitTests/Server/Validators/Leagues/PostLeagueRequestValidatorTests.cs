@@ -1,10 +1,13 @@
 ﻿using FluentValidation.TestHelper;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.Server.Validation.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Test;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Leagues;
 
@@ -33,7 +36,7 @@ public sealed class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture
 
     private static PostLeagueRequestValidator CreateValidator(LeagueDbContext dbContext)
     {
-        return new PostLeagueRequestValidator(new PostLeagueModelValidator(dbContext));
+        return new PostLeagueRequestValidator(new PostLeagueModelValidator(dbContext), MockHelpers.TestUserManager<ApplicationUser>());
     }
 
     [Fact]
