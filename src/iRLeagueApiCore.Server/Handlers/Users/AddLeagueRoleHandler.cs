@@ -11,7 +11,7 @@ public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler
 {
     private readonly RoleManager<IdentityRole> roleManager;
 
-    public AddLeagueRoleHandler(ILogger<AddLeagueRoleHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
+    public AddLeagueRoleHandler(ILogger<AddLeagueRoleHandler> logger, UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager, IEnumerable<IValidator<AddLeagueRoleRequest>> validators) : base(logger, userManager, validators)
     {
         this.roleManager = roleManager;
