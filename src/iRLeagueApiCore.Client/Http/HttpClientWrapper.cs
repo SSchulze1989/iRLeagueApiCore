@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Results;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
@@ -61,9 +62,13 @@ public sealed class HttpClientWrapper
             }
             await AddJWTTokenAsync(request);
         }
-
+#if DEBUG
+        logger.LogDebug("Send request: [{Method}] {RequestUrl}", request.Method, request.RequestUri);
+#endif
         var result = await httpClient.SendAsync(request, cancellationToken);
-        logger.LogDebug("Send request to: {RequestUrl}", request.RequestUri);
+#if DEBUG
+        logger.LogDebug("Returned: [StatusCode {StatusCode}]", result.StatusCode);
+#endif
 
         if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient is not null)
         {
