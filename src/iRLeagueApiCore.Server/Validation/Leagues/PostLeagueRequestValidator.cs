@@ -23,8 +23,13 @@ public sealed class PostLeagueRequestValidator : AbstractValidator<PostLeagueReq
 
     private async Task<bool> HaveLessThanMaximumAllowedLeagues(LeagueUser user, CancellationToken cancellationToken)
     {
-        var applicationUser = await userManager.FindByIdAsync(user.Id)
-            ?? throw new InvalidOperationException("Could not find user for this request");
+        var applicationUser = await userManager.FindByIdAsync(user.Id);
+        if (applicationUser is null)
+        {
+            // User does not exist but that will be handled at a different point
+            // For now no user means -> validation ok
+            return true;
+        }
         var userLeagueCount = (await userManager
             .GetRolesAsync(applicationUser))
             .Where(x => x.Contains(LeagueRoles.Owner))
