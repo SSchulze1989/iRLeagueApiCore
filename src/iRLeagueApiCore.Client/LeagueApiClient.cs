@@ -26,10 +26,10 @@ public sealed class LeagueApiClient : ILeagueApiClient
 
     private string? CurrentLeagueName { get; set; }
 
-    public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, ITokenStore tokenStore, JsonSerializerOptions? jsonOptions = null)
+    public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, HttpClientWrapperFactory clientWrapperFactory, ITokenStore tokenStore)
     {
         this.logger = logger;
-        httpClientWrapper = new HttpClientWrapper(httpClient, tokenStore, this, jsonOptions);
+        httpClientWrapper = clientWrapperFactory.Create(httpClient, tokenStore, this);
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         this.tokenStore = tokenStore;
         tokenStore.TokenChanged += TokenStore_TokenChanged;

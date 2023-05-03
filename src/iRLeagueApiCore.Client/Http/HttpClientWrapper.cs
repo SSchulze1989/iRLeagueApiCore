@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Results;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,16 +10,18 @@ namespace iRLeagueApiCore.Client.Http;
 public sealed class HttpClientWrapper
 {
     private readonly HttpClient httpClient;
+    private readonly ILogger<HttpClientWrapper> logger;
     private readonly IAsyncTokenProvider tokenProvider;
     private readonly ILeagueApiClient? apiClient;
     private readonly JsonSerializerOptions? jsonOptions;
 
-    public HttpClientWrapper(HttpClient httpClient, IAsyncTokenProvider tokenProvider, ILeagueApiClient? apiClient = default, JsonSerializerOptions? jsonOptions = default)
+    public HttpClientWrapper(HttpClient httpClient, ILogger<HttpClientWrapper> logger, IAsyncTokenProvider tokenProvider, ILeagueApiClient? apiClient = default, JsonSerializerOptions? jsonOptions = default)
     {
         this.httpClient = httpClient;
         this.tokenProvider = tokenProvider;
         this.apiClient = apiClient;
         this.jsonOptions = jsonOptions;
+        this.logger = logger;
     }
 
     public async Task<HttpResponseMessage> Get(string uri, CancellationToken cancellationToken)
@@ -60,8 +63,11 @@ public sealed class HttpClientWrapper
         }
 
         var result = await httpClient.SendAsync(request, cancellationToken);
+        logger.LogDebug("Send request to: {RequestUrl}", request.RequestUri);
+
         if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient is not null)
         {
+            logger.LogDebug("Logout on unauthorized response");
             // logout on unauthorized answer -> means something is wrong with our tokens
             await apiClient.LogOut();
         }
