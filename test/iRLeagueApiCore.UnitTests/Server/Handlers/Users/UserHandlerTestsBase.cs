@@ -21,13 +21,7 @@ public abstract class UserHandlerTestsBase<THandler, TRequest> : IClassFixture<I
         fixture = new();
         logger = Mock.Of<ILogger<THandler>>();
         validators = Array.Empty<IValidator<TRequest>>();
-    }
-
-    protected UserManager<ApplicationUser> TestUserManager(IEnumerable<ApplicationUser>? users = null)
-    {
-        users ??= fixture.CreateMany<ApplicationUser>();
-        var manager = MockHelpers.MockUserManager<ApplicationUser>();
-        return manager.Object;
+        identityFixture.Setup();
     }
 
     protected IPostprocessComposer<ApplicationUser> UserBuilder()

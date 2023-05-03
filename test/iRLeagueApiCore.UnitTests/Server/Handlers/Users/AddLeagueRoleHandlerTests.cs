@@ -1,6 +1,8 @@
 ﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Handlers.Users;
 using iRLeagueApiCore.UnitTests.Fixtures;
+using Microsoft.AspNetCore.Identity;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Users;
 public sealed class AddLeagueRoleHandlerTests : UserHandlerTestsBase<AddLeagueRoleHandler, AddLeagueRoleRequest>
@@ -15,7 +17,7 @@ public sealed class AddLeagueRoleHandlerTests : UserHandlerTestsBase<AddLeagueRo
     {
         var testUser = CreateTestUser();
         var testRole = CreateTestRole(identityFixture.testLeague);
-        var request = CreateRequest(identityFixture.testLeague, testUser.Id, LeagueRoles.GetRoleName(testRole.Name)!);
+        var request = CreateRequest(identityFixture.testLeague, testUser, testRole);
         var sut = CreateSut();
 
         await sut.Handle(request, default);
@@ -27,20 +29,33 @@ public sealed class AddLeagueRoleHandlerTests : UserHandlerTestsBase<AddLeagueRo
     public async Task ShoulCreateNonExistingRole()
     {
         var testUser = CreateTestUser();
-        var testRoleName = LeagueRoles.Steward;
-        var testLeagueRoleName = LeagueRoles.GetLeagueRoleName(identityFixture.testLeague, testRoleName);
-        var request = CreateRequest(identityFixture.testLeague, testUser.Id, testRoleName);
+        var testRole = CreateTestRole(identityFixture.testLeague);
+        identityFixture.Roles.Remove(testRole.Id);
+        var request = CreateRequest(identityFixture.testLeague, testUser, testRole);
         var sut = CreateSut();
 
-        identityFixture.Roles.Should().NotContain(x => x.Value.Name == testLeagueRoleName);
+        identityFixture.Roles.Should().NotContain(x => x.Value.Name == testRole.Name);
         await sut.Handle(request, default);
 
-        identityFixture.Roles.Should().Contain(x => x.Value.Name == testLeagueRoleName);
+        identityFixture.Roles.Should().Contain(x => x.Value.Name == testRole.Name);
     }
 
-    private AddLeagueRoleRequest CreateRequest(string leagueName, string userId, string roleName)
+    [Fact]
+    public async Task ShouldReturnUserWithRole()
     {
-        return new AddLeagueRoleRequest(leagueName, userId, roleName);
+        var testUser = CreateTestUser();
+        var testRole = CreateTestRole(identityFixture.testLeague);
+        var request = CreateRequest(identityFixture.testLeague, testUser, testRole);
+        var sut = CreateSut();
+
+        var result = await sut.Handle(request, default);
+
+        result.LeagueRoles.Should().Contain(LeagueRoles.GetRoleName(testRole.Name));
+    }
+
+    private AddLeagueRoleRequest CreateRequest(string leagueName, ApplicationUser user, IdentityRole role)
+    {
+        return new AddLeagueRoleRequest(leagueName, user.Id, LeagueRoles.GetRoleName(role.Name)!);
     }
 
     private AddLeagueRoleHandler CreateSut()

@@ -9,7 +9,7 @@ public record RemoveLeagueRoleRequest(string LeagueName, string UserId, string R
 public sealed class RemoveLeagueRoleHandler : UsersHandlerBase<RemoveLeagueRoleHandler, RemoveLeagueRoleRequest>,
     IRequestHandler<RemoveLeagueRoleRequest, LeagueUserModel>
 {
-    public RemoveLeagueRoleHandler(ILogger<RemoveLeagueRoleHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
+    public RemoveLeagueRoleHandler(ILogger<RemoveLeagueRoleHandler> logger, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<RemoveLeagueRoleRequest>> validators) : base(logger, userManager, validators)
     {
     }

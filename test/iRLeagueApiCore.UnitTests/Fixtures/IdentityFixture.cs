@@ -11,7 +11,7 @@ using System.Data;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 
-public sealed class IdentityFixture : IAsyncLifetime
+public sealed class IdentityFixture
 {
     public readonly string testLeague = "TestLeague";
     public readonly ApplicationUser validUser = new ApplicationUser()
@@ -26,25 +26,17 @@ public sealed class IdentityFixture : IAsyncLifetime
             LeagueRoles.Member,
             LeagueRoles.Steward
     };
-    public UserManager<ApplicationUser> UserManager { get; init; }
-    public RoleManager<IdentityRole> RoleManager { get; init; }
-    public IUserRoleStore<ApplicationUser> UserRoleStore { get; init; }
-    public IUserStore<ApplicationUser> UserStore { get; init; }
-    public IRoleStore<IdentityRole> RoleStore { get; init; }
-    public List<ApplicationUser> Users { get; init; }
-    public Dictionary<string, IdentityRole> Roles { get; init; }
-    public Dictionary<ApplicationUser, List<IdentityRole>> UserRoles { get; init; }
+    public UserManager<ApplicationUser> UserManager { get; private set; } = default!;
+    public RoleManager<IdentityRole> RoleManager { get; private set; } = default!;
+    public IUserRoleStore<ApplicationUser> UserRoleStore { get; private set; } = default!;
+    public IUserStore<ApplicationUser> UserStore { get; private set; } = default!;
+    public IRoleStore<IdentityRole> RoleStore { get; private set; } = default!;
+    public List<ApplicationUser> Users { get; private set; } = default!;
+    public Dictionary<string, IdentityRole> Roles { get; private set; } = default!;
+    public Dictionary<ApplicationUser, List<IdentityRole>> UserRoles { get; private set; } = default!;
 
     public IdentityFixture()
     {
-        Users = new();
-        Roles = new();
-        UserRoles = new();
-        UserStore = TestUserStore(Users);
-        RoleStore = TestRoleStore(Roles);
-        UserRoleStore = TestUserRoleStore(UserStore, RoleStore, UserRoles);
-        UserManager = TestUserManager(UserRoleStore);
-        RoleManager = TestRoleManager(RoleStore);
     }
 
     [Fact]
@@ -96,9 +88,16 @@ public sealed class IdentityFixture : IAsyncLifetime
         });
     }
 
-    public async Task InitializeAsync()
+    public void Setup()
     {
-        await Task.CompletedTask;
+        Users = new();
+        Roles = new();
+        UserRoles = new();
+        UserStore = TestUserStore(Users);
+        RoleStore = TestRoleStore(Roles);
+        UserRoleStore = TestUserRoleStore(UserStore, RoleStore, UserRoles);
+        UserManager = TestUserManager(UserRoleStore);
+        RoleManager = TestRoleManager(RoleStore);
     }
 
     public async Task DisposeAsync()
