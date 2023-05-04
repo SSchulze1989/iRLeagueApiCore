@@ -8,7 +8,6 @@ namespace iRLeagueApiCore.Client;
 internal sealed class LeagueApiClientFactory
 {
     private readonly ILoggerFactory loggerFactory;
-    private readonly ILogger<LeagueApiClientFactory> logger;
     private readonly IHttpClientFactory httpClientFactory;
     private readonly ITokenStore tokenStore;
     private readonly HttpClientWrapperFactory clientWrapperFactory;
@@ -20,7 +19,6 @@ internal sealed class LeagueApiClientFactory
     {
         this.baseAddress = baseAddress;
         this.loggerFactory = loggerFactory;
-        logger = loggerFactory.CreateLogger<LeagueApiClientFactory>();
         this.httpClientFactory = httpClientFactory;
         this.tokenStore = tokenStore;
         this.clientWrapperFactory = clientWrapperFactory;

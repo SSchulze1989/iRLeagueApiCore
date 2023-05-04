@@ -12,6 +12,7 @@ namespace iRLeagueApiCore.Client;
 public interface ILeagueApiClient
 {
     bool IsLoggedIn { get; }
+    Uri? BaseAddress { get; }
     ILeagueByNameEndpoint? CurrentLeague { get; }
     ISeasonByIdEndpoint? CurrentSeason { get; }
     ILeaguesEndpoint Leagues();
