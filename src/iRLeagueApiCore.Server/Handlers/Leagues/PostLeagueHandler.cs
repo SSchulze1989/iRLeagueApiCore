@@ -61,6 +61,10 @@ public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, Pos
         {
             return false;
         }
+        if (await userManager.IsInRoleAsync(applicationUser, ownerRole))
+        {
+            return true;
+        }
         var result = await userManager.AddToRoleAsync(applicationUser, ownerRole);
         return result.Succeeded;
     }

@@ -53,7 +53,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
         var leagueUser = new LeagueUser(string.Empty, User);
         var request = new PostLeagueRequest(leagueUser, postLeague);
         var getLeague = await mediator.Send(request, cancellationToken);
-        return CreatedAtAction(nameof(Get), new { id = getLeague.Id }, getLeague);
+        return CreatedAtAction(nameof(Get), new { leagueId = getLeague.Id }, getLeague);
     }
 
     [HttpPut]
