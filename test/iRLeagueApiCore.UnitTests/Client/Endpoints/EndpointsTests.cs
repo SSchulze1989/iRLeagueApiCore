@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using Microsoft.AspNetCore.Identity.Test;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -11,6 +12,16 @@ public sealed class EndpointsTests
 {
     public static string BaseUrl = "https://example.com/api/";
 
+    private static HttpClientWrapperFactory ClientWrapperFactory { get; }
+
+    static EndpointsTests()
+    {
+        var mockLoggerFactory = new Mock<ILoggerFactory>();
+        mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        ClientWrapperFactory = new(mockLoggerFactory.Object, null);
+    }
+
     [Fact]
     public void Endpoint_AddQueryParameter_ShouldAddQueryParameters()
     {
@@ -18,7 +29,7 @@ public sealed class EndpointsTests
         var value = "value1";
         var routeBuilder = new RouteBuilder();
         routeBuilder.AddEndpoint(BaseUrl);
-        var endpoint = new TestEndpoint(new(new(), Mock.Of<IAsyncTokenProvider>()), routeBuilder);
+        var endpoint = new TestEndpoint(ClientWrapperFactory.Create(new(), Mock.Of<IAsyncTokenProvider>()), routeBuilder);
 
         endpoint.AddQueryParameter(x => x.Add(name, value));
         var route = endpoint.RouteBuilder.Build();
@@ -44,7 +55,7 @@ public sealed class EndpointsTests
         {
             BaseAddress = new Uri(BaseUrl)
         };
-        var testClientWrapper = new HttpClientWrapper(testClient, Mock.Of<IAsyncTokenProvider>());
+        var testClientWrapper = ClientWrapperFactory.Create(testClient, Mock.Of<IAsyncTokenProvider>());
         await action.Invoke(endpoint.Invoke(testClientWrapper));
 
         requestUrl.Should().Be(expectedUrl);
@@ -70,7 +81,7 @@ public sealed class EndpointsTests
         {
             BaseAddress = new Uri(BaseUrl)
         };
-        var testClientWrapper = new HttpClientWrapper(testClient, Mock.Of<IAsyncTokenProvider>());
+        var testClientWrapper = ClientWrapperFactory.Create(testClient, Mock.Of<IAsyncTokenProvider>());
         await action.Invoke(endpoint.Invoke(testClientWrapper));
 
         requestUrl.Should().Be(expectedUrl);

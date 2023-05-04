@@ -4,7 +4,10 @@ using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Server.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.Test;
+using static Microsoft.AspNetCore.Identity.Test.MockHelpers;
+using System.Data;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 
@@ -23,6 +26,18 @@ public sealed class IdentityFixture
             LeagueRoles.Member,
             LeagueRoles.Steward
     };
+    public UserManager<ApplicationUser> UserManager { get; private set; } = default!;
+    public RoleManager<IdentityRole> RoleManager { get; private set; } = default!;
+    public IUserRoleStore<ApplicationUser> UserRoleStore { get; private set; } = default!;
+    public IUserStore<ApplicationUser> UserStore { get; private set; } = default!;
+    public IRoleStore<IdentityRole> RoleStore { get; private set; } = default!;
+    public List<ApplicationUser> Users { get; private set; } = default!;
+    public Dictionary<string, IdentityRole> Roles { get; private set; } = default!;
+    public Dictionary<ApplicationUser, List<IdentityRole>> UserRoles { get; private set; } = default!;
+
+    public IdentityFixture()
+    {
+    }
 
     [Fact]
     public async Task TestDefaultSetup()
@@ -71,6 +86,24 @@ public sealed class IdentityFixture
                 new ValidationFailure("Property1", "Message1"),
                 new ValidationFailure("Property2", "Message2")
         });
+    }
+
+    [Fact]
+    public void Setup()
+    {
+        Users = new();
+        Roles = new();
+        UserRoles = new();
+        UserStore = TestUserStore(Users);
+        RoleStore = TestRoleStore(Roles);
+        UserRoleStore = TestUserRoleStore(UserStore, RoleStore, UserRoles);
+        UserManager = TestUserManager(UserRoleStore);
+        RoleManager = TestRoleManager(RoleStore);
+    }
+
+    public async Task DisposeAsync()
+    {
+        await Task.CompletedTask;
     }
 }
 

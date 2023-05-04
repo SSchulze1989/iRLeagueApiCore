@@ -9,8 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Client\Endpoints\Leagues\**" />
     <Compile Remove="Server\Validators\Scorings\**" />
+    <EmbeddedResource Remove="Client\Endpoints\Leagues\**" />
     <EmbeddedResource Remove="Server\Validators\Scorings\**" />
+    <None Remove="Client\Endpoints\Leagues\**" />
     <None Remove="Server\Validators\Scorings\**" />
   </ItemGroup>
 
@@ -18,8 +21,8 @@
     <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="FluentIdentityBuilder" Version="0.0.3" />
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.6.1" />
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.6.1" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.6.2" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.6.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.9">
       <PrivateAssets>all</PrivateAssets>
@@ -44,10 +47,6 @@
     <ProjectReference Include="..\..\src\iRLeagueApiCore.Services\iRLeagueApiCore.Services.csproj" />
     <ProjectReference Include="..\..\src\iRLeagueApiCore.TrackImport\iRLeagueApiCore.TrackImport.csproj" />
     <ProjectReference Include="..\iRLeagueApiCore.Mocking\iRLeagueApiCore.Mocking\iRLeagueApiCore.Mocking.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Client\Endpoints\Leagues\" />
   </ItemGroup>
 
   <ItemGroup>

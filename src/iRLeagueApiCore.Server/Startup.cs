@@ -200,15 +200,15 @@ public sealed class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                //c.SwaggerEndpoint("./v1/swagger.json", "TestDeploy v1");
-                //c.RoutePrefix = string.Empty;
-                string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "./swagger/" : "";
-                c.SwaggerEndpoint($"{swaggerJsonBasePath}v1/swagger.json", "iRLeagueApiCore.Server v1");
-            });
         }
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            //c.SwaggerEndpoint("./v1/swagger.json", "TestDeploy v1");
+            //c.RoutePrefix = string.Empty;
+            string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "./swagger/" : "";
+            c.SwaggerEndpoint($"{swaggerJsonBasePath}v1/swagger.json", "iRLeagueApiCore.Server v1");
+        });
 
         //app.UseHttpsRedirection();
 
