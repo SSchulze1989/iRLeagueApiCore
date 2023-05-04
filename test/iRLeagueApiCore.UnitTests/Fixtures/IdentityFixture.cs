@@ -88,6 +88,7 @@ public sealed class IdentityFixture
         });
     }
 
+    [Fact]
     public void Setup()
     {
         Users = new();

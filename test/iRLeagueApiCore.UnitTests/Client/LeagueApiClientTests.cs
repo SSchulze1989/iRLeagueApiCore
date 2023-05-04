@@ -15,6 +15,16 @@ public sealed class LeagueApiClientTests
 
     private ILogger<LeagueApiClient> Logger { get; } = new Mock<ILogger<LeagueApiClient>>().Object;
 
+    private static HttpClientWrapperFactory ClientWrapperFactory { get; }
+
+    static LeagueApiClientTests()
+    {
+        var mockLoggerFactory = new Mock<ILoggerFactory>();
+        mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        ClientWrapperFactory = new(mockLoggerFactory.Object, null);
+    }
+
     [Fact]
     public async Task ShouldSetAuthenticationToken()
     {
@@ -37,7 +47,7 @@ public sealed class LeagueApiClientTests
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);
 
-        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
+        var apiClient = new LeagueApiClient(Logger, httpClient, ClientWrapperFactory, mockTokenStore.Object);
 
         var result = await apiClient.LogIn("testUser", "testPassword");
 
@@ -64,7 +74,7 @@ public sealed class LeagueApiClientTests
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);
 
-        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
+        var apiClient = new LeagueApiClient(Logger, httpClient, ClientWrapperFactory, mockTokenStore.Object);
         await apiClient.Leagues().Get();
 
         Assert.Equal("bearer", authHeader?.Scheme, ignoreCase: true);
@@ -96,7 +106,7 @@ public sealed class LeagueApiClientTests
         var httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri(baseUrl);
 
-        var apiClient = new LeagueApiClient(Logger, httpClient, mockTokenStore.Object);
+        var apiClient = new LeagueApiClient(Logger, httpClient, ClientWrapperFactory, mockTokenStore.Object);
         await apiClient.LogOut();
         await apiClient.Leagues().Get();
 

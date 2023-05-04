@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Responses;
+using Microsoft.Extensions.Logging;
 using Moq.Protected;
 using Newtonsoft.Json;
 using System.Net;
@@ -12,6 +13,16 @@ public sealed class HttpExtensionsTests
     private const string testString = "TestMessage";
     private const long testValue = 42;
     private const string testToken = "asgöahsgpasiakojsatlwetaet";
+
+    private HttpClientWrapperFactory ClientWrapperFactory { get; init; }
+
+    public HttpExtensionsTests()
+    {
+        var mockLoggerFactory = new Mock<ILoggerFactory>();
+        mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        ClientWrapperFactory = new(mockLoggerFactory.Object, null);
+    }
 
     [Fact]
     public async Task ShouldReturnActionResult()
@@ -158,7 +169,7 @@ public sealed class HttpExtensionsTests
         mockTokenProvider.Setup(x => x.GetAccessTokenAsync())
             .ReturnsAsync(testToken);
         var client = new HttpClient(mockMessageHandler.Object);
-        var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
+        var wrapper = ClientWrapperFactory.Create(client, mockTokenProvider.Object);
 
         var result = await wrapper.SendRequest(new HttpRequestMessage(HttpMethod.Get, "https://example.com"), default);
         Assert.True(result.IsSuccessStatusCode);
@@ -178,7 +189,7 @@ public sealed class HttpExtensionsTests
             });
         var mockTokenProvider = new Mock<IAsyncTokenProvider>();
         var client = new HttpClient(mockMessageHandler.Object);
-        var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
+        var wrapper = ClientWrapperFactory.Create(client, mockTokenProvider.Object);
 
         var result = await wrapper.GetAsClientActionResult<TestContent>("https://example.com");
         Assert.True(result.Success);
@@ -198,7 +209,7 @@ public sealed class HttpExtensionsTests
             });
         var mockTokenProvider = new Mock<IAsyncTokenProvider>();
         var client = new HttpClient(mockMessageHandler.Object);
-        var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
+        var wrapper = ClientWrapperFactory.Create(client, mockTokenProvider.Object);
         var model = new TestContent();
 
         var result = await wrapper.PostAsClientActionResult<TestContent>("https://example.com", model);
@@ -219,7 +230,7 @@ public sealed class HttpExtensionsTests
             });
         var mockTokenProvider = new Mock<IAsyncTokenProvider>();
         var client = new HttpClient(mockMessageHandler.Object);
-        var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
+        var wrapper = ClientWrapperFactory.Create(client, mockTokenProvider.Object);
         var model = new TestContent();
 
         var result = await wrapper.PutAsClientActionResult<TestContent>("https://example.com", model);
@@ -240,7 +251,7 @@ public sealed class HttpExtensionsTests
             });
         var mockTokenProvider = new Mock<IAsyncTokenProvider>();
         var client = new HttpClient(mockMessageHandler.Object);
-        var wrapper = new HttpClientWrapper(client, mockTokenProvider.Object);
+        var wrapper = ClientWrapperFactory.Create(client, mockTokenProvider.Object);
 
         var result = await wrapper.DeleteAsClientActionResult("https://example.com");
         Assert.True(result.Success);

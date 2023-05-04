@@ -11,16 +11,30 @@ public sealed class RequireLeagueRoleAttribute : Attribute
     /// <summary>
     /// Private field to prevent modifiying from outside
     /// </summary>
-    private readonly string[] _roles;
+    private readonly LeagueRoleValue[] _roles;
     /// <summary>
     /// Roles that are required to access the decorated resource
     /// </summary>
-    public string[] Roles => _roles.ToArray();
+    public LeagueRoleValue[] Roles => _roles.ToArray();
     /// <summary>
     /// </summary>
-    /// <param name="roles">List of roles. Requires user to be in at leas one of the provided roles</param>
+    /// <param name="roles">List of roles. Requires user to be in at least one of the provided roles</param>
     public RequireLeagueRoleAttribute(params string[] roles)
     {
-        _roles = roles;
+        var roleValues = roles.Select(x => LeagueRoles.GetRoleValue(x));
+        var allRoles = IncludeImplicitRoles(roleValues);
+        _roles = allRoles.ToArray();
+    }
+
+    /// <summary>
+    /// Includes the (reverse) implicit role requirements
+    /// For example "Admin" is always implicit in role "Owner", that means "Owner" will satisfy all conditions where "Admin" is required
+    /// Therefore "Owner" is automatically added to the required roles list
+    /// </summary>
+    /// <param name="roles"></param>
+    /// <returns></returns>
+    private static IEnumerable<LeagueRoleValue> IncludeImplicitRoles(IEnumerable<LeagueRoleValue> roles)
+    {
+        return roles.Concat(roles.SelectMany(x => LeagueRoles.ImplicitRoleOf(x))).Distinct();
     }
 }
