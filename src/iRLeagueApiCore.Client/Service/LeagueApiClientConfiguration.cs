@@ -16,6 +16,18 @@ public sealed class LeagueApiClientConfiguration
         this.services = services;
     }
 
+    public LeagueApiClientConfiguration UseBaseAddress(string baseAddress)
+    {
+        BaseAddress = baseAddress;
+        return this;
+    }
+
+    public LeagueApiClientConfiguration UseDefaultTokenStore()
+    {
+        services.Replace(ServiceDescriptor.Scoped<ITokenStore, DefaultTokenStore>());
+        return this;
+    }
+
     public LeagueApiClientConfiguration UseTokenStore<T>() where T : class, ITokenStore
     {
         services.Replace(ServiceDescriptor.Scoped<ITokenStore,  T>());
