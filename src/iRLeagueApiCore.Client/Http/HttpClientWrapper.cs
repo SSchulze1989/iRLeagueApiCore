@@ -16,6 +16,8 @@ public sealed class HttpClientWrapper
     private readonly ILeagueApiClient? apiClient;
     private readonly JsonSerializerOptions? jsonOptions;
 
+    public Uri? BaseAddress => httpClient.BaseAddress;
+
     public HttpClientWrapper(HttpClient httpClient, ILogger<HttpClientWrapper> logger, IAsyncTokenProvider tokenProvider, ILeagueApiClient? apiClient = default, JsonSerializerOptions? jsonOptions = default)
     {
         this.httpClient = httpClient;

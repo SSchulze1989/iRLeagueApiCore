@@ -7,13 +7,8 @@ using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Common.Models.Users;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace iRLeagueApiCore.Client;
 
@@ -25,6 +20,8 @@ public sealed class LeagueApiClient : ILeagueApiClient
     private bool isAuthorizing;
 
     private string? CurrentLeagueName { get; set; }
+
+    public Uri? BaseAddress => httpClientWrapper.BaseAddress;
 
     public LeagueApiClient(ILogger<LeagueApiClient> logger, HttpClient httpClient, HttpClientWrapperFactory clientWrapperFactory, ITokenStore tokenStore)
     {
