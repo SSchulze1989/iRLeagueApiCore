@@ -55,7 +55,19 @@ public sealed class LeagueApiClient : ILeagueApiClient
         var accessToken = await tokenStore.GetAccessTokenAsync();
         if (string.IsNullOrEmpty(idToken) == false && string.IsNullOrEmpty(accessToken))
         {
-            await Reauthorize();
+            try
+            {
+                await Reauthorize();
+            }
+            catch (Exception ex) when (
+                ex is InvalidOperationException || 
+                ex is ApiServiceUnavailableException ||
+                ex is HttpRequestException)
+            {
+                // do not throw any non system critical Exceptions in async void
+                // this will silently fail the reathorization when the service is unavailable
+                // TODO: find a way to inform the client consumer about the service state
+            }
         }
     }
 
