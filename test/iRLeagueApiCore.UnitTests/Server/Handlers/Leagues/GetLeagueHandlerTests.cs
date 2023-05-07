@@ -27,6 +27,13 @@ public sealed class GetLeagueDbTestFixture : HandlersTestsBase<GetLeagueHandler,
         return new GetLeagueRequest(leagueId);
     }
 
+    protected override void DefaultAssertions(GetLeagueRequest request, LeagueModel result, LeagueDbContext dbContext)
+    {
+        var entity = dbContext.Leagues.First(x => x.Id == request.leagueId);
+        result.IsInitialized.Should().Be(entity.IsInitialized);
+        base.DefaultAssertions(request, result, dbContext);
+    }
+
     [Fact]
     public override async Task<LeagueModel> ShouldHandleDefault()
     {
