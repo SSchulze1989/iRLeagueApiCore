@@ -4,7 +4,7 @@ using iRLeagueApiCore.Client.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints;
 
-public sealed class CustomEndpoint<T> : UpdateEndpoint<T, object>, ICustomEndpoint<T>
+internal sealed class CustomEndpoint<T> : UpdateEndpoint<T, object>, ICustomEndpoint<T>
 {
     private string Route { get; }
 

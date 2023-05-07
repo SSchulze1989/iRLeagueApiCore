@@ -4,7 +4,7 @@ using iRLeagueApiCore.Client.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints;
 
-public class GetEndpoint<T> : EndpointBase, IGetEndpoint<T>
+internal class GetEndpoint<T> : EndpointBase, IGetEndpoint<T>
 {
     public GetEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
         base(httpClient, routeBuilder)

@@ -7,7 +7,7 @@ using iRLeagueApiCore.Common.Models.Reviews;
 
 namespace iRLeagueApiCore.Client.Endpoints.Sessions;
 
-public sealed class SessionByIdEndpoint : EndpointBase, ISessionByIdEndpoint
+internal sealed class SessionByIdEndpoint : EndpointBase, ISessionByIdEndpoint
 {
     public SessionByIdEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder, long sessionId) :
         base(httpClient, routeBuilder)

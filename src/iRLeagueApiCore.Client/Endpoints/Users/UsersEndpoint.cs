@@ -5,7 +5,7 @@ using iRLeagueApiCore.Common.Models.Users;
 
 namespace iRLeagueApiCore.Client.Endpoints.Users;
 
-public sealed class UsersEndpoint : GetAllEndpoint<LeagueUserModel>, IUsersEndpoint, ILeagueUsersEndpoint
+internal sealed class UsersEndpoint : GetAllEndpoint<LeagueUserModel>, IUsersEndpoint, ILeagueUsersEndpoint
 {
     public UsersEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) : base(httpClient, routeBuilder)
     {

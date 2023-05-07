@@ -5,7 +5,7 @@ using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues;
 
-public sealed class LeaguesEndpoint : EndpointBase, ILeaguesEndpoint
+internal sealed class LeaguesEndpoint : EndpointBase, ILeaguesEndpoint
 {
     public LeaguesEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
     {

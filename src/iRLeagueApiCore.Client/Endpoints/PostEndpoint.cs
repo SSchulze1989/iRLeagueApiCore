@@ -4,7 +4,7 @@ using iRLeagueApiCore.Client.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints;
 
-public class PostEndpoint<TResult> : EndpointBase, IPostEndpoint<TResult>
+internal class PostEndpoint<TResult> : EndpointBase, IPostEndpoint<TResult>
 {
     public PostEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
         base(httpClient, routeBuilder)
@@ -17,7 +17,7 @@ public class PostEndpoint<TResult> : EndpointBase, IPostEndpoint<TResult>
     }
 }
 
-public class PostEndpoint<TResult, TModel> : EndpointBase, IPostEndpoint<TResult, TModel> where TModel : notnull
+internal class PostEndpoint<TResult, TModel> : EndpointBase, IPostEndpoint<TResult, TModel> where TModel : notnull
 {
     public PostEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
         base(httpClientWrapper, routeBuilder)

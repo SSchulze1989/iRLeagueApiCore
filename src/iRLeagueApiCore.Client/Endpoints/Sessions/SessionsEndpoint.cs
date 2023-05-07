@@ -5,7 +5,7 @@ using iRLeagueApiCore.Client.QueryBuilder;
 
 namespace iRLeagueApiCore.Client.Endpoints.Sessions;
 
-public sealed class SessionsEndpoint : EndpointBase, ISessionsEndpoint
+internal sealed class SessionsEndpoint : EndpointBase, ISessionsEndpoint
 {
     public SessionsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
         base(httpClient, routeBuilder)
