@@ -78,4 +78,15 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }
+
+    [HttpPost]
+    [Route("{leagueId}")]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole(LeagueRoles.Admin)]
+    public async Task<ActionResult> Initialize([FromRoute] long leagueId, CancellationToken cancellationToken = default)
+    {
+        var request = new PostIntitializeLeagueRequest(leagueId);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
 }

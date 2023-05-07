@@ -4,11 +4,16 @@ using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Leagues;
 
-public sealed class LeagueByIdEndpoint : UpdateEndpoint<LeagueModel, PutLeagueModel>, ILeagueByIdEndpoint
+internal sealed class LeagueByIdEndpoint : UpdateEndpoint<LeagueModel, PutLeagueModel>, ILeagueByIdEndpoint
 {
     public LeagueByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long leagueId) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddParameter(leagueId);
+    }
+
+    IPostEndpoint<LeagueModel> ILeagueByIdEndpoint.Initialize()
+    {
+        return new PostEndpoint<LeagueModel>(HttpClientWrapper, RouteBuilder);
     }
 }
