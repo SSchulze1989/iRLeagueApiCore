@@ -3,7 +3,7 @@ using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Championships;
-public class ChampSeasonsEndpoint : GetAllEndpoint<ChampSeasonModel>, IChampSeasonsEndpoint, ISeasonChampSeasonsEndpoint, IChampionshipChampSeasonsEndpoint
+internal class ChampSeasonsEndpoint : GetAllEndpoint<ChampSeasonModel>, IChampSeasonsEndpoint, ISeasonChampSeasonsEndpoint, IChampionshipChampSeasonsEndpoint
 {
     public ChampSeasonsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
         base(httpClientWrapper, routeBuilder)

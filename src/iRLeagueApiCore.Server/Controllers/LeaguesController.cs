@@ -57,7 +57,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     }
 
     [HttpPut]
-    [Route("{leagueId}")]
+    [Route("{leagueId:long}")]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     public async Task<ActionResult<LeagueModel>> Put([FromRoute] long leagueId, [FromBody] PutLeagueModel putLeague, CancellationToken cancellationToken = default)
@@ -69,7 +69,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     }
 
     [HttpDelete]
-    [Route("{leagueId}")]
+    [Route("{leagueId:long}")]
     [TypeFilter(typeof(LeagueAuthorizeAttribute))]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     public async Task<ActionResult> Delete([FromRoute] long leagueId, CancellationToken cancellationToken = default)
@@ -77,5 +77,16 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
         var request = new DeleteLeagueRequest(leagueId);
         await mediator.Send(request, cancellationToken);
         return NoContent();
+    }
+
+    [HttpPost]
+    [Route("{leagueId:long}")]
+    [TypeFilter(typeof(LeagueAuthorizeAttribute))]
+    [RequireLeagueRole(LeagueRoles.Admin)]
+    public async Task<ActionResult> Initialize([FromRoute] long leagueId, CancellationToken cancellationToken = default)
+    {
+        var request = new PostIntitializeLeagueRequest(leagueId);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
     }
 }

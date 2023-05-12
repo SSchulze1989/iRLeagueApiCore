@@ -16,6 +16,8 @@ public sealed class HttpClientWrapper
     private readonly ILeagueApiClient? apiClient;
     private readonly JsonSerializerOptions? jsonOptions;
 
+    public Uri? BaseAddress => httpClient.BaseAddress;
+
     public HttpClientWrapper(HttpClient httpClient, ILogger<HttpClientWrapper> logger, IAsyncTokenProvider tokenProvider, ILeagueApiClient? apiClient = default, JsonSerializerOptions? jsonOptions = default)
     {
         this.httpClient = httpClient;
@@ -62,21 +64,29 @@ public sealed class HttpClientWrapper
             }
             await AddJWTTokenAsync(request);
         }
+
+        try
+        {
 #if DEBUG
-        logger.LogDebug("Send request: [{Method}] {RequestUrl}", request.Method, request.RequestUri);
+            logger.LogDebug("Send request: [{Method}] {RequestUrl}", request.Method, request.RequestUri);
 #endif
-        var result = await httpClient.SendAsync(request, cancellationToken);
+            var result = await httpClient.SendAsync(request, cancellationToken);
 #if DEBUG
         logger.LogDebug("Returned: [StatusCode {StatusCode}]", result.StatusCode);
 #endif
 
-        if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient is not null)
-        {
-            logger.LogDebug("Logout on unauthorized response");
-            // logout on unauthorized answer -> means something is wrong with our tokens
-            await apiClient.LogOut();
+            if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient is not null)
+            {
+                logger.LogDebug("Logout on unauthorized response");
+                // logout on unauthorized answer -> means something is wrong with our tokens
+                await apiClient.LogOut();
+            }
+            return result;
         }
-        return result;
+        catch (HttpRequestException ex)
+        {
+            throw new ApiServiceUnavailableException(ex);
+        }
     }
 
     public HttpRequestMessage CreateRequest(HttpMethod method, string uri, object? content, HttpRequestOptions? options = default)

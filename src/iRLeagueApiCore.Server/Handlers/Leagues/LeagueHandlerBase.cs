@@ -39,6 +39,7 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         NameFull = x.NameFull,
         Description = x.Description,
         DescriptionPlain = x.DescriptionPlain,
+        IsInitialized = x.IsInitialized,
         EnableProtests = x.EnableProtests,
         ProtestCoolDownPeriod = x.ProtestCoolDownPeriod,
         ProtestsClosedAfter = x.ProtestsClosedAfter,

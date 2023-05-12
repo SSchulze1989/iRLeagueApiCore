@@ -3,7 +3,7 @@ using iRLeagueApiCore.Client.QueryBuilder;
 
 namespace iRLeagueApiCore.Client.Endpoints;
 
-public class EndpointBase : IEndpoint
+internal class EndpointBase : IEndpoint
 {
     protected HttpClientWrapper HttpClientWrapper { get; }
     protected RouteBuilder RouteBuilder { get; }

@@ -5,7 +5,7 @@ using iRLeagueApiCore.Common.Models.Users;
 
 namespace iRLeagueApiCore.Client.Endpoints.Users;
 
-public sealed class SearchEndpoint : PostEndpoint<IEnumerable<UserModel>, SearchModel>, IPostEndpoint<IEnumerable<UserModel>, SearchModel>
+internal sealed class SearchEndpoint : PostEndpoint<IEnumerable<UserModel>, SearchModel>, IPostEndpoint<IEnumerable<UserModel>, SearchModel>
 {
     public SearchEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
     {
