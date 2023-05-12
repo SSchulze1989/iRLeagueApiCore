@@ -4,7 +4,7 @@ using iRLeagueApiCore.Common.Models.Reviews;
 
 namespace iRLeagueApiCore.Client.Endpoints.Reviews;
 
-public sealed class ReviewByIdEndpoint : UpdateEndpoint<ReviewModel, PutReviewModel>, IReviewByIdEndpoint
+internal sealed class ReviewByIdEndpoint : UpdateEndpoint<ReviewModel, PutReviewModel>, IReviewByIdEndpoint
 {
     public ReviewByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long id) :
         base(httpClientWrapper, routeBuilder)

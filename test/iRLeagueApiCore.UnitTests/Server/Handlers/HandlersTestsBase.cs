@@ -58,6 +58,11 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAcces
         return new ValidationResult(new ValidationFailure[] { new ValidationFailure("Property", "Error") });
     }
 
+    protected virtual IValidator<TRequest> DefaultValidator()
+    {
+        return MockHelpers.TestValidator<TRequest>();
+    }
+
     protected virtual void DefaultPreTestAssertions(TRequest request, LeagueDbContext dbContext)
     {
     }
