@@ -15,7 +15,7 @@ public sealed class PutScoringHandler : ScoringHandlerBase<PutScoringHandler, Pu
     public async Task<ScoringModel> Handle(PutScoringRequest request, CancellationToken cancellationToken = default)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putScoring = await GetScoringEntityAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();
+        var putScoring = await GetScoringEntityAsync(request.ScoringId) ?? throw new ResourceNotFoundException();
         await MapToScoringEntityAsync(request.User, request.LeagueId, request.Model, putScoring);
         await dbContext.SaveChangesAsync();
         var getScoring = await MapToGetScoringModelAsync(request.LeagueId, putScoring.ScoringId)

@@ -40,7 +40,7 @@ public class ScoringHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     protected virtual async Task<ScoringEntity> MapToScoringEntityAsync(LeagueUser user, long leagueId, PostScoringModel source, ScoringEntity target,
         CancellationToken cancellationToken = default)
     {
-        target.ExtScoringSource = await GetScoringEntityAsync(leagueId, source.ExtScoringSourceId, cancellationToken);
+        target.ExtScoringSource = await GetScoringEntityAsync(source.ExtScoringSourceId, cancellationToken);
         target.MaxResultsPerGroup = source.MaxResultsPerGroup;
         target.Name = source.Name;
         target.ShowResults = source.ShowResults;

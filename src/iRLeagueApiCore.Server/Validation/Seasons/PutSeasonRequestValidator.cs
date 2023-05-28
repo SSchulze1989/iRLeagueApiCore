@@ -10,9 +10,6 @@ public sealed class PutSeasonRequestValidator : AbstractValidator<PutSeasonReque
     {
         this.dbContext = dbContext;
 
-        RuleFor(x => x.LeagueId)
-            .NotEmpty()
-            .WithMessage("League id required");
         RuleFor(x => x.SeasonId)
             .NotEmpty()
             .WithMessage("Season id required");
@@ -27,7 +24,6 @@ public sealed class PutSeasonRequestValidator : AbstractValidator<PutSeasonReque
     private async Task<bool> ScoringExists(PutSeasonRequest request, long? scoringId, CancellationToken cancellationToken)
     {
         return await dbContext.Scorings
-            .Where(x => x.LeagueId == request.LeagueId)
             .AnyAsync(x => x.ScoringId == scoringId);
     }
 }

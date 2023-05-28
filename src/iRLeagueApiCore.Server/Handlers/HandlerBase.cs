@@ -28,17 +28,15 @@ public abstract class HandlerBase<THandler, TRequest>
             .SingleOrDefaultAsync(x => x.ScheduleId == scheduleId, cancellationToken);
     }
 
-    protected virtual async Task<ScoringEntity?> GetScoringEntityAsync(long leagueId, long? scoringId, CancellationToken cancellationToken = default)
+    protected virtual async Task<ScoringEntity?> GetScoringEntityAsync(long? scoringId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Scorings
-            .Where(x => x.LeagueId == leagueId)
             .SingleOrDefaultAsync(x => x.ScoringId == scoringId, cancellationToken);
     }
 
-    protected virtual async Task<SeasonEntity?> GetSeasonEntityAsync(long leagueId, long? seasonId, CancellationToken cancellationToken = default)
+    protected virtual async Task<SeasonEntity?> GetSeasonEntityAsync(long? seasonId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Seasons
-            .Where(x => x.LeagueId == leagueId)
             .SingleOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken);
     }
 

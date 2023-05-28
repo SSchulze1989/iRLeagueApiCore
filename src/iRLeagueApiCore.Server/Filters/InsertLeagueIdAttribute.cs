@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace iRLeagueApiCore.Server.Filters;
@@ -23,9 +25,11 @@ namespace iRLeagueApiCore.Server.Filters;
 public sealed class InsertLeagueIdAttribute : ActionFilterAttribute
 {
     private readonly LeagueDbContext _dbContext;
-    public InsertLeagueIdAttribute(LeagueDbContext dbContext)
+    private readonly RequestLeagueProvider leagueProvider;
+    public InsertLeagueIdAttribute(LeagueDbContext dbContext, RequestLeagueProvider leagueProvider)
     {
         _dbContext = dbContext;
+        this.leagueProvider = leagueProvider;
     }
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -48,6 +52,7 @@ public sealed class InsertLeagueIdAttribute : ActionFilterAttribute
         }
 
         context.ActionArguments.Add("leagueId", leagueId);
+        leagueProvider.SetLeague(leagueId, leagueName);
 
         await base.OnActionExecutionAsync(context, next);
     }

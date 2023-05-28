@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
-public record GetSeasonsRequest(long LeagueId) : IRequest<IEnumerable<SeasonModel>>;
+public record GetSeasonsRequest() : IRequest<IEnumerable<SeasonModel>>;
 
 public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler, GetSeasonsRequest>, IRequestHandler<GetSeasonsRequest, IEnumerable<SeasonModel>>
 {
@@ -14,7 +14,7 @@ public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler, Get
     public async Task<IEnumerable<SeasonModel>> Handle(GetSeasonsRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getSeasons = await GetSeasonsEntityAsync(request.LeagueId, cancellationToken);
+        var getSeasons = await GetSeasonsEntityAsync(cancellationToken);
         if (getSeasons.Count() == 0)
         {
             throw new ResourceNotFoundException();
@@ -22,10 +22,9 @@ public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler, Get
         return getSeasons;
     }
 
-    private async Task<IEnumerable<SeasonModel>> GetSeasonsEntityAsync(long leagueId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<SeasonModel>> GetSeasonsEntityAsync(CancellationToken cancellationToken)
     {
         return (await dbContext.Seasons
-            .Where(x => x.LeagueId == leagueId)
             .Select(MapToGetSeasonModelExpression)
             .ToListAsync(cancellationToken))
             .OrderBy(x => x.SeasonStart);

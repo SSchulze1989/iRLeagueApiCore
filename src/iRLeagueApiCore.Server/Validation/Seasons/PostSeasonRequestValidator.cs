@@ -10,9 +10,6 @@ public sealed class PostSeasonRequestValidator : AbstractValidator<PostSeasonReq
     {
         this.dbContext = dbContext;
 
-        RuleFor(x => x.LeagueId)
-            .NotEmpty()
-            .WithMessage("League id required");
         RuleFor(x => x.Model)
             .SetValidator(modelValidator);
         RuleFor(x => x.Model.MainScoringId)
@@ -24,7 +21,6 @@ public sealed class PostSeasonRequestValidator : AbstractValidator<PostSeasonReq
     private async Task<bool> ScoringExists(PostSeasonRequest request, long? scoringId, CancellationToken cancellationToken)
     {
         return await dbContext.Scorings
-            .Where(x => x.LeagueId == request.LeagueId)
             .AnyAsync(x => x.ScoringId == scoringId);
     }
 }
