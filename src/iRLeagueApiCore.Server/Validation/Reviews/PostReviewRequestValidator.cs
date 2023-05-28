@@ -14,16 +14,15 @@ public sealed class PostReviewRequestValidator : AbstractValidator<PostReviewToS
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("No session selected")
-            .MustAsync((request, sessionId, cancellationToken) => SessionisValid(request.LeagueId, sessionId, cancellationToken))
+            .MustAsync((request, sessionId, cancellationToken) => SessionisValid(sessionId, cancellationToken))
             .WithMessage("Selected session does not exist");
         RuleFor(x => x.Model)
             .SetValidator(new PostReviewModelValidator(dbContext));
     }
 
-    private async Task<bool> SessionisValid(long leagueId, long sessionId, CancellationToken cancellationToken)
+    private async Task<bool> SessionisValid(long sessionId, CancellationToken cancellationToken)
     {
         return await dbContext.Sessions
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SessionId == sessionId)
             .AnyAsync(cancellationToken);
     }
