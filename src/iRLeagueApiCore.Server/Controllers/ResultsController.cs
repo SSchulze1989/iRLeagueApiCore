@@ -21,17 +21,16 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     /// Get single result from specific resultId
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="resultId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long resultId,
+    public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromRoute] long resultId,
         CancellationToken cancellationToken)
     {
-        var request = new GetResultRequest(leagueId, resultId);
+        var request = new GetResultRequest(resultId);
         var getResult = await mediator.Send(request, cancellationToken);
         return Ok(getResult);
     }
@@ -40,17 +39,16 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     /// Get all results from a season
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="seasonId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<SeasonEventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long seasonId, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<SeasonEventResultModel>>> GetFromSeason([FromRoute] string leagueName, [FromRoute] long seasonId,
+        CancellationToken cancellationToken = default)
     {
-        var request = new GetResultsFromSeasonRequest(leagueId, seasonId);
+        var request = new GetResultsFromSeasonRequest(seasonId);
         var getResults = await mediator.Send(request, cancellationToken);
         return Ok(getResults);
     }
@@ -59,27 +57,26 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     /// Get all results from a session
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="eventId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSession([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long eventId, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSession([FromRoute] string leagueName, [FromRoute] long eventId, 
+        CancellationToken cancellationToken = default)
     {
-        var request = new GetResultsFromEventRequest(leagueId, eventId);
+        var request = new GetResultsFromEventRequest(eventId);
         var getResults = await mediator.Send(request, cancellationToken);
         return Ok(getResults);
     }
 
     [HttpDelete]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-    public async Task<ActionResult> DeleteFromEvent([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+    public async Task<ActionResult> DeleteFromEvent([FromRoute] string leagueName, [FromRoute] long eventId,
         CancellationToken cancellationToken = default)
     {
-        var request = new DeleteResultRequest(leagueId, eventId);
+        var request = new DeleteResultRequest(eventId);
         var getResults = await mediator.Send(request, cancellationToken);
         return NoContent();
     }
@@ -88,7 +85,6 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     /// Upload a result json (must be exported from the iRacing GUI)
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="eventId"></param>
     /// <param name="result">complete json data exported from iRacing GUI</param>
     /// <param name="cancellationToken"></param>
@@ -96,10 +92,10 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [HttpPost]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]/Upload")]
-    public async Task<ActionResult<bool>> UploadResult([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+    public async Task<ActionResult<bool>> UploadResult([FromRoute] string leagueName, [FromRoute] long eventId,
         [FromBody] ParseSimSessionResult result, CancellationToken cancellationToken = default)
     {
-        var request = new UploadResultRequest(leagueId, eventId, result);
+        var request = new UploadResultRequest(eventId, result);
         var success = await mediator.Send(request, cancellationToken);
         if (success)
         {
@@ -114,10 +110,10 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [HttpPost]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]/Calculate")]
-    public async Task<ActionResult<bool>> TriggerResultCalculation([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+    public async Task<ActionResult<bool>> TriggerResultCalculation([FromRoute] string leagueName, [FromRoute] long eventId,
         CancellationToken cancellationToken = default)
     {
-        var request = new TriggerResultCalculationCommand(leagueId, eventId);
+        var request = new TriggerResultCalculationCommand(eventId);
         await mediator.Send(request, cancellationToken);
         return Ok(true);
     }

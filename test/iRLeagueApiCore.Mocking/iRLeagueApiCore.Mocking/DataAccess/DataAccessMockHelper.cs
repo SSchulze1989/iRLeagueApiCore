@@ -68,6 +68,8 @@ public sealed class DataAccessMockHelper
         var voteCategories = CreateVoteCategories(league);
         league.VoteCategories = voteCategories.ToList();
 
+        dbContext.Leagues.Add(CreateLeague());
+
         await dbContext.SaveChangesAsync();
     }
 

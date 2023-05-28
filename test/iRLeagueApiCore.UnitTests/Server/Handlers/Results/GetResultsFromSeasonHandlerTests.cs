@@ -19,19 +19,18 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
 
     protected override GetResultsFromSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestSeasonId);
+        return DefaultRequest(TestSeasonId);
     }
 
-    private GetResultsFromSeasonRequest DefaultRequest(long leagueId, long seasonId)
+    private GetResultsFromSeasonRequest DefaultRequest(long seasonId)
     {
-        return new GetResultsFromSeasonRequest(leagueId, seasonId);
+        return new GetResultsFromSeasonRequest(seasonId);
     }
 
     protected override void DefaultAssertions(GetResultsFromSeasonRequest request, IEnumerable<SeasonEventResultModel> result, LeagueDbContext dbContext)
     {
         base.DefaultAssertions(request, result, dbContext);
         var seasonResults = dbContext.ScoredEventResults
-            .Where(x => x.LeagueId == request.LeagueId)
             .Where(x => x.Event.Schedule.SeasonId == request.SeasonId)
             .GroupBy(x => x.EventId);
         Assert.Equal(seasonResults.Count(), result.Count());
@@ -58,7 +57,8 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
     {
         leagueId ??= TestLeagueId;
         seasonId ??= TestSeasonId;
-        var request = DefaultRequest(leagueId.Value, seasonId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(seasonId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 }

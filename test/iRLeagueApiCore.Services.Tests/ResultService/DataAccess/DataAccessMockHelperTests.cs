@@ -26,7 +26,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
 
         using (var dbContext = accessMockHelper.CreateMockDbContext(databaseName))
         {
-            dbContext.Leagues.Should().HaveCount(1);
+            dbContext.Leagues.Should().HaveCount(2);
         }
     }
 
