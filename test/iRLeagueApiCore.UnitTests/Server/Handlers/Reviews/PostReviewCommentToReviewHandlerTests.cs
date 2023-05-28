@@ -24,15 +24,15 @@ public sealed class PostReviewCommentToReviewHandlerTests : ReviewsHandlersTests
         return new PostReviewCommentToReviewHandler(logger, dbContext, new[] { validator });
     }
 
-    private PostReviewCommentToReviewRequest DefaultRequest(long leagueId, long reviewId)
+    private PostReviewCommentToReviewRequest DefaultRequest(long reviewId)
     {
 
-        return new PostReviewCommentToReviewRequest(leagueId, reviewId, DefaultUser(), TestReviewComment);
+        return new PostReviewCommentToReviewRequest(reviewId, DefaultUser(), TestReviewComment);
     }
 
     protected override PostReviewCommentToReviewRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestReviewId);
+        return DefaultRequest(TestReviewId);
     }
 
     protected override void DefaultAssertions(PostReviewCommentToReviewRequest request, ReviewCommentModel result, LeagueDbContext dbContext)
@@ -76,7 +76,8 @@ public sealed class PostReviewCommentToReviewHandlerTests : ReviewsHandlersTests
     {
         leagueId ??= TestLeagueId;
         reviewId ??= TestReviewId;
-        var request = DefaultRequest(leagueId.Value, reviewId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

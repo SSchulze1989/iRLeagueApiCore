@@ -12,11 +12,10 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     {
     }
 
-    protected virtual async Task<ReviewCommentEntity?> GetCommentEntityAsync(long leagueId, long commentId, CancellationToken cancellationToken)
+    protected virtual async Task<ReviewCommentEntity?> GetCommentEntityAsync(long commentId, CancellationToken cancellationToken)
     {
         return await dbContext.ReviewComments
             .Include(x => x.ReviewCommentVotes)
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.CommentId == commentId)
             .FirstOrDefaultAsync();
     }
@@ -69,10 +68,9 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         return voteEntities;
     }
 
-    protected virtual async Task<ReviewCommentModel?> MapToReviewCommentModelAsync(long leagueId, long commentId, CancellationToken cancellationToken)
+    protected virtual async Task<ReviewCommentModel?> MapToReviewCommentModelAsync(long commentId, CancellationToken cancellationToken)
     {
         return await dbContext.ReviewComments
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.CommentId == commentId)
             .Select(MapToReviewCommentModelExpression)
             .FirstOrDefaultAsync(cancellationToken);

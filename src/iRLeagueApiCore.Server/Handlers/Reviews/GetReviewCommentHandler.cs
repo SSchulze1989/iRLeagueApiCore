@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record GetReviewCommentRequest(long LeagueId, long CommentId) : IRequest<ReviewCommentModel>;
+public record GetReviewCommentRequest(long CommentId) : IRequest<ReviewCommentModel>;
 
 public sealed class GetReviewCommentHandler : CommentHandlerBase<GetReviewCommentHandler, GetReviewCommentRequest>,
     IRequestHandler<GetReviewCommentRequest, ReviewCommentModel>
@@ -15,7 +15,7 @@ public sealed class GetReviewCommentHandler : CommentHandlerBase<GetReviewCommen
     public async Task<ReviewCommentModel> Handle(GetReviewCommentRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getComment = await MapToReviewCommentModelAsync(request.LeagueId, request.CommentId, cancellationToken)
+        var getComment = await MapToReviewCommentModelAsync(request.CommentId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         return getComment;
     }

@@ -15,15 +15,15 @@ public sealed class GetReviewCommentHandlerTests : ReviewsHandlersTestsBase<GetR
         return new GetReviewCommentHandler(logger, dbContext, new[] { validator });
     }
 
-    private GetReviewCommentRequest DefaultRequest(long leagueId, long commentId)
+    private GetReviewCommentRequest DefaultRequest(long commentId)
     {
 
-        return new GetReviewCommentRequest(leagueId, commentId);
+        return new GetReviewCommentRequest(commentId);
     }
 
     protected override GetReviewCommentRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestCommentId);
+        return DefaultRequest(TestCommentId);
     }
 
     protected override void DefaultAssertions(GetReviewCommentRequest request, ReviewCommentModel result, LeagueDbContext dbContext)
@@ -83,7 +83,8 @@ public sealed class GetReviewCommentHandlerTests : ReviewsHandlersTestsBase<GetR
     {
         leagueId ??= TestLeagueId;
         commentId ??= TestCommentId;
-        var request = DefaultRequest(leagueId.Value, commentId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(commentId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

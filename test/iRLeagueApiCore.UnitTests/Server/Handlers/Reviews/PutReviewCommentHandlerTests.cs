@@ -24,21 +24,20 @@ public sealed class PutReviewCommentHandlerTests : ReviewsHandlersTestsBase<PutR
         return new PutReviewCommentHandler(logger, dbContext, new[] { validator });
     }
 
-    private PutReviewCommentRequest DefaultRequest(long leagueId, long commentId)
+    private PutReviewCommentRequest DefaultRequest(long commentId)
     {
 
-        return new PutReviewCommentRequest(leagueId, commentId, DefaultUser(), TestReviewComment);
+        return new PutReviewCommentRequest(commentId, DefaultUser(), TestReviewComment);
     }
 
     protected override PutReviewCommentRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestCommentId);
+        return DefaultRequest(TestCommentId);
     }
 
     protected override void DefaultAssertions(PutReviewCommentRequest request, ReviewCommentModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
         result.CommentId.Should().Be(request.CommentId);
         result.Text.Should().Be(expected.Text);
         result.Votes.Should().HaveSameCount(expected.Votes);
@@ -76,7 +75,8 @@ public sealed class PutReviewCommentHandlerTests : ReviewsHandlersTestsBase<PutR
     {
         leagueId ??= TestLeagueId;
         reviewId ??= TestReviewId;
-        var request = DefaultRequest(leagueId.Value, reviewId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 
