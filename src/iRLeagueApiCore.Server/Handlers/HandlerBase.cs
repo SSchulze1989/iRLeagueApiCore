@@ -15,28 +15,34 @@ public abstract class HandlerBase<THandler, TRequest>
         this.validators = validators;
     }
 
+    protected virtual async Task<LeagueEntity?> GetLeagueEntityAsync(CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Leagues
+            .SingleOrDefaultAsync();
+    }
+
     protected virtual async Task<LeagueEntity?> GetLeagueEntityAsync(long leagueId, CancellationToken cancellationToken)
     {
         return await dbContext.Leagues
-            .SingleOrDefaultAsync(x => x.Id == leagueId);
+            .FirstOrDefaultAsync(x => x.Id == leagueId);
     }
 
     protected virtual async Task<ScheduleEntity?> GetScheduleEntityAsync(long? scheduleId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Schedules
-            .SingleOrDefaultAsync(x => x.ScheduleId == scheduleId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.ScheduleId == scheduleId, cancellationToken);
     }
 
     protected virtual async Task<ScoringEntity?> GetScoringEntityAsync(long? scoringId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Scorings
-            .SingleOrDefaultAsync(x => x.ScoringId == scoringId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.ScoringId == scoringId, cancellationToken);
     }
 
     protected virtual async Task<SeasonEntity?> GetSeasonEntityAsync(long? seasonId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Seasons
-            .SingleOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken);
     }
 
     protected virtual async Task<TrackConfigEntity?> GetTrackConfigEntityAsync(long? trackConfigId, CancellationToken cancellationToken = default)

@@ -20,11 +20,11 @@ public class ProtestsController : LeagueApiController<ProtestsController>
     [HttpPost]
     [AllowAnonymous]
     [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
-    public async Task<ActionResult<ProtestModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long sessionId,
-        PostProtestModel postReview, CancellationToken cancellationToken)
+    public async Task<ActionResult<ProtestModel>> Post([FromRoute] string leagueName, [FromRoute] long sessionId, PostProtestModel postReview, 
+        CancellationToken cancellationToken)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PostProtestToSessionRequest(leagueId, sessionId, leagueUser, postReview);
+        var request = new PostProtestToSessionRequest(sessionId, leagueUser, postReview);
         var getProtest = await mediator.Send(request, cancellationToken);
         return Created(string.Empty, getProtest);
     }
@@ -32,11 +32,11 @@ public class ProtestsController : LeagueApiController<ProtestsController>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Events/{eventId:long}/Protests")]
-    public async Task<ActionResult<IEnumerable<ProtestModel>>> GetFromEvent([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long eventId, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<ProtestModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId, 
+        CancellationToken cancellationToken)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new GetProtestsFromEventRequest(leagueId, leagueUser, eventId);
+        var request = new GetProtestsFromEventRequest(leagueUser, eventId);
         var getProtests = await mediator.Send(request, cancellationToken);
         return Ok(getProtests);
     }
@@ -44,10 +44,10 @@ public class ProtestsController : LeagueApiController<ProtestsController>
     [HttpDelete]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
     [Route("{id:long}")]
-    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new DeleteProtestRequest(leagueId, id);
+        var request = new DeleteProtestRequest(id);
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }
