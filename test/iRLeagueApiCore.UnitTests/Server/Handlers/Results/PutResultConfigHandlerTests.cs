@@ -17,10 +17,10 @@ public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutRes
     protected override PutResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutResultConfigRequest>? validator = null)
     {
         return new PutResultConfigHandler(logger, dbContext,
-            new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() });
+            new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() }, accessMockHelper.LeagueProvider);
     }
 
-    private PutResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
+    private PutResultConfigRequest DefaultRequest(long resultConfigId)
     {
         var PutResultConfig = new PutResultConfigModel()
         {
@@ -28,18 +28,17 @@ public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutRes
             DisplayName = "TestResultConfig DisplayName",
             ResultsPerTeam = 10,
         };
-        return new PutResultConfigRequest(leagueId, resultConfigId, DefaultUser(), PutResultConfig);
+        return new PutResultConfigRequest(resultConfigId, DefaultUser(), PutResultConfig);
     }
 
     protected override PutResultConfigRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestResultConfigId);
+        return DefaultRequest(TestResultConfigId);
     }
 
     protected override void DefaultAssertions(PutResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ResultConfigId.Should().Be(request.ResultConfigId);
         result.Name.Should().Be(expected.Name);
         result.DisplayName.Should().Be(expected.DisplayName);
@@ -62,9 +61,10 @@ public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutRes
     {
         leagueId ??= TestLeagueId;
         resultConfigId ??= TestResultConfigId;
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         var handler = CreateTestHandler(dbContext);
-        var request = DefaultRequest(leagueId.Value, resultConfigId.Value);
+        var request = DefaultRequest(resultConfigId.Value);
         var act = () => handler.Handle(request, default);
         await act.Should().ThrowAsync<ResourceNotFoundException>();
     }

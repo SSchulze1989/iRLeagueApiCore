@@ -13,17 +13,17 @@ public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<Del
 
     protected override DeleteResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteResultConfigRequest> validator)
     {
-        return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator });
+        return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator }, accessMockHelper.LeagueProvider);
     }
 
-    private DeleteResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
+    private DeleteResultConfigRequest DefaultRequest(long resultConfigId)
     {
-        return new DeleteResultConfigRequest(leagueId, resultConfigId);
+        return new DeleteResultConfigRequest(resultConfigId);
     }
 
     protected override DeleteResultConfigRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestResultConfigId);
+        return DefaultRequest(TestResultConfigId);
     }
 
     protected override void DefaultAssertions(DeleteResultConfigRequest request, MediatR.Unit result, LeagueDbContext dbContext)
@@ -50,7 +50,8 @@ public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<Del
     {
         leagueId ??= TestLeagueId;
         resultId ??= TestResultId;
-        var request = DefaultRequest(leagueId.Value, resultId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(resultId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

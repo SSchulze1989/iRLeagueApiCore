@@ -15,7 +15,7 @@ public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostR
 
     protected override PostResultConfigToChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostResultConfigToChampSeasonRequest> validator)
     {
-        return new PostResultConfigToChampSeasonHandler(logger, dbContext, new IValidator<PostResultConfigToChampSeasonRequest>[] { validator });
+        return new PostResultConfigToChampSeasonHandler(logger, dbContext, new IValidator<PostResultConfigToChampSeasonRequest>[] { validator }, accessMockHelper.LeagueProvider);
     }
 
     protected override PostResultConfigToChampSeasonRequest DefaultRequest()
@@ -26,13 +26,12 @@ public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostR
             DisplayName = "TestResultConfig DisplayName",
             ResultsPerTeam = 10,
         };
-        return new PostResultConfigToChampSeasonRequest(TestLeagueId, TestChampSeasonId, DefaultUser(), postResultConfig);
+        return new PostResultConfigToChampSeasonRequest(TestChampSeasonId, DefaultUser(), postResultConfig);
     }
 
     protected override void DefaultAssertions(PostResultConfigToChampSeasonRequest request, ResultConfigModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ResultConfigId.Should().NotBe(0);
         result.Name.Should().Be(expected.Name);
         result.DisplayName.Should().Be(expected.DisplayName);

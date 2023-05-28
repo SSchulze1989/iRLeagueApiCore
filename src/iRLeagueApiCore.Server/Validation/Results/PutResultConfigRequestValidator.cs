@@ -23,7 +23,6 @@ public sealed class PutResultConfigRequestValidator : AbstractValidator<PutResul
             return true;
         }
         var exists = await dbContext.Scorings
-            .Where(x => x.LeagueId == request.LeagueId)
             .Where(x => x.ScoringId == scoringModel.Id)
             .Select(x => new { x.ResultConfigId })
             .FirstOrDefaultAsync(cancellationToken);

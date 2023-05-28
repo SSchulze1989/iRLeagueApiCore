@@ -18,17 +18,17 @@ public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetRes
     protected override GetResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultConfigRequest>? validator = null)
     {
         return new GetResultConfigHandler(logger, dbContext,
-            new IValidator<GetResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<GetResultConfigRequest>() });
+            new IValidator<GetResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<GetResultConfigRequest>() }, accessMockHelper.LeagueProvider);
     }
 
-    private GetResultConfigRequest DefaultRequest(long leagueId, long resultConfigId)
+    private GetResultConfigRequest DefaultRequest(long resultConfigId)
     {
-        return new GetResultConfigRequest(leagueId, resultConfigId);
+        return new GetResultConfigRequest(resultConfigId);
     }
 
     protected override GetResultConfigRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestResultConfigId);
+        return DefaultRequest(TestResultConfigId);
     }
 
     protected override void DefaultAssertions(GetResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
@@ -36,7 +36,6 @@ public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetRes
         var resultConfigEntity = dbContext.ResultConfigurations
             .FirstOrDefault(x => x.ResultConfigId == request.ResultConfigId);
         resultConfigEntity.Should().NotBeNull();
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ResultConfigId.Should().Be(request.ResultConfigId);
         result.Name.Should().Be(resultConfigEntity!.Name);
         result.DisplayName.Should().Be(resultConfigEntity.DisplayName);
@@ -59,7 +58,8 @@ public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetRes
     {
         leagueId ??= TestLeagueId;
         resultConfigId ??= TestResultConfigId;
-        var request = DefaultRequest(leagueId!.Value, resultConfigId!.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(resultConfigId!.Value);
         await HandleNotFoundRequestAsync(request);
     }
 
