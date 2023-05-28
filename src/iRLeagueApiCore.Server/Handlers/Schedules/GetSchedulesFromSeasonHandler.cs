@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
-public record GetSchedulesFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<ScheduleModel>>;
+public record GetSchedulesFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<ScheduleModel>>;
 
 public sealed class GetSchedulesFromSeasonHandler : ScheduleHandlerBase<GetSchedulesFromSeasonRequest, GetSchedulesFromSeasonRequest>,
     IRequestHandler<GetSchedulesFromSeasonRequest, IEnumerable<ScheduleModel>>
@@ -15,14 +15,13 @@ public sealed class GetSchedulesFromSeasonHandler : ScheduleHandlerBase<GetSched
     public async Task<IEnumerable<ScheduleModel>> Handle(GetSchedulesFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getSchedules = await MapToGetScheduleModelsAsync(request.LeagueId, request.SeasonId, cancellationToken);
+        var getSchedules = await MapToGetScheduleModelsAsync(request.SeasonId, cancellationToken);
         return getSchedules;
     }
 
-    private async Task<IEnumerable<ScheduleModel>> MapToGetScheduleModelsAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<ScheduleModel>> MapToGetScheduleModelsAsync(long seasonId, CancellationToken cancellationToken)
     {
         return await dbContext.Schedules
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SeasonId == seasonId)
             .Select(MapToGetScheduleModelExpression)
             .ToListAsync();

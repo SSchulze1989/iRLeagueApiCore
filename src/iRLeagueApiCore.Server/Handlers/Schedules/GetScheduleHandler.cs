@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
-public record GetScheduleRequest(long LeagueId, long ScheduleId) : IRequest<ScheduleModel>;
+public record GetScheduleRequest(long ScheduleId) : IRequest<ScheduleModel>;
 
 public sealed class GetScheduleHandler : ScheduleHandlerBase<GetScheduleHandler, GetScheduleRequest>,
     IRequestHandler<GetScheduleRequest, ScheduleModel>
@@ -14,7 +14,7 @@ public sealed class GetScheduleHandler : ScheduleHandlerBase<GetScheduleHandler,
     public async Task<ScheduleModel> Handle(GetScheduleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getSchedule = await MapToGetScheduleModelAsync(request.LeagueId, request.ScheduleId, cancellationToken)
+        var getSchedule = await MapToGetScheduleModelAsync(request.ScheduleId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         return getSchedule;
     }

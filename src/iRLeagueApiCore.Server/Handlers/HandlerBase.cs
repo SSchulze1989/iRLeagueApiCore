@@ -21,10 +21,9 @@ public abstract class HandlerBase<THandler, TRequest>
             .SingleOrDefaultAsync(x => x.Id == leagueId);
     }
 
-    protected virtual async Task<ScheduleEntity?> GetScheduleEntityAsync(long leagueId, long? scheduleId, CancellationToken cancellationToken = default)
+    protected virtual async Task<ScheduleEntity?> GetScheduleEntityAsync(long? scheduleId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Schedules
-            .Where(x => x.LeagueId == leagueId)
             .SingleOrDefaultAsync(x => x.ScheduleId == scheduleId, cancellationToken);
     }
 

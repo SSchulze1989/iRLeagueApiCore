@@ -48,11 +48,10 @@ public sealed class ScheduleControllerTests
     public async Task GetSchedulesValid()
     {
         var expectedResult = new ScheduleModel[] { DefaultGetModel() };
-        var mediator = MockHelpers.TestMediator<GetSchedulesRequest, IEnumerable<ScheduleModel>>(x =>
-            x.LeagueId == testLeagueId, expectedResult);
+        var mediator = MockHelpers.TestMediator<GetSchedulesRequest, IEnumerable<ScheduleModel>>(result: expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-        var result = await controller.GetAll(testLeagueName, testLeagueId);
+        var result = await controller.GetAll(testLeagueName);
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expectedResult, okResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -64,10 +63,10 @@ public sealed class ScheduleControllerTests
     {
         var expectedResult = DefaultGetModel();
         var mediator = MockHelpers.TestMediator<GetScheduleRequest, ScheduleModel>(x =>
-            x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId, expectedResult);
+            x.ScheduleId == testScheduleId, expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-        var result = await controller.Get(testLeagueName, testLeagueId, testScheduleId);
+        var result = await controller.Get(testLeagueName, testScheduleId);
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expectedResult, okResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -78,11 +77,10 @@ public sealed class ScheduleControllerTests
     public async Task PostScheduleValid()
     {
         var expectedResult = DefaultGetModel();
-        var mediator = MockHelpers.TestMediator<PostScheduleRequest, ScheduleModel>(x =>
-            x.LeagueId == testLeagueId, expectedResult);
+        var mediator = MockHelpers.TestMediator<PostScheduleRequest, ScheduleModel>(result: expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-        var result = await controller.Post(testLeagueName, testSeasonÍd, testLeagueId, DefaultPostModel());
+        var result = await controller.Post(testLeagueName, testSeasonÍd, DefaultPostModel());
         var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
         Assert.Equal(expectedResult, createdResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -94,10 +92,10 @@ public sealed class ScheduleControllerTests
     {
         var expectedResult = DefaultGetModel();
         var mediator = MockHelpers.TestMediator<PutScheduleRequest, ScheduleModel>(x =>
-            x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId, expectedResult);
+            x.ScheduleId == testScheduleId, expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-        var result = await controller.Put(testLeagueName, testLeagueId, testScheduleId, DefaultPutModel());
+        var result = await controller.Put(testLeagueName, testScheduleId, DefaultPutModel());
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expectedResult, okResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -108,10 +106,10 @@ public sealed class ScheduleControllerTests
     public async Task DeleteScheduleValid()
     {
         var mediator = MockHelpers.TestMediator<DeleteScheduleRequest, Unit>(x =>
-            x.LeagueId == testLeagueId && x.ScheduleId == testScheduleId);
+            x.ScheduleId == testScheduleId);
         var controller = AddContexts.AddMemberControllerContext(new SchedulesController(logger, mediator));
 
-        var result = await controller.Delete(testLeagueName, testLeagueId, testScheduleId);
+        var result = await controller.Delete(testLeagueName, testScheduleId);
         Assert.IsType<NoContentResult>(result);
         var mediatorMock = Mock.Get(mediator);
         mediatorMock.Verify(x => x.Send(It.IsAny<DeleteScheduleRequest>(), default));

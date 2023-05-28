@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
-public record PutScheduleRequest(long LeagueId, LeagueUser User, long ScheduleId, PutScheduleModel Model) : IRequest<ScheduleModel>;
+public record PutScheduleRequest(LeagueUser User, long ScheduleId, PutScheduleModel Model) : IRequest<ScheduleModel>;
 
 public sealed class PutScheduleHandler : ScheduleHandlerBase<PutScheduleHandler, PutScheduleRequest>,
     IRequestHandler<PutScheduleRequest, ScheduleModel>
@@ -15,11 +15,11 @@ public sealed class PutScheduleHandler : ScheduleHandlerBase<PutScheduleHandler,
     public async Task<ScheduleModel> Handle(PutScheduleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putSchedule = await GetScheduleEntityAsync(request.LeagueId, request.ScheduleId, cancellationToken)
+        var putSchedule = await GetScheduleEntityAsync(request.ScheduleId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         putSchedule = MapToScheduleEntity(request.User, request.Model, putSchedule);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getSchedule = await MapToGetScheduleModelAsync(request.LeagueId, request.ScheduleId, cancellationToken)
+        var getSchedule = await MapToGetScheduleModelAsync(request.ScheduleId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getSchedule;
     }

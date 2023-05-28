@@ -19,12 +19,12 @@ public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteSchedu
 
     protected override DeleteScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestScheduleId);
+        return DefaultRequest(TestScheduleId);
     }
 
-    private DeleteScheduleRequest DefaultRequest(long leagueId, long scheduleId)
+    private DeleteScheduleRequest DefaultRequest(long scheduleId)
     {
-        return new DeleteScheduleRequest(leagueId, scheduleId);
+        return new DeleteScheduleRequest(scheduleId);
     }
 
     protected override void DefaultPreTestAssertions(DeleteScheduleRequest request, LeagueDbContext dbContext)
@@ -60,7 +60,8 @@ public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteSchedu
     {
         leagueId ??= TestLeagueId;
         scheduleId ??= TestScheduleId;
-        var request = DefaultRequest(leagueId.Value, scheduleId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(scheduleId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 }
