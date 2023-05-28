@@ -22,13 +22,13 @@ public sealed class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHa
 
     protected override DeleteSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestSeasonId);
+        return DefaultRequest(TestSeasonId);
     }
 
-    private DeleteSeasonRequest DefaultRequest(long leagueId, long seasonId)
+    private DeleteSeasonRequest DefaultRequest(long seasonId)
     {
 
-        return new DeleteSeasonRequest(leagueId, seasonId);
+        return new DeleteSeasonRequest(seasonId);
     }
 
     protected override void DefaultPreTestAssertions(DeleteSeasonRequest request, LeagueDbContext dbContext)
@@ -60,7 +60,8 @@ public sealed class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHa
     [InlineData(1, -42)]
     public async Task HandleNotFound(long leagueId, long seasonId)
     {
-        var request = DefaultRequest(leagueId, seasonId);
+        accessMockHelper.SetCurrentLeague(leagueId);
+        var request = DefaultRequest(seasonId);
         await HandleNotFoundRequestAsync(request);
     }
 }

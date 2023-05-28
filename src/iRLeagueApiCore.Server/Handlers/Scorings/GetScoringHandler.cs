@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public record GetScoringRequest(long LeagueId, long ScoringId) : IRequest<ScoringModel>;
+public record GetScoringRequest(long ScoringId) : IRequest<ScoringModel>;
 
 public sealed class GetScoringHandler : ScoringHandlerBase<GetScoringHandler, GetScoringRequest>, IRequestHandler<GetScoringRequest, ScoringModel>
 {
@@ -14,6 +14,6 @@ public sealed class GetScoringHandler : ScoringHandlerBase<GetScoringHandler, Ge
     public async Task<ScoringModel> Handle(GetScoringRequest request, CancellationToken cancellationToken = default)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        return await MapToGetScoringModelAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();
+        return await MapToGetScoringModelAsync(request.ScoringId, cancellationToken) ?? throw new ResourceNotFoundException();
     }
 }

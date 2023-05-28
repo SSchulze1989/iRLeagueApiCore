@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public record DeleteScoringRequest(long LeagueId, long ScoringId) : IRequest;
+public record DeleteScoringRequest(long ScoringId) : IRequest;
 
 public sealed class DeleteScoringHandler : ScoringHandlerBase<DeleteScoringHandler, DeleteScoringRequest>, IRequestHandler<DeleteScoringRequest>
 {

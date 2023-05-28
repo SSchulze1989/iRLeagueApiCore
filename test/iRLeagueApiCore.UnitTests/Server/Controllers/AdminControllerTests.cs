@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
-public sealed class AdminDbTestFixture
+public sealed class AdminControllerTests
 {
     readonly ILogger<AdminController> _mockLogger = new Mock<ILogger<AdminController>>().Object;
     ApplicationUser MockUser { get; }
@@ -23,7 +23,7 @@ public sealed class AdminDbTestFixture
     const string TestLeagueName = "TestLeague";
     string TestLeagueRoleName = LeagueRoles.GetLeagueRoleName(TestLeagueName, TestRoleName) ?? string.Empty;
 
-    public AdminDbTestFixture()
+    public AdminControllerTests()
     {
         var userMock = new Mock<ApplicationUser>();
         userMock.SetupAllProperties();

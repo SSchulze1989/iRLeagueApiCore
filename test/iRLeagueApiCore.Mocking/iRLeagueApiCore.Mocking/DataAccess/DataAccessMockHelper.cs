@@ -13,6 +13,8 @@ public sealed class DataAccessMockHelper
     private readonly Mock<ILeagueProvider> mockLeagueProvider = new();
     private long CurrentLeagueId { get; set; } = 0;
 
+    public ILeagueProvider LeagueProvider => mockLeagueProvider.Object;
+
     public DataAccessMockHelper()
     {
         mockLeagueProvider.Setup(x => x.LeagueId).Returns(() => CurrentLeagueId);
@@ -404,6 +406,11 @@ public sealed class DataAccessMockHelper
 
     public void SetCurrentLeague(LeagueEntity league)
     {
-        CurrentLeagueId = league.Id;
+        SetCurrentLeague(league.Id);
+    }
+
+    public void SetCurrentLeague(long leagueId)
+    {
+        CurrentLeagueId = leagueId;
     }
 }

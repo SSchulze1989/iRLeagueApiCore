@@ -37,7 +37,7 @@ public class ScoringHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             .Where(x => string.IsNullOrEmpty(x) == false) ?? new string[0];
     }
 
-    protected virtual async Task<ScoringEntity> MapToScoringEntityAsync(LeagueUser user, long leagueId, PostScoringModel source, ScoringEntity target,
+    protected virtual async Task<ScoringEntity> MapToScoringEntityAsync(LeagueUser user, PostScoringModel source, ScoringEntity target,
         CancellationToken cancellationToken = default)
     {
         target.ExtScoringSource = await GetScoringEntityAsync(source.ExtScoringSourceId, cancellationToken);
@@ -50,10 +50,9 @@ public class ScoringHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         return UpdateVersionEntity(user, target);
     }
 
-    protected virtual async Task<ScoringModel?> MapToGetScoringModelAsync(long leagueId, long scoringId, CancellationToken cancellationToken = default)
+    protected virtual async Task<ScoringModel?> MapToGetScoringModelAsync(long scoringId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Scorings
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ScoringId == scoringId)
             .Select(MapToGetScoringModelExpression)
             .SingleOrDefaultAsync(cancellationToken);

@@ -21,16 +21,16 @@ public sealed class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler,
 
     protected override PutSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestSeasonId);
+        return DefaultRequest(TestSeasonId);
     }
 
-    private PutSeasonRequest DefaultRequest(long leagueId, long seasonId)
+    private PutSeasonRequest DefaultRequest(long seasonId)
     {
         var model = new PutSeasonModel()
         {
             SeasonName = testSeasonName
         };
-        return new PutSeasonRequest(leagueId, DefaultUser(), seasonId, model);
+        return new PutSeasonRequest(DefaultUser(), seasonId, model);
     }
 
     protected override void DefaultPreTestAssertions(PutSeasonRequest request, LeagueDbContext dbContext)
@@ -41,7 +41,7 @@ public sealed class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler,
     protected override void DefaultAssertions(PutSeasonRequest request, SeasonModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
+        result.LeagueId.Should().Be(accessMockHelper.LeagueProvider.LeagueId);
         result.SeasonId.Should().Be(request.SeasonId);
         result.Finished.Should().Be(expected.Finished);
         result.HideComments.Should().Be(expected.HideComments);
@@ -70,7 +70,8 @@ public sealed class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler,
     [InlineData(-42, 1)]
     public async Task HandleNotFound(long leagueId, long seasonId)
     {
-        var request = DefaultRequest(leagueId, seasonId);
+        accessMockHelper.SetCurrentLeague(leagueId);
+        var request = DefaultRequest(seasonId);
         await HandleNotFoundRequestAsync(request);
     }
 }

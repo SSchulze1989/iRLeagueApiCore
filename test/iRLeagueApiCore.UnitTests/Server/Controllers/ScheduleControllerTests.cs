@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
-public sealed class ScheduleDbTestFixture
+public sealed class ScheduleControllerTests
 {
     private readonly ILogger<SchedulesController> logger;
 
@@ -19,7 +19,7 @@ public sealed class ScheduleDbTestFixture
     const long testScheduleId = 1;
     const string testScheduleName = "Schedule 1";
 
-    public ScheduleDbTestFixture()
+    public ScheduleControllerTests()
     {
         logger = Mock.Of<ILogger<SchedulesController>>();
     }
