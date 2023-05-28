@@ -1,4 +1,5 @@
 ﻿using iRLeagueDatabaseCore.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.Mocking.DataAccess;
 
@@ -22,6 +23,7 @@ public abstract class DataAccessTestsBase : IAsyncLifetime
     {
         dbContext.Database.EnsureCreated();
         await accessMockHelper.PopulateBasicTestSet(dbContext);
+        accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
     }
 
     public virtual async Task DisposeAsync()

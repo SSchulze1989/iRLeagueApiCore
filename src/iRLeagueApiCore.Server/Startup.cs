@@ -4,6 +4,7 @@ using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -127,9 +128,11 @@ public sealed class Startup
         services.AddDbContextFactory<UserDbContext, UserDbContextFactory>();
         services.AddScoped(x =>
             x.GetRequiredService<IDbContextFactory<UserDbContext>>().CreateDbContext());
-        services.AddDbContextFactory<LeagueDbContext, LeagueDbContextFactory>();
+        services.AddSingleton<LeagueDbContextFactory>();
+        services.AddScoped<RequestLeagueProvider>();
+        services.AddScoped<ILeagueProvider>(x => x.GetRequiredService<RequestLeagueProvider>());
         services.AddScoped(x =>
-            x.GetRequiredService<IDbContextFactory<LeagueDbContext>>().CreateDbContext());
+            x.GetRequiredService<LeagueDbContextFactory>().CreateDbContext(x.GetRequiredService<ILeagueProvider>()));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<UserDbContext>()
