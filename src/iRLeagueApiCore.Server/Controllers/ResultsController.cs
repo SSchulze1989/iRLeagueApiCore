@@ -35,6 +35,16 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
         return Ok(getResult);
     }
 
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("latest")]
+    public async Task<ActionResult<IEnumerable<EventResultModel>>> GetLatest([FromRoute] string leagueName, CancellationToken cancellationToken = default)
+    {
+        var request = new GetLatestResultRequest();
+        var getResult = await mediator.Send(request, cancellationToken);
+        return Ok(getResult);
+    }
+
     /// <summary>
     /// Get all results from a season
     /// </summary>
@@ -63,7 +73,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromSession([FromRoute] string leagueName, [FromRoute] long eventId, 
+    public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId, 
         CancellationToken cancellationToken = default)
     {
         var request = new GetResultsFromEventRequest(eventId);

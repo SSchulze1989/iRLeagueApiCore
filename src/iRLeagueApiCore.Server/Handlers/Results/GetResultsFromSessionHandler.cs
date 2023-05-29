@@ -15,19 +15,11 @@ public sealed class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsF
     public async Task<IEnumerable<EventResultModel>> Handle(GetResultsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getResults = await MapToGetResultModelsFromSessionAsync(request.EventId, cancellationToken);
+        var getResults = await MapToGetResultModelsFromEventAsync(request.EventId, cancellationToken);
         if (getResults.Count() == 0)
         {
             throw new ResourceNotFoundException();
         }
         return getResults;
-    }
-
-    private async Task<IEnumerable<EventResultModel>> MapToGetResultModelsFromSessionAsync( long eventId, CancellationToken cancellationToken)
-    {
-        return await dbContext.ScoredEventResults
-            .Where(x => x.EventId == eventId)
-            .Select(MapToEventResultModelExpression)
-            .ToListAsync(cancellationToken);
     }
 }
