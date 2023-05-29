@@ -11,7 +11,7 @@ public sealed class DeleteChampSeasonHandlerTests :
     protected override DeleteChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, 
         IValidator<DeleteChampSeasonRequest> validator)
     {
-        return new DeleteChampSeasonHandler(logger, dbContext, new[] { validator }, LeagueProvider);
+        return new DeleteChampSeasonHandler(logger, dbContext, new[] { validator });
     }
 
     protected override DeleteChampSeasonRequest DefaultRequest()

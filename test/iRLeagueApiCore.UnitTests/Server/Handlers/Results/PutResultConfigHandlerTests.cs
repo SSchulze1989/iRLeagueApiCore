@@ -17,7 +17,7 @@ public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutRes
     protected override PutResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutResultConfigRequest>? validator = null)
     {
         return new PutResultConfigHandler(logger, dbContext,
-            new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() }, accessMockHelper.LeagueProvider);
+            new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() });
     }
 
     private PutResultConfigRequest DefaultRequest(long resultConfigId)

@@ -13,7 +13,7 @@ public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<Del
 
     protected override DeleteResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteResultConfigRequest> validator)
     {
-        return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator }, accessMockHelper.LeagueProvider);
+        return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator });
     }
 
     private DeleteResultConfigRequest DefaultRequest(long resultConfigId)

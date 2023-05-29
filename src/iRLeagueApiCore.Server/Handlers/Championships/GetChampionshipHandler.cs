@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public record GetChampionshipRequest(long LeagueId, long ChampionshipId) : IRequest<ChampionshipModel>;
+public record GetChampionshipRequest(long ChampionshipId) : IRequest<ChampionshipModel>;
 
 public class GetChampionshipHandler : ChampionshipHandlerBase<GetChampionshipHandler, GetChampionshipRequest>, 
     IRequestHandler<GetChampionshipRequest, ChampionshipModel>
@@ -15,7 +15,7 @@ public class GetChampionshipHandler : ChampionshipHandlerBase<GetChampionshipHan
     public async Task<ChampionshipModel> Handle(GetChampionshipRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getChampionship = await MapToChampionshipModelAsync(request.LeagueId, request.ChampionshipId, cancellationToken)
+        var getChampionship = await MapToChampionshipModelAsync(request.ChampionshipId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         return getChampionship;
     }

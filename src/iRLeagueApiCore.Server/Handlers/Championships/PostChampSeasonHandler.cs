@@ -81,7 +81,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
     {
         var target = CreateVersionEntity(user, new StandingConfigurationEntity()
         {
-            LeagueId = leagueProvider.LeagueId,
+            LeagueId = dbContext.LeagueProvider.LeagueId,
         });
         var source = await dbContext.StandingConfigurations
             .Where(x => x.StandingConfigId == prevStandingConfigId)

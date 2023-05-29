@@ -16,7 +16,7 @@ public sealed class PostSeasonHandlerTests : HandlersTestsBase<PostSeasonHandler
 
     protected override PostSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostSeasonRequest> validator)
     {
-        return new PostSeasonHandler(logger, dbContext, new IValidator<PostSeasonRequest>[] { validator }, accessMockHelper.LeagueProvider);
+        return new PostSeasonHandler(logger, dbContext, new IValidator<PostSeasonRequest>[] { validator });
     }
 
     protected override PostSeasonRequest DefaultRequest()

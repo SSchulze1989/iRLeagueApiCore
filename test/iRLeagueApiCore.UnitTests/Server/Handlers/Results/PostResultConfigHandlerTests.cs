@@ -15,7 +15,7 @@ public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostR
 
     protected override PostResultConfigToChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostResultConfigToChampSeasonRequest> validator)
     {
-        return new PostResultConfigToChampSeasonHandler(logger, dbContext, new IValidator<PostResultConfigToChampSeasonRequest>[] { validator }, accessMockHelper.LeagueProvider);
+        return new PostResultConfigToChampSeasonHandler(logger, dbContext, new IValidator<PostResultConfigToChampSeasonRequest>[] { validator });
     }
 
     protected override PostResultConfigToChampSeasonRequest DefaultRequest()

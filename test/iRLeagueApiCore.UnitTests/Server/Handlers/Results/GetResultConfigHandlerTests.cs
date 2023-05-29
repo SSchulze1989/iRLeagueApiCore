@@ -18,7 +18,7 @@ public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetRes
     protected override GetResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultConfigRequest>? validator = null)
     {
         return new GetResultConfigHandler(logger, dbContext,
-            new IValidator<GetResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<GetResultConfigRequest>() }, accessMockHelper.LeagueProvider);
+            new IValidator<GetResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<GetResultConfigRequest>() });
     }
 
     private GetResultConfigRequest DefaultRequest(long resultConfigId)

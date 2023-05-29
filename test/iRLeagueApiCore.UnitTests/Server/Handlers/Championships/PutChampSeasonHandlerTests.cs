@@ -8,7 +8,7 @@ public sealed class PutChampSeasonHandlerTests : ChampionshipHandlersTestsBase<P
 {
     protected override PutChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutChampSeasonRequest> validator)
     {
-        return new(logger, dbContext, new[] { validator }, LeagueProvider);
+        return new(logger, dbContext, new[] { validator });
     }
 
     protected override PutChampSeasonRequest DefaultRequest()

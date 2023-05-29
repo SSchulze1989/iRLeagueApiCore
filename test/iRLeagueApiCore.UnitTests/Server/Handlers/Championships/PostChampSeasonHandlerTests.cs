@@ -10,7 +10,7 @@ public sealed class PostChampSeasonHandlerTests : ChampionshipHandlersTestsBase<
 {
     protected override PostChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostChampSeasonRequest> validator)
     {
-        return new PostChampSeasonHandler(logger, dbContext, new[] { validator }, LeagueProvider);
+        return new PostChampSeasonHandler(logger, dbContext, new[] { validator });
     }
 
     protected override PostChampSeasonRequest DefaultRequest()

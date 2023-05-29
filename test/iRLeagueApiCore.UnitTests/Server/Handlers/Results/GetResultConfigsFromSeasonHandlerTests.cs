@@ -10,7 +10,7 @@ public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTests
 {
     protected override GetResultConfigsFromSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultConfigsFromSeasonRequest> validator)
     {
-        return new(logger, dbContext, new[] { validator }, accessMockHelper.LeagueProvider);
+        return new(logger, dbContext, new[] { validator });
     }
 
     protected override GetResultConfigsFromSeasonRequest DefaultRequest() => DefaultRequest(TestSeasonId);
