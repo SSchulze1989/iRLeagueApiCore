@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Events;
 
-public record DeleteEventRequest(long LeagueId, long EventId) : IRequest;
+public record DeleteEventRequest(long EventId) : IRequest;
 
 public sealed class DeleteEventHandler : EventHandlerBase<DeleteEventHandler, DeleteEventRequest>, IRequestHandler<DeleteEventRequest>
 {
@@ -12,7 +12,7 @@ public sealed class DeleteEventHandler : EventHandlerBase<DeleteEventHandler, De
     public async Task<Unit> Handle(DeleteEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteEvent = await GetEventEntityAsync(request.LeagueId, request.EventId, cancellationToken)
+        var deleteEvent = await GetEventEntityAsync(request.EventId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.Events
             .Remove(deleteEvent);

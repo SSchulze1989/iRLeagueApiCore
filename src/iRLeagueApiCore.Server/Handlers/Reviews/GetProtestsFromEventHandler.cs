@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
@@ -9,15 +10,18 @@ public record GetProtestsFromEventRequest(LeagueUser User, long EventId) : IRequ
 public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEventHandler, GetProtestsFromEventRequest>, IRequestHandler<GetProtestsFromEventRequest, 
     IEnumerable<ProtestModel>>
 {
-    public GetProtestsFromEventHandler(ILogger<GetProtestsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetProtestsFromEventRequest>> validators) : 
+    private readonly ILeagueProvider leagueProvider;
+
+    public GetProtestsFromEventHandler(ILogger<GetProtestsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetProtestsFromEventRequest>> validators, ILeagueProvider leagueProvider) :
         base(logger, dbContext, validators)
     {
+        this.leagueProvider = leagueProvider;
     }
 
     public async Task<IEnumerable<ProtestModel>> Handle(GetProtestsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var league = await GetLeagueEntityAsync(cancellationToken)
+        var league = await GetLeagueEntityAsync(leagueProvider.LeagueId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         var isSteward = request.User.IsInRole(LeagueRoles.Admin, LeagueRoles.Steward);
 
