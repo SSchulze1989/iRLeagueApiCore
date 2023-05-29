@@ -9,6 +9,14 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
     {
     }
 
+    protected async Task<IEnumerable<EventResultModel>> MapToGetResultModelsFromEventAsync(long eventId, CancellationToken cancellationToken)
+    {
+        return await dbContext.ScoredEventResults
+            .Where(x => x.EventId == eventId)
+            .Select(MapToEventResultModelExpression)
+            .ToListAsync(cancellationToken);
+    }
+
     public Expression<Func<ScoredEventResultEntity, EventResultModel>> MapToEventResultModelExpression => result => new EventResultModel()
     {
         EventId = result.EventId,
