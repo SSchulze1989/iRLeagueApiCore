@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Teams;
 
-public record PutTeamRequest(long LeagueId, long TeamId, LeagueUser User, PutTeamModel Model) : IRequest<TeamModel>;
+public record PutTeamRequest(long TeamId, LeagueUser User, PutTeamModel Model) : IRequest<TeamModel>;
 
 public class PutTeamHandler : TeamsHandlerBase<PutTeamHandler, PutTeamRequest>, 
     IRequestHandler<PutTeamRequest, TeamModel>
@@ -16,11 +16,11 @@ public class PutTeamHandler : TeamsHandlerBase<PutTeamHandler, PutTeamRequest>,
     public async Task<TeamModel> Handle(PutTeamRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putTeam = await GetTeamEntity(request.LeagueId, request.TeamId, cancellationToken)
+        var putTeam = await GetTeamEntity(request.TeamId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        putTeam = await MapToTeamEntityAsync(request.LeagueId, request.User, request.Model, putTeam, cancellationToken);
+        putTeam = await MapToTeamEntityAsync(request.User, request.Model, putTeam, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getTeam = await MapToTeamModel(request.LeagueId, request.TeamId, cancellationToken)
+        var getTeam = await MapToTeamModel(request.TeamId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getTeam;
     }

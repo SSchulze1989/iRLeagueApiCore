@@ -20,19 +20,19 @@ public sealed class TeamsController : LeagueApiController<TeamsController>
 
     [HttpGet]
     [Route("")]
-    public async Task<ActionResult<IEnumerable<TeamModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<TeamModel>>> GetAll([FromRoute] string leagueName, CancellationToken cancellationToken)
     {
-        var request = new GetTeamsFromLeagueRequest(leagueId);
+        var request = new GetTeamsFromLeagueRequest();
         var getTeams = await mediator.Send(request, cancellationToken);
         return Ok(getTeams);
     }
 
     [HttpGet]
     [Route("{id:long}")]
-    public async Task<ActionResult<TeamModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult<TeamModel>> Get([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new GetTeamRequest(leagueId, id);
+        var request = new GetTeamRequest(id);
         var getTeam = await mediator.Send(request, cancellationToken);
         return Ok(getTeam);
     }
@@ -40,11 +40,11 @@ public sealed class TeamsController : LeagueApiController<TeamsController>
     [HttpPost]
     [Route("")]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult<TeamModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+    public async Task<ActionResult<TeamModel>> Post([FromRoute] string leagueName,
         [FromBody] PostTeamModel postTeam, CancellationToken cancellationToken)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PostTeamRequest(leagueId, leagueUser, postTeam);
+        var request = new PostTeamRequest(leagueUser, postTeam);
         var getTeam = await mediator.Send(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getTeam.TeamId }, getTeam);
     }
@@ -52,11 +52,11 @@ public sealed class TeamsController : LeagueApiController<TeamsController>
     [HttpPut]
     [Route("{id:long}")]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult<TeamModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult<TeamModel>> Put([FromRoute] string leagueName, [FromRoute] long id,
         [FromBody] PutTeamModel putTeam, CancellationToken cancellationToken)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PutTeamRequest(leagueId, id, leagueUser, putTeam);
+        var request = new PutTeamRequest(id, leagueUser, putTeam);
         var getTeam = await mediator.Send(request, cancellationToken);
         return Ok(getTeam);
     }
@@ -64,10 +64,10 @@ public sealed class TeamsController : LeagueApiController<TeamsController>
     [HttpDelete]
     [Route("{id:long}")]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new DeleteTeamRequest(leagueId, id);
+        var request = new DeleteTeamRequest(id);
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }
