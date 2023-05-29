@@ -8,25 +8,15 @@ namespace iRLeagueApiCore.Server.Filters;
 /// <summary>
 /// Automatically insert the league id corresponding the league name in route parameters
 /// <para>
-/// Requires <b>{leagueName}</b> in Route and "<c><see cref="long"/> leagueId</c>" as parameter
+/// Requires <b>"{leagueName}"</b> in Route
 /// </para>
 /// </summary>
-/// <example>
-/// <code>
-/// [InsertLeague]
-/// [Route("{leagueName}/action")]
-/// public IActionResult Action([FromRoute] string leagueName, long leagueId, [FromServices] LeagueDbContext dbContext)
-/// {
-///     ...
-/// }
-/// </code>
-/// </example>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-public sealed class InsertLeagueIdAttribute : ActionFilterAttribute
+public sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
 {
     private readonly LeagueDbContext _dbContext;
     private readonly RequestLeagueProvider leagueProvider;
-    public InsertLeagueIdAttribute(LeagueDbContext dbContext, RequestLeagueProvider leagueProvider)
+    public SetTenantLeagueIdAttribute(LeagueDbContext dbContext, RequestLeagueProvider leagueProvider)
     {
         _dbContext = dbContext;
         this.leagueProvider = leagueProvider;

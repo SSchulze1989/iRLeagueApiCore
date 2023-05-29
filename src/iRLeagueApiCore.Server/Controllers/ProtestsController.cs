@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [Route("{leagueName}/[controller]")]
 public class ProtestsController : LeagueApiController<ProtestsController>
 {

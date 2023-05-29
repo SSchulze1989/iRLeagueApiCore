@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 
 [Authorize]
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
 public class ChampionshipsController : LeagueApiController<ChampionshipsController>

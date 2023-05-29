@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
 [Route("{leagueName}/[controller]")]
 public sealed class VoteCategoriesController : LeagueApiController<VoteCategoriesController>

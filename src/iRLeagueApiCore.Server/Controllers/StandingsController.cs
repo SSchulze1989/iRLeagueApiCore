@@ -8,7 +8,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 
 [Route("/{leagueName}/[controller]")]
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [RequireLeagueRole]
 public sealed class StandingsController : LeagueApiController<StandingsController>
 {
