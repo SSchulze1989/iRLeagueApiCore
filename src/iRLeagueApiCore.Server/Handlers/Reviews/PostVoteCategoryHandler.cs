@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Any;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record PostVoteCategoryRequest(long LeagueId, PostVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
+public record PostVoteCategoryRequest(PostVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
 
 public sealed class PostVoteCategoryHandler : VoteCategoriesHandlerBase<PostVoteCategoryHandler, PostVoteCategoryRequest>, 
     IRequestHandler<PostVoteCategoryRequest, VoteCategoryModel>
@@ -17,18 +17,17 @@ public sealed class PostVoteCategoryHandler : VoteCategoriesHandlerBase<PostVote
     public async Task<VoteCategoryModel> Handle(PostVoteCategoryRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var postVoteCategory = await CreateVoteCategoryEntityAsync(request.LeagueId, cancellationToken);
+        var postVoteCategory = await CreateVoteCategoryEntityAsync(cancellationToken);
         postVoteCategory = await MapToVoteCategoryEntityAsync(request.Model, postVoteCategory, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getVoteCategory = await MapToVoteCategoryModel(request.LeagueId, postVoteCategory.CatId, cancellationToken)
+        var getVoteCategory = await MapToVoteCategoryModel(postVoteCategory.CatId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource not found");
         return getVoteCategory;
     }
 
-    private async Task<VoteCategoryEntity> CreateVoteCategoryEntityAsync(long leagueId, CancellationToken cancellationToken)
+    private async Task<VoteCategoryEntity> CreateVoteCategoryEntityAsync(CancellationToken cancellationToken)
     {
         var league = await dbContext.Leagues
-            .Where(x => x.Id == leagueId)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var voteCategory = new VoteCategoryEntity();

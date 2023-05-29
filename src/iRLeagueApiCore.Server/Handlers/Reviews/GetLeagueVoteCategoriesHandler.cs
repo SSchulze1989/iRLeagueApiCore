@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record GetLeagueVoteCategoriesRequest(long LeagueId) : IRequest<IEnumerable<VoteCategoryModel>>;
+public record GetLeagueVoteCategoriesRequest() : IRequest<IEnumerable<VoteCategoryModel>>;
 
 public sealed class GetLeagueVoteCategoriesHandler : VoteCategoriesHandlerBase<GetLeagueVoteCategoriesHandler, GetLeagueVoteCategoriesRequest>,
     IRequestHandler<GetLeagueVoteCategoriesRequest, IEnumerable<VoteCategoryModel>>
@@ -16,14 +16,13 @@ public sealed class GetLeagueVoteCategoriesHandler : VoteCategoriesHandlerBase<G
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
 
-        var getVoteCategories = await MapToLeagueVoteCategoryModels(request.LeagueId, cancellationToken);
+        var getVoteCategories = await MapToLeagueVoteCategoryModels(cancellationToken);
         return getVoteCategories;
     }
 
-    private async Task<IEnumerable<VoteCategoryModel>> MapToLeagueVoteCategoryModels(long leagueId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<VoteCategoryModel>> MapToLeagueVoteCategoryModels(CancellationToken cancellationToken)
     {
         return await dbContext.VoteCategories
-            .Where(x => x.LeagueId == leagueId)
             .OrderBy(x => x.Index)
             .Select(MapToVoteCategoryModelExpression)
             .ToListAsync(cancellationToken);
