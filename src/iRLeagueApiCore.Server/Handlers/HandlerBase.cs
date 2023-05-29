@@ -15,12 +15,6 @@ public abstract class HandlerBase<THandler, TRequest>
         this.validators = validators;
     }
 
-    protected virtual async Task<LeagueEntity?> GetLeagueEntityAsync(CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Leagues
-            .SingleOrDefaultAsync();
-    }
-
     protected virtual async Task<LeagueEntity?> GetLeagueEntityAsync(long leagueId, CancellationToken cancellationToken)
     {
         return await dbContext.Leagues
