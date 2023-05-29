@@ -1,26 +1,28 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public record PutChampSeasonRequest(long LeagueId, long ChampSeasonId, LeagueUser User, PutChampSeasonModel Model) : IRequest<ChampSeasonModel>;
+public record PutChampSeasonRequest(long ChampSeasonId, LeagueUser User, PutChampSeasonModel Model) : IRequest<ChampSeasonModel>;
 
 public sealed class PutChampSeasonHandler : ChampSeasonHandlerBase<PutChampSeasonHandler, PutChampSeasonRequest>,
     IRequestHandler<PutChampSeasonRequest, ChampSeasonModel>
 {
-    public PutChampSeasonHandler(ILogger<PutChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutChampSeasonRequest>> validators) :
-        base(logger, dbContext, validators)
+    public PutChampSeasonHandler(ILogger<PutChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutChampSeasonRequest>> validators, 
+        ILeagueProvider leagueProvider) :
+        base(logger, dbContext, validators, leagueProvider)
     {
     }
 
     public async Task<ChampSeasonModel> Handle(PutChampSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putChampSeason = await GetChampSeasonEntityAsync(request.LeagueId, request.ChampSeasonId, cancellationToken)
+        var putChampSeason = await GetChampSeasonEntityAsync(request.ChampSeasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        putChampSeason = await MapToChampSeasonEntityAsync(request.LeagueId, request.User, request.Model, putChampSeason, cancellationToken);
+        putChampSeason = await MapToChampSeasonEntityAsync(request.User, request.Model, putChampSeason, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getChampSeason = await MapToChampSeasonModel(request.LeagueId, putChampSeason.ChampSeasonId, cancellationToken)
+        var getChampSeason = await MapToChampSeasonModel(putChampSeason.ChampSeasonId, cancellationToken)
             ?? throw new InvalidOperationException("Updated resource not found");
         return getChampSeason;
     }
