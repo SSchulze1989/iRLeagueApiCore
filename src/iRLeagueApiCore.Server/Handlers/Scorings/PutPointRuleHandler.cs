@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public record PutPointRuleRequest(long LeagueId, long PointRuleId, LeagueUser User, PutPointRuleModel Model) : IRequest<PointRuleModel>;
+public record PutPointRuleRequest(long PointRuleId, LeagueUser User, PutPointRuleModel Model) : IRequest<PointRuleModel>;
 
 public sealed class PutPointRuleHandler : PointRuleHandlerBase<PutPointRuleHandler, PutPointRuleRequest>,
     IRequestHandler<PutPointRuleRequest, PointRuleModel>
@@ -16,11 +16,11 @@ public sealed class PutPointRuleHandler : PointRuleHandlerBase<PutPointRuleHandl
     public async Task<PointRuleModel> Handle(PutPointRuleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putPointRule = await GetPointRuleEntityAsync(request.LeagueId, request.PointRuleId, cancellationToken)
+        var putPointRule = await GetPointRuleEntityAsync(request.PointRuleId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         putPointRule = await MapToPointRuleEntityAsync(request.User, request.Model, putPointRule, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getPointRule = await MapToPointRuleModel(request.LeagueId, putPointRule.PointRuleId, cancellationToken)
+        var getPointRule = await MapToPointRuleModel(putPointRule.PointRuleId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getPointRule;
     }
