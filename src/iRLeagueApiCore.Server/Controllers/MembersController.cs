@@ -22,10 +22,9 @@ public sealed class MembersController : LeagueApiController<MembersController>
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<MemberInfoModel>>> GetFromLeague([FromRoute] string leagueName, [FromFilter] long leagueId,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<MemberInfoModel>>> GetFromLeague([FromRoute] string leagueName, CancellationToken cancellationToken)
     {
-        var request = new GetMembersFromLeagueRequest(leagueId);
+        var request = new GetMembersFromLeagueRequest();
         var getMembers = await mediator.Send(request, cancellationToken);
         return Ok(getMembers);
     }
@@ -33,10 +32,10 @@ public sealed class MembersController : LeagueApiController<MembersController>
     [HttpGet]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<MemberInfoModel>>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+    public async Task<ActionResult<IEnumerable<MemberInfoModel>>> Get([FromRoute] string leagueName, [FromRoute] long eventId,
         CancellationToken cancellationToken)
     {
-        var request = new GetMembersFromEventRequest(leagueId, eventId);
+        var request = new GetMembersFromEventRequest(eventId);
         var getMembers = await mediator.Send(request, cancellationToken);
         return Ok(getMembers);
     }

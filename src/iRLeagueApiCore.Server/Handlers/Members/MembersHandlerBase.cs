@@ -10,10 +10,9 @@ public class MembersHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     {
     }
 
-    protected async Task<IEnumerable<MemberModel>> MapToMemberListAsync(long leagueId, IEnumerable<long> memberIds, CancellationToken cancellationToken)
+    protected async Task<IEnumerable<MemberModel>> MapToMemberListAsync(IEnumerable<long> memberIds, CancellationToken cancellationToken)
     {
         return await dbContext.LeagueMembers
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => memberIds.Contains(x.MemberId))
             .Select(MapToMemberModelExpression)
             .ToListAsync(cancellationToken);
