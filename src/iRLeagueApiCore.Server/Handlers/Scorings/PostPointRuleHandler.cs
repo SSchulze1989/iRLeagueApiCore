@@ -9,13 +9,10 @@ public record PostPointRuleRequest(LeagueUser User, PostPointRuleModel Model) : 
 public sealed class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHandler, PostPointRuleRequest>,
     IRequestHandler<PostPointRuleRequest, PointRuleModel>
 {
-    private readonly ILeagueProvider leagueProvider;
-
     public PostPointRuleHandler(ILogger<PostPointRuleHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<PostPointRuleRequest>> validators, ILeagueProvider leagueProvider) 
+        IEnumerable<IValidator<PostPointRuleRequest>> validators) 
         : base(logger, dbContext, validators)
     {
-        this.leagueProvider = leagueProvider;
     }
 
     public async Task<PointRuleModel> Handle(PostPointRuleRequest request, CancellationToken cancellationToken)
@@ -31,7 +28,7 @@ public sealed class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHan
 
     private async Task<PointRuleEntity> CreatePointRuleEntityAsync(LeagueUser user, CancellationToken cancellationToken)
     {
-        var league = await GetLeagueEntityAsync(leagueProvider.LeagueId, cancellationToken)
+        var league = await GetCurrentLeagueEntityAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var pointRule = CreateVersionEntity(user, new PointRuleEntity());
         league.PointRules.Add(pointRule);

@@ -8,9 +8,9 @@ public record GetChampSeasonsFromSeasonRequest(long SeasonId) : IRequest<IEnumer
 public sealed class GetChampSeasonFromSeasonHandler : ChampSeasonHandlerBase<GetChampSeasonFromSeasonHandler, GetChampSeasonsFromSeasonRequest>,
     IRequestHandler<GetChampSeasonsFromSeasonRequest, IEnumerable<ChampSeasonModel>>
 {
-    public GetChampSeasonFromSeasonHandler(ILogger<GetChampSeasonFromSeasonHandler> logger, LeagueDbContext dbContext,
-        IEnumerable<IValidator<GetChampSeasonsFromSeasonRequest>> validators, ILeagueProvider leagueProvider) :
-        base(logger, dbContext, validators, leagueProvider)
+    public GetChampSeasonFromSeasonHandler(ILogger<GetChampSeasonFromSeasonHandler> logger, LeagueDbContext dbContext, 
+        IEnumerable<IValidator<GetChampSeasonsFromSeasonRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

@@ -9,8 +9,8 @@ public class GetChampSeasonFromSeasonChampionshipHandler : ChampSeasonHandlerBas
     IRequestHandler<GetChampSeasonFromSeasonChampionshipRequest, ChampSeasonModel>
 {
     public GetChampSeasonFromSeasonChampionshipHandler(ILogger<GetChampSeasonFromSeasonChampionshipHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetChampSeasonFromSeasonChampionshipRequest>> validators, ILeagueProvider leagueProvider) : 
-        base(logger, dbContext, validators, leagueProvider)
+        IEnumerable<IValidator<GetChampSeasonFromSeasonChampionshipRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

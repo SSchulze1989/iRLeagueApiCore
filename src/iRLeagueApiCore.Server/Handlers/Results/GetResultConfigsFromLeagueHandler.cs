@@ -8,9 +8,9 @@ public record GetResultConfigsFromLeagueRequest() : IRequest<IEnumerable<ResultC
 public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler, GetResultConfigsFromLeagueRequest>,
     IRequestHandler<GetResultConfigsFromLeagueRequest, IEnumerable<ResultConfigModel>>
 {
-    public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext,
-        IEnumerable<IValidator<GetResultConfigsFromLeagueRequest>> validators, ILeagueProvider leagueProvider) : 
-        base(logger, dbContext, validators, leagueProvider)
+    public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext, 
+        IEnumerable<IValidator<GetResultConfigsFromLeagueRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

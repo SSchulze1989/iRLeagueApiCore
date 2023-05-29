@@ -9,8 +9,8 @@ public sealed class GetResultConfigHandler : ResultConfigHandlerBase<GetResultCo
     IRequestHandler<GetResultConfigRequest, ResultConfigModel>
 {
     public GetResultConfigHandler(ILogger<GetResultConfigHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetResultConfigRequest>> validators, ILeagueProvider leagueProvider) :
-        base(logger, dbContext, validators, leagueProvider)
+        IEnumerable<IValidator<GetResultConfigRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

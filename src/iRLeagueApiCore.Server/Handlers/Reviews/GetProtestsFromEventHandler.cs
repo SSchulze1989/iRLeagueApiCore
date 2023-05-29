@@ -10,18 +10,15 @@ public record GetProtestsFromEventRequest(LeagueUser User, long EventId) : IRequ
 public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEventHandler, GetProtestsFromEventRequest>, IRequestHandler<GetProtestsFromEventRequest, 
     IEnumerable<ProtestModel>>
 {
-    private readonly ILeagueProvider leagueProvider;
-
-    public GetProtestsFromEventHandler(ILogger<GetProtestsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetProtestsFromEventRequest>> validators, ILeagueProvider leagueProvider) :
+    public GetProtestsFromEventHandler(ILogger<GetProtestsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetProtestsFromEventRequest>> validators) :
         base(logger, dbContext, validators)
     {
-        this.leagueProvider = leagueProvider;
     }
 
     public async Task<IEnumerable<ProtestModel>> Handle(GetProtestsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var league = await GetLeagueEntityAsync(leagueProvider.LeagueId, cancellationToken)
+        var league = await GetCurrentLeagueEntityAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var isSteward = request.User.IsInRole(LeagueRoles.Admin, LeagueRoles.Steward);
 

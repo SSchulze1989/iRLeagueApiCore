@@ -9,9 +9,8 @@ public record PutChampSeasonRequest(long ChampSeasonId, LeagueUser User, PutCham
 public sealed class PutChampSeasonHandler : ChampSeasonHandlerBase<PutChampSeasonHandler, PutChampSeasonRequest>,
     IRequestHandler<PutChampSeasonRequest, ChampSeasonModel>
 {
-    public PutChampSeasonHandler(ILogger<PutChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutChampSeasonRequest>> validators, 
-        ILeagueProvider leagueProvider) :
-        base(logger, dbContext, validators, leagueProvider)
+    public PutChampSeasonHandler(ILogger<PutChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutChampSeasonRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

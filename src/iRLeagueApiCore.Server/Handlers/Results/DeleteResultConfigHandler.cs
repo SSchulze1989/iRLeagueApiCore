@@ -8,8 +8,8 @@ public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteRe
     IRequestHandler<DeleteResultConfigRequest>
 {
     public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<DeleteResultConfigRequest>> validators, ILeagueProvider leagueProvider) :
-        base(logger, dbContext, validators, leagueProvider)
+        IEnumerable<IValidator<DeleteResultConfigRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

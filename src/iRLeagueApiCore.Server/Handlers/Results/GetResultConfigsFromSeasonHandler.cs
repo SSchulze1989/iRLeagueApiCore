@@ -9,8 +9,8 @@ public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResu
     IRequestHandler<GetResultConfigsFromSeasonRequest, IEnumerable<ResultConfigModel>>
 {
     public GetResultConfigsFromSeasonHandler(ILogger<GetResultConfigsFromSeasonHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetResultConfigsFromSeasonRequest>> validators, ILeagueProvider leagueProvider) : 
-        base(logger, dbContext, validators, leagueProvider)
+        IEnumerable<IValidator<GetResultConfigsFromSeasonRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

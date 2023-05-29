@@ -10,9 +10,8 @@ public record PostChampSeasonRequest(long ChampionshipId, long SeasonId, LeagueU
 public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSeasonHandler, PostChampSeasonRequest>, 
     IRequestHandler<PostChampSeasonRequest, ChampSeasonModel>
 {
-    public PostChampSeasonHandler(ILogger<PostChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampSeasonRequest>> validators, 
-        ILeagueProvider leagueProvider) : 
-        base(logger, dbContext, validators, leagueProvider)
+    public PostChampSeasonHandler(ILogger<PostChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampSeasonRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

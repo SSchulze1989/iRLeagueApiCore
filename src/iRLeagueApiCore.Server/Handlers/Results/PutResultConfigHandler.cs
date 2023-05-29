@@ -10,8 +10,8 @@ public sealed class PutResultConfigHandler : ResultConfigHandlerBase<PutResultCo
     IRequestHandler<PutResultConfigRequest, ResultConfigModel>
 {
     public PutResultConfigHandler(ILogger<PutResultConfigHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<PutResultConfigRequest>> validators, ILeagueProvider leagueProvider) :
-        base(logger, dbContext, validators, leagueProvider)
+        IEnumerable<IValidator<PutResultConfigRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 

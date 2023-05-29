@@ -10,8 +10,8 @@ public sealed class PostResultConfigToChampSeasonHandler : ResultConfigHandlerBa
     IRequestHandler<PostResultConfigToChampSeasonRequest, ResultConfigModel>
 {
     public PostResultConfigToChampSeasonHandler(ILogger<PostResultConfigToChampSeasonHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<PostResultConfigToChampSeasonRequest>> validators, ILeagueProvider leagueProvider) :
-        base(logger, dbContext, validators, leagueProvider)
+        IEnumerable<IValidator<PostResultConfigToChampSeasonRequest>> validators) :
+        base(logger, dbContext, validators)
     {
     }
 

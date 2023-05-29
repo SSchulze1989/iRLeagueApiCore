@@ -6,13 +6,9 @@ using System.Linq.Expressions;
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
-{
-    protected readonly ILeagueProvider leagueProvider;
-
-    public ChampSeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators, ILeagueProvider leagueProvider) :
+{    public ChampSeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
-        this.leagueProvider = leagueProvider;
     }
 
     protected virtual async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long champSeasonId, CancellationToken cancellationToken)
@@ -49,7 +45,7 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         {
             entity = CreateVersionEntity(user, new StandingConfigurationEntity()
             {
-                LeagueId = leagueProvider.LeagueId,
+                LeagueId = dbContext.LeagueProvider.LeagueId,
             });
         }
         entity.Name = model.Name;
