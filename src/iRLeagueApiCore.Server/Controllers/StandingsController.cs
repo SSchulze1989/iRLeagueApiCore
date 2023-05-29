@@ -20,10 +20,10 @@ public sealed class StandingsController : LeagueApiController<StandingsControlle
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<StandingsModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long seasonId,
+    public async Task<ActionResult<IEnumerable<StandingsModel>>> GetFromSeason([FromRoute] string leagueName, [FromRoute] long seasonId,
         CancellationToken cancellationToken = default)
     {
-        var request = new GetStandingsFromSeasonRequest(leagueId, seasonId);
+        var request = new GetStandingsFromSeasonRequest(seasonId);
         var getStandings = await mediator.Send(request, cancellationToken);
         return Ok(getStandings);
     }
@@ -31,10 +31,10 @@ public sealed class StandingsController : LeagueApiController<StandingsControlle
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<StandingsModel>>> GetFromEvent([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long eventId,
+    public async Task<ActionResult<IEnumerable<StandingsModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId,
         CancellationToken cancellationToken = default)
     {
-        var request = new GetStandingsFromEventRequest(leagueId, eventId);
+        var request = new GetStandingsFromEventRequest(eventId);
         var getStandings = await mediator.Send(request, cancellationToken);
         return Ok(getStandings);
     }
