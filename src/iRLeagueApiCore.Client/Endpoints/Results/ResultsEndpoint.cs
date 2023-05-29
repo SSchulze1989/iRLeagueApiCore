@@ -39,4 +39,9 @@ internal class ResultsEndpoint : GetAllEndpoint<EventResultModel>,
     {
         return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<SeasonEventResultModel>>(QueryUrl, cancellationToken);
     }
+
+    IGetEndpoint<IEnumerable<EventResultModel>> IResultsEndpoint.Latest()
+    {
+        return new GetLatestEndpoint<IEnumerable<EventResultModel>>(HttpClientWrapper, RouteBuilder);
+    }
 }
