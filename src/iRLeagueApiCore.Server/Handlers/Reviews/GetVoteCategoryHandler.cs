@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record GetVoteCategoryRequest(long LeagueId, long CatId) : IRequest<VoteCategoryModel>;
+public record GetVoteCategoryRequest(long CatId) : IRequest<VoteCategoryModel>;
 
 public class GetVoteCategoryHandler : VoteCategoriesHandlerBase<GetVoteCategoryHandler, GetVoteCategoryRequest>, 
     IRequestHandler<GetVoteCategoryRequest, VoteCategoryModel>
@@ -15,7 +15,7 @@ public class GetVoteCategoryHandler : VoteCategoriesHandlerBase<GetVoteCategoryH
     public async Task<VoteCategoryModel> Handle(GetVoteCategoryRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getVoteCategory = await MapToVoteCategoryModel(request.LeagueId, request.CatId, cancellationToken)
+        var getVoteCategory = await MapToVoteCategoryModel(request.CatId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         return getVoteCategory;
     }

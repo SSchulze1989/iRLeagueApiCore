@@ -1,6 +1,7 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueDatabaseCore;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,13 +10,22 @@ namespace iRLeagueApiCore.Mocking.DataAccess;
 public sealed class DataAccessMockHelper
 {
     private readonly Fixture fixture = new();
+    private readonly Mock<ILeagueProvider> mockLeagueProvider = new();
+    private long CurrentLeagueId { get; set; } = 0;
+
+    public ILeagueProvider LeagueProvider => mockLeagueProvider.Object;
+
+    public DataAccessMockHelper()
+    {
+        mockLeagueProvider.Setup(x => x.LeagueId).Returns(() => CurrentLeagueId);
+    }
 
     public LeagueDbContext CreateMockDbContext(string dbName)
     {
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
         optionsBuilder.UseInMemoryDatabase(databaseName: dbName)
            .UseLazyLoadingProxies();
-        var dbContext = new LeagueDbContext(optionsBuilder.Options);
+        var dbContext = new LeagueDbContext(optionsBuilder.Options, mockLeagueProvider.Object);
 
         return dbContext;
     }
@@ -57,6 +67,8 @@ public sealed class DataAccessMockHelper
 
         var voteCategories = CreateVoteCategories(league);
         league.VoteCategories = voteCategories.ToList();
+
+        dbContext.Leagues.Add(CreateLeague());
 
         await dbContext.SaveChangesAsync();
     }
@@ -392,5 +404,15 @@ public sealed class DataAccessMockHelper
             .Without(x => x.AcceptedReviewVotes)
             .Without(x => x.CommentReviewVotes)
             .CreateMany();
+    }
+
+    public void SetCurrentLeague(LeagueEntity league)
+    {
+        SetCurrentLeague(league.Id);
+    }
+
+    public void SetCurrentLeague(long leagueId)
+    {
+        CurrentLeagueId = leagueId;
     }
 }

@@ -59,11 +59,10 @@ public sealed class SeasonDbTestFixture
     public async Task GetSeasonsValid()
     {
         var expectedResult = new SeasonModel[] { DefaultGetModel() };
-        var mediator = MockHelpers.TestMediator<GetSeasonsRequest, IEnumerable<SeasonModel>>(x =>
-            x.LeagueId == testLeagueId, expectedResult);
+        var mediator = MockHelpers.TestMediator<GetSeasonsRequest, IEnumerable<SeasonModel>>(result: expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
-        var result = await controller.GetAll(testLeagueName, testLeagueId);
+        var result = await controller.GetAll(testLeagueName);
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expectedResult, okResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -75,10 +74,10 @@ public sealed class SeasonDbTestFixture
     {
         var expectedResult = DefaultGetModel();
         var mediator = MockHelpers.TestMediator<GetSeasonRequest, SeasonModel>(x =>
-            x.LeagueId == testLeagueId && x.SeasonId == testSeasonId, expectedResult);
+            x.SeasonId == testSeasonId, expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
-        var result = await controller.Get(testLeagueName, testLeagueId, testSeasonId);
+        var result = await controller.Get(testLeagueName, testSeasonId);
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expectedResult, okResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -89,11 +88,10 @@ public sealed class SeasonDbTestFixture
     public async Task PostSeasonValid()
     {
         var expectedResult = DefaultGetModel();
-        var mediator = MockHelpers.TestMediator<PostSeasonRequest, SeasonModel>(x =>
-            x.LeagueId == testLeagueId, expectedResult);
+        var mediator = MockHelpers.TestMediator<PostSeasonRequest, SeasonModel>(result: expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
-        var result = await controller.Post(testLeagueName, testLeagueId, DefaultPostModel());
+        var result = await controller.Post(testLeagueName, DefaultPostModel());
         var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
         Assert.Equal(expectedResult, createdResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -105,10 +103,10 @@ public sealed class SeasonDbTestFixture
     {
         var expectedResult = DefaultGetModel();
         var mediator = MockHelpers.TestMediator<PutSeasonRequest, SeasonModel>(x =>
-            x.LeagueId == testLeagueId && x.SeasonId == testSeasonId, expectedResult);
+            x.SeasonId == testSeasonId, expectedResult);
         var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
-        var result = await controller.Put(testLeagueName, testLeagueId, testSeasonId, DefaultPutModel());
+        var result = await controller.Put(testLeagueName, testSeasonId, DefaultPutModel());
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expectedResult, okResult.Value);
         var mediatorMock = Mock.Get(mediator);
@@ -119,10 +117,10 @@ public sealed class SeasonDbTestFixture
     public async Task DeleteSeasonValid()
     {
         var mediator = MockHelpers.TestMediator<DeleteSeasonRequest, Unit>(x =>
-            x.LeagueId == testLeagueId && x.SeasonId == testSeasonId);
+            x.SeasonId == testSeasonId);
         var controller = AddContexts.AddMemberControllerContext(new SeasonsController(logger, mediator));
 
-        var result = await controller.Delete(testLeagueName, testLeagueId, testSeasonId);
+        var result = await controller.Delete(testLeagueName, testSeasonId);
         Assert.IsType<NoContentResult>(result);
         var mediatorMock = Mock.Get(mediator);
         mediatorMock.Verify(x => x.Send(It.IsAny<DeleteSeasonRequest>(), default));

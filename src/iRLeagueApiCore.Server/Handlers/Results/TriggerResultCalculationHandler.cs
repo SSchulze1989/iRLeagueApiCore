@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record TriggerResultCalculationCommand(long LeagueId, long EventId) : IRequest;
+public record TriggerResultCalculationCommand(long EventId) : IRequest;
 
 public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerResultCalculationHandler, TriggerResultCalculationCommand>,
     IRequestHandler<TriggerResultCalculationCommand, Unit>
@@ -19,7 +19,6 @@ public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerR
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var @event = await dbContext.Events
-            .Where(x => x.LeagueId == request.LeagueId)
             .Where(x => x.EventId == request.EventId)
             .FirstOrDefaultAsync(cancellationToken);
         if (@event is null)

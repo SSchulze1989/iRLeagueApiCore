@@ -20,19 +20,18 @@ public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHan
 
     protected override GetResultRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestResultId);
+        return DefaultRequest(TestResultId);
     }
 
-    private GetResultRequest DefaultRequest(long leagueId, long resultId)
+    private GetResultRequest DefaultRequest(long resultId)
     {
-        return new GetResultRequest(leagueId, resultId);
+        return new GetResultRequest(resultId);
     }
 
     protected override void DefaultAssertions(GetResultRequest request, EventResultModel result, LeagueDbContext dbContext)
     {
         base.DefaultAssertions(request, result, dbContext);
         var actualResult = dbContext.ScoredEventResults
-            .Where(x => x.LeagueId == request.LeagueId)
             .Where(x => x.ResultId == request.ResultId)
             .Include(x => x.ScoredSessionResults)
                 .ThenInclude(x => x.ScoredResultRows)
@@ -65,7 +64,8 @@ public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHan
     {
         leagueId ??= TestLeagueId;
         resultId ??= TestResultId;
-        var request = DefaultRequest(leagueId.Value, resultId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(resultId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

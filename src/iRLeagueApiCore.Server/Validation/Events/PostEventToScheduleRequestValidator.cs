@@ -20,7 +20,6 @@ public sealed class PostEventToScheduleRequestValidator : AbstractValidator<Post
     public async Task<bool> EventExists(PostEventToScheduleRequest request, long scheduleId, CancellationToken cancellationToken)
     {
         return await dbContext.Schedules
-            .Where(x => x.LeagueId == request.LeagueId)
             .Where(x => x.ScheduleId == scheduleId)
             .AnyAsync(cancellationToken);
     }

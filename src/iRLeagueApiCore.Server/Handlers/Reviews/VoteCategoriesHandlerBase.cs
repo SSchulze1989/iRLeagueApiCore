@@ -10,18 +10,16 @@ public class VoteCategoriesHandlerBase<THandler, TRequest> : HandlerBase<THandle
     {
     }
 
-    protected virtual async Task<VoteCategoryEntity?> GetVoteCategoryEntityAsync(long leagueId, long catId, CancellationToken cancellationToken)
+    protected virtual async Task<VoteCategoryEntity?> GetVoteCategoryEntityAsync(long catId, CancellationToken cancellationToken)
     {
         return await dbContext.VoteCategories
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.CatId == catId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<IEnumerable<VoteCategoryEntity>> GetCategoryEntitiesAsync(long leagueId, CancellationToken cancellationToken)
+    protected virtual async Task<IEnumerable<VoteCategoryEntity>> GetCategoryEntitiesAsync(CancellationToken cancellationToken)
     {
         return await dbContext.VoteCategories
-            .Where(x => x.LeagueId == leagueId)
             .ToListAsync(cancellationToken);
     }
 
@@ -33,10 +31,9 @@ public class VoteCategoriesHandlerBase<THandler, TRequest> : HandlerBase<THandle
         return await Task.FromResult(target);
     }
 
-    protected virtual async Task<VoteCategoryModel?> MapToVoteCategoryModel(long leagueId, long catId, CancellationToken cancellationToken)
+    protected virtual async Task<VoteCategoryModel?> MapToVoteCategoryModel(long catId, CancellationToken cancellationToken)
     {
         return await dbContext.VoteCategories
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.CatId == catId)
             .Select(MapToVoteCategoryModelExpression)
             .FirstOrDefaultAsync(cancellationToken);

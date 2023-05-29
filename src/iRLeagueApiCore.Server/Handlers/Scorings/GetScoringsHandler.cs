@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public record GetScoringsRequest(long LeagueId) : IRequest<IEnumerable<ScoringModel>>;
+public record GetScoringsRequest() : IRequest<IEnumerable<ScoringModel>>;
 
 public sealed class GetScoringsHandler : ScoringHandlerBase<GetScoringsHandler, GetScoringsRequest>, IRequestHandler<GetScoringsRequest, IEnumerable<ScoringModel>>
 {
@@ -14,14 +14,13 @@ public sealed class GetScoringsHandler : ScoringHandlerBase<GetScoringsHandler, 
     public async Task<IEnumerable<ScoringModel>> Handle(GetScoringsRequest request, CancellationToken cancellationToken = default)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        return await MapToGetScoringModelsAsync(request.LeagueId);
+        return await MapToGetScoringModelsAsync(cancellationToken);
     }
 
-    private async Task<IEnumerable<ScoringModel>> MapToGetScoringModelsAsync(long leagueId, CancellationToken cancellationToken = default)
+    private async Task<IEnumerable<ScoringModel>> MapToGetScoringModelsAsync(CancellationToken cancellationToken = default)
     {
         return await dbContext.Scorings
-            .Where(x => x.LeagueId == leagueId)
             .Select(MapToGetScoringModelExpression)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

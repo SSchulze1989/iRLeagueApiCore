@@ -19,12 +19,7 @@ public sealed class GetSeasonsDbTestFixture : HandlersTestsBase<GetSeasonsHandle
 
     protected override GetSeasonsRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId);
-    }
-
-    private GetSeasonsRequest DefaultRequest(long leagueId)
-    {
-        return new GetSeasonsRequest(leagueId);
+        return new GetSeasonsRequest();
     }
 
     [Fact]
@@ -44,7 +39,8 @@ public sealed class GetSeasonsDbTestFixture : HandlersTestsBase<GetSeasonsHandle
     [InlineData(-42)]
     public async Task HandleNotFound(long leagueId)
     {
-        var request = DefaultRequest(leagueId);
+        accessMockHelper.SetCurrentLeague(leagueId);
+        var request = DefaultRequest();
         await HandleNotFoundRequestAsync(request);
     }
 }

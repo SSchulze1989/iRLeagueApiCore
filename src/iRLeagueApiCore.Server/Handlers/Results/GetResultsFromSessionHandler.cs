@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record GetResultsFromEventRequest(long LeagueId, long EventId) : IRequest<IEnumerable<EventResultModel>>;
+public record GetResultsFromEventRequest(long EventId) : IRequest<IEnumerable<EventResultModel>>;
 
 public sealed class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsFromSessionHandler, GetResultsFromEventRequest>,
     IRequestHandler<GetResultsFromEventRequest, IEnumerable<EventResultModel>>
@@ -15,7 +15,7 @@ public sealed class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsF
     public async Task<IEnumerable<EventResultModel>> Handle(GetResultsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getResults = await MapToGetResultModelsFromSessionAsync(request.LeagueId, request.EventId, cancellationToken);
+        var getResults = await MapToGetResultModelsFromSessionAsync(request.EventId, cancellationToken);
         if (getResults.Count() == 0)
         {
             throw new ResourceNotFoundException();
@@ -23,10 +23,9 @@ public sealed class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsF
         return getResults;
     }
 
-    private async Task<IEnumerable<EventResultModel>> MapToGetResultModelsFromSessionAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<EventResultModel>> MapToGetResultModelsFromSessionAsync( long eventId, CancellationToken cancellationToken)
     {
         return await dbContext.ScoredEventResults
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.EventId == eventId)
             .Select(MapToEventResultModelExpression)
             .ToListAsync(cancellationToken);

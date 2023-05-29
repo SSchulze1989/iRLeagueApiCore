@@ -21,22 +21,21 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
 
     protected override PutScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestScheduleId);
+        return DefaultRequest(TestScheduleId);
     }
 
-    private PutScheduleRequest DefaultRequest(long leagueId, long scheduleId)
+    private PutScheduleRequest DefaultRequest(long scheduleId)
     {
         var model = new PutScheduleModel()
         {
             Name = testScheduleName
         };
-        return new PutScheduleRequest(leagueId, DefaultUser(), scheduleId, model);
+        return new PutScheduleRequest(DefaultUser(), scheduleId, model);
     }
 
     protected override void DefaultAssertions(PutScheduleRequest request, ScheduleModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ScheduleId.Should().Be(request.ScheduleId);
         result.Name.Should().Be(expected.Name);
         AssertChanged(request.User, DateTime.UtcNow, result);
@@ -64,7 +63,8 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
     {
         leagueId ??= TestLeagueId;
         scheduleId ??= TestScheduleId;
-        var request = DefaultRequest(leagueId.Value, scheduleId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(scheduleId.Value);
         await base.HandleNotFoundRequestAsync(request);
     }
 }

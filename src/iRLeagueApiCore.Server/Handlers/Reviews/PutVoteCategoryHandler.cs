@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record PutVoteCategoryRequest(long LeagueId, long CatId, PutVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
+public record PutVoteCategoryRequest(long CatId, PutVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
 
 public class PutVoteCategoryHandler : VoteCategoriesHandlerBase<PutVoteCategoryHandler, PutVoteCategoryRequest>, 
     IRequestHandler<PutVoteCategoryRequest, VoteCategoryModel>
@@ -16,11 +16,11 @@ public class PutVoteCategoryHandler : VoteCategoriesHandlerBase<PutVoteCategoryH
     public async Task<VoteCategoryModel> Handle(PutVoteCategoryRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putVoteCategory = await GetVoteCategoryEntityAsync(request.LeagueId, request.CatId, cancellationToken)
+        var putVoteCategory = await GetVoteCategoryEntityAsync(request.CatId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         putVoteCategory = await MapToVoteCategoryEntityAsync(request.Model, putVoteCategory, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getVoteCategory = await MapToVoteCategoryModel(request.LeagueId, putVoteCategory.CatId, cancellationToken)
+        var getVoteCategory = await MapToVoteCategoryModel(putVoteCategory.CatId, cancellationToken)
             ?? throw new InvalidOperationException("Updated resource not found");
         return getVoteCategory;
     }

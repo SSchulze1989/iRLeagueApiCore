@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
 public sealed class SchedulesController : LeagueApiController<SchedulesController>
@@ -19,10 +19,9 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
 
     [HttpGet]
     [Route("")]
-    public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId,
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetAll([FromRoute] string leagueName, CancellationToken cancellationToken = default)
     {
-        var request = new GetSchedulesRequest(leagueId);
+        var request = new GetSchedulesRequest();
         var getSchedules = await mediator.Send(request, cancellationToken);
         return Ok(getSchedules);
     }
@@ -30,10 +29,10 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<ScheduleModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<ScheduleModel>> Get([FromRoute] string leagueName, [FromRoute] long id, 
+        CancellationToken cancellationToken = default)
     {
-        var request = new GetScheduleRequest(leagueId, id);
+        var request = new GetScheduleRequest(id);
         var getSchedule = await mediator.Send(request, cancellationToken);
         return Ok(getSchedule);
     }
@@ -41,10 +40,10 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long seasonId, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromRoute] long seasonId, 
+        CancellationToken cancellationToken = default)
     {
-        var request = new GetSchedulesFromSeasonRequest(leagueId, seasonId);
+        var request = new GetSchedulesFromSeasonRequest(seasonId);
         var getSchedules = await mediator.Send(request, cancellationToken);
         return Ok(getSchedules);
     }
@@ -52,11 +51,11 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpPost]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-    public async Task<ActionResult<ScheduleModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long seasonId, [FromBody] PostScheduleModel postSchedule, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<ScheduleModel>> Post([FromRoute] string leagueName, [FromRoute] long seasonId, [FromBody] PostScheduleModel postSchedule, 
+        CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PostScheduleRequest(leagueId, seasonId, leagueUser, postSchedule);
+        var request = new PostScheduleRequest(seasonId, leagueUser, postSchedule);
         var getSchedule = await mediator.Send(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getSchedule.ScheduleId }, getSchedule);
     }
@@ -64,11 +63,11 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("{id:long}")]
-    public async Task<ActionResult<ScheduleModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long id, [FromBody] PutScheduleModel putSchedule, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<ScheduleModel>> Put([FromRoute] string leagueName, [FromRoute] long id, [FromBody] PutScheduleModel putSchedule, 
+        CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PutScheduleRequest(leagueId, leagueUser, id, putSchedule);
+        var request = new PutScheduleRequest(leagueUser, id, putSchedule);
         var getSchedule = await mediator.Send(request, cancellationToken);
         return Ok(getSchedule);
     }
@@ -76,10 +75,9 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpDelete]
     [RequireLeagueRole(LeagueRoles.Admin)]
     [Route("{id:long}")]
-    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id, CancellationToken cancellationToken = default)
     {
-        var request = new DeleteScheduleRequest(leagueId, id);
+        var request = new DeleteScheduleRequest(id);
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }

@@ -18,18 +18,6 @@ public sealed class DbTestFixture : DataAccessTestsBase
     {
     }
 
-    public static LeagueDbContext CreateStaticDbContext()
-    {
-        var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-
-        // use in memory database when no connection string present
-        //optionsBuilder.UseMySQL(connectionString);
-        optionsBuilder.UseInMemoryDatabase("TestDatabase");
-
-        var dbContext = new LeagueDbContext(optionsBuilder.Options);
-        return dbContext;
-    }
-
     public LeagueDbContext CreateDbContext()
     {
         var dbContext = accessMockHelper.CreateMockDbContext(databaseName);

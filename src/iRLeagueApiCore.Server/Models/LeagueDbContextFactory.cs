@@ -1,6 +1,8 @@
-﻿namespace iRLeagueApiCore.Server.Models;
+﻿using iRLeagueDatabaseCore;
 
-public sealed class LeagueDbContextFactory : IDbContextFactory<LeagueDbContext>
+namespace iRLeagueApiCore.Server.Models;
+
+public sealed class LeagueDbContextFactory
 {
     private readonly IConfiguration _configuration;
 
@@ -9,13 +11,13 @@ public sealed class LeagueDbContextFactory : IDbContextFactory<LeagueDbContext>
         _configuration = configuration;
     }
 
-    public LeagueDbContext CreateDbContext()
+    public LeagueDbContext CreateDbContext(ILeagueProvider leagueProvider)
     {
         var dbConnectionString = _configuration.GetConnectionString("ModelDb");
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
         optionsBuilder.UseMySQL(dbConnectionString);
 
-        var dbContext = new LeagueDbContext(optionsBuilder.Options);
+        var dbContext = new LeagueDbContext(optionsBuilder.Options, leagueProvider);
         return dbContext;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Members;
 
-public record GetMembersFromEventRequest(long LeagueId, long EventId) : IRequest<IEnumerable<MemberModel>>;
+public record GetMembersFromEventRequest(long EventId) : IRequest<IEnumerable<MemberModel>>;
 
 public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler, GetMembersFromEventRequest>,
     IRequestHandler<GetMembersFromEventRequest, IEnumerable<MemberModel>>
@@ -14,14 +14,13 @@ public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFr
     public async Task<IEnumerable<MemberModel>> Handle(GetMembersFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getMembers = await GetMembersFromEvent(request.LeagueId, request.EventId, cancellationToken);
+        var getMembers = await GetMembersFromEvent(request.EventId, cancellationToken);
         return getMembers;
     }
 
-    private async Task<IEnumerable<MemberModel>> GetMembersFromEvent(long leagueId, long eventId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<MemberModel>> GetMembersFromEvent(long eventId, CancellationToken cancellationToken)
     {
         var resultMembers = await dbContext.EventResults
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.EventId == eventId)
             .Select(x => x.SessionResults
                     .SelectMany(y => y.ResultRows)
@@ -30,7 +29,6 @@ public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFr
             .ToListAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var scoredResultMembers = await dbContext.ScoredEventResults
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.EventId == eventId)
             .Select(x => x.ScoredSessionResults
                 .SelectMany(y => y.ScoredResultRows)
@@ -42,6 +40,6 @@ public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFr
             .Concat(scoredResultMembers)
             .Distinct();
 
-        return await MapToMemberListAsync(leagueId, memberIds, cancellationToken);
+        return await MapToMemberListAsync(memberIds, cancellationToken);
     }
 }

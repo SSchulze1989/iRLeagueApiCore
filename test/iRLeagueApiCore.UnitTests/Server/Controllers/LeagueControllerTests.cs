@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Controllers;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
@@ -10,21 +11,17 @@ using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
-public sealed class LeagueDbTestFixture : IClassFixture<DbTestFixture>
+public sealed class LeagueControllerTests : DataAccessTestsBase
 {
-    DbTestFixture Fixture { get; }
-    ITestOutputHelper Output { get; }
     ILogger<LeaguesController> MockLogger { get; }
 
     private const string testLeagueName = "TestLeague";
     private const string testFullName = "Full Name";
     private const long testLeagueId = 1;
 
-    public LeagueDbTestFixture(DbTestFixture fixture, ITestOutputHelper output)
+    public LeagueControllerTests()
     {
-        Fixture = fixture;
         MockLogger = new Mock<ILogger<LeaguesController>>().Object;
-        Output = output;
     }
 
     private LeaguesController CreateController(IMediator mediator)

@@ -10,7 +10,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 
 [Authorize]
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
 public class ChampionshipsController : LeagueApiController<ChampionshipsController>
@@ -24,17 +24,16 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     /// Get single championship by id
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<ChampionshipModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<ChampionshipModel>> Get([FromRoute] string leagueName, [FromRoute] long id, 
+        CancellationToken cancellationToken = default)
     {
-        var request = new GetChampionshipRequest(leagueId, id);
+        var request = new GetChampionshipRequest(id);
         var getChampionship = await mediator.Send(request, cancellationToken);
         return Ok(getChampionship);
     }
@@ -43,15 +42,15 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     /// Get all championships from a league
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     [Route("")]
-    public async Task<ActionResult<IEnumerable<ChampionshipModel>>> GetFromLeague([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<ChampionshipModel>>> GetFromLeague([FromRoute] string leagueName, 
+        CancellationToken cancellationToken = default)
     {
-        var request = new GetChampionshipsFromLeagueRequest(leagueId);
+        var request = new GetChampionshipsFromLeagueRequest();
         var getChampionships = await mediator.Send(request, cancellationToken);
         return Ok(getChampionships);
     }
@@ -60,17 +59,16 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     /// Post a new championship
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="postChampionship"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost]
     [Route("")]
-    public async Task<ActionResult<ChampionshipModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, [FromBody] PostChampionshipModel postChampionship,
+    public async Task<ActionResult<ChampionshipModel>> Post([FromRoute] string leagueName, [FromBody] PostChampionshipModel postChampionship,
         CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PostChampionshipRequest(leagueId, leagueUser, postChampionship);
+        var request = new PostChampionshipRequest(leagueUser, postChampionship);
         var getChampionship = await mediator.Send(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getChampionship.ChampionshipId }, getChampionship);
     }
@@ -79,7 +77,6 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     /// Update a single championship
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="id"></param>
     /// <param name="putChampionship"></param>
     /// <param name="cancellationToken"></param>
@@ -87,11 +84,11 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("{id:long}")]
-    public async Task<ActionResult<ChampionshipModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId,
-    [FromRoute] long id, [FromBody] PutChampionshipModel putChampionship, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<ChampionshipModel>> Put([FromRoute] string leagueName, [FromRoute] long id, 
+        [FromBody] PutChampionshipModel putChampionship, CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PutChampionshipRequest(leagueId, id, leagueUser, putChampionship);
+        var request = new PutChampionshipRequest(id, leagueUser, putChampionship);
         var getChampionship = await mediator.Send(request, cancellationToken);
         return Ok(getChampionship);
     }
@@ -100,17 +97,16 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     /// Delete a championship permanently
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="leagueId"></param>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpDelete]
     [RequireLeagueRole(LeagueRoles.Admin)]
     [Route("{id:long}")]
-    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId,
-        [FromRoute] long id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id, 
+        CancellationToken cancellationToken = default)
     {
-        var request = new DeleteChampionshipRequest(leagueId, id);
+        var request = new DeleteChampionshipRequest(id);
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }

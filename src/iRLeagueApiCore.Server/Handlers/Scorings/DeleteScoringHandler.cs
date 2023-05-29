@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public record DeleteScoringRequest(long LeagueId, long ScoringId) : IRequest;
+public record DeleteScoringRequest(long ScoringId) : IRequest;
 
 public sealed class DeleteScoringHandler : ScoringHandlerBase<DeleteScoringHandler, DeleteScoringRequest>, IRequestHandler<DeleteScoringRequest>
 {
@@ -11,7 +11,7 @@ public sealed class DeleteScoringHandler : ScoringHandlerBase<DeleteScoringHandl
     public async Task<Unit> Handle(DeleteScoringRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var scoring = await GetScoringEntityAsync(request.LeagueId, request.ScoringId) ?? throw new ResourceNotFoundException();
+        var scoring = await GetScoringEntityAsync(request.ScoringId) ?? throw new ResourceNotFoundException();
         dbContext.Scorings.Remove(scoring);
         await dbContext.SaveChangesAsync();
         _logger.LogInformation("Removed scoring {ScoringId} inside league {LeagueId} from database",

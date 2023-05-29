@@ -16,12 +16,12 @@ public sealed class DeleteChampSeasonHandlerTests :
 
     protected override DeleteChampSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestChampSeasonId);
+        return DefaultRequest(TestChampSeasonId);
     }
 
-    private DeleteChampSeasonRequest DefaultRequest(long leagueId, long champSeasonId)
+    private DeleteChampSeasonRequest DefaultRequest(long champSeasonId)
     {
-        return new DeleteChampSeasonRequest(leagueId, champSeasonId);
+        return new DeleteChampSeasonRequest(champSeasonId);
     }
 
     protected override void DefaultAssertions(DeleteChampSeasonRequest request, Unit result, LeagueDbContext dbContext)

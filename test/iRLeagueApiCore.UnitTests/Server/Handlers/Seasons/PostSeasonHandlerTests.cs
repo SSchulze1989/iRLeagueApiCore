@@ -6,11 +6,11 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Seasons;
 
-public sealed class PostSeasonDbTestFixture : HandlersTestsBase<PostSeasonHandler, PostSeasonRequest, SeasonModel>
+public sealed class PostSeasonHandlerTests : HandlersTestsBase<PostSeasonHandler, PostSeasonRequest, SeasonModel>
 {
     private const string testSeasonName = "TestSeason";
 
-    public PostSeasonDbTestFixture() : base()
+    public PostSeasonHandlerTests() : base()
     {
     }
 
@@ -21,22 +21,17 @@ public sealed class PostSeasonDbTestFixture : HandlersTestsBase<PostSeasonHandle
 
     protected override PostSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId);
-    }
-
-    private PostSeasonRequest DefaultRequest(long leagueId)
-    {
         var model = new PostSeasonModel()
         {
             SeasonName = testSeasonName
         };
-        return new PostSeasonRequest(leagueId, DefaultUser(), model);
+        return new PostSeasonRequest(DefaultUser(), model);
     }
 
     protected override void DefaultAssertions(PostSeasonRequest request, SeasonModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
+        result.LeagueId.Should().Be(accessMockHelper.LeagueProvider.LeagueId);
         result.SeasonId.Should().NotBe(0);
         result.Finished.Should().Be(expected.Finished);
         result.HideComments.Should().Be(expected.HideComments);
@@ -63,7 +58,8 @@ public sealed class PostSeasonDbTestFixture : HandlersTestsBase<PostSeasonHandle
     [InlineData(-42)]
     public async Task HandleNotFound(long leagueId)
     {
-        var request = DefaultRequest(leagueId);
+        accessMockHelper.SetCurrentLeague(leagueId);
+        var request = DefaultRequest();
         await HandleNotFoundRequestAsync(request);
     }
 }

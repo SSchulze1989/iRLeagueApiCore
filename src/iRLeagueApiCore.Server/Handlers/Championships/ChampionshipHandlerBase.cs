@@ -11,11 +11,10 @@ public class ChampionshipHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     {
     }
 
-    protected virtual async Task<ChampionshipEntity?> GetChampionshipEntityAsync(long leagueId, long championshipId, CancellationToken cancellationToken)
+    protected virtual async Task<ChampionshipEntity?> GetChampionshipEntityAsync(long championshipId, CancellationToken cancellationToken)
     {
         return await dbContext.Championships
             .Include(x => x.ChampSeasons)
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampionshipId == championshipId)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -29,10 +28,9 @@ public class ChampionshipHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return await Task.FromResult(target);
     }
 
-    protected virtual async Task<ChampionshipModel?> MapToChampionshipModelAsync(long leagueId, long championshipId, CancellationToken cancellationToken)
+    protected virtual async Task<ChampionshipModel?> MapToChampionshipModelAsync(long championshipId, CancellationToken cancellationToken)
     {
         return await dbContext.Championships
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampionshipId == championshipId)
             .Where(x => x.IsArchived == false)
             .Select(MapToChampionshipModelExpression)

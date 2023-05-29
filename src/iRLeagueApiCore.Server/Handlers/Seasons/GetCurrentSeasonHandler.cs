@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
-public record GetCurrentSeasonRequest(long LeagueId) : IRequest<SeasonModel>;
+public record GetCurrentSeasonRequest() : IRequest<SeasonModel>;
 
 public sealed class GetCurrentSeasonHandler : SeasonHandlerBase<GetCurrentSeasonHandler, GetCurrentSeasonRequest>,
     IRequestHandler<GetCurrentSeasonRequest, SeasonModel>
@@ -16,13 +16,12 @@ public sealed class GetCurrentSeasonHandler : SeasonHandlerBase<GetCurrentSeason
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getSeasonId = await dbContext.Events
-            .Where(x => x.LeagueId == request.LeagueId)
             .Where(x => x.Date < DateTime.UtcNow)
             .OrderByDescending(x => x.Date)
             .Select(x => (long?)x.Schedule.SeasonId)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
-        var getSeason = await MapToGetSeasonModel(request.LeagueId, getSeasonId, cancellationToken)
+        var getSeason = await MapToGetSeasonModel(getSeasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         return getSeason;
     }

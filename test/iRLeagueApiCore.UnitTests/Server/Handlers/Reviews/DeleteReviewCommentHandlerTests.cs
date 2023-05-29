@@ -18,15 +18,15 @@ public sealed class DeleteReviewCommentHandlerTests : ReviewsHandlersTestsBase<D
         return new DeleteReviewCommentHandler(logger, dbContext, new[] { validator });
     }
 
-    private DeleteReviewCommentRequest DefaultRequest(long leagueId, long commentId)
+    private DeleteReviewCommentRequest DefaultRequest(long commentId)
     {
 
-        return new DeleteReviewCommentRequest(leagueId, commentId);
+        return new DeleteReviewCommentRequest(commentId);
     }
 
     protected override DeleteReviewCommentRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestCommentId);
+        return DefaultRequest(TestCommentId);
     }
 
     protected override void DefaultPreTestAssertions(DeleteReviewCommentRequest request, LeagueDbContext dbContext)
@@ -61,7 +61,8 @@ public sealed class DeleteReviewCommentHandlerTests : ReviewsHandlersTestsBase<D
     {
         leagueId ??= TestLeagueId;
         commentId ??= TestCommentId;
-        var request = DefaultRequest(leagueId.Value, commentId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(commentId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

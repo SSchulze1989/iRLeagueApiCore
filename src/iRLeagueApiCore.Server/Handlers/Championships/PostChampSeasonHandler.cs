@@ -1,44 +1,43 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
 using System.Threading;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public record PostChampSeasonRequest(long LeagueId, long ChampionshipId, long SeasonId, LeagueUser User, PostChampSeasonModel Model) : IRequest<ChampSeasonModel>;
+public record PostChampSeasonRequest(long ChampionshipId, long SeasonId, LeagueUser User, PostChampSeasonModel Model) : IRequest<ChampSeasonModel>;
 
 public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSeasonHandler, PostChampSeasonRequest>, 
     IRequestHandler<PostChampSeasonRequest, ChampSeasonModel>
 {
-    public PostChampSeasonHandler(ILogger<PostChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampSeasonRequest>> validators) : 
-        base(logger, dbContext, validators)
+    public PostChampSeasonHandler(ILogger<PostChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampSeasonRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 
     public async Task<ChampSeasonModel> Handle(PostChampSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var postChampSeason = await GetChampSeasonEntityAsync(request.LeagueId, request.ChampionshipId, request.SeasonId, cancellationToken)
-            ?? await CreateChampSeasonEntityAsync(request.User, request.LeagueId, request.ChampionshipId, request.SeasonId, cancellationToken);
+        var postChampSeason = await GetChampSeasonEntityAsync(request.ChampionshipId, request.SeasonId, cancellationToken)
+            ?? await CreateChampSeasonEntityAsync(request.User, request.ChampionshipId, request.SeasonId, cancellationToken);
         postChampSeason.IsActive = true;
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getChampSeason = await MapToChampSeasonModel(request.LeagueId, postChampSeason.ChampSeasonId, cancellationToken)
+        var getChampSeason = await MapToChampSeasonModel(postChampSeason.ChampSeasonId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource not found");
         return getChampSeason;
     }
 
-    private async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long leagueId, long championshipId, long seasonId, CancellationToken cancellationToken)
+    private async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long championshipId, long seasonId, CancellationToken cancellationToken)
     {
         return await dbContext.ChampSeasons
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampionshipId == championshipId)
             .Where(x => x.SeasonId == seasonId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    private async Task<ChampSeasonEntity> CreateChampSeasonEntityAsync(LeagueUser user, long leagueId, long championshipId, long seasonId, CancellationToken cancellationToken)
+    private async Task<ChampSeasonEntity> CreateChampSeasonEntityAsync(LeagueUser user, long championshipId, long seasonId, CancellationToken cancellationToken)
     {
         var championship = await dbContext.Championships
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ChampionshipId == championshipId)
             .Include(x => x.ChampSeasons)
                 .ThenInclude(x => x.ResultConfigurations)
@@ -51,7 +50,6 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         var season = await dbContext.Seasons
             .Include(x => x.ChampSeasons)
                 .ThenInclude(x => x.ResultConfigurations)
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SeasonId == seasonId)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
@@ -69,8 +67,8 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             .FirstOrDefault();
 
         // find previous season settings and copy
-        champSeason.StandingConfiguration = await CreateOrCopyStandingConfigEntity(user, leagueId, prevChampSeason?.StandingConfigId, cancellationToken);
-        champSeason.ResultConfigurations = await CopyResultConfigurationEntities(user, leagueId, champSeason, prevChampSeason?.ResultConfigurations.Select(x => x.ResultConfigId), cancellationToken);
+        champSeason.StandingConfiguration = await CreateOrCopyStandingConfigEntity(user, prevChampSeason?.StandingConfigId, cancellationToken);
+        champSeason.ResultConfigurations = await CopyResultConfigurationEntities(user, champSeason, prevChampSeason?.ResultConfigurations.Select(x => x.ResultConfigId), cancellationToken);
         UpdateVersionEntity(user, champSeason);
 
         championship.ChampSeasons.Add(champSeason);
@@ -79,14 +77,13 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         return champSeason;
     }
 
-    private async Task<StandingConfigurationEntity> CreateOrCopyStandingConfigEntity(LeagueUser user, long leagueId, long? prevStandingConfigId, CancellationToken cancellationToken)
+    private async Task<StandingConfigurationEntity> CreateOrCopyStandingConfigEntity(LeagueUser user, long? prevStandingConfigId, CancellationToken cancellationToken)
     {
         var target = CreateVersionEntity(user, new StandingConfigurationEntity()
         {
-            LeagueId = leagueId,
+            LeagueId = dbContext.LeagueProvider.LeagueId,
         });
         var source = await dbContext.StandingConfigurations
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.StandingConfigId == prevStandingConfigId)
             .FirstOrDefaultAsync(cancellationToken);
         if (source is not null)
@@ -188,7 +185,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         return sourceConfig;
     }
 
-    private async Task<ICollection<ResultConfigurationEntity>> CopyResultConfigurationEntities(LeagueUser user, long leagueId, ChampSeasonEntity targetChampSeason, IEnumerable<long>? prevResultConfigIds,
+    private async Task<ICollection<ResultConfigurationEntity>> CopyResultConfigurationEntities(LeagueUser user, ChampSeasonEntity targetChampSeason, IEnumerable<long>? prevResultConfigIds,
         CancellationToken cancellationToken)
     {
         if (prevResultConfigIds is null)
@@ -197,7 +194,6 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         }
 
         var resultConfigs = await dbContext.ResultConfigurations
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => prevResultConfigIds.Contains(x.ResultConfigId))
             .Include(x => x.League)
             .Include(x => x.ChampSeason)

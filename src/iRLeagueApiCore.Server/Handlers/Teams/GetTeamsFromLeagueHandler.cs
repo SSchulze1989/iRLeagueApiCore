@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Teams;
 
-public record GetTeamsFromLeagueRequest(long LeagueId) : IRequest<IEnumerable<TeamModel>>;
+public record GetTeamsFromLeagueRequest() : IRequest<IEnumerable<TeamModel>>;
 
 public sealed class GetTeamsFromLeagueHandler : TeamsHandlerBase<GetTeamsFromLeagueHandler, GetTeamsFromLeagueRequest>,
     IRequestHandler<GetTeamsFromLeagueRequest, IEnumerable<TeamModel>>
@@ -15,14 +15,13 @@ public sealed class GetTeamsFromLeagueHandler : TeamsHandlerBase<GetTeamsFromLea
     public async Task<IEnumerable<TeamModel>> Handle(GetTeamsFromLeagueRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getTeams = await MapToTeamModels(request.LeagueId, cancellationToken);
+        var getTeams = await MapToTeamModels(cancellationToken);
         return getTeams;
     }
 
-    private async Task<IEnumerable<TeamModel>> MapToTeamModels(long leagueId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<TeamModel>> MapToTeamModels(CancellationToken cancellationToken)
     {
         return await dbContext.Teams
-            .Where(x => x.LeagueId == leagueId)
             .Select(MapToTeamModelExpression)
             .ToListAsync(cancellationToken);
     }

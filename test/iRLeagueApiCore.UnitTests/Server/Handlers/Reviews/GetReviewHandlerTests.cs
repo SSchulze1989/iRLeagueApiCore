@@ -15,19 +15,18 @@ public sealed class GetReviewHandlerTests : ReviewsHandlersTestsBase<GetReviewHa
         return new GetReviewHandler(logger, dbContext, new[] { validator });
     }
 
-    private GetReviewRequest DefaultRequest(long leagueId, long reviewId, bool includeComments = true)
+    private GetReviewRequest DefaultRequest(long reviewId, bool includeComments = true)
     {
-        return new GetReviewRequest(leagueId, reviewId, includeComments);
+        return new GetReviewRequest(reviewId, includeComments);
     }
 
     protected override GetReviewRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestReviewId);
+        return DefaultRequest(TestReviewId);
     }
 
     protected override void DefaultAssertions(GetReviewRequest request, ReviewModel result, LeagueDbContext dbContext)
     {
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ReviewId.Should().Be(request.ReviewId);
         var reviewEntity = dbContext.IncidentReviews
             .Include(x => x.Session)
@@ -93,7 +92,8 @@ public sealed class GetReviewHandlerTests : ReviewsHandlersTestsBase<GetReviewHa
     {
         leagueId ??= TestLeagueId;
         reviewId ??= TestReviewId;
-        var request = DefaultRequest(leagueId.Value, reviewId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 
@@ -106,7 +106,7 @@ public sealed class GetReviewHandlerTests : ReviewsHandlersTestsBase<GetReviewHa
     [Fact]
     public async Task ShouldNotIncludeCommentsWhenFalse()
     {
-        var request = DefaultRequest(TestLeagueId, TestReviewId, false);
+        var request = DefaultRequest(TestReviewId, false);
         await HandleSpecialAsync(request, (request, model, context) =>
         {
             model.ReviewId.Should().Be(TestReviewId);

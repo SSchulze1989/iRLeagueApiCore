@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Steward)]
 [Route("{leagueName}/[controller]")]
 public sealed class VoteCategoriesController : LeagueApiController<VoteCategoriesController>
@@ -21,10 +21,10 @@ public sealed class VoteCategoriesController : LeagueApiController<VoteCategorie
     [HttpGet]
     [AllowAnonymous]
     [Route("")]
-    public async Task<ActionResult<IEnumerable<VoteCategoryModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult<IEnumerable<VoteCategoryModel>>> GetAll([FromRoute] string leagueName, [FromRoute] long id,
             CancellationToken cancellationToken)
     {
-        var request = new GetLeagueVoteCategoriesRequest(leagueId);
+        var request = new GetLeagueVoteCategoriesRequest();
         var getVoteCategories = await mediator.Send(request, cancellationToken);
         return Ok(getVoteCategories);
     }
@@ -32,40 +32,40 @@ public sealed class VoteCategoriesController : LeagueApiController<VoteCategorie
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<ReviewModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult<ReviewModel>> Get([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new GetVoteCategoryRequest(leagueId, id);
+        var request = new GetVoteCategoryRequest(id);
         var getVoteCategory = await mediator.Send(request, cancellationToken);
         return Ok(getVoteCategory);
     }
 
     [HttpPost]
     [Route("")]
-    public async Task<ActionResult<VoteCategoryModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId,
+    public async Task<ActionResult<VoteCategoryModel>> Post([FromRoute] string leagueName,
         [FromBody] PostVoteCategoryModel postVoteCategory, CancellationToken cancellationToken)
     {
-        var request = new PostVoteCategoryRequest(leagueId, postVoteCategory);
+        var request = new PostVoteCategoryRequest(postVoteCategory);
         var getVoteCategory = await mediator.Send(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getVoteCategory.Id }, getVoteCategory);
     }
 
     [HttpPut]
     [Route("{id:long}")]
-    public async Task<ActionResult<VoteCategoryModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult<VoteCategoryModel>> Put([FromRoute] string leagueName, [FromRoute] long id,
         [FromBody] PutVoteCategoryModel putVoteCategory, CancellationToken cancellationToken)
     {
-        var request = new PutVoteCategoryRequest(leagueId, id, putVoteCategory);
+        var request = new PutVoteCategoryRequest(id, putVoteCategory);
         var getVoteCategory = await mediator.Send(request, cancellationToken);
         return Ok(getVoteCategory);
     }
 
     [HttpDelete]
     [Route("{id:long}")]
-    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new DeleteVoteCategoryRequest(leagueId, id);
+        var request = new DeleteVoteCategoryRequest(id);
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }

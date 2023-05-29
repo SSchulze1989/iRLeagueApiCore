@@ -11,41 +11,37 @@ public class ProtestsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
     {
     }
 
-    protected virtual async Task<ProtestEntity?> GetProtestEntityAsync(long leagueId, long protestId, CancellationToken cancellationToken)
+    protected virtual async Task<ProtestEntity?> GetProtestEntityAsync(long protestId, CancellationToken cancellationToken)
     {
         return await dbContext.Protests
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ProtestId == protestId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ProtestEntity> MapToProtestEntity(long leagueId, LeagueUser user, PostProtestModel model, ProtestEntity entity, CancellationToken cancellationToken)
+    protected virtual async Task<ProtestEntity> MapToProtestEntity(LeagueUser user, PostProtestModel model, ProtestEntity entity, CancellationToken cancellationToken)
     {
         entity.Author = await dbContext.LeagueMembers
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.MemberId == model.AuthorMemberId)
             .FirstAsync(cancellationToken);
         entity.Corner = model.Corner;
         entity.FullDescription = model.FullDescription;
         entity.OnLap = model.OnLap;
-        entity.InvolvedMembers = await MapToLeagueMemberList(leagueId, model.InvolvedMembers.Select(x => x.MemberId), entity.InvolvedMembers, cancellationToken);
+        entity.InvolvedMembers = await MapToLeagueMemberList(model.InvolvedMembers.Select(x => x.MemberId), entity.InvolvedMembers, cancellationToken);
         return entity;
     }
 
-    protected virtual async Task<ICollection<LeagueMemberEntity>> MapToLeagueMemberList(long leagueId, IEnumerable<long> involvedMemberIds, 
+    protected virtual async Task<ICollection<LeagueMemberEntity>> MapToLeagueMemberList(IEnumerable<long> involvedMemberIds, 
         ICollection<LeagueMemberEntity> involvedMembers, CancellationToken cancellationToken)
     {
         var members = await dbContext.LeagueMembers
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => involvedMemberIds.Contains(x.MemberId))
             .ToListAsync(cancellationToken);
         return members;
     }
 
-    protected virtual async Task<ProtestModel?> MapToProtestModel(long leagueId, long protestId, bool includeAuthor, CancellationToken cancellationToken)
+    protected virtual async Task<ProtestModel?> MapToProtestModel(long protestId, bool includeAuthor, CancellationToken cancellationToken)
     {
         return await dbContext.Protests
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ProtestId == protestId)
             .Select(MapToProtestModelExpression(includeAuthor))
             .FirstOrDefaultAsync(cancellationToken);

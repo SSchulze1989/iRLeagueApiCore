@@ -22,11 +22,10 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
     /// <param name="standings"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<IEnumerable<StandingsModel>> AlignStandingResultRows(long leagueId, long seasonId, IEnumerable<StandingsModel> standings,
+    protected async Task<IEnumerable<StandingsModel>> AlignStandingResultRows(long seasonId, IEnumerable<StandingsModel> standings,
         CancellationToken cancellationToken)
     {
         var events = await dbContext.Events
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.Schedule.SeasonId == seasonId)
             .OrderBy(x => x.Date)
             .ToListAsync(cancellationToken);

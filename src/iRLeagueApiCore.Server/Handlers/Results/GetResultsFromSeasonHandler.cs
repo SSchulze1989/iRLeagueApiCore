@@ -1,7 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models;
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record GetResultsFromSeasonRequest(long LeagueId, long SeasonId) : IRequest<IEnumerable<SeasonEventResultModel>>;
+public record GetResultsFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<SeasonEventResultModel>>;
 
 public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest>,
     IRequestHandler<GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
@@ -14,7 +14,7 @@ public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFr
     public async Task<IEnumerable<SeasonEventResultModel>> Handle(GetResultsFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getResults = await MapToGetResultModelsFromSeasonAsync(request.LeagueId, request.SeasonId, cancellationToken);
+        var getResults = await MapToGetResultModelsFromSeasonAsync(request.SeasonId, cancellationToken);
         if (getResults.Count() == 0)
         {
             throw new ResourceNotFoundException();
@@ -22,10 +22,9 @@ public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFr
         return getResults;
     }
 
-    private async Task<IEnumerable<SeasonEventResultModel>> MapToGetResultModelsFromSeasonAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<SeasonEventResultModel>> MapToGetResultModelsFromSeasonAsync(long seasonId, CancellationToken cancellationToken)
     {
         var seasonResults = await dbContext.ScoredEventResults
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.Event.Schedule.SeasonId == seasonId)
             .OrderBy(x => x.Event.Date)
             .Select(MapToEventResultModelExpression)

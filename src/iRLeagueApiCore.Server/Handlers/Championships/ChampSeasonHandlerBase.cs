@@ -1,19 +1,19 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
 using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
-{
-    public ChampSeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+{    public ChampSeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    protected virtual async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long leagueId, long champSeasonId, CancellationToken cancellationToken)
+    protected virtual async Task<ChampSeasonEntity?> GetChampSeasonEntityAsync(long champSeasonId, CancellationToken cancellationToken)
     {
-        return await ChampSeasonsQuery(leagueId)
+        return await ChampSeasonsQuery()
             .Include(x => x.Championship)
             .Include(x => x.StandingConfiguration)
             .Include(x => x.ResultConfigurations)
@@ -21,17 +21,17 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(long leagueId, LeagueUser user, PutChampSeasonModel model, ChampSeasonEntity target, 
+    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(LeagueUser user, PutChampSeasonModel model, ChampSeasonEntity target, 
         CancellationToken cancellationToken)
     {
         target.Championship.Name = model.ChampionshipName;
         target.Championship.DisplayName = model.ChampionshipDisplayName;
-        target.StandingConfiguration = await MapToStandingConfigurationAsync(leagueId, user, model.StandingConfig, cancellationToken);
-        target.ResultConfigurations = await MapToResultConfigurationListAsync(leagueId, model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
+        target.StandingConfiguration = await MapToStandingConfigurationAsync(user, model.StandingConfig, cancellationToken);
+        target.ResultConfigurations = await MapToResultConfigurationListAsync(model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
         return await Task.FromResult(target);
     }
 
-    protected async Task<StandingConfigurationEntity?> MapToStandingConfigurationAsync(long leagueId, LeagueUser user, StandingConfigModel? model, CancellationToken cancellationToken)
+    protected async Task<StandingConfigurationEntity?> MapToStandingConfigurationAsync(LeagueUser user, StandingConfigModel? model, CancellationToken cancellationToken)
     {
         if (model is null)
         {
@@ -39,14 +39,13 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         }
 
         var entity =  await dbContext.StandingConfigurations
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.StandingConfigId == model.StandingConfigId && model.StandingConfigId != 0)
             .FirstOrDefaultAsync(cancellationToken);
         if (entity is null)
         {
             entity = CreateVersionEntity(user, new StandingConfigurationEntity()
             {
-                LeagueId = leagueId,
+                LeagueId = dbContext.LeagueProvider.LeagueId,
             });
         }
         entity.Name = model.Name;
@@ -57,28 +56,26 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         return entity;
     }
 
-    protected async Task<ICollection<ResultConfigurationEntity>> MapToResultConfigurationListAsync(long leagueId, IEnumerable<long> resultConfigId, 
+    protected async Task<ICollection<ResultConfigurationEntity>> MapToResultConfigurationListAsync(IEnumerable<long> resultConfigId, 
         ICollection<ResultConfigurationEntity> target, CancellationToken cancellationToken)
     {
         target = await dbContext.ResultConfigurations
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => resultConfigId.Contains(x.ResultConfigId))
             .ToListAsync(cancellationToken);
         return target;
     }
 
-    protected async Task<ChampSeasonModel?> MapToChampSeasonModel(long leagueId, long champSeasonId, CancellationToken cancellationToken)
+    protected async Task<ChampSeasonModel?> MapToChampSeasonModel(long champSeasonId, CancellationToken cancellationToken)
     {
-        return await ChampSeasonsQuery(leagueId)
+        return await ChampSeasonsQuery()
             .Where(x => x.ChampSeasonId == champSeasonId)
             .Select(MapToChampSeasonModelExpression)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected IQueryable<ChampSeasonEntity> ChampSeasonsQuery(long leagueId)
+    protected IQueryable<ChampSeasonEntity> ChampSeasonsQuery()
     {
         return dbContext.ChampSeasons
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.IsActive);
     }
 

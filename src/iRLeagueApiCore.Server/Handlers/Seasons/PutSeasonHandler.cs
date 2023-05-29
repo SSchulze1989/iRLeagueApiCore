@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
-public record PutSeasonRequest(long LeagueId, LeagueUser User, long SeasonId, PutSeasonModel Model) : IRequest<SeasonModel>;
+public record PutSeasonRequest(LeagueUser User, long SeasonId, PutSeasonModel Model) : IRequest<SeasonModel>;
 
 public sealed class PutSeasonHandler : SeasonHandlerBase<PutSeasonHandler, PutSeasonRequest>, IRequestHandler<PutSeasonRequest, SeasonModel>
 {
@@ -15,11 +15,11 @@ public sealed class PutSeasonHandler : SeasonHandlerBase<PutSeasonHandler, PutSe
     public async Task<SeasonModel> Handle(PutSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putSeason = await GetSeasonEntityAsync(request.LeagueId, request.SeasonId, cancellationToken)
+        var putSeason = await GetSeasonEntityAsync(request.SeasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        await MapToSeasonEntityAsync(request.LeagueId, request.User, request.Model, putSeason, cancellationToken);
+        await MapToSeasonEntityAsync(request.User, request.Model, putSeason, cancellationToken);
         await dbContext.SaveChangesAsync();
-        var getSeason = await MapToGetSeasonModel(request.LeagueId, request.SeasonId, cancellationToken)
+        var getSeason = await MapToGetSeasonModel(request.SeasonId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getSeason;
     }
