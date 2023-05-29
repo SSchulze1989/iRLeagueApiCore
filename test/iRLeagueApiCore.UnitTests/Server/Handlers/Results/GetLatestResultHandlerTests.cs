@@ -34,7 +34,7 @@ public sealed class GetLatestResultHandlerTests : ResultHandlersTestsBase<GetLat
     [Fact]
     public async Task ShouldReturnLatestEventWithResult_EvenWhenPreviousEventHasNoResult()
     {
-        var eventWithResult = await dbContext.Events.Skip(2).FirstAsync();
+        var eventWithResult = await dbContext.Events.OrderBy(x => x.Date).LastAsync();
         await CreateScoredEventResults(eventWithResult);
         var request = DefaultRequest();
         var sut = CreateSut();
