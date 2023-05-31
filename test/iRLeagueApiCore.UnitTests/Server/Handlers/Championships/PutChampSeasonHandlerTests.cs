@@ -2,6 +2,8 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Championships;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.AspNetCore.Identity.Test;
+using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Championships;
 public sealed class PutChampSeasonHandlerTests : ChampionshipHandlersTestsBase<PutChampSeasonHandler, PutChampSeasonRequest, ChampSeasonModel>
@@ -16,12 +18,30 @@ public sealed class PutChampSeasonHandlerTests : ChampionshipHandlersTestsBase<P
         throw new NotImplementedException();
     }
 
-    //private PutChampSeasonRequest DefaultRequest(long leagueId, long champSeasonId)
-    //{
-    //    var resultConfigId = dbContext.StandingConfigurations.First().StandingConfigId;
-    //    var model = fixture.Build<PutChampSeasonModel>()
-    //        .With(x => x.ResultConfigs, fixture.Build<ResultConfigInfoModel>()
-    //            .With(x => x.ResultConfigId, resultConfigId).CreateMany(1).ToList());
-    //    return new(leagueId, champSeasonId, model);
-    //}
+    [Fact]
+    public async Task ShouldSetDefaultResultConfig()
+    {
+        var champSeason = await dbContext.ChampSeasons
+            .Include(x => x.DefaultResultConfig)
+            .Include(x => x.ResultConfigurations)
+            .FirstAsync();
+        var defaultResultConfig = champSeason.ResultConfigurations.Last();
+        champSeason.DefaultResultConfig?.ResultConfigId.Should().NotBe(defaultResultConfig.ResultConfigId);
+        var request = new PutChampSeasonRequest(champSeason.ChampSeasonId, DefaultUser(), new()
+        {
+            DefaultResultConfig = new() { LeagueId = champSeason.LeagueId, ResultConfigId = defaultResultConfig.ResultConfigId },
+            ResultConfigs = champSeason.ResultConfigurations.Select(x => new ResultConfigInfoModel() { ResultConfigId = x.ResultConfigId, Name = x.Name }).ToArray(),
+        });
+        var sut = CreateSut();
+
+        var test = await sut.Handle(request, default);
+
+        test.DefaultResultConfig.Should().NotBeNull();
+        test.DefaultResultConfig!.ResultConfigId.Should().Be(defaultResultConfig.ResultConfigId);
+    }
+
+    private PutChampSeasonHandler CreateSut()
+    {
+        return CreateTestHandler(dbContext, MockHelpers.TestValidator<PutChampSeasonRequest>());
+    }
 }

@@ -28,6 +28,7 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         target.Championship.DisplayName = model.ChampionshipDisplayName;
         target.StandingConfiguration = await MapToStandingConfigurationAsync(user, model.StandingConfig, cancellationToken);
         target.ResultConfigurations = await MapToResultConfigurationListAsync(model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
+        target.DefaultResultConfig = target.ResultConfigurations.FirstOrDefault(x => x.ResultConfigId == model.DefaultResultConfig?.ResultConfigId);
         return await Task.FromResult(target);
     }
 
@@ -94,6 +95,15 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
             Name = config.Name,
             DisplayName = config.DisplayName,
         }).ToList(),
+        DefaultResultConfig = champSeason.DefaultResultConfig == null ? null : new ResultConfigInfoModel()
+        {
+            LeagueId = champSeason.LeagueId,
+            ResultConfigId = champSeason.DefaultResultConfig.ResultConfigId,
+            ChampSeasonId = champSeason.ChampSeasonId,
+            ChampionshipName = champSeason.Championship.Name,
+            Name = champSeason.DefaultResultConfig.Name,
+            DisplayName = champSeason.DefaultResultConfig.DisplayName,
+        },
         SeasonId = champSeason.SeasonId,
         SeasonName = champSeason.Season.SeasonName,
         StandingConfig = champSeason.StandingConfiguration == null ? null : new StandingConfigModel()

@@ -20,7 +20,7 @@ public abstract class ChampionshipHandlersTestsBase<THandler, TRequest, TResult>
         var season = dbContext.Seasons.First();
         foreach (var championship in championships)
         {
-            var champSeason = accessMockHelper.CreateChampSeason(championship, season);
+            var champSeason = accessMockHelper.CreateChampSeason(championship, season, nResultConfigs: 2);
             dbContext.ChampSeasons.Add(champSeason);
         }
         var season2 = accessMockHelper.CreateSeason(league);
