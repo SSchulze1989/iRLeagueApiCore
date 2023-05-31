@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore;
 using System.Linq.Expressions;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
@@ -201,6 +202,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             : null,
         Name = resultConfig.Name,
         DisplayName = resultConfig.DisplayName,
+        IsDefaultConfig = resultConfig.ResultConfigId == resultConfig.ChampSeason.DefaultResultConfigId,
         ResultKind = resultConfig.ResultKind,
         ResultsPerTeam = resultConfig.ResultsPerTeam,
         Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()
