@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Eventing.Reader;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 
