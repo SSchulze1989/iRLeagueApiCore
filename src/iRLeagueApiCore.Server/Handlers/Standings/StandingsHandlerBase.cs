@@ -17,7 +17,6 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
     /// That means that for each event in the calendar an entry in the resultRows collection will be created but it will be
     /// null if the driver did not participate in this event.
     /// </summary>
-    /// <param name="leagueId"></param>
     /// <param name="seasonId"></param>
     /// <param name="standings"></param>
     /// <param name="cancellationToken"></param>
