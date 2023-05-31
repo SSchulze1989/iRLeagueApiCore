@@ -16,17 +16,13 @@ internal sealed class ExecuteEventResultCalculation
     private readonly IEventCalculationResultStore dataStore;
     private readonly ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider;
     private readonly IStandingCalculationQueue standingCalculationQueue;
-    private readonly ILeagueDbContext dbContext;
-    private readonly ILeagueProvider leagueProvider;
 
     public ExecuteEventResultCalculation(ILogger<ExecuteEventResultCalculation> logger,
         IEventCalculationDataProvider dataProvider,
         IEventCalculationConfigurationProvider configProvider,
         IEventCalculationResultStore dataStore,
         ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider,
-        IStandingCalculationQueue standingCalculationQueue,
-        ILeagueDbContext dbContext,
-        ILeagueProvider leagueProvider)
+        IStandingCalculationQueue standingCalculationQueue)
     {
         this.logger = logger;
         this.dataProvider = dataProvider;
@@ -34,8 +30,6 @@ internal sealed class ExecuteEventResultCalculation
         this.dataStore = dataStore;
         this.calculationServiceProvider = calculationServiceProvider;
         this.standingCalculationQueue = standingCalculationQueue;
-        this.dbContext = dbContext;
-        this.leagueProvider = leagueProvider;
     }
 
     public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
