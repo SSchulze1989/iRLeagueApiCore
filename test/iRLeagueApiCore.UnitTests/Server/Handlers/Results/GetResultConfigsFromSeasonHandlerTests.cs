@@ -13,9 +13,9 @@ public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTests
         return new(logger, dbContext, new[] { validator });
     }
 
-    protected override GetResultConfigsFromSeasonRequest DefaultRequest() => DefaultRequest(TestLeagueId, TestSeasonId);
+    protected override GetResultConfigsFromSeasonRequest DefaultRequest() => DefaultRequest(TestSeasonId);
 
-    private GetResultConfigsFromSeasonRequest DefaultRequest(long leagueId, long seasonId) => new(leagueId, seasonId);
+    private GetResultConfigsFromSeasonRequest DefaultRequest(long seasonId) => new(seasonId);
 
     protected override void DefaultAssertions(GetResultConfigsFromSeasonRequest request, IEnumerable<ResultConfigModel> result, LeagueDbContext dbContext)
     {

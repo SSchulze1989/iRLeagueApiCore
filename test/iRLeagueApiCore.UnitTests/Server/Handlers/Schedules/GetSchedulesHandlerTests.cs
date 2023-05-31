@@ -19,12 +19,7 @@ public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHa
 
     protected override GetSchedulesRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId);
-    }
-
-    private GetSchedulesRequest DefaultRequest(long leagueId)
-    {
-        return new GetSchedulesRequest(leagueId);
+        return new GetSchedulesRequest();
     }
 
     protected override void DefaultAssertions(GetSchedulesRequest request, IEnumerable<ScheduleModel> result, LeagueDbContext dbContext)
@@ -52,7 +47,8 @@ public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHa
     [InlineData(-43)]
     public async Task HandleNotFoundAsync(long leagueId)
     {
-        var request = DefaultRequest(leagueId);
+        accessMockHelper.SetCurrentLeague(leagueId);
+        var request = DefaultRequest();
         await base.HandleNotFoundRequestAsync(request);
     }
 }

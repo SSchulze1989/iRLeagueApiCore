@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Events;
 
-public record GetEventsFromSeasonRequest(long LeagueId, long SeasonId, bool IncludeDetails) : IRequest<IEnumerable<EventModel>>;
+public record GetEventsFromSeasonRequest(long SeasonId, bool IncludeDetails) : IRequest<IEnumerable<EventModel>>;
 
 public sealed class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromSeasonHandler, GetEventsFromSeasonRequest>,
     IRequestHandler<GetEventsFromSeasonRequest, IEnumerable<EventModel>>
@@ -15,15 +15,14 @@ public sealed class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromS
     public async Task<IEnumerable<EventModel>> Handle(GetEventsFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getEvents = await MapToEventsFromSeasonAsync(request.LeagueId, request.SeasonId, request.IncludeDetails, cancellationToken);
+        var getEvents = await MapToEventsFromSeasonAsync(request.SeasonId, request.IncludeDetails, cancellationToken);
         return getEvents;
     }
 
-    private async Task<IEnumerable<EventModel>> MapToEventsFromSeasonAsync(long leagueId, long seasonId, bool includeDetails = false,
+    private async Task<IEnumerable<EventModel>> MapToEventsFromSeasonAsync(long seasonId, bool includeDetails = false,
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Events
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.Schedule.SeasonId == seasonId)
             .Select(MapToEventModelExpression(includeDetails))
             .ToListAsync();

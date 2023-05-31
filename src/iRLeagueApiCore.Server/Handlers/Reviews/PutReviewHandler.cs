@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record PutReviewRequest(long LeagueId, long ReviewId, LeagueUser User, PutReviewModel Model) : IRequest<ReviewModel>;
+public record PutReviewRequest(long ReviewId, LeagueUser User, PutReviewModel Model) : IRequest<ReviewModel>;
 
 public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutReviewRequest>, IRequestHandler<PutReviewRequest, ReviewModel>
 {
@@ -20,11 +20,11 @@ public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutR
     public async Task<ReviewModel> Handle(PutReviewRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putReview = await GetReviewEntity(request.LeagueId, request.ReviewId, cancellationToken)
+        var putReview = await GetReviewEntity(request.ReviewId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         putReview = await MapToReviewEntity(request.User, request.Model, putReview, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getReview = await MapToReviewModel(putReview.LeagueId, putReview.ReviewId, includeComments, cancellationToken)
+        var getReview = await MapToReviewModel(putReview.ReviewId, includeComments, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getReview;
     }

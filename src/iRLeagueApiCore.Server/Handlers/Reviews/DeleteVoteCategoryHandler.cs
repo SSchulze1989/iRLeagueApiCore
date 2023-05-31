@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeleteVoteCategoryRequest(long LeagueId, long CatId) : IRequest;
+public record DeleteVoteCategoryRequest(long CatId) : IRequest;
 
 public class DeleteVoteCategoryHandler : VoteCategoriesHandlerBase<DeleteVoteCategoryHandler, DeleteVoteCategoryRequest>, 
     IRequestHandler<DeleteVoteCategoryRequest, Unit>
@@ -13,7 +13,7 @@ public class DeleteVoteCategoryHandler : VoteCategoriesHandlerBase<DeleteVoteCat
     public async Task<Unit> Handle(DeleteVoteCategoryRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteVoteCategory = await GetVoteCategoryEntityAsync(request.LeagueId, request.CatId, cancellationToken)
+        var deleteVoteCategory = await GetVoteCategoryEntityAsync(request.CatId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.Remove(deleteVoteCategory);
         await dbContext.SaveChangesAsync(cancellationToken);

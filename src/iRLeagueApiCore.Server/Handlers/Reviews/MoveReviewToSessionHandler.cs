@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record MoveReviewToSessionRequest(long LeagueId, long SessionId, long ReviewId, LeagueUser User) : IRequest<ReviewModel>;
+public record MoveReviewToSessionRequest(long SessionId, long ReviewId, LeagueUser User) : IRequest<ReviewModel>;
 public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler, MoveReviewToSessionRequest>,
     IRequestHandler<MoveReviewToSessionRequest, ReviewModel>
 {
@@ -20,13 +20,13 @@ public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewTo
     public async Task<ReviewModel> Handle(MoveReviewToSessionRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var moveReview = await GetReviewEntity(request.LeagueId, request.ReviewId, cancellationToken)
+        var moveReview = await GetReviewEntity(request.ReviewId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        var toSession = await GetSessionEntityAsync(request.LeagueId, request.SessionId, cancellationToken)
+        var toSession = await GetSessionEntityAsync(request.SessionId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         moveReview = await MoveToSessionAsync(request.User, moveReview, toSession, cancellationToken);
         await dbContext.SaveChangesAsync();
-        var getReview = await MapToReviewModel(request.LeagueId, moveReview.ReviewId, includeComments, cancellationToken)
+        var getReview = await MapToReviewModel(moveReview.ReviewId, includeComments, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getReview;
     }
@@ -37,10 +37,9 @@ public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewTo
         return await Task.FromResult(UpdateVersionEntity(user, review));
     }
 
-    private async Task<SessionEntity?> GetSessionEntityAsync(long leagueId, long sessionId, CancellationToken cancellationToken)
+    private async Task<SessionEntity?> GetSessionEntityAsync(long sessionId, CancellationToken cancellationToken)
     {
         return await dbContext.Sessions
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SessionId == sessionId)
             .FirstOrDefaultAsync(cancellationToken);
     }

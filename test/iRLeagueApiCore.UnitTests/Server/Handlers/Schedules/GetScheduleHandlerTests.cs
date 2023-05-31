@@ -20,17 +20,16 @@ public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHand
 
     protected override GetScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestScheduleId);
+        return DefaultRequest(TestScheduleId);
     }
 
-    private GetScheduleRequest DefaultRequest(long leagueId, long scheduleId)
+    private GetScheduleRequest DefaultRequest(long scheduleId)
     {
-        return new GetScheduleRequest(leagueId, scheduleId);
+        return new GetScheduleRequest(scheduleId);
     }
 
     protected override void DefaultAssertions(GetScheduleRequest request, ScheduleModel result, LeagueDbContext dbContext)
     {
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ScheduleId.Should().Be(request.ScheduleId);
         var scheduleEntity = dbContext.Schedules
             .Include(x => x.Events)
@@ -64,7 +63,8 @@ public sealed class GetScheduleDbTestFixture : HandlersTestsBase<GetScheduleHand
     {
         leagueId ??= TestLeagueId;
         scheduleId ??= TestScheduleId;
-        var request = DefaultRequest(leagueId.Value, scheduleId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(scheduleId.Value);
         await base.HandleNotFoundRequestAsync(request);
     }
 }

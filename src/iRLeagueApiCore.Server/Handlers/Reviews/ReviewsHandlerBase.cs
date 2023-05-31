@@ -12,13 +12,12 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     {
     }
 
-    protected virtual async Task<IncidentReviewEntity?> GetReviewEntity(long leagueId, long reviewId, CancellationToken cancellationToken)
+    protected virtual async Task<IncidentReviewEntity?> GetReviewEntity(long reviewId, CancellationToken cancellationToken)
     {
         return await dbContext.IncidentReviews
             .Include(x => x.InvolvedMembers)
             .Include(x => x.AcceptedReviewVotes)
                 .ThenInclude(x => x.ReviewPenaltys)
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ReviewId == reviewId)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -73,10 +72,9 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         return voteEntity;
     }
 
-    protected virtual async Task<ReviewModel?> MapToReviewModel(long leagueId, long reviewId, bool includeComments, CancellationToken cancellationToken)
+    protected virtual async Task<ReviewModel?> MapToReviewModel(long reviewId, bool includeComments, CancellationToken cancellationToken)
     {
         var query = dbContext.IncidentReviews
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ReviewId == reviewId)
             .Select(MapToReviewModelExpression(includeComments));
         return await query.FirstOrDefaultAsync(cancellationToken);

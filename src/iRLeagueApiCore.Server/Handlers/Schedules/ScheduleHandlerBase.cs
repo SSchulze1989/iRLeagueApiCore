@@ -21,10 +21,9 @@ public class ScheduleHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
         return target;
     }
 
-    protected virtual async Task<ScheduleModel?> MapToGetScheduleModelAsync(long leagueId, long scheduleId, CancellationToken cancellationToken)
+    protected virtual async Task<ScheduleModel?> MapToGetScheduleModelAsync(long scheduleId, CancellationToken cancellationToken)
     {
         return await dbContext.Schedules
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ScheduleId == scheduleId)
             .Select(MapToGetScheduleModelExpression)
             .SingleOrDefaultAsync(cancellationToken);

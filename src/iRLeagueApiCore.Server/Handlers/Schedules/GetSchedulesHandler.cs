@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
-public record GetSchedulesRequest(long LeagueId) : IRequest<IEnumerable<ScheduleModel>>;
+public record GetSchedulesRequest() : IRequest<IEnumerable<ScheduleModel>>;
 
 public sealed class GetSchedulesHandler : ScheduleHandlerBase<GetSchedulesHandler, GetSchedulesRequest>, IRequestHandler<GetSchedulesRequest, IEnumerable<ScheduleModel>>
 {
@@ -13,7 +13,7 @@ public sealed class GetSchedulesHandler : ScheduleHandlerBase<GetSchedulesHandle
     public async Task<IEnumerable<ScheduleModel>> Handle(GetSchedulesRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getSchedules = await MapToGetScheduleModelsAsync(request.LeagueId, cancellationToken);
+        var getSchedules = await MapToGetScheduleModelsAsync(cancellationToken);
         if (getSchedules.Count() == 0)
         {
             throw new ResourceNotFoundException();
@@ -21,10 +21,9 @@ public sealed class GetSchedulesHandler : ScheduleHandlerBase<GetSchedulesHandle
         return getSchedules;
     }
 
-    private async Task<IEnumerable<ScheduleModel>> MapToGetScheduleModelsAsync(long leagueId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<ScheduleModel>> MapToGetScheduleModelsAsync(CancellationToken cancellationToken)
     {
         return await dbContext.Schedules
-            .Where(x => x.LeagueId == leagueId)
             .Select(MapToGetScheduleModelExpression)
             .ToListAsync(cancellationToken);
     }

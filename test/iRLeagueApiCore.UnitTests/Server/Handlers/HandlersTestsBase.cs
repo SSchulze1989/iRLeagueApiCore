@@ -11,6 +11,7 @@ using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Test;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
@@ -24,22 +25,22 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAcces
 
     protected const object? defaultId = null;
 
-    protected long TestLeagueId => dbContext.Leagues.First().Id;
+    protected long TestLeagueId => dbContext.Leagues.IgnoreQueryFilters().First().Id;
     protected const string testLeagueName = "TestLeague";
-    protected long TestSeasonId => dbContext.Seasons.First().SeasonId;
-    protected long TestScoringId => dbContext.Scorings.First().ScoringId;
-    protected long TestScheduleId => dbContext.Schedules.First().ScheduleId;
-    protected long TestEventId => dbContext.Events.First().EventId;
-    protected long TestSessionId => dbContext.Sessions.First().SessionId;
-    protected long TestResultId => dbContext.ScoredEventResults.First().ResultId;
-    protected long TestPointRuleId => dbContext.PointRules.First().PointRuleId;
-    protected long TestResultConfigId => dbContext.ResultConfigurations.First().ResultConfigId;
-    protected long TestReviewId => dbContext.IncidentReviews.First().ReviewId;
-    protected long TestMemberId => dbContext.Members.First().Id;
-    protected long TestMemberId2 => dbContext.Members.Skip(1).First().Id;
-    protected long TestCommentId => dbContext.ReviewComments.First().CommentId;
-    protected long TestReviewVoteId => dbContext.AcceptedReviewVotes.First().ReviewVoteId;
-    protected long TestVoteCategory => dbContext.VoteCategories.First().CatId;
+    protected long TestSeasonId => dbContext.Seasons.IgnoreQueryFilters().First().SeasonId;
+    protected long TestScoringId => dbContext.Scorings.IgnoreQueryFilters().First().ScoringId;
+    protected long TestScheduleId => dbContext.Schedules.IgnoreQueryFilters().First().ScheduleId;
+    protected long TestEventId => dbContext.Events.IgnoreQueryFilters().First().EventId;
+    protected long TestSessionId => dbContext.Sessions.IgnoreQueryFilters().First().SessionId;
+    protected long TestResultId => dbContext.ScoredEventResults.IgnoreQueryFilters().First().ResultId;
+    protected long TestPointRuleId => dbContext.PointRules.IgnoreQueryFilters().First().PointRuleId;
+    protected long TestResultConfigId => dbContext.ResultConfigurations.IgnoreQueryFilters().First().ResultConfigId;
+    protected long TestReviewId => dbContext.IncidentReviews.IgnoreQueryFilters().First().ReviewId;
+    protected long TestMemberId => dbContext.Members.IgnoreQueryFilters().First().Id;
+    protected long TestMemberId2 => dbContext.Members.Skip(1).IgnoreQueryFilters().First().Id;
+    protected long TestCommentId => dbContext.ReviewComments.IgnoreQueryFilters().First().CommentId;
+    protected long TestReviewVoteId => dbContext.AcceptedReviewVotes.IgnoreQueryFilters().First().ReviewVoteId;
+    protected long TestVoteCategory => dbContext.VoteCategories.IgnoreQueryFilters().First().CatId;
     protected const string testUserName = "TestUser";
     protected const string testUserId = "a0031cbe-a28b-48ac-a6db-cdca446a8162";
     protected static IEnumerable<string> testLeagueRoles = new string[] { LeagueRoles.Member };

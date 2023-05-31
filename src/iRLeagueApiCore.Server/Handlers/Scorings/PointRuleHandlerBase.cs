@@ -11,10 +11,9 @@ public class PointRuleHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
     {
     }
 
-    protected virtual async Task<PointRuleEntity?> GetPointRuleEntityAsync(long leagueId, long pointRuleId, CancellationToken cancellationToken)
+    protected virtual async Task<PointRuleEntity?> GetPointRuleEntityAsync(long pointRuleId, CancellationToken cancellationToken)
     {
         return await dbContext.PointRules
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.PointRuleId == pointRuleId)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -33,10 +32,9 @@ public class PointRuleHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
         return await Task.FromResult(pointRuleEntity);
     }
 
-    protected virtual async Task<PointRuleModel?> MapToPointRuleModel(long leagueId, long pointRuleId, CancellationToken cancellationToken)
+    protected virtual async Task<PointRuleModel?> MapToPointRuleModel(long pointRuleId, CancellationToken cancellationToken)
     {
         return await dbContext.PointRules
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.PointRuleId == pointRuleId)
             .Select(MapToPointRuleModelExpression)
             .FirstOrDefaultAsync(cancellationToken);

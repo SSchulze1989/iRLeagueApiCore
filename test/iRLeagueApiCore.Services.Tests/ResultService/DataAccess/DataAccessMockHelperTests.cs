@@ -26,7 +26,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
 
         using (var dbContext = accessMockHelper.CreateMockDbContext(databaseName))
         {
-            dbContext.Leagues.Should().HaveCount(1);
+            dbContext.Leagues.Should().HaveCount(2);
         }
     }
 
@@ -35,6 +35,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
     {
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
+        accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
 
         var session = await dbContext.Sessions
             .Include(x => x.Event)
@@ -50,6 +51,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
     {
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
+        accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
 
         var events = await dbContext.Events
             .Include(x => x.EventResult)
@@ -66,6 +68,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
     {
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
+        accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
 
         var leagueMembers = await dbContext.LeagueMembers
             .Include(x => x.Team)
@@ -79,6 +82,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
     {
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
+        accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
 
         var result = await dbContext.EventResults
             .Include(x => x.SessionResults)
@@ -92,6 +96,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
     {
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
+        accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
 
         var sessions = await dbContext.Sessions
             .Include(x => x.IncidentReviews)
@@ -108,6 +113,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
     {
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
         await accessMockHelper.PopulateBasicTestSet(dbContext);
+        accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
 
         var voteCategories = await dbContext.VoteCategories
             .ToListAsync();
@@ -125,6 +131,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
         using (var dbContext = accessMockHelper.CreateMockDbContext(databaseName))
         {
             await accessMockHelper.PopulateBasicTestSet(dbContext);
+            accessMockHelper.SetCurrentLeague(await dbContext.Leagues.FirstAsync());
 
             var @event = await dbContext.Events
                 .Include(x => x.Schedule.Season.League)

@@ -18,15 +18,15 @@ public sealed class DeleteReviewHandlerTests : ReviewsHandlersTestsBase<DeleteRe
         return new DeleteReviewHandler(logger, dbContext, new[] { validator });
     }
 
-    private DeleteReviewRequest DefaultRequest(long leagueId, long reviewId)
+    private DeleteReviewRequest DefaultRequest(long reviewId)
     {
 
-        return new DeleteReviewRequest(leagueId, reviewId);
+        return new DeleteReviewRequest(reviewId);
     }
 
     protected override DeleteReviewRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestReviewId);
+        return DefaultRequest(TestReviewId);
     }
 
     protected override void DefaultAssertions(DeleteReviewRequest request, Unit result, LeagueDbContext dbContext)
@@ -35,13 +35,6 @@ public sealed class DeleteReviewHandlerTests : ReviewsHandlersTestsBase<DeleteRe
             .SingleOrDefault(x => x.ReviewId == request.ReviewId);
         deletedReview.Should().BeNull();
         base.DefaultAssertions(request, result, dbContext);
-    }
-
-    private void AssertMemberInfo(MemberEntity expected, MemberInfoModel result)
-    {
-        result.MemberId.Should().Be(expected.Id);
-        result.FirstName.Should().Be(expected.Firstname);
-        result.LastName.Should().Be(expected.Lastname);
     }
 
     [Fact]
@@ -59,7 +52,8 @@ public sealed class DeleteReviewHandlerTests : ReviewsHandlersTestsBase<DeleteRe
     {
         leagueId ??= TestLeagueId;
         reviewId ??= TestReviewId;
-        var request = DefaultRequest(leagueId.Value, reviewId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

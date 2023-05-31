@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeleteReviewRequest(long LeagueId, long ReviewId) : IRequest;
+public record DeleteReviewRequest(long ReviewId) : IRequest;
 
 public sealed class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler, DeleteReviewRequest>,
     IRequestHandler<DeleteReviewRequest>
@@ -13,7 +13,7 @@ public sealed class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler
     public async Task<Unit> Handle(DeleteReviewRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteReview = await GetReviewEntity(request.LeagueId, request.ReviewId, cancellationToken)
+        var deleteReview = await GetReviewEntity(request.ReviewId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.Remove(deleteReview);
         await dbContext.SaveChangesAsync(cancellationToken);

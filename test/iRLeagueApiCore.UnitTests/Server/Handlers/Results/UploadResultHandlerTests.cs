@@ -62,7 +62,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         var result = await CreateFakeResult(false, false, 1);
         result.session_results.First().results = result.session_results.First().results.Concat(newMemberRows).ToArray();
         var sut = CreateSut();
-        var request = CreateRequest(TestLeagueId, TestEventId, result);
+        var request = CreateRequest(TestEventId, result);
 
         await sut.Handle(request, default);
 
@@ -89,7 +89,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         dbContext.Events.Add(@event);
         await dbContext.SaveChangesAsync();
         var result = await CreateFakeResult();
-        var request = CreateRequest(@event.LeagueId, @event.EventId, result);
+        var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
 
         await sut.Handle(request, default);
@@ -116,7 +116,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         dbContext.Events.Add(@event);
         await dbContext.SaveChangesAsync();
         var result = await CreateFakeResult();
-        var request = CreateRequest(@event.LeagueId, @event.EventId, result);
+        var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
 
         await sut.Handle(request, default);
@@ -142,7 +142,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         dbContext.Events.Add(@event);
         await dbContext.SaveChangesAsync();
         var result = await CreateFakeResult();
-        var request = CreateRequest(@event.LeagueId, @event.EventId, result);
+        var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
 
         await sut.Handle(request, default);
@@ -170,7 +170,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         dbContext.Events.Add(@event);
         await dbContext.SaveChangesAsync();
         var result = await CreateFakeResult(raceCount: sessionCount);
-        var request = CreateRequest(@event.LeagueId, @event.EventId, result);
+        var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
 
         await sut.Handle(request, default);
@@ -205,7 +205,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         dbContext.Events.Add(@event);
         await dbContext.SaveChangesAsync();
         var result = await CreateFakeResult(false, false, 1);
-        var request = CreateRequest(@event.LeagueId, @event.EventId, result);
+        var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
 
         await sut.Handle(request, default);
@@ -267,7 +267,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         var setupRow = result.session_results[0].results.Last();
         setupRow.interval = -1;
         setupRow.laps_complete = maxLaps - lapsDown;
-        var request = CreateRequest(@event.LeagueId, @event.EventId, result);
+        var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
 
         await sut.Handle(request, default);
@@ -283,9 +283,9 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
     private IPostprocessComposer<EventEntity> EventBuilder()
     {
         return fixture.Build<EventEntity>()
-            .With(x => x.LeagueId, dbContext.Leagues.Select(x => x.Id).Max())
             .With(x => x.Schedule, dbContext.Schedules.First())
             .With(x => x.EventId, () => dbContext.Events.Select(x => x.EventId).Max() + 1)
+            .Without(x => x.LeagueId)
             .Without(x => x.EventResult)
             .Without(x => x.ResultConfigs)
             .Without(x => x.ScoredEventResults)
@@ -308,9 +308,9 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         return new UploadResultHandler(logger, dbContext, Array.Empty<IValidator<UploadResultRequest>>(), calculationQueue);
     }
 
-    private UploadResultRequest CreateRequest(long leagueId, long eventId, ParseSimSessionResult data)
+    private UploadResultRequest CreateRequest(long eventId, ParseSimSessionResult data)
     {
-        return new UploadResultRequest(leagueId, eventId, data);
+        return new UploadResultRequest(eventId, data);
     }
 
     private async Task<ParseSimSessionResult> CreateFakeResult(bool practice = true,

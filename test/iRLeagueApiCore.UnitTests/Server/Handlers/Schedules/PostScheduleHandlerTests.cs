@@ -21,22 +21,21 @@ public sealed class PostScheduleDbTestFixture : HandlersTestsBase<PostScheduleHa
 
     protected override PostScheduleRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestSeasonId);
+        return DefaultRequest(TestSeasonId);
     }
 
-    private PostScheduleRequest DefaultRequest(long leagueId, long seasonId)
+    private PostScheduleRequest DefaultRequest(long seasonId)
     {
         var model = new PostScheduleModel()
         {
             Name = testScheduleName
         };
-        return new PostScheduleRequest(leagueId, seasonId, DefaultUser(), model);
+        return new PostScheduleRequest(seasonId, DefaultUser(), model);
     }
 
     protected override void DefaultAssertions(PostScheduleRequest request, ScheduleModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ScheduleId.Should().NotBe(0);
         result.Name.Should().Be(expected.Name);
         AssertCreated(request.User, DateTime.UtcNow, result);
@@ -64,7 +63,8 @@ public sealed class PostScheduleDbTestFixture : HandlersTestsBase<PostScheduleHa
     {
         leagueId ??= TestLeagueId;
         seasonId ??= TestSeasonId;
-        var request = DefaultRequest(leagueId.Value, seasonId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(seasonId.Value);
         await base.HandleNotFoundRequestAsync(request);
     }
 }

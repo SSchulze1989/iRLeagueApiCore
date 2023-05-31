@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace iRLeagueApiCore.Server.Filters;
@@ -6,26 +8,18 @@ namespace iRLeagueApiCore.Server.Filters;
 /// <summary>
 /// Automatically insert the league id corresponding the league name in route parameters
 /// <para>
-/// Requires <b>{leagueName}</b> in Route and "<c><see cref="long"/> leagueId</c>" as parameter
+/// Requires <b>"{leagueName}"</b> in Route
 /// </para>
 /// </summary>
-/// <example>
-/// <code>
-/// [InsertLeague]
-/// [Route("{leagueName}/action")]
-/// public IActionResult Action([FromRoute] string leagueName, long leagueId, [FromServices] LeagueDbContext dbContext)
-/// {
-///     ...
-/// }
-/// </code>
-/// </example>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-public sealed class InsertLeagueIdAttribute : ActionFilterAttribute
+public sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
 {
     private readonly LeagueDbContext _dbContext;
-    public InsertLeagueIdAttribute(LeagueDbContext dbContext)
+    private readonly RequestLeagueProvider leagueProvider;
+    public SetTenantLeagueIdAttribute(LeagueDbContext dbContext, RequestLeagueProvider leagueProvider)
     {
         _dbContext = dbContext;
+        this.leagueProvider = leagueProvider;
     }
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -48,6 +42,7 @@ public sealed class InsertLeagueIdAttribute : ActionFilterAttribute
         }
 
         context.ActionArguments.Add("leagueId", leagueId);
+        leagueProvider.SetLeague(leagueId, leagueName);
 
         await base.OnActionExecutionAsync(context, next);
     }

@@ -1,19 +1,22 @@
-﻿namespace iRLeagueApiCore.Server.Handlers.Results;
+﻿using iRLeagueDatabaseCore;
 
-public record DeleteResultConfigRequest(long LeagueId, long ResultConfigId) : IRequest;
+namespace iRLeagueApiCore.Server.Handlers.Results;
+
+public record DeleteResultConfigRequest(long ResultConfigId) : IRequest;
 
 public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest>,
     IRequestHandler<DeleteResultConfigRequest>
 {
-    public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteResultConfigRequest>> validators) :
-        base(logger, dbContext, validators)
+    public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext, 
+        IEnumerable<IValidator<DeleteResultConfigRequest>> validators) 
+        : base(logger, dbContext, validators)
     {
     }
 
     public async Task<Unit> Handle(DeleteResultConfigRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteResultConfig = await GetResultConfigEntity(request.LeagueId, request.ResultConfigId, cancellationToken)
+        var deleteResultConfig = await GetResultConfigEntity(request.ResultConfigId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.ResultConfigurations.Remove(deleteResultConfig);
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public record DeletePointRuleRequest(long LeagueId, long PointRuleId) : IRequest;
+public record DeletePointRuleRequest(long PointRuleId) : IRequest;
 
 public sealed class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler, DeletePointRuleRequest>,
     IRequestHandler<DeletePointRuleRequest, Unit>
@@ -13,7 +13,7 @@ public sealed class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRul
     public async Task<Unit> Handle(DeletePointRuleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deletePointRule = await GetPointRuleEntityAsync(request.LeagueId, request.PointRuleId, cancellationToken)
+        var deletePointRule = await GetPointRuleEntityAsync(request.PointRuleId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.PointRules.Remove(deletePointRule);
         await dbContext.SaveChangesAsync(cancellationToken);

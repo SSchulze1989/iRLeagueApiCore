@@ -1,6 +1,8 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
 using System.Linq.Expressions;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
@@ -11,7 +13,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     {
     }
 
-    protected virtual async Task<ResultConfigurationEntity?> GetResultConfigEntity(long leagueId, long resultConfigId, CancellationToken cancellationToken)
+    protected virtual async Task<ResultConfigurationEntity?> GetResultConfigEntity(long resultConfigId, CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
@@ -21,12 +23,11 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 .ThenInclude(x => x.Conditions)
             .Include(x => x.PointFilters)
                 .ThenInclude(x => x.Conditions)
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ResultConfigId == resultConfigId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(long leagueId, LeagueUser user, PostResultConfigModel postResultConfig,
+    protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PostResultConfigModel postResultConfig,
         ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
     {
         resultConfigEntity.DisplayName = postResultConfig.DisplayName;
@@ -37,16 +38,16 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         resultConfigEntity.Name = postResultConfig.Name;
         resultConfigEntity.ResultKind = postResultConfig.ResultKind;
         resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
-        resultConfigEntity.Scorings = await MapToScoringList(leagueId, user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
-        resultConfigEntity.PointFilters = await MapToFilterOptionListAsync(leagueId, user, postResultConfig.FiltersForPoints,
+        resultConfigEntity.Scorings = await MapToScoringList(user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
+        resultConfigEntity.PointFilters = await MapToFilterOptionListAsync(user, postResultConfig.FiltersForPoints,
             resultConfigEntity.PointFilters, cancellationToken);
-        resultConfigEntity.ResultFilters = await MapToFilterOptionListAsync(leagueId, user, postResultConfig.FiltersForResult,
+        resultConfigEntity.ResultFilters = await MapToFilterOptionListAsync(user, postResultConfig.FiltersForResult,
             resultConfigEntity.ResultFilters, cancellationToken);
         UpdateVersionEntity(user, resultConfigEntity);
         return await Task.FromResult(resultConfigEntity);
     }
 
-    private async Task<ICollection<StandingConfigurationEntity>> MapToStandingConfigListAsync(long leagueId, LeagueUser user, StandingConfigModel? standingConfigModel,
+    private async Task<ICollection<StandingConfigurationEntity>> MapToStandingConfigListAsync(LeagueUser user, StandingConfigModel? standingConfigModel,
         ICollection<StandingConfigurationEntity> standingConfigurationEntities, CancellationToken cancellationToken)
     {
         if (standingConfigModel is null)
@@ -58,7 +59,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         if (standingConfigEntity is null)
         {
             standingConfigEntity = CreateVersionEntity(user, new StandingConfigurationEntity());
-            standingConfigEntity.LeagueId = leagueId;
+            standingConfigEntity.LeagueId = dbContext.LeagueProvider.LeagueId;
             standingConfigurationEntities.Clear();
             standingConfigurationEntities.Add(standingConfigEntity);
         }
@@ -70,7 +71,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return await Task.FromResult(standingConfigurationEntities);
     }
 
-    private async Task<ICollection<FilterOptionEntity>> MapToFilterOptionListAsync(long leagueId, LeagueUser user, IEnumerable<ResultFilterModel> filterModels,
+    private async Task<ICollection<FilterOptionEntity>> MapToFilterOptionListAsync(LeagueUser user, IEnumerable<ResultFilterModel> filterModels,
         ICollection<FilterOptionEntity> filterEntities, CancellationToken cancellationToken)
     {
         foreach (var filterModel in filterModels)
@@ -81,7 +82,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             {
                 filterOptionEntity = CreateVersionEntity(user, new FilterOptionEntity());
                 filterEntities.Add(filterOptionEntity);
-                filterOptionEntity.LeagueId = leagueId;
+                filterOptionEntity.LeagueId = dbContext.LeagueProvider.LeagueId;
             }
             await MapToFilterOptionEntityAsync(user, filterModel, filterOptionEntity, cancellationToken);
         }
@@ -112,7 +113,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return Task.FromResult(filterOptionEntity);
     }
 
-    private async Task<ICollection<ScoringEntity>> MapToScoringList(long leagueId, LeagueUser user, ICollection<ScoringModel> scoringModels,
+    private async Task<ICollection<ScoringEntity>> MapToScoringList(LeagueUser user, ICollection<ScoringModel> scoringModels,
         ICollection<ScoringEntity> scoringEntities, CancellationToken cancellationToken)
     {
         // Map votes
@@ -124,9 +125,9 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             {
                 scoringEntity = CreateVersionEntity(user, new ScoringEntity());
                 scoringEntities.Add(scoringEntity);
-                scoringEntity.LeagueId = leagueId;
+                scoringEntity.LeagueId = dbContext.LeagueProvider.LeagueId;
             }
-            await MapToScoringEntityAsync(leagueId, user, scoringModel, scoringEntity, cancellationToken);
+            await MapToScoringEntityAsync(user, scoringModel, scoringEntity, cancellationToken);
         }
         // Delete votes that are no longer in source collection
         var deleteScorings = scoringEntities
@@ -138,7 +139,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return scoringEntities;
     }
 
-    private async Task<ScoringEntity> MapToScoringEntityAsync(long leagueId, LeagueUser user, ScoringModel scoringModel, ScoringEntity scoringEntity,
+    private async Task<ScoringEntity> MapToScoringEntityAsync(LeagueUser user, ScoringModel scoringModel, ScoringEntity scoringEntity,
         CancellationToken cancellationToken)
     {
         scoringEntity.Index = scoringModel.Index;
@@ -149,7 +150,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         scoringEntity.UseResultSetTeam = scoringModel.UseResultSetTeam;
         scoringEntity.UpdateTeamOnRecalculation = scoringModel.UpdateTeamOnRecalculation;
         scoringEntity.PointsRule = scoringModel.PointRule is not null ? await MapToPointRuleEntityAsync(user, scoringModel.PointRule,
-            scoringEntity.PointsRule ?? CreateVersionEntity(user, new PointRuleEntity() { LeagueId = leagueId}), cancellationToken) : null;
+            scoringEntity.PointsRule ?? CreateVersionEntity(user, new PointRuleEntity() { LeagueId = dbContext.LeagueProvider.LeagueId }), cancellationToken) : null;
         scoringEntity.UseExternalSourcePoints = scoringModel.UseSourcePoints;
         UpdateVersionEntity(user, scoringEntity);
         return await Task.FromResult(scoringEntity);
@@ -169,15 +170,14 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return await Task.FromResult(pointRuleEntity);
     }
 
-    protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(long leagueId, LeagueUser user, PutResultConfigModel putResultConfig, ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
+    protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PutResultConfigModel putResultConfig, ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
     {
-        return await MapToResultConfigEntityAsync(leagueId, user, (PostResultConfigModel)putResultConfig, resultConfigEntity, cancellationToken);
+        return await MapToResultConfigEntityAsync(user, (PostResultConfigModel)putResultConfig, resultConfigEntity, cancellationToken);
     }
 
-    protected virtual async Task<ResultConfigModel?> MapToResultConfigModel(long leagueId, long resultConfigId, CancellationToken cancellationToken)
+    protected virtual async Task<ResultConfigModel?> MapToResultConfigModel(long resultConfigId, CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.ResultConfigId == resultConfigId)
             .Select(MapToResultConfigModelExpression)
             .FirstOrDefaultAsync(cancellationToken);
@@ -202,6 +202,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             : null,
         Name = resultConfig.Name,
         DisplayName = resultConfig.DisplayName,
+        IsDefaultConfig = resultConfig.ResultConfigId == resultConfig.ChampSeason.DefaultResultConfigId,
         ResultKind = resultConfig.ResultKind,
         ResultsPerTeam = resultConfig.ResultsPerTeam,
         Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()

@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeleteProtestRequest(long LeagueId, long ProtestId) : IRequest;
+public record DeleteProtestRequest(long ProtestId) : IRequest;
 
 public class DeleteProtestHandler : ProtestsHandlerBase<DeleteProtestHandler, DeleteProtestRequest>, 
     IRequestHandler<DeleteProtestRequest, Unit>
@@ -13,7 +13,7 @@ public class DeleteProtestHandler : ProtestsHandlerBase<DeleteProtestHandler, De
     public async Task<Unit> Handle(DeleteProtestRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteProtest = await GetProtestEntityAsync(request.LeagueId, request.ProtestId, cancellationToken)
+        var deleteProtest = await GetProtestEntityAsync(request.ProtestId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.Protests.Remove(deleteProtest);
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -15,12 +15,12 @@ public sealed class PostChampSeasonHandlerTests : ChampionshipHandlersTestsBase<
 
     protected override PostChampSeasonRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestChampionshipId, TestSeasonId);
+        return DefaultRequest(TestChampionshipId, TestSeasonId);
     }
 
-    private PostChampSeasonRequest DefaultRequest(long leagueId, long championshipId, long seasonId)
+    private PostChampSeasonRequest DefaultRequest(long championshipId, long seasonId)
     {
-        return new(leagueId, championshipId, seasonId, DefaultUser(), new());
+        return new(championshipId, seasonId, DefaultUser(), new());
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public sealed class PostChampSeasonHandlerTests : ChampionshipHandlersTestsBase<
     [Fact]
     public async Task Handle_ShouldCopySettings_WhenPreviousSeasonExists()
     {
-        var request = DefaultRequest(TestLeagueId, TestChampionshipId, (await dbContext.Seasons.Skip(1).FirstAsync()).SeasonId);
+        var request = DefaultRequest(TestChampionshipId, (await dbContext.Seasons.Skip(1).FirstAsync()).SeasonId);
         var champSeasonQuery = dbContext.ChampSeasons
             .Include(x => x.Championship)
             .Include(x => x.ResultConfigurations)
@@ -75,7 +75,7 @@ public sealed class PostChampSeasonHandlerTests : ChampionshipHandlersTestsBase<
         champSeason.IsActive = false;
         await dbContext.SaveChangesAsync();
 
-        var request = DefaultRequest(TestLeagueId, champSeason.ChampionshipId, champSeason.SeasonId);
+        var request = DefaultRequest(champSeason.ChampionshipId, champSeason.SeasonId);
         await HandleSpecialAsync(request, async (request, model, context) =>
         {
             var test = await context.ChampSeasons.FirstAsync();

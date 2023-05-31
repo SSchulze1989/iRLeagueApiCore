@@ -1,15 +1,16 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueDatabaseCore;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record GetProtestsFromEventRequest(long LeagueId, LeagueUser User, long EventId) : IRequest<IEnumerable<ProtestModel>>;
+public record GetProtestsFromEventRequest(LeagueUser User, long EventId) : IRequest<IEnumerable<ProtestModel>>;
 
 public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEventHandler, GetProtestsFromEventRequest>, IRequestHandler<GetProtestsFromEventRequest, 
     IEnumerable<ProtestModel>>
 {
-    public GetProtestsFromEventHandler(ILogger<GetProtestsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetProtestsFromEventRequest>> validators) : 
+    public GetProtestsFromEventHandler(ILogger<GetProtestsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetProtestsFromEventRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -17,7 +18,7 @@ public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEv
     public async Task<IEnumerable<ProtestModel>> Handle(GetProtestsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var league = await GetLeagueEntityAsync(request.LeagueId, cancellationToken)
+        var league = await GetCurrentLeagueEntityAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var isSteward = request.User.IsInRole(LeagueRoles.Admin, LeagueRoles.Steward);
 
@@ -28,7 +29,7 @@ public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEv
         }
 
         var includeAuthor = GetIncludeName(league, isSteward);
-        var getProtests = await MapToProtestModelsFromEvent(request.LeagueId, request.EventId, includeAuthor, cancellationToken);
+        var getProtests = await MapToProtestModelsFromEvent(request.EventId, includeAuthor, cancellationToken);
         return getProtests;
     }
 
@@ -38,10 +39,9 @@ public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEv
         _ => isSteward
     };
 
-private async Task<IEnumerable<ProtestModel>> MapToProtestModelsFromEvent(long leagueId, long eventId, bool includeAuthor, CancellationToken cancellationToken)
+private async Task<IEnumerable<ProtestModel>> MapToProtestModelsFromEvent(long eventId, bool includeAuthor, CancellationToken cancellationToken)
     {
         return await dbContext.Protests
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.Session.EventId == eventId)
             .Select(MapToProtestModelExpression(includeAuthor))
             .ToListAsync(cancellationToken);

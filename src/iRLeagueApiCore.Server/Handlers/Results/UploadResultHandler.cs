@@ -6,7 +6,7 @@ using System.Transactions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record UploadResultRequest(long leagueId, long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
+public record UploadResultRequest(long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
 
 public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
     IRequestHandler<UploadResultRequest, bool>
@@ -27,9 +27,9 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
 
         // add to database
-        var @event = await GetEventEntityAsync(request.leagueId, request.EventId, cancellationToken)
+        var @event = await GetEventEntityAsync(request.EventId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        SeasonStartIratings = await GetMemberSeasonStartIratingAsync(request.leagueId, @event.Schedule.SeasonId, cancellationToken);
+        SeasonStartIratings = await GetMemberSeasonStartIratingAsync(@event.Schedule.SeasonId, cancellationToken);
         using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
             if (@event.EventResult is not null)
@@ -49,11 +49,10 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         return true;
     }
 
-    private async Task<EventEntity?> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+    private async Task<EventEntity?> GetEventEntityAsync(long eventId, CancellationToken cancellationToken)
     {
         // search for session first to check if result will be valid
         return await dbContext.Events
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.EventId == eventId)
             .Include(x => x.Schedule)
             .Include(x => x.Sessions)
@@ -299,10 +298,9 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         return row;
     }
 
-    private async Task<IDictionary<long, int>> GetMemberSeasonStartIratingAsync(long leagueId, long seasonId, CancellationToken cancellationToken)
+    private async Task<IDictionary<long, int>> GetMemberSeasonStartIratingAsync(long seasonId, CancellationToken cancellationToken)
     {
         return (await dbContext.ResultRows
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SubResult.Result.Event.Schedule.SeasonId == seasonId)
             .OrderBy(x => x.SubResult.Result.Event.Date)
             .Select(x => new { x.MemberId, x.OldIRating })

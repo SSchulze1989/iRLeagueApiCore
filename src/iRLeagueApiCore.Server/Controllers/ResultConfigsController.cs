@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace iRLeagueApiCore.Server.Controllers;
 
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
-[TypeFilter(typeof(InsertLeagueIdAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
 [RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
 public sealed class ResultConfigsController : LeagueApiController<ResultConfigsController>
@@ -20,9 +20,9 @@ public sealed class ResultConfigsController : LeagueApiController<ResultConfigsC
     [HttpGet]
     [Route("")]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<ResultConfigModel>>> GetAll([FromRoute] string leagueName, [FromFilter] long leagueId, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<ResultConfigModel>>> GetAll([FromRoute] string leagueName, CancellationToken cancellationToken)
     {
-        var request = new GetResultConfigsFromLeagueRequest(leagueId);
+        var request = new GetResultConfigsFromLeagueRequest();
         var getResultConfigs = await mediator.Send(request, cancellationToken);
         return Ok(getResultConfigs);
     }
@@ -30,10 +30,10 @@ public sealed class ResultConfigsController : LeagueApiController<ResultConfigsC
     [HttpGet]
     [Route("{id:long}")]
     [AllowAnonymous]
-    public async Task<ActionResult<ResultConfigModel>> Get([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult<ResultConfigModel>> Get([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new GetResultConfigRequest(leagueId, id);
+        var request = new GetResultConfigRequest(id);
         var getResultConfig = await mediator.Send(request, cancellationToken);
         return Ok(getResultConfig);
     }
@@ -41,10 +41,10 @@ public sealed class ResultConfigsController : LeagueApiController<ResultConfigsC
     [HttpGet]
     [Route("/{leagueName}/Seasons/{seasonId:long}/ResultConfigs")]
     [AllowAnonymous]
-    public async Task<ActionResult<ResultConfigModel>> GetFromSeason([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long seasonId,
+    public async Task<ActionResult<ResultConfigModel>> GetFromSeason([FromRoute] string leagueName, [FromRoute] long seasonId,
         CancellationToken cancellationToken)
     {
-        var request = new GetResultConfigsFromSeasonRequest(leagueId, seasonId);
+        var request = new GetResultConfigsFromSeasonRequest(seasonId);
         var getResultConfigs = await mediator.Send(request, cancellationToken);
         return Ok(getResultConfigs);
     }
@@ -52,11 +52,11 @@ public sealed class ResultConfigsController : LeagueApiController<ResultConfigsC
     [HttpPost]
     [Route("/{leagueName}/ChampSeasons/{champSeasonId:long}/ResultConfigs")]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult<ResultConfigModel>> Post([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long champSeasonId,
+    public async Task<ActionResult<ResultConfigModel>> Post([FromRoute] string leagueName, [FromRoute] long champSeasonId,
         [FromBody] PostResultConfigModel postResultConfig, CancellationToken cancellationToken)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PostResultConfigToChampSeasonRequest(leagueId, champSeasonId, leagueUser, postResultConfig);
+        var request = new PostResultConfigToChampSeasonRequest(champSeasonId, leagueUser, postResultConfig);
         var getResultConfig = await mediator.Send(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { leagueName, id = getResultConfig.ResultConfigId }, getResultConfig);
     }
@@ -64,11 +64,11 @@ public sealed class ResultConfigsController : LeagueApiController<ResultConfigsC
     [HttpPut]
     [Route("{id:long}")]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult<ResultConfigModel>> Put([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult<ResultConfigModel>> Put([FromRoute] string leagueName, [FromRoute] long id,
         [FromBody] PutResultConfigModel putResultConfig, CancellationToken cancellationToken)
     {
         var leagueUser = new LeagueUser(leagueName, User);
-        var request = new PutResultConfigRequest(leagueId, id, leagueUser, putResultConfig);
+        var request = new PutResultConfigRequest(id, leagueUser, putResultConfig);
         var getResultConfig = await mediator.Send(request, cancellationToken);
         return Ok(getResultConfig);
     }
@@ -76,10 +76,10 @@ public sealed class ResultConfigsController : LeagueApiController<ResultConfigsC
     [HttpDelete]
     [Route("{id:long}")]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromFilter] long leagueId, [FromRoute] long id,
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new DeleteResultConfigRequest(leagueId, id);
+        var request = new DeleteResultConfigRequest(id);
         await mediator.Send(request, cancellationToken);
         return NoContent();
     }

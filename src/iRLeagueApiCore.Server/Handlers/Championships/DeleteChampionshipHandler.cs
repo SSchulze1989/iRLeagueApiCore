@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public record DeleteChampionshipRequest(long LeagueId, long ChampionshipId) : IRequest;
+public record DeleteChampionshipRequest(long ChampionshipId) : IRequest;
 
 public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampionshipHandler, DeleteChampionshipRequest>,
     IRequestHandler<DeleteChampionshipRequest, Unit>
@@ -13,7 +13,7 @@ public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampions
     public async Task<Unit> Handle(DeleteChampionshipRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteChampionship = await GetChampionshipEntityAsync(request.LeagueId, request.ChampionshipId, cancellationToken)
+        var deleteChampionship = await GetChampionshipEntityAsync(request.ChampionshipId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         // only archive championship instead of deleting
         deleteChampionship.IsArchived = true;

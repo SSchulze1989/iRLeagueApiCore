@@ -11,15 +11,14 @@ public class EventHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReque
     {
     }
 
-    protected virtual async Task<EventEntity?> GetEventEntityAsync(long leagueId, long eventId, CancellationToken cancellationToken)
+    protected virtual async Task<EventEntity?> GetEventEntityAsync(long eventId, CancellationToken cancellationToken)
     {
         return await dbContext.Events
             .Include(x => x.Sessions)
             .Include(x => x.Track)
             .Include(x => x.ResultConfigs)
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.EventId == eventId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     protected virtual async Task<EventEntity> MapToEventEntityAsync(LeagueUser user, PostEventModel postEvent, EventEntity target, CancellationToken cancellationToken)
@@ -86,10 +85,9 @@ public class EventHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReque
         return UpdateVersionEntity(user, target);
     }
 
-    protected virtual async Task<EventModel?> MapToEventModelAsync(long leagueId, long eventId, bool includeDetails = false, CancellationToken cancellationToken = default)
+    protected virtual async Task<EventModel?> MapToEventModelAsync(long eventId, bool includeDetails = false, CancellationToken cancellationToken = default)
     {
         var query = dbContext.Events
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.EventId == eventId)
             .Select(MapToEventModelExpression(includeDetails));
         var sql = query.ToQueryString();

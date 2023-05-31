@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Members;
 
-public record GetMembersFromLeagueRequest(long LeagueId) : IRequest<IEnumerable<MemberModel>>;
+public record GetMembersFromLeagueRequest() : IRequest<IEnumerable<MemberModel>>;
 
 public sealed class GetMembersFromLeagueHandler : MembersHandlerBase<GetMembersFromLeagueHandler, GetMembersFromLeagueRequest>,
     IRequestHandler<GetMembersFromLeagueRequest, IEnumerable<MemberModel>>
@@ -14,14 +14,13 @@ public sealed class GetMembersFromLeagueHandler : MembersHandlerBase<GetMembersF
     public async Task<IEnumerable<MemberModel>> Handle(GetMembersFromLeagueRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getMembers = await MapToMemberModels(request.LeagueId, cancellationToken);
+        var getMembers = await MapToMemberModels(cancellationToken);
         return getMembers;
     }
 
-    private async Task<IEnumerable<MemberModel>> MapToMemberModels(long leagueId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<MemberModel>> MapToMemberModels(CancellationToken cancellationToken)
     {
         return await dbContext.LeagueMembers
-            .Where(x => x.LeagueId == leagueId)
             .Select(MapToMemberModelExpression)
             .ToListAsync(cancellationToken);
     }

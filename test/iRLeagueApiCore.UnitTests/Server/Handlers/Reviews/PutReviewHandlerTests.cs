@@ -38,21 +38,20 @@ public sealed class PutReviewHandlerTests : ReviewsHandlersTestsBase<PutReviewHa
         return new PutReviewHandler(logger, dbContext, new[] { validator });
     }
 
-    private PutReviewRequest DefaultRequest(long leagueId, long reviewId)
+    private PutReviewRequest DefaultRequest(long reviewId)
     {
 
-        return new PutReviewRequest(leagueId, reviewId, DefaultUser(), TestReviewModel);
+        return new PutReviewRequest(reviewId, DefaultUser(), TestReviewModel);
     }
 
     protected override PutReviewRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestReviewId);
+        return DefaultRequest(TestReviewId);
     }
 
     protected override void DefaultAssertions(PutReviewRequest request, ReviewModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.LeagueId.Should().Be(request.LeagueId);
         result.ReviewId.Should().Be(request.ReviewId);
         result.Corner.Should().Be(expected.Corner);
         result.OnLap.Should().Be(expected.OnLap);
@@ -104,7 +103,8 @@ public sealed class PutReviewHandlerTests : ReviewsHandlersTestsBase<PutReviewHa
     {
         leagueId ??= TestLeagueId;
         reviewId ??= TestReviewId;
-        var request = DefaultRequest(leagueId.Value, reviewId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(reviewId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

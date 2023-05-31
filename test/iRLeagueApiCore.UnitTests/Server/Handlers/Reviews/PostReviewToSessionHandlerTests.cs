@@ -30,20 +30,19 @@ public sealed class PostReviewToSessionHandlerTests : ReviewsHandlersTestsBase<P
         return new PostReviewToSessionHandler(logger, dbContext, new[] { validator });
     }
 
-    private PostReviewToSessionRequest DefaultRequest(long leagueId, long sessionId)
+    private PostReviewToSessionRequest DefaultRequest(long sessionId)
     {
-        return new PostReviewToSessionRequest(leagueId, sessionId, DefaultUser(), TestReviewModel);
+        return new PostReviewToSessionRequest(sessionId, DefaultUser(), TestReviewModel);
     }
 
     protected override PostReviewToSessionRequest DefaultRequest()
     {
-        return DefaultRequest(TestLeagueId, TestSessionId);
+        return DefaultRequest(TestSessionId);
     }
 
     protected override void DefaultAssertions(PostReviewToSessionRequest request, ReviewModel result, LeagueDbContext dbContext)
     {
         var expected = TestReviewModel;
-        result.LeagueId.Should().Be(request.LeagueId);
         result.SessionId.Should().Be(request.SessionId);
         result.ReviewId.Should().NotBe(0);
         result.Corner.Should().Be(expected.Corner);
@@ -88,7 +87,8 @@ public sealed class PostReviewToSessionHandlerTests : ReviewsHandlersTestsBase<P
     {
         leagueId ??= TestLeagueId;
         sessionId ??= TestSessionId;
-        var request = DefaultRequest(leagueId.Value, sessionId.Value);
+        accessMockHelper.SetCurrentLeague(leagueId.Value);
+        var request = DefaultRequest(sessionId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 

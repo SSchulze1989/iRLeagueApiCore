@@ -1,6 +1,8 @@
-﻿namespace iRLeagueApiCore.Server.Handlers.Championships;
+﻿using iRLeagueDatabaseCore;
 
-public record DeleteChampSeasonRequest(long LeagueId, long ChampSeasonId) : IRequest;
+namespace iRLeagueApiCore.Server.Handlers.Championships;
+
+public record DeleteChampSeasonRequest(long ChampSeasonId) : IRequest;
 
 public sealed class DeleteChampSeasonHandler : ChampSeasonHandlerBase<DeleteChampSeasonHandler, DeleteChampSeasonRequest>,
     IRequestHandler<DeleteChampSeasonRequest, Unit>
@@ -13,7 +15,7 @@ public sealed class DeleteChampSeasonHandler : ChampSeasonHandlerBase<DeleteCham
     public async Task<Unit> Handle(DeleteChampSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteChampSeason = await GetChampSeasonEntityAsync(request.LeagueId, request.ChampSeasonId, cancellationToken)
+        var deleteChampSeason = await GetChampSeasonEntityAsync(request.ChampSeasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         deleteChampSeason.IsActive = false;
         await dbContext.SaveChangesAsync(cancellationToken);

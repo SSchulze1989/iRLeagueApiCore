@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
-public record DeleteScheduleRequest(long LeagueId, long ScheduleId) : IRequest;
+public record DeleteScheduleRequest(long ScheduleId) : IRequest;
 
 public sealed class DeleteScheduleHandler : ScheduleHandlerBase<DeleteScheduleHandler, DeleteScheduleRequest>, IRequestHandler<DeleteScheduleRequest>
 {
@@ -12,15 +12,14 @@ public sealed class DeleteScheduleHandler : ScheduleHandlerBase<DeleteScheduleHa
     public async Task<Unit> Handle(DeleteScheduleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        await DeleteSchedule(request.LeagueId, request.ScheduleId, cancellationToken);
+        await DeleteSchedule(request.ScheduleId, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }
 
-    private async Task DeleteSchedule(long leagueId, long scheduleId, CancellationToken cancellationToken)
+    private async Task DeleteSchedule(long scheduleId, CancellationToken cancellationToken)
     {
         var schedule = await dbContext.Schedules
-            .Where(x => x.LeagueId == leagueId)
             .SingleOrDefaultAsync(x => x.ScheduleId == scheduleId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.Remove(schedule);

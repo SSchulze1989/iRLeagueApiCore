@@ -11,20 +11,19 @@ public abstract class SeasonHandlerBase<THandler, TRequest> : HandlerBase<THandl
     {
     }
 
-    protected virtual async Task<SeasonEntity> MapToSeasonEntityAsync(long leagueId, LeagueUser user, PostSeasonModel putSeason,
+    protected virtual async Task<SeasonEntity> MapToSeasonEntityAsync(LeagueUser user, PostSeasonModel putSeason,
         SeasonEntity target, CancellationToken cancellationToken)
     {
         target.Finished = putSeason.Finished;
         target.HideCommentsBeforeVoted = putSeason.HideComments;
-        target.MainScoring = await GetScoringEntityAsync(leagueId, putSeason.MainScoringId, cancellationToken);
+        target.MainScoring = await GetScoringEntityAsync(putSeason.MainScoringId, cancellationToken);
         target.SeasonName = putSeason.SeasonName;
         return UpdateVersionEntity(user, target);
     }
 
-    protected virtual async Task<SeasonModel?> MapToGetSeasonModel(long leagueId, long seasonId, CancellationToken cancellationToken)
+    protected virtual async Task<SeasonModel?> MapToGetSeasonModel(long seasonId, CancellationToken cancellationToken)
     {
         return await dbContext.Seasons
-            .Where(x => x.LeagueId == leagueId)
             .Where(x => x.SeasonId == seasonId)
             .Select(MapToGetSeasonModelExpression)
             .SingleOrDefaultAsync();
