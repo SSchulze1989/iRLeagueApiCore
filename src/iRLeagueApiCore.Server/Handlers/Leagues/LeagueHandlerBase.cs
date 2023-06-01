@@ -27,6 +27,7 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
     protected virtual async Task<LeagueModel?> MapToGetLeagueModelAsync(long leagueId, CancellationToken cancellationToken)
     {
         return await dbContext.Leagues
+            .IgnoreQueryFilters()
             .Where(x => x.Id == leagueId)
             .Select(MapToGetLeagueModelExpression)
             .SingleOrDefaultAsync(cancellationToken);
