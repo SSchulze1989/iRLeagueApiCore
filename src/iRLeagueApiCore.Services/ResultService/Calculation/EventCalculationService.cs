@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
@@ -37,6 +38,8 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
             {
                 continue;
             }
+            sessionData = AssignAddPenalties(sessionData, data.AddPenalties);
+
             var sessionCalculationService = sessionCalculationServiceProvider.GetCalculationService(sessionConfig);
             sessionResults.Add(await sessionCalculationService.Calculate(sessionData));
         }
@@ -68,6 +71,7 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
                     SessionNr = 999,
                     ResultRows = combinedRows,
                 };
+                combinedData = AssignAddPenalties(combinedData, data.AddPenalties);
                 var combinedCalculationService = sessionCalculationServiceProvider.GetCalculationService(combinedConfig);
                 sessionResults.Add(await combinedCalculationService.Calculate(combinedData));
             }
@@ -75,5 +79,17 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
         result.SessionResults = sessionResults;
 
         return result;
+    }
+
+    private static SessionCalculationData AssignAddPenalties(SessionCalculationData data, IEnumerable<AddPenaltyCalculationData> addPenalties)
+    {
+        var sessionPenalties = addPenalties.Where(x => x.SessionNr == data.SessionNr);
+        data.ResultRows.ForEeach(row =>
+            row.AddPenalties = sessionPenalties
+                .Where(x =>
+                    (x.MemberId != null && x.MemberId == row.MemberId) ||
+                    (x.MemberId == null && x.TeamId != null && x.TeamId == row.TeamId))
+                .ToList());
+        return data;
     }
 }

@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Mocking.Extensions;
+using iRLeagueApiCore.Common.Enums;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 
@@ -211,6 +212,174 @@ public sealed class MemberSessionCalculationServiceTests
         await test.Should().NotThrowAsync();
     }
 
+    [Fact]
+    public async Task Calculate_ShouldApplyTimePenaltyToInterval()
+    {
+        const int rowCount = 3;
+        const int spread = 5;
+        // create fixed intervals to test sorting
+        var intervals = Enumerable.Range(0, rowCount)
+            .Select(x => TimeSpan.FromSeconds(x * spread))
+            .CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.Interval, () => intervals())
+            .CreateMany(rowCount);
+        var addPenalty = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Time)
+            .With(x => x.Time, TimeSpan.FromSeconds(spread + 1))
+            .Create();
+        var penaltyRow = data.ResultRows.ElementAt(0);
+        penaltyRow.AddPenalties = new[] { addPenalty };
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
+        testResultRow.Interval.Should().Be(penaltyRow.Interval + addPenalty.Time);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldSortAfterApplyingTimePenalty()
+    {
+        const int rowCount = 3;
+        const int spread = 5;
+        const int penaltyIndex = 1;
+        // create fixed intervals to test sorting
+        var intervals = Enumerable.Range(0, rowCount)
+            .Select(x => TimeSpan.FromSeconds(x * spread))
+            .CreateSequence();
+        var positions = Enumerable.Range(1, rowCount).CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.Interval, () => intervals())
+            .With(x => x.FinishPosition, () => positions())
+            .CreateMany(rowCount);
+        var addPenalty = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Time)
+            .With(x => x.Time, TimeSpan.FromSeconds(spread + 1))
+            .Create();
+        var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
+        penaltyRow.AddPenalties = new[] { addPenalty };
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            sortForPoints: x => x.OrderBy(x => x.Interval).ToList());
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
+        test.ResultRows.ToList().IndexOf(testResultRow).Should().Be(penaltyIndex + 1);
+        testResultRow.FinalPosition.Should().Be((int)penaltyRow.FinishPosition + 1);
+    }
+
+    [Theory]
+    [InlineData(1, 1)]
+    [InlineData(1, 2)]
+    [InlineData(3, 3)]
+    public async Task Calculate_ShouldApplyPositioningPenalty(int penaltyIndex, int positionPenalty)
+    {
+        const int rowCount = 5;
+        // create fixed intervals to test sorting
+        var positions = Enumerable.Range(1, rowCount).CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.FinishPosition, () => positions())
+            .CreateMany(rowCount);
+        var addPenalty = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Position)
+            .With(x => x.Positions, positionPenalty)
+            .Create();
+        var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
+        penaltyRow.AddPenalties = new[] { addPenalty };
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var expIndex = Math.Min(penaltyIndex + positionPenalty, rowCount - 1);
+        var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
+        test.ResultRows.ToList().IndexOf(testResultRow).Should().Be(expIndex);
+        testResultRow.FinalPosition.Should().Be(expIndex + 1);
+    }
+
+    [Theory]
+    [InlineData(0, 2, 2, 2, 1, 3)]
+    [InlineData(0, 2, 2, 1, 1, 1)]
+    [InlineData(1, 1, 2, 2, 1, 3)]
+    public async Task Calculate_ShouldApplyPositioningPenalty_WithMultiple(
+        int penaltyIndex1, int positionPenalty1, int expIndex1,
+        int penaltyIndex2, int positionPenalty2, int expIndex2)
+    {
+        const int rowCount = 5;
+        // create fixed intervals to test sorting
+        var positions = Enumerable.Range(1, rowCount)
+            .CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.FinishPosition, () => positions())
+            .CreateMany(rowCount);
+        var addPenalty1 = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Position)
+            .With(x => x.Positions, positionPenalty1)
+            .Create();
+        var addPenalty2 = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Position)
+            .With(x => x.Positions, positionPenalty2)
+            .Create();
+        var penaltyRow1 = data.ResultRows.ElementAt(penaltyIndex1);
+        penaltyRow1.AddPenalties = new[] { addPenalty1 };
+        var penaltyRow2 = data.ResultRows.ElementAt(penaltyIndex2);
+        penaltyRow2.AddPenalties = new[] { addPenalty2 };
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testResultRow1 = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow1.ScoredResultRowId);
+        var testResultRow2 = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow2.ScoredResultRowId);
+        test.ResultRows.ToList().IndexOf(testResultRow1).Should().Be(expIndex1);
+        testResultRow1.FinalPosition.Should().Be(expIndex1 + 1);
+        test.ResultRows.ToList().IndexOf(testResultRow2).Should().Be(expIndex2);
+        testResultRow2.FinalPosition.Should().Be(expIndex2 + 1);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldApplyPointsPenalty()
+    {
+        const int rowCount = 3;
+        const int spread = 5;
+        const int penaltyIndex = 0;
+        // create fixed intervals to test sorting
+        var points = Enumerable.Range(0, rowCount)
+            .Select(x => (rowCount - x) * spread)
+            .CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.RacePoints, () => points())
+            .CreateMany(rowCount);
+        var addPenalty = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Points)
+            .With(x => x.Points, spread + 1)
+            .Create();
+        var penaltyRow = data.ResultRows.ElementAt(0);
+        penaltyRow.AddPenalties = new[] { addPenalty };
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            sortFinal: x => x.OrderBy(x => x.TotalPoints).ToList());
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
+        var expIndex = penaltyIndex + 1;
+        testResultRow.PenaltyPoints.Should().Be(addPenalty.Points);
+        testResultRow.TotalPoints.Should().Be(testResultRow.RacePoints - testResultRow.PenaltyPoints);
+        test.ResultRows.ToList().IndexOf(testResultRow).Should().Be(expIndex);
+    }
+
     private MemberSessionCalculationService CreateSut()
     {
         return fixture.Create<MemberSessionCalculationService>();
@@ -237,7 +406,7 @@ public sealed class MemberSessionCalculationServiceTests
             .Without(x => x.RacePoints)
             .Without(x => x.BonusPoints)
             .Without(x => x.PenaltyPoints)
-            .Without(x => x.AddPenalty);
+            .Without(x => x.AddPenalties);
     }
 
     private IEnumerable<ResultRowCalculationData> GetTestRows()

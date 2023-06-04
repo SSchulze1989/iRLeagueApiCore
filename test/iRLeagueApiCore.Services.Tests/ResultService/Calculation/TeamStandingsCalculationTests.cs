@@ -203,7 +203,7 @@ public sealed class TeamStandingCalculationServiceTests
     private IPostprocessComposer<ResultRowCalculationResult> TestRowBuilder()
     {
         return fixture.Build<ResultRowCalculationResult>()
-            .Without(x => x.AddPenalty)
+            .Without(x => x.AddPenalties)
             .Do(x => { x.TotalPoints = x.RacePoints + x.BonusPoints - x.PenaltyPoints; });
     }
 

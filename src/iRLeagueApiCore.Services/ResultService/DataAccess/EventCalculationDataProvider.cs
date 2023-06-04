@@ -1,7 +1,11 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using MySqlX.XDevAPI.Relational;
 using System.Diagnostics.Eventing.Reader;
+using System.Threading;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 
@@ -20,6 +24,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
             return data;
         }
 
+        data = await AssociatePenalties(config, data, cancellationToken);
         // Fill Qualy lap
         data = FillQualyLapTime(config, data);
         return data;
@@ -78,6 +83,34 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         return data;
     }
 
+    private async Task<EventCalculationData> AssociatePenalties(EventCalculationConfiguration config, EventCalculationData data, CancellationToken cancellationToken)
+    {
+        // get existing scoredresultrows
+        var scoredResultRows = await dbContext.ScoredResultRows
+            .Include(x => x.ScoredSessionResult)
+            .Include(x => x.AddPenalties)
+            .Where(x => x.ScoredSessionResult.ResultId == config.ResultId)
+            .ToListAsync(cancellationToken);
+        if (scoredResultRows.None())
+        {
+            return data;
+        }
+
+        data.AddPenalties = scoredResultRows
+            .SelectMany(row => row.AddPenalties
+                .Select(x => new AddPenaltyCalculationData()
+                {
+                    SessionNr = row.ScoredSessionResult.SessionNr,
+                    MemberId = row.MemberId,
+                    TeamId = row.TeamId,
+                    Type = x.Value.Type,
+                    Points = x.Value.Points,
+                    Positions = x.Value.Positions,
+                    Time = x.Value.Time,
+                }));
+        return data;
+    }
+
     private static Expression<Func<EventResultEntity, EventCalculationData>> MapToEventResultCalculationDataExpression => eventResult => new EventCalculationData()
     {
         LeagueId = eventResult.LeagueId,
@@ -106,7 +139,6 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
                     TeamId = row.TeamId,
                     TeamName = row.Team == null ? string.Empty : row.Team.Name,
-                    AddPenalty = null,
                     AvgLapTime = row.AvgLapTime,
                     Car = row.Car,
                     CarClass = row.CarClass,
@@ -158,7 +190,6 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
                 TeamId = row.TeamId,
                 TeamName = row.Team == null ? string.Empty : row.Team.Name,
-                AddPenalty = null,
                 AvgLapTime = row.AvgLapTime,
                 Car = row.Car,
                 CarClass = row.CarClass,

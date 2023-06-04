@@ -107,7 +107,6 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
                 Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
                 TeamId = row.TeamId,
                 TeamName = row.Team == null ? string.Empty : row.Team.Name,
-                AddPenalty = null,
                 AvgLapTime = row.AvgLapTime,
                 Car = row.Car,
                 CarClass = row.CarClass,
