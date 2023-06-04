@@ -24,7 +24,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
 	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.6.5" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.6.5" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.6.6-dev.1" />
 	<PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
@@ -71,7 +71,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.6.5</Version>
+		<Version>0.6.6-dev.1</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 

@@ -1,6 +1,10 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Models;
+using iRLeagueDatabaseCore;
+using iRLeagueDatabaseCore.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace iRLeagueApiCore.Services.ResultService.Excecution;
 
@@ -33,6 +37,8 @@ internal sealed class ExecuteEventResultCalculation
         using var loggerScoppe = logger.BeginScope(new Dictionary<string, object> { ["ExecutionId"] = new Guid() });
 
         logger.LogInformation("--- Start result calculation for event: {EventId} ---", eventId);
+        await dataProvider.SetLeague(eventId, cancellationToken);
+
         IEnumerable<long?> resultConfigIds = (await configProvider.GetResultConfigIds(eventId, cancellationToken)).Cast<long?>();
         if (resultConfigIds.Any() == false)
         {
