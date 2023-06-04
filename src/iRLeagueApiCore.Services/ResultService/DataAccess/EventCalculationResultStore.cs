@@ -125,7 +125,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
     {
         rowEntity.Member = requiredEntities.Members.FirstOrDefault(x => x.Id == row.MemberId);
         rowEntity.Team = requiredEntities.Teams.FirstOrDefault(x => x.TeamId == row.TeamId);
-        rowEntity.AddPenalty = requiredEntities.AddPenalties.FirstOrDefault(x => x.ScoredResultRowId == rowEntity.ScoredResultRowId);
+        rowEntity.AddPenalties = requiredEntities.AddPenalties;
         rowEntity.AvgLapTime = row.AvgLapTime;
         rowEntity.BonusPoints = row.BonusPoints;
         rowEntity.Car = row.Car;
@@ -194,7 +194,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
                 };
                 penaltyEntities.Add(penaltyEntity);
             }
-            penaltyEntity.PenaltyPoints = penalty.PenaltyPoints;
+            penaltyEntity.Value.Points = penalty.PenaltyPoints;
         }
         return penaltyEntities;
     }
