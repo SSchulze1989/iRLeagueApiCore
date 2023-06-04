@@ -182,14 +182,19 @@ public sealed class TeamSessionCalculationServiceTests
     private IPostprocessComposer<ResultRowCalculationData> TestRowBuilder()
     {
         return fixture.Build<ResultRowCalculationData>()
-            .Without(x => x.AddPenalty);
+            .Without(x => x.AddPenalties);
+    }
+
+    private IPostprocessComposer<ResultRowCalculationData> TeamTestRowBuilder(IEnumerable<long?> teamIds)
+    {
+        var idSequence = teamIds.CreateSequence();
+        return TestRowBuilder()
+            .With(x => x.TeamId, () => idSequence());
     }
 
     private IEnumerable<ResultRowCalculationData> GetTestRows(IEnumerable<long?> teamIds, int rowsPerTeam)
     {
-        var idSequence = teamIds.CreateSequence();
-        return TestRowBuilder()
-            .With(x => x.TeamId, () => idSequence())
+        return TeamTestRowBuilder(teamIds)
             .CreateMany(teamIds.Count() * rowsPerTeam);
     }
 }
