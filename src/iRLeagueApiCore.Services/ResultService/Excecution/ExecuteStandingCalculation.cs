@@ -26,6 +26,7 @@ internal sealed class ExecuteStandingCalculation
     public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
     {
         using var loggerScoppe = logger.BeginScope(new Dictionary<string, object> { ["ExecutionId"] = new Guid() });
+        await dataProvider.SetLeague(eventId, cancellationToken);
 
         logger.LogInformation("--- Start standing calculation for event: {EventId} ---", eventId);
         var seasonId = await configProvider.GetSeasonId(eventId, cancellationToken) ?? -1;
