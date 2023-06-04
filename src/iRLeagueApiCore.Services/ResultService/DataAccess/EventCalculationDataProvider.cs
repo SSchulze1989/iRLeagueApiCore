@@ -87,30 +87,27 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
     {
         // get existing scoredresultrows
         var scoredResultRows = await dbContext.ScoredResultRows
+            .Include(x => x.ScoredSessionResult)
             .Include(x => x.AddPenalties)
-            .Where(x => x.ScoredSessionResult.ScoredEventResult.ResultId == config.ResultId)
+            .Where(x => x.ScoredSessionResult.ResultId == config.ResultId)
             .ToListAsync(cancellationToken);
         if (scoredResultRows.None())
         {
             return data;
         }
 
-        var resultRows = data.SessionResults
-            .SelectMany(x => x.ResultRows);
-        resultRows.ForEeach(row => row.AddPenalties = 
-            scoredResultRows
-                .Where(x => 
-                    (x.MemberId != null && x.MemberId == row.MemberId) || 
-                    (x.MemberId == null && x.TeamId != null && x.TeamId == row.TeamId))
-                .SelectMany(x => x.AddPenalties)
+        data.AddPenalties = scoredResultRows
+            .SelectMany(row => row.AddPenalties
                 .Select(x => new AddPenaltyCalculationData()
                 {
+                    SessionNr = row.ScoredSessionResult.SessionNr,
+                    MemberId = row.MemberId,
+                    TeamId = row.TeamId,
                     Type = x.Value.Type,
                     Points = x.Value.Points,
                     Positions = x.Value.Positions,
                     Time = x.Value.Time,
-                })
-                .ToList());
+                }));
         return data;
     }
 

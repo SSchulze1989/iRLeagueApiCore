@@ -126,7 +126,6 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
     {
         rowEntity.Member = requiredEntities.Members.FirstOrDefault(x => x.Id == row.MemberId);
         rowEntity.Team = requiredEntities.Teams.FirstOrDefault(x => x.TeamId == row.TeamId);
-        rowEntity.AddPenalties = requiredEntities.AddPenalties;
         rowEntity.AvgLapTime = row.AvgLapTime;
         rowEntity.BonusPoints = row.BonusPoints;
         rowEntity.Car = row.Car;

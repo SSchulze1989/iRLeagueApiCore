@@ -48,11 +48,13 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     protected virtual async Task<AddPenaltyEntity> MapToAddPenaltyEntity(PenaltyModel postPenalty, AddPenaltyEntity penaltyEntity, CancellationToken cancellationToken)
     {
         penaltyEntity.Reason = postPenalty.Reason;
-        penaltyEntity.Value ??= new();
-        penaltyEntity.Value.Type = postPenalty.Type;
-        penaltyEntity.Value.Points = postPenalty.Points;
-        penaltyEntity.Value.Positions = postPenalty.Positions;
-        penaltyEntity.Value.Time = postPenalty.Time;
+        penaltyEntity.Value = new()
+        {
+            Type = postPenalty.Type,
+            Points = postPenalty.Points,
+            Positions = postPenalty.Positions,
+            Time = postPenalty.Time,
+        };
         return await Task.FromResult(penaltyEntity);
     }
 
@@ -189,16 +191,10 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
 
     protected async Task<PenaltyModel?> MapToAddPenaltyModel(long addPenaltyId, CancellationToken cancellationToken)
     {
-        // It is required to fetch the whole entity here first because if used witht he expression directly the 
-        // value of "Value.Time" is not converted to a TimeSpan and will always have the default value
-        // It is not ideal to fetch the whole entities - including ScoredResultRow - but I could not find another workaround
-        // --> this might be solved by updating to EF Core 7 with Pomelo
-        return (await dbContext.AddPenaltys
-            .Include(x => x.ScoredResultRow.Member)
+        return await dbContext.AddPenaltys
             .Where(x => x.AddPenaltyId == addPenaltyId)
-            .ToListAsync(cancellationToken))
-            .Select(MapToAddPenaltyModelExpression.Compile())
-            .FirstOrDefault();
+            .Select(MapToAddPenaltyModelExpression)
+            .FirstOrDefaultAsync(cancellationToken);
     }
     protected Expression<Func<AddPenaltyEntity, PenaltyModel>> MapToAddPenaltyModelExpression => penalty => new()
     {

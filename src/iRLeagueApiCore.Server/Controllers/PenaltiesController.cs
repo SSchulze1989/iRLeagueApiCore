@@ -50,7 +50,7 @@ public sealed class PenaltiesController : LeagueApiController<PenaltiesControlle
     }
 
     [HttpDelete]
-    [Route("{id:long")]
+    [Route("{id:long}")]
     public async Task<ActionResult> DeletePenalty([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {

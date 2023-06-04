@@ -128,12 +128,12 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         var test = (await sut.GetData(config))!;
 
         test.Should().NotBeNull();
-        var testRow = test.SessionResults.First().ResultRows.First();
-        testRow.AddPenalties.Should().Satisfy(
-            x =>
-                x.Type == addPenalty.Value.Type &&
-                x.Points == addPenalty.Value.Points
-            );
+        test.AddPenalties.Should().NotBeEmpty();
+        var testPenalty = test.AddPenalties.First();
+        testPenalty.SessionNr.Should().Be(scoredResult.ScoredSessionResults.First().SessionNr);
+        testPenalty.MemberId.Should().Be(addPenalty.ScoredResultRow.MemberId);
+        testPenalty.Type.Should().Be(addPenalty.Value.Type);
+        testPenalty.Points.Should().Be(addPenalty.Value.Points);
     }
 
     private EventCalculationDataProvider CreateSut()

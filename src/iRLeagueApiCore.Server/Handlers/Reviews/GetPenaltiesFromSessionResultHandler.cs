@@ -21,23 +21,15 @@ public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<Ge
 
     private async Task<IEnumerable<PenaltyModel>> GetReviewPenaltiesFromSessionResult(long sessionResultId, CancellationToken cancellationToken)
     {
-        // It is required to fetch the whole entity here first because if used witht he expression directly the 
-        // value of "Value.Time" is not converted to a TimeSpan and will always have the default value
-        // It is not ideal to fetch the whole entities - including ScoredResultRow - but I could not find another workaround
-        // --> this might be solved by updating to EF Core 7 with Pomelo
-        var addPenalties = (await dbContext.AddPenaltys
-            .Include(x => x.ScoredResultRow.Member)
+        var addPenalties = await dbContext.AddPenaltys
             .Where(x => x.ScoredResultRow.SessionResultId == sessionResultId)
-            .ToListAsync(cancellationToken))
-            .Select(MapToAddPenaltyModelExpression.Compile())
-            .ToList();
+            .Select(MapToAddPenaltyModelExpression)
+            .ToListAsync(cancellationToken);
 
-        var reviewPenalties = (await dbContext.ReviewPenaltys
-            .Include(x => x.ResultRow.Member)
+        var reviewPenalties = await dbContext.ReviewPenaltys
             .Where(x => x.ResultRow.SessionResultId == sessionResultId)
-            .ToListAsync(cancellationToken))
-            .Select(MapToReviewPenaltyModelExpression.Compile())
-            .ToList();
+            .Select(MapToReviewPenaltyModelExpression)
+            .ToListAsync(cancellationToken);
 
         return addPenalties.Concat(reviewPenalties);
     }
