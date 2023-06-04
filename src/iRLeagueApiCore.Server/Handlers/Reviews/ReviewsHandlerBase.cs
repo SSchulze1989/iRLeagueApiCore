@@ -38,6 +38,24 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         return UpdateVersionEntity(user, reviewEntity);
     }
 
+    protected virtual async Task<AddPenaltyEntity?> GetAddPenaltyEntity(long addPenaltyId, CancellationToken cancellationToken)
+    {
+        return await dbContext.AddPenaltys
+            .Where(x => x.AddPenaltyId == addPenaltyId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    protected virtual async Task<AddPenaltyEntity> MapToAddPenaltyEntity(PenaltyModel postPenalty, AddPenaltyEntity penaltyEntity, CancellationToken cancellationToken)
+    {
+        penaltyEntity.Reason = postPenalty.Reason;
+        penaltyEntity.Value ??= new();
+        penaltyEntity.Value.Type = postPenalty.Type;
+        penaltyEntity.Value.Points = postPenalty.Points;
+        penaltyEntity.Value.Positions = postPenalty.Positions;
+        penaltyEntity.Value.Time = postPenalty.Time;
+        return await Task.FromResult(penaltyEntity);
+    }
+
     protected virtual async Task<ICollection<AcceptedReviewVoteEntity>> MapToAcceptedVoteList(IEnumerable<VoteModel> voteModels,
         ICollection<AcceptedReviewVoteEntity> voteEntities, CancellationToken cancellationToken)
     {

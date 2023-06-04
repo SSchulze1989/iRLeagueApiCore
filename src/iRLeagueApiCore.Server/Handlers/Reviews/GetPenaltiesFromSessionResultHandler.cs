@@ -2,17 +2,17 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record GetPenaltiesFromSessionResult(long SessionResultId) : IRequest<IEnumerable<PenaltyModel>>;
-public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<GetPenaltiesFromSessionResultHandler, GetPenaltiesFromSessionResult>,
-    IRequestHandler<GetPenaltiesFromSessionResult, IEnumerable<PenaltyModel>>
+public record GetPenaltiesFromSessionResultRequest(long SessionResultId) : IRequest<IEnumerable<PenaltyModel>>;
+public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<GetPenaltiesFromSessionResultHandler, GetPenaltiesFromSessionResultRequest>,
+    IRequestHandler<GetPenaltiesFromSessionResultRequest, IEnumerable<PenaltyModel>>
 {
     public GetPenaltiesFromSessionResultHandler(ILogger<GetPenaltiesFromSessionResultHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetPenaltiesFromSessionResult>> validators) 
+        IEnumerable<IValidator<GetPenaltiesFromSessionResultRequest>> validators) 
         : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<PenaltyModel>> Handle(GetPenaltiesFromSessionResult request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<PenaltyModel>> Handle(GetPenaltiesFromSessionResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getReviews = await GetReviewPenaltiesFromSessionResult(request.SessionResultId, cancellationToken);
@@ -21,15 +21,23 @@ public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<Ge
 
     private async Task<IEnumerable<PenaltyModel>> GetReviewPenaltiesFromSessionResult(long sessionResultId, CancellationToken cancellationToken)
     {
-        var addPenalties = await dbContext.AddPenaltys
+        // It is required to fetch the whole entity here first because if used witht he expression directly the 
+        // value of "Value.Time" is not converted to a TimeSpan and will always have the default value
+        // It is not ideal to fetch the whole entities - including ScoredResultRow - but I could not find another workaround
+        // --> this might be solved by updating to EF Core 7 with Pomelo
+        var addPenalties = (await dbContext.AddPenaltys
+            .Include(x => x.ScoredResultRow.Member)
             .Where(x => x.ScoredResultRow.SessionResultId == sessionResultId)
-            .Select(MapToAddPenaltyModelExpression)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(cancellationToken))
+            .Select(MapToAddPenaltyModelExpression.Compile())
+            .ToList();
 
-        var reviewPenalties = await dbContext.ReviewPenaltys
+        var reviewPenalties = (await dbContext.ReviewPenaltys
+            .Include(x => x.ResultRow.Member)
             .Where(x => x.ResultRow.SessionResultId == sessionResultId)
-            .Select(MapToReviewPenaltyModelExpression)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(cancellationToken))
+            .Select(MapToReviewPenaltyModelExpression.Compile())
+            .ToList();
 
         return addPenalties.Concat(reviewPenalties);
     }
