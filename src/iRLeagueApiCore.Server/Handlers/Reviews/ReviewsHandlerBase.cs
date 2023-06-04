@@ -187,6 +187,19 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         Positions = penalty.Value.Positions,
     };
 
+    protected async Task<PenaltyModel?> MapToAddPenaltyModel(long addPenaltyId, CancellationToken cancellationToken)
+    {
+        // It is required to fetch the whole entity here first because if used witht he expression directly the 
+        // value of "Value.Time" is not converted to a TimeSpan and will always have the default value
+        // It is not ideal to fetch the whole entities - including ScoredResultRow - but I could not find another workaround
+        // --> this might be solved by updating to EF Core 7 with Pomelo
+        return (await dbContext.AddPenaltys
+            .Include(x => x.ScoredResultRow.Member)
+            .Where(x => x.AddPenaltyId == addPenaltyId)
+            .ToListAsync(cancellationToken))
+            .Select(MapToAddPenaltyModelExpression.Compile())
+            .FirstOrDefault();
+    }
     protected Expression<Func<AddPenaltyEntity, PenaltyModel>> MapToAddPenaltyModelExpression => penalty => new()
     {
         ResultRowId = penalty.ScoredResultRowId,

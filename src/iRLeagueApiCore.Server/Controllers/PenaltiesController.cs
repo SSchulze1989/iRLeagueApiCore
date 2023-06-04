@@ -13,7 +13,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [Route("{leagueName}/[controller]")]
 public sealed class PenaltiesController : LeagueApiController<PenaltiesController>
 {
-    public PenaltiesController(ILogger<PenaltiesController> logger, IMediator mediator) 
+    public PenaltiesController(ILogger<PenaltiesController> logger, IMediator mediator)
         : base(logger, mediator)
     {
     }
@@ -37,5 +37,25 @@ public sealed class PenaltiesController : LeagueApiController<PenaltiesControlle
         var request = new PostPenaltyToResultRequest(resultId, memberId, postPenalty);
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpPut]
+    [Route("{id:long}")]
+    public async Task<ActionResult<PenaltyModel>> PutPenalty([FromRoute] string leagueName, [FromRoute] long id,
+        [FromBody] PenaltyModel putPenalty, CancellationToken cancellationToken)
+    {
+        var request = new PutPenaltyRequest(id, putPenalty);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpDelete]
+    [Route("{id:long")]
+    public async Task<ActionResult> DeletePenalty([FromRoute] string leagueName, [FromRoute] long id,
+        CancellationToken cancellationToken)
+    {
+        var request = new DeletePenaltyRequest(id);
+        await mediator.Send(request, cancellationToken);
+        return NoContent();
     }
 }
