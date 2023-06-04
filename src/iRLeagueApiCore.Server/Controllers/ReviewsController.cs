@@ -68,7 +68,7 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("/{leagueName}/Sessions/{sessionId:long}/Reviews")]
+    [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
     public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromSession([FromRoute] string leagueName, [FromRoute] long sessionId, 
         CancellationToken cancellationToken)
     {
@@ -80,7 +80,7 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("/{leagueName}/Events/{eventId:long}/Reviews")]
+    [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
     public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId, 
         CancellationToken cancellationToken)
     {
@@ -99,16 +99,5 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
         var request = new MoveReviewToSessionRequest(sessionId, id, leagueUser);
         var getReview = await mediator.Send(request, cancellationToken);
         return Ok(getReview);
-    }
-
-    [HttpGet]
-    [AllowAnonymous]
-    [Route("/{leagueName}/ResultRows/{id:long}/ReviewPenalties")]
-    public async Task<ActionResult<IEnumerable<ReviewPenaltyModel>>> GetReviewPenaltiesFromRow([FromRoute] string leagueName, [FromRoute] long id,
-        CancellationToken cancellationToken)
-    {
-        var request = new GetReviewPenaltiesFromResultRowRequest(id);
-        var result = await mediator.Send(request, cancellationToken);
-        return Ok(result);
     }
 }

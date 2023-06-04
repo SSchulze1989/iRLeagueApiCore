@@ -154,11 +154,29 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         LastModifiedOn = review.LastModifiedOn,
     };
 
-    protected Expression<Func<ReviewPenaltyEntity, ReviewPenaltyModel>> MapToReviewPenaltyModelExpression => penalty => new()
+    protected Expression<Func<ReviewPenaltyEntity, PenaltyModel>> MapToReviewPenaltyModelExpression => penalty => new()
     {
         ResultRowId = penalty.ResultRowId,
         ReviewId = penalty.ReviewId,
         ReviewVoteId = penalty.ReviewVoteId,
+        MemberId = penalty.ResultRow.MemberId.GetValueOrDefault(),
+        Firstname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Firstname : string.Empty,
+        Lastname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Lastname : string.Empty,
+        Reason = penalty.ReviewVote.Description,
+        Type = penalty.Value.Type,
+        Points = (int)penalty.Value.Points,
+        Time = penalty.Value.Time,
+        Positions = penalty.Value.Positions,
+    };
+
+    protected Expression<Func<AddPenaltyEntity, PenaltyModel>> MapToAddPenaltyModelExpression => penalty => new()
+    {
+        ResultRowId = penalty.ScoredResultRowId,
+        AddPenaltyId = penalty.AddPenaltyId,
+        MemberId = penalty.ScoredResultRow.MemberId.GetValueOrDefault(),
+        Firstname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Firstname : string.Empty,
+        Lastname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Lastname : string.Empty,
+        Reason = penalty.Reason,
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,
         Time = penalty.Value.Time,

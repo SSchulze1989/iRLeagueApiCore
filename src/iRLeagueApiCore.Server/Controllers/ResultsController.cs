@@ -21,16 +21,16 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     /// Get single result from specific resultId
     /// </summary>
     /// <param name="leagueName"></param>
-    /// <param name="resultId"></param>
+    /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromRoute] long resultId,
+    public async Task<ActionResult<EventResultModel>> Get([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken)
     {
-        var request = new GetResultRequest(resultId);
+        var request = new GetResultRequest(id);
         var getResult = await mediator.Send(request, cancellationToken);
         return Ok(getResult);
     }
