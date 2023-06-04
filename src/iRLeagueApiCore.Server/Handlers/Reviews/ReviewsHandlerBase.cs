@@ -153,4 +153,15 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         LastModifiedByUserName = review.LastModifiedByUserName,
         LastModifiedOn = review.LastModifiedOn,
     };
+
+    protected Expression<Func<ReviewPenaltyEntity, ReviewPenaltyModel>> MapToReviewPenaltyModelExpression => penalty => new()
+    {
+        ResultRowId = penalty.ResultRowId,
+        ReviewId = penalty.ReviewId,
+        ReviewVoteId = penalty.ReviewVoteId,
+        Type = penalty.Value.Type,
+        Points = (int)penalty.Value.Points,
+        Time = penalty.Value.Time,
+        Positions = penalty.Value.Positions,
+    };
 }

@@ -100,4 +100,15 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
         var getReview = await mediator.Send(request, cancellationToken);
         return Ok(getReview);
     }
+
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("/{leagueName}/ResultRows/{id:long}/ReviewPenalties")]
+    public async Task<ActionResult<IEnumerable<ReviewPenaltyModel>>> GetReviewPenaltiesFromRow([FromRoute] string leagueName, [FromRoute] long id,
+        CancellationToken cancellationToken)
+    {
+        var request = new GetReviewPenaltiesFromResultRowRequest(id);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
 }

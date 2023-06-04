@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -191,9 +192,11 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
                     LeagueId = review.LeagueId,
                     Review = review,
                     ReviewVote = vote,
+                    Value = new(),
                 };
                 penaltyEntities.Add(penaltyEntity);
             }
+            penaltyEntity.Value.Type = PenaltyType.Points;
             penaltyEntity.Value.Points = penalty.PenaltyPoints;
         }
         return penaltyEntities;
