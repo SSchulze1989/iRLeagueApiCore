@@ -1,7 +1,11 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using MySqlX.XDevAPI.Relational;
 using System.Diagnostics.Eventing.Reader;
+using System.Threading;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 
@@ -20,6 +24,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
             return data;
         }
 
+        data = await AssociatePenalties(config, data, cancellationToken);
         // Fill Qualy lap
         data = FillQualyLapTime(config, data);
         return data;
@@ -75,6 +80,37 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
             row.QualifyingTime = driverQualyLaps.FirstOrDefault(x => x.MemberId == row.MemberId)?.QualifyingTime ?? TimeSpan.Zero;
         }
 
+        return data;
+    }
+
+    private async Task<EventCalculationData> AssociatePenalties(EventCalculationConfiguration config, EventCalculationData data, CancellationToken cancellationToken)
+    {
+        // get existing scoredresultrows
+        var scoredResultRows = await dbContext.ScoredResultRows
+            .Include(x => x.AddPenalties)
+            .Where(x => x.ScoredSessionResult.ScoredEventResult.ResultId == config.ResultId)
+            .ToListAsync(cancellationToken);
+        if (scoredResultRows.None())
+        {
+            return data;
+        }
+
+        var resultRows = data.SessionResults
+            .SelectMany(x => x.ResultRows);
+        resultRows.ForEeach(row => row.AddPenalties = 
+            scoredResultRows
+                .Where(x => 
+                    (x.MemberId != null && x.MemberId == row.MemberId) || 
+                    (x.MemberId == null && x.TeamId != null && x.TeamId == row.TeamId))
+                .SelectMany(x => x.AddPenalties)
+                .Select(x => new AddPenaltyCalculationData()
+                {
+                    Type = x.Value.Type,
+                    Points = x.Value.Points,
+                    Positions = x.Value.Positions,
+                    Time = x.Value.Time,
+                })
+                .ToList());
         return data;
     }
 

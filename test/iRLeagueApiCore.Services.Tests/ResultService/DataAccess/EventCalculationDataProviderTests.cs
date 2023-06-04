@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Mocking.DataAccess;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
@@ -97,6 +98,42 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
                 testRow.Car.Should().Be(sourceRow.Car);
             }
         }
+    }
+
+    [Fact]
+    public async Task GetData_ShouldProvideAddPenalties()
+    {
+        var @event = await GetFirstEventEntity();
+        var rawResult = @event.EventResult;
+        var configEntity = accessMockHelper.CreateConfiguration(@event);
+        var scoredResult = accessMockHelper.CreateScoredResult(@event, configEntity);
+        var addPenalty = new AddPenaltyEntity()
+        {
+            LeagueId = scoredResult.LeagueId,
+            ScoredResultRow = scoredResult.ScoredSessionResults.First().ScoredResultRows.First(),
+            Value = new()
+            {
+                Type = PenaltyType.Points,
+                Points = 420,
+            },
+        };
+        dbContext.ResultConfigurations.Add(configEntity);
+        dbContext.ScoredEventResults.Add(scoredResult);
+        dbContext.AddPenaltys.Add(addPenalty);
+        await dbContext.SaveChangesAsync();
+        var config = GetConfiguration(@event);
+        config.ResultId = scoredResult.ResultId;
+        var sut = CreateSut();
+
+        var test = (await sut.GetData(config))!;
+
+        test.Should().NotBeNull();
+        var testRow = test.SessionResults.First().ResultRows.First();
+        testRow.AddPenalties.Should().Satisfy(
+            x =>
+                x.Type == addPenalty.Value.Type &&
+                x.Points == addPenalty.Value.Points
+            );
     }
 
     private EventCalculationDataProvider CreateSut()
