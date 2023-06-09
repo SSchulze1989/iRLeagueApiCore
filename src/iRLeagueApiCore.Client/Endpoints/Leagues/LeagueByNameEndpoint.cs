@@ -112,4 +112,9 @@ internal sealed class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueBy
     {
         return new CustomEndpoint<T>(HttpClientWrapper, RouteBuilder, route);
     }
+
+    IResultsEndpoint ILeagueByNameEndpoint.Results()
+    {
+        return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
 }
