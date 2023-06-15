@@ -3,6 +3,7 @@
 namespace iRLeagueApiCore.Client.Endpoints;
 public interface IEndpoint
 {
+    string QueryUrl { get; }
     internal void WithParameters(Func<IParameterBuilder, IParameterBuilder> parameterBuilder);
 }
 

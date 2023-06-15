@@ -6,13 +6,9 @@ namespace iRLeagueApiCore.Client.Endpoints;
 
 internal sealed class CustomEndpoint<T> : UpdateEndpoint<T, object>, ICustomEndpoint<T>
 {
-    private string Route { get; }
-
-    protected override string QueryUrl => Route;
-
     public CustomEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, string route) : base(httpClientWrapper, routeBuilder)
     {
-        Route = route;
+        RouteBuilder.AddEndpoint(route);
     }
 
     async Task<ClientActionResult<T>> IPostEndpoint<T, object>.Post(object model, CancellationToken cancellationToken)

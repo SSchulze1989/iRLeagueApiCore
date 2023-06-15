@@ -29,6 +29,17 @@ public sealed class PenaltiesController : LeagueApiController<PenaltiesControlle
         return Ok(result);
     }
 
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("/{leagueName}/Results/{id:long}/[controller]")]
+    public async Task<ActionResult<IEnumerable<PenaltyModel>>> GetPenaltiesFromEventResult([FromRoute] string leagueName, [FromRoute] long id,
+        CancellationToken cancellationToken)
+    {
+        var request = new GetPenaltiesFromEventResultRequest(id);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpPost]
     [Route("/{leagueName}/ScoredSessionResults/{resultId:long}/Drivers/{memberId:long}/[controller]")]
     public async Task<ActionResult<PenaltyModel>> PostPenaltyToResult([FromRoute] string leagueName, [FromRoute] long resultId, [FromRoute] long memberId,
