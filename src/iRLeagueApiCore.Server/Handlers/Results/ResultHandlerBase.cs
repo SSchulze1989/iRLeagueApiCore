@@ -34,6 +34,7 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         {
             LeagueId = sessionResult.LeagueId,
             ScoringId = sessionResult.ScoringId,
+            SessionResultId = sessionResult.SessionResultId,
             SessionName = sessionResult.Name,
             SessionNr = sessionResult.SessionNr,
             ResultRows = sessionResult.ScoredResultRows
@@ -96,12 +97,6 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
                 LastName = sessionResult.FastestQualyLapDriver.Lastname,
                 MemberId = sessionResult.FastestQualyLapDriver.Id,
             },
-            //HardChargers = sessionResult.HardChargers.Select(member => new MemberInfoModel()
-            //{
-            //    FirstName = member.Firstname,
-            //    LastName = member.Lastname,
-            //    MemberId = member.Id,
-            //}).ToList(),
             CleanestDrivers = sessionResult.CleanestDrivers.Select(member => new MemberInfoModel()
             {
                 FirstName = member.Firstname,

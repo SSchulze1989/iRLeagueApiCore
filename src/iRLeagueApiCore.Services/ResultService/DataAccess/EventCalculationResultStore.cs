@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -125,7 +126,6 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
     {
         rowEntity.Member = requiredEntities.Members.FirstOrDefault(x => x.Id == row.MemberId);
         rowEntity.Team = requiredEntities.Teams.FirstOrDefault(x => x.TeamId == row.TeamId);
-        rowEntity.AddPenalty = requiredEntities.AddPenalties.FirstOrDefault(x => x.ScoredResultRowId == rowEntity.ScoredResultRowId);
         rowEntity.AvgLapTime = row.AvgLapTime;
         rowEntity.BonusPoints = row.BonusPoints;
         rowEntity.Car = row.Car;
@@ -191,10 +191,12 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
                     LeagueId = review.LeagueId,
                     Review = review,
                     ReviewVote = vote,
+                    Value = new(),
                 };
                 penaltyEntities.Add(penaltyEntity);
             }
-            penaltyEntity.PenaltyPoints = penalty.PenaltyPoints;
+            penaltyEntity.Value.Type = PenaltyType.Points;
+            penaltyEntity.Value.Points = penalty.PenaltyPoints;
         }
         return penaltyEntities;
     }

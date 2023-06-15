@@ -24,6 +24,7 @@ public abstract class HandlerBase<THandler, TRequest>
     protected virtual async Task<LeagueEntity?> GetLeagueEntityAsync(long leagueId, CancellationToken cancellationToken = default)
     {
         return await dbContext.Leagues
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(x => x.Id == leagueId, cancellationToken);
     }
 

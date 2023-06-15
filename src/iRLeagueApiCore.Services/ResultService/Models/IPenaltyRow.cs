@@ -2,5 +2,5 @@
 
 internal interface IPenaltyRow
 {
-    public AddPenaltyCalculationData? AddPenalty { get; set; }
+    public IEnumerable<AddPenaltyCalculationData> AddPenalties { get; set; }
 }

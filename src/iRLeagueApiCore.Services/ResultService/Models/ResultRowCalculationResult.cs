@@ -8,6 +8,7 @@ internal sealed class ResultRowCalculationResult : ResultRowCalculationData
 
     public ResultRowCalculationResult(ResultRowCalculationData data)
     {
+        AddPenalties = data.AddPenalties;
         ScoredResultRowId = data.ScoredResultRowId;
         MemberId = data.MemberId;
         Firstname = data.Firstname;

@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Http;
+﻿using iRLeagueApiCore.Client.Endpoints.Penalties;
+using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 
@@ -10,5 +11,10 @@ internal class ResultByIdEndpoint : GetEndpoint<EventResultModel>, IResultByIdEn
         base(httpClient, routeBuilder)
     {
         RouteBuilder.AddParameter(resultId);
+    }
+
+    public IGetAllEndpoint<PenaltyModel> Penalties()
+    {
+        return new PenaltiesEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

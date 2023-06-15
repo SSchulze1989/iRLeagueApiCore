@@ -1,5 +1,7 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
+using System.ComponentModel;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -14,6 +16,8 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         {
             rows = filter.FilterRows(rows);
         }
+        ApplyAddPenaltyTimes(rows);
+        rows = pointRule.SortForPoints(rows);
 
         IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
         // Filter for points only
@@ -23,14 +27,15 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
 
         // Calculation
-        var calcRows = pointRule.SortForPoints(pointRows);
-        pointRule.ApplyPoints(calcRows);
+        pointRule.ApplyPoints(pointRows.ToList());
 
         IEnumerable<ResultRowCalculationResult> finalRows = rows;
+        ApplyAddPenaltyPoints(finalRows);
         ApplyReviewPenalties(finalRows, data.AcceptedReviewVotes);
         ApplyBonusPoints(pointRows, pointRule.GetBonusPoints());
         ApplyTotalPoints(finalRows);
         finalRows = pointRule.SortFinal(finalRows);
+        finalRows = ApplyAddPenaltyPositions(finalRows);
         // Set final position
         foreach ((var row, var position) in finalRows.Select((x, i) => (x, i + 1)))
         {
@@ -130,6 +135,46 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return combined.ToList();
     }
 
+    private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyTimes(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        foreach (var row in rows)
+        {
+            foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Time))
+            {
+                row.Interval += row.Interval.Add(penalty.Time);
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyPoints(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        foreach (var row in rows)
+        {
+            foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Points))
+            {
+                row.PenaltyPoints += penalty.Points;
+            }
+        }
+        return rows;
+    }
+
+    private static IReadOnlyList<ResultRowCalculationResult> ApplyAddPenaltyPositions(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        var modRows = rows.ToList();
+        foreach (var row in rows.Reverse()) // Start from the back to keep order between mutliple drivers with penalties
+        {
+            var movePositions = row.AddPenalties.Where(x => x.Type == PenaltyType.Position).Sum(x => x.Positions);
+            if (movePositions == 0)
+            {
+                continue;
+            }
+            var rowIndex = modRows.IndexOf(row);
+            modRows.Move(rowIndex, movePositions);
+        }
+        return modRows;
+    }
+
     private static IEnumerable<ResultRowCalculationResult> ApplyReviewPenalties(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<AcceptedReviewVoteCalculationData> reviewVotes)
     {
         foreach (var row in rows)
@@ -189,6 +234,9 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 case 'f':
                     ApplyFastestLapBonusPoints(rows, bonusPoints);
                     break;
+                case 'q':
+                    ApplyStartPositionBonusPoints(rows, bonusKeyValue, bonusPoints);
+                    break;
             };
         }
 
@@ -226,6 +274,18 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         if (row is not null)
         {
             row.BonusPoints += points;
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyStartPositionBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int position, int points)
+    {
+        foreach (var row in rows)
+        {
+            if (row.StartPosition == position)
+            {
+                row.BonusPoints += points;
+            }
         }
         return rows;
     }

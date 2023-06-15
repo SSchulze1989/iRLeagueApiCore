@@ -38,6 +38,26 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         return UpdateVersionEntity(user, reviewEntity);
     }
 
+    protected virtual async Task<AddPenaltyEntity?> GetAddPenaltyEntity(long addPenaltyId, CancellationToken cancellationToken)
+    {
+        return await dbContext.AddPenaltys
+            .Where(x => x.AddPenaltyId == addPenaltyId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    protected virtual async Task<AddPenaltyEntity> MapToAddPenaltyEntity(PenaltyModel postPenalty, AddPenaltyEntity penaltyEntity, CancellationToken cancellationToken)
+    {
+        penaltyEntity.Reason = postPenalty.Reason;
+        penaltyEntity.Value = new()
+        {
+            Type = postPenalty.Type,
+            Points = postPenalty.Points,
+            Positions = postPenalty.Positions,
+            Time = postPenalty.Time,
+        };
+        return await Task.FromResult(penaltyEntity);
+    }
+
     protected virtual async Task<ICollection<AcceptedReviewVoteEntity>> MapToAcceptedVoteList(IEnumerable<VoteModel> voteModels,
         ICollection<AcceptedReviewVoteEntity> voteEntities, CancellationToken cancellationToken)
     {
@@ -152,5 +172,47 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         LastModifiedByUserId = review.LastModifiedByUserId,
         LastModifiedByUserName = review.LastModifiedByUserName,
         LastModifiedOn = review.LastModifiedOn,
+    };
+
+    protected Expression<Func<ReviewPenaltyEntity, PenaltyModel>> MapToReviewPenaltyModelExpression => penalty => new()
+    {
+        ResultRowId = penalty.ResultRowId,
+        ReviewId = penalty.ReviewId,
+        ReviewVoteId = penalty.ReviewVoteId,
+        EventId = penalty.ResultRow.ScoredSessionResult.ScoredEventResult.EventId,
+        SessionNr = penalty.ResultRow.ScoredSessionResult.SessionNr,
+        SessionName = penalty.ResultRow.ScoredSessionResult.Name,
+        MemberId = penalty.ResultRow.MemberId.GetValueOrDefault(),
+        Firstname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Firstname : string.Empty,
+        Lastname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Lastname : string.Empty,
+        Reason = penalty.ReviewVote.Description,
+        Type = penalty.Value.Type,
+        Points = (int)penalty.Value.Points,
+        Time = penalty.Value.Time,
+        Positions = penalty.Value.Positions,
+    };
+
+    protected async Task<PenaltyModel?> MapToAddPenaltyModel(long addPenaltyId, CancellationToken cancellationToken)
+    {
+        return await dbContext.AddPenaltys
+            .Where(x => x.AddPenaltyId == addPenaltyId)
+            .Select(MapToAddPenaltyModelExpression)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+    protected Expression<Func<AddPenaltyEntity, PenaltyModel>> MapToAddPenaltyModelExpression => penalty => new()
+    {
+        ResultRowId = penalty.ScoredResultRowId,
+        AddPenaltyId = penalty.AddPenaltyId,
+        MemberId = penalty.ScoredResultRow.MemberId.GetValueOrDefault(),
+        EventId = penalty.ScoredResultRow.ScoredSessionResult.ScoredEventResult.EventId,
+        SessionNr = penalty.ScoredResultRow.ScoredSessionResult.SessionNr,
+        SessionName = penalty.ScoredResultRow.ScoredSessionResult.Name,
+        Firstname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Firstname : string.Empty,
+        Lastname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Lastname : string.Empty,
+        Reason = penalty.Reason,
+        Type = penalty.Value.Type,
+        Points = (int)penalty.Value.Points,
+        Time = penalty.Value.Time,
+        Positions = penalty.Value.Positions,
     };
 }

@@ -23,6 +23,7 @@ public sealed class GetLeagueByNameHandler : LeagueHandlerBase<GetLeagueByNameHa
     private async Task<LeagueModel?> MapToLeagueModelFromName(string leagueName, CancellationToken cancellationToken)
     {
         return await dbContext.Leagues
+            .IgnoreQueryFilters()
             .Where(x => x.Name == leagueName)
             .Select(MapToGetLeagueModelExpression)
             .FirstOrDefaultAsync(cancellationToken);

@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -13,7 +14,6 @@ internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, 
     {
         foreach (var row in rows)
         {
-            row.PenaltyPoints = row.AddPenalty?.PenaltyPoints ?? 0;
             row.TotalPoints = row.RacePoints + row.BonusPoints - row.PenaltyPoints;
         }
         return rows;

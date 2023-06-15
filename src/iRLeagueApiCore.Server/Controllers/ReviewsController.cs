@@ -68,7 +68,7 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("/{leagueName}/Sessions/{sessionId:long}/Reviews")]
+    [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
     public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromSession([FromRoute] string leagueName, [FromRoute] long sessionId, 
         CancellationToken cancellationToken)
     {
@@ -80,7 +80,7 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("/{leagueName}/Events/{eventId:long}/Reviews")]
+    [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
     public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId, 
         CancellationToken cancellationToken)
     {
