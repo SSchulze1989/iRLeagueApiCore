@@ -23,7 +23,7 @@ public abstract class TeamsHandlerBase<THandler, TRequest> : HandlerBase<THandle
     {
         var leagueId = dbContext.LeagueProvider.LeagueId;
         var league = await dbContext.Leagues
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == leagueId, cancellationToken);
         if (league is null)
         {
             throw new InvalidOperationException($"League with id: {leagueId} does not exist");
