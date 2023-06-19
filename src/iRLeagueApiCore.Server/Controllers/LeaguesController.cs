@@ -20,7 +20,8 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     [Route("")]
     public async Task<ActionResult<IEnumerable<LeagueModel>>> GetAll(CancellationToken cancellationToken = default)
     {
-        var request = new GetLeaguesRequest();
+        var includeHidden = User.IsInRole("Admin");
+        var request = new GetLeaguesRequest(includeHidden);
         var getLeagues = await mediator.Send(request, cancellationToken);
         return Ok(getLeagues);
     }
