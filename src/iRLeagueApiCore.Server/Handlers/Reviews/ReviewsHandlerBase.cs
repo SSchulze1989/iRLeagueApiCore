@@ -45,8 +45,10 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<AddPenaltyEntity> MapToAddPenaltyEntity(PenaltyModel postPenalty, AddPenaltyEntity penaltyEntity, CancellationToken cancellationToken)
+    protected virtual async Task<AddPenaltyEntity> MapToAddPenaltyEntity(PostPenaltyModel postPenalty, AddPenaltyEntity penaltyEntity, CancellationToken cancellationToken)
     {
+        penaltyEntity.Corner = postPenalty.Corner;
+        penaltyEntity.Lap = postPenalty.Lap;
         penaltyEntity.Reason = postPenalty.Reason;
         penaltyEntity.Value = new()
         {
@@ -185,7 +187,9 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         MemberId = penalty.ResultRow.MemberId.GetValueOrDefault(),
         Firstname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Firstname : string.Empty,
         Lastname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Lastname : string.Empty,
-        Reason = penalty.ReviewVote.Description,
+        Lap = penalty.Review.OnLap,
+        Corner = penalty.Review.Corner,
+        Reason = penalty.Review.IncidentKind,
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,
         Time = penalty.Value.Time,
@@ -209,6 +213,8 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         SessionName = penalty.ScoredResultRow.ScoredSessionResult.Name,
         Firstname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Firstname : string.Empty,
         Lastname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Lastname : string.Empty,
+        Lap = penalty.Lap,
+        Corner = penalty.Corner,
         Reason = penalty.Reason,
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,

@@ -18,7 +18,7 @@ internal sealed class PenaltyByIdEndpoint : EndpointBase, IPenaltyByIdEndpoint
         return await HttpClientWrapper.DeleteAsClientActionResult(QueryUrl, cancellationToken);
     }
 
-    public async Task<ClientActionResult<PenaltyModel>> Put(PenaltyModel model, CancellationToken cancellationToken = default)
+    public async Task<ClientActionResult<PenaltyModel>> Put(PutPenaltyModel model, CancellationToken cancellationToken = default)
     {
         return await HttpClientWrapper.PutAsClientActionResult<PenaltyModel>(QueryUrl, model, cancellationToken);
     }
