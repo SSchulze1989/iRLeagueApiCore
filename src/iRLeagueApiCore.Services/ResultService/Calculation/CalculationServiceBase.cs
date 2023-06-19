@@ -141,7 +141,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         {
             foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Time))
             {
-                row.Interval += row.Interval.Add(penalty.Time);
+                row.Interval += penalty.Time;
             }
         }
         return rows;
@@ -234,6 +234,9 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 case 'f':
                     ApplyFastestLapBonusPoints(rows, bonusPoints);
                     break;
+                case 'q':
+                    ApplyStartPositionBonusPoints(rows, bonusKeyValue, bonusPoints);
+                    break;
             };
         }
 
@@ -271,6 +274,18 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         if (row is not null)
         {
             row.BonusPoints += points;
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyStartPositionBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int position, int points)
+    {
+        foreach (var row in rows)
+        {
+            if (row.StartPosition == position)
+            {
+                row.BonusPoints += points;
+            }
         }
         return rows;
     }

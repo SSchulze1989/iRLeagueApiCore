@@ -380,6 +380,29 @@ public sealed class MemberSessionCalculationServiceTests
         test.ResultRows.ToList().IndexOf(testResultRow).Should().Be(expIndex);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldApplyPositionBonusPoints()
+    {
+        var startPositions = new double[] { 3, 2, 1 }.CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.StartPosition, startPositions)
+            .CreateMany(3);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            bonusPoints: new Dictionary<string, int>() { { "q1", 2 }, { "q2", 1 } });
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveSameCount(data.ResultRows);
+        var testRow1 = test.ResultRows.ElementAt(2);
+        var testRow2 = test.ResultRows.ElementAt(1);
+        testRow1.BonusPoints.Should().Be(2);
+        testRow2.BonusPoints.Should().Be(1);
+    }
+
     private MemberSessionCalculationService CreateSut()
     {
         return fixture.Create<MemberSessionCalculationService>();
