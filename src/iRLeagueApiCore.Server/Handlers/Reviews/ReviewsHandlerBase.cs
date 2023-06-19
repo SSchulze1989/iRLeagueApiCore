@@ -215,8 +215,6 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         SessionName = penalty.ScoredResultRow.ScoredSessionResult.Name,
         Firstname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Firstname : string.Empty,
         Lastname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Lastname : string.Empty,
-        Lap = penalty.Lap,
-        Corner = penalty.Corner,
         Reason = penalty.Reason,
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,
