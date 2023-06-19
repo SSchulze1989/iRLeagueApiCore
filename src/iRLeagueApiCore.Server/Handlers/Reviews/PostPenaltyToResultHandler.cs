@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record PostPenaltyToResultRequest(long ResultId, long MemberId, PenaltyModel Model) : IRequest<PenaltyModel>;
+public record PostPenaltyToResultRequest(long ResultId, long MemberId, PostPenaltyModel Model) : IRequest<PenaltyModel>;
 public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResultHandler, PostPenaltyToResultRequest>, 
     IRequestHandler<PostPenaltyToResultRequest, PenaltyModel>
 {
@@ -19,7 +19,7 @@ public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResult
         await dbContext.SaveChangesAsync(cancellationToken);
         var getPenaltyEntity = await dbContext.AddPenaltys
             .Where(x => x.AddPenaltyId == postPenalty.AddPenaltyId)
-            .FirstAsync();
+            .FirstAsync(cancellationToken);
         var getPenalty = await MapToAddPenaltyModel(postPenalty.AddPenaltyId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getPenalty;
