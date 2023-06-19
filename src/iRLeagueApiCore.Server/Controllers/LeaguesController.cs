@@ -22,7 +22,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     public async Task<ActionResult<IEnumerable<LeagueModel>>> GetAll(CancellationToken cancellationToken = default)
     {
         var includeHidden = User.IsInRole("Admin");
-        var owned = GetOwnedLeagues(User);
+        var owned = GetUserLeagues(User);
         var request = new GetLeaguesRequest(owned, includeHidden);
         var getLeagues = await mediator.Send(request, cancellationToken);
         return Ok(getLeagues);
@@ -93,7 +93,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
         return Ok(result);
     }
 
-    private static IEnumerable<string> GetOwnedLeagues(ClaimsPrincipal user)
+    private static IEnumerable<string> GetUserLeagues(ClaimsPrincipal user)
     {
         var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role);
         var leagueRoles = userRoles
@@ -101,8 +101,8 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
             .Where(x => x.Length == 2)
             .Select(x => new { League = x.ElementAt(0), Role = x.ElementAt(1) });
         var owned = leagueRoles
-            .Where(x => x.Role == LeagueRoles.Owner)
-            .Select(x => x.League);
+            .Select(x => x.League)
+            .Distinct();
         return owned;
     }
 }
