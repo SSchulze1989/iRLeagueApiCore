@@ -62,8 +62,8 @@ internal sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
             return 0;
         }
         var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(TimeSpan.FromSeconds(30));
-        memoryCache.Set(CacheKeys.GetLeagueNameKey(leagueName), league);
+            .SetAbsoluteExpiration(DateTime.UtcNow.AddSeconds(30));
+        memoryCache.Set(CacheKeys.GetLeagueNameKey(leagueName), league, cacheEntryOptions);
         return league.Id;
     }
 }

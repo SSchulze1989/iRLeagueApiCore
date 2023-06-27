@@ -30,22 +30,27 @@ internal sealed class CheckLeagueSubscriptionAttribute : ActionFilterAttribute
         var requireSubscription = context.ActionDescriptor.EndpointMetadata
             .OfType<RequireSubscriptionAttribute>()
             .Any();
-        if (requireSubscription && await CheckSubscription(leagueName) == false)
+        if (requireSubscription == false)
         {
+            await next();
+            return;
+        }
+        var league = await GetLeagueByName(leagueName) 
+            ?? throw new InvalidOperationException("League data could not be found for given name");
+        if (CheckSubscriptionStatus(league) == false)
+        {
+            if (league.Subscription != SubscriptionStatus.Expired)
+            {
+                await SetLeagueExpired(league.Id);
+            }
             context.Result = new StatusCodeResult((int)HttpStatusCode.PaymentRequired);
             return;
         }
         await next();
     }
 
-    private async Task<bool> CheckSubscription(string leagueName)
+    private static bool CheckSubscriptionStatus(LeagueEntity league)
     {
-        var league = await GetLeagueByName(leagueName);
-        if (league is null)
-        {
-            return true;
-        }
-
         var subscriptionActive = league.Subscription switch
         {
             SubscriptionStatus.FreeTrial => league.Expires > DateTime.UtcNow,
@@ -53,22 +58,22 @@ internal sealed class CheckLeagueSubscriptionAttribute : ActionFilterAttribute
             SubscriptionStatus.Lifetime => true,
             _ => false,
         };
-        if (subscriptionActive == false && league.Subscription != SubscriptionStatus.Expired)
-        {
-            await SetLeagueExpired(league.Id);
-        }
         return subscriptionActive;
     }
 
     private async Task SetLeagueExpired(long leagueId)
     {
         var league = await dbContext.Leagues
-            .FirstOrDefaultAsync(x => x.Id == leagueId);
-        if (league is not null)
+            .FirstOrDefaultAsync(x => x.Id == leagueId)
+            ?? throw new InvalidOperationException("League data could not be found for given name");
+        // Check subscription status again to prevent missing updates during valid cache period
+        var subscriptionActive = CheckSubscriptionStatus(league);
+        if (subscriptionActive == false)
         {
             league.Subscription = SubscriptionStatus.Expired;
+            await dbContext.SaveChangesAsync();
+            memoryCache.Remove(CacheKeys.GetLeagueNameKey(league.Name));
         }
-        await dbContext.SaveChangesAsync();
     }
 
     private async Task<LeagueEntity?> GetLeagueByName(string leagueName)
@@ -85,7 +90,7 @@ internal sealed class CheckLeagueSubscriptionAttribute : ActionFilterAttribute
         if (league is not null)
         {
             var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromSeconds(30));
+                .SetAbsoluteExpiration(DateTime.UtcNow.AddSeconds(30));
             memoryCache.Set(CacheKeys.GetLeagueNameKey(leagueName), league, cacheEntryOptions);
         }
         return league;
