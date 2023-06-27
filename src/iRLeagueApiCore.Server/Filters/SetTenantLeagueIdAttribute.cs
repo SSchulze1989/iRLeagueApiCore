@@ -2,6 +2,7 @@
 using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace iRLeagueApiCore.Server.Filters;
 
@@ -12,14 +13,16 @@ namespace iRLeagueApiCore.Server.Filters;
 /// </para>
 /// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-public sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
+internal sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
 {
     private readonly LeagueDbContext _dbContext;
     private readonly RequestLeagueProvider leagueProvider;
-    public SetTenantLeagueIdAttribute(LeagueDbContext dbContext, RequestLeagueProvider leagueProvider)
+    private readonly IMemoryCache memoryCache;
+    public SetTenantLeagueIdAttribute(LeagueDbContext dbContext, RequestLeagueProvider leagueProvider, IMemoryCache memoryCache)
     {
         _dbContext = dbContext;
         this.leagueProvider = leagueProvider;
+        this.memoryCache = memoryCache;
     }
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -29,11 +32,7 @@ public sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
             throw new InvalidOperationException("Missing {leagueName} in action route");
         }
         var leagueName = (string)leagueNameObject!;
-
-        var league = await _dbContext.Leagues
-            .Select(x => new { x.Id, x.Name })
-            .SingleOrDefaultAsync(x => x.Name == leagueName);
-        var leagueId = league?.Id ?? 0;
+        var leagueId = await GetLeagueIdByName(leagueName);
 
         if (leagueId == 0)
         {
@@ -45,5 +44,26 @@ public sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
         leagueProvider.SetLeague(leagueId, leagueName);
 
         await base.OnActionExecutionAsync(context, next);
+    }
+
+    private async Task<long> GetLeagueIdByName(string leagueName)
+    {
+        // hit cache and try to get league information without asking database
+        if (memoryCache.TryGetValue(CacheKeys.GetLeagueNameKey(leagueName), out LeagueEntity cachedLeague))
+        {
+            return cachedLeague.Id;
+        }
+        // get league from database and store in cache
+        var league = await _dbContext.Leagues
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Name == leagueName);
+        if (league is null)
+        {
+            return 0;
+        }
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(DateTime.UtcNow.AddSeconds(30));
+        memoryCache.Set(CacheKeys.GetLeagueNameKey(leagueName), league, cacheEntryOptions);
+        return league.Id;
     }
 }

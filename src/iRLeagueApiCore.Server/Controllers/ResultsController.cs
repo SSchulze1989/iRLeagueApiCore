@@ -10,6 +10,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [Route("/{leagueName}/[controller]")]
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
 [TypeFilter(typeof(SetTenantLeagueIdAttribute))]
+[TypeFilter(typeof(CheckLeagueSubscriptionAttribute))]
 [RequireLeagueRole]
 public sealed class ResultsController : LeagueApiController<ResultsController>
 {
@@ -101,6 +102,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     /// <returns></returns>
     [HttpPost]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [RequireSubscription]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]/Upload")]
     public async Task<ActionResult<bool>> UploadResult([FromRoute] string leagueName, [FromRoute] long eventId,
         [FromBody] ParseSimSessionResult result, CancellationToken cancellationToken = default)
