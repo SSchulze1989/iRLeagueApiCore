@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -187,6 +188,8 @@ public sealed class Startup
         services.AddEmailService();
         services.AddResultService();
         services.AddBackgroundQueue();
+
+        services.AddSingleton<ICredentials, CredentialList>(x => new(Configuration.GetSection("Credentials")));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
