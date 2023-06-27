@@ -197,6 +197,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
     }
 
     [Theory]
+    [InlineData(SubscriptionStatus.Unknown)]
     [InlineData(SubscriptionStatus.FreeTrial)]
     [InlineData(SubscriptionStatus.PaidPlan)]
     public async Task Action_ShouldSetLeagueToExpired_WhenSubscriptionExpired(SubscriptionStatus subscriptionStatus)
@@ -382,6 +383,9 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             .Verifiable();
         memoryCacheMock.Setup(x => x.TryGetValue(It.IsAny<object>(), out It.Ref<object>.IsAny))
             .Returns((object key, out object value) => cache.TryGetValue(key, out value))
+            .Verifiable();
+        memoryCacheMock.Setup(x => x.Remove(It.IsAny<object>()))
+            .Callback((object key) => cache.Remove(key))
             .Verifiable();
         return memoryCacheMock;
     }
