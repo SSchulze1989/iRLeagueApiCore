@@ -170,13 +170,6 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         return leagueMember;
     }
 
-    private static (string, string) GetFirstnameLastname(string name)
-    {
-        var parts = name.Split(' ', 2);
-        var fullName = (parts[0], parts.ElementAt(1) ?? string.Empty);
-        return fullName;
-    }
-
     private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(long leagueId, ParseSimSessionResult sessionData, ParseSessionResult data,
         IRSimSessionDetailsEntity details, CancellationToken cancellationToken)
     {
@@ -296,51 +289,5 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         row.SeasonStartIRating = SeasonStartIratings.TryGetValue(row.Member.Id, out int irating) ? irating : row.OldIRating;
 
         return row;
-    }
-
-    private async Task<IDictionary<long, int>> GetMemberSeasonStartIratingAsync(long seasonId, CancellationToken cancellationToken)
-    {
-        return (await dbContext.ResultRows
-            .Where(x => x.SubResult.Result.Event.Schedule.SeasonId == seasonId)
-            .OrderBy(x => x.SubResult.Result.Event.Date)
-            .Select(x => new { x.MemberId, x.OldIRating })
-            .ToListAsync(cancellationToken))
-            .DistinctBy(x => x.MemberId)
-            .ToDictionary(k => k.MemberId, k => k.OldIRating);
-    }
-
-    private IEnumerable<SessionResultEntity> MapToSubSessions(IDictionary<int, SessionResultEntity> subResults, EventEntity @event,
-        ICollection<(int resultNr, int sessionNr)> map)
-    {
-        var mappedResults = new List<SessionResultEntity>();
-        foreach ((var resultNr, var sessionNr) in map)
-        {
-            if (subResults.ContainsKey(resultNr) == false)
-            {
-                throw new InvalidOperationException($"Error while trying to map subResult Nr.{resultNr} to subSession Nr.{sessionNr}: no result with this subResultNr exists");
-            }
-            var sessionResult = subResults[resultNr];
-            var session = @event.Sessions
-                .SingleOrDefault(x => x.SessionNr == sessionNr)
-                ?? throw new InvalidOperationException($"Error while trying to map subResult Nr.{resultNr} to subSession Nr.{sessionNr}: no subSession with this subSessionNr exists");
-            sessionResult.Session = session;
-            session.SessionResult = sessionResult;
-            mappedResults.Add(sessionResult);
-        }
-        return mappedResults;
-    }
-
-    private static TimeSpan ParseTime(int value) => value < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(value / 10000D);
-
-    private static TimeSpan ParseTime(long value) => value < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(value / 10000D);
-
-    private static TimeSpan ParseInterval(int value, int completedLaps, int sessionLaps)
-    {
-        if (value >= 0)
-        {
-            return TimeSpan.FromSeconds(value / 10000D);
-        }
-
-        return TimeSpan.FromDays(sessionLaps - completedLaps);
     }
 }

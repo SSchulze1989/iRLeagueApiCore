@@ -131,9 +131,9 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [AllowAnonymous]
     //[RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     //[RequireSubscription]
-    [Route("/{leagueName}/Events/{eventId:long}/[controller]/Fetch/{subsessionId}")]
+    [Route("/{leagueName}/Events/{eventId:long}/[controller]/Fetch/{subsessionId:int}")]
     public async Task<ActionResult<bool>> FetchFromIracing([FromRoute] string leagueName, [FromRoute] long eventId,
-        [FromRoute] string subsessionId, CancellationToken cancellationToken = default)
+        [FromRoute] int subsessionId, CancellationToken cancellationToken = default)
     {
         var request = new FetchResultsFromIRacingAPIRequest(eventId, subsessionId);
         var success = await mediator.Send(request, cancellationToken);
