@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
+    <PackageReference Include="Aydsko.iRacingData" Version="2303.0.0" />
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
 	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.8.0-dev.2" CopyToOutputDirectory="lib/net6.0">

@@ -1,4 +1,5 @@
 using AspNetCoreRateLimit;
+using Aydsko.iRacingData;
 using iRLeagueApiCore.Common.Converters;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
@@ -190,6 +191,12 @@ public sealed class Startup
         services.AddBackgroundQueue();
 
         services.AddSingleton<ICredentials, CredentialList>(x => new(Configuration.GetSection("Credentials")));
+
+        services.AddIRacingDataApi(options =>
+        {
+            options.UserAgentProductName = "iRLeagueApiCore";
+            options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
