@@ -16,6 +16,16 @@ internal class EndpointBase : IEndpoint
         RouteBuilder = routeBuilder.Copy();
     }
 
+    void IEndpoint.AddEndpoint(string endpoint)
+    {
+        RouteBuilder.AddEndpoint(endpoint);
+    }
+
+    void IEndpoint.AddRouteParameter<T>(T parameter)
+    {
+        RouteBuilder.AddParameter(parameter);
+    }
+
     void IEndpoint.WithParameters(Func<IParameterBuilder, IParameterBuilder> parameterBuilder)
     {
         RouteBuilder.WithParameters(parameterBuilder);

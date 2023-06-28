@@ -12,7 +12,7 @@ internal sealed class VoteCategoriesEndpoint : PostGetAllEndpoint<VoteCategoryMo
         RouteBuilder.AddEndpoint("VoteCategories");
     }
 
-    IVoteCategoryByIdEndpoint IWithIdEndpoint<IVoteCategoryByIdEndpoint>.WithId(long id)
+    IVoteCategoryByIdEndpoint IWithIdEndpoint<IVoteCategoryByIdEndpoint, long>.WithId(long id)
     {
         return new VoteCategoryByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }

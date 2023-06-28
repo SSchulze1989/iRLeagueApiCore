@@ -11,7 +11,7 @@ internal class ChampSeasonsEndpoint : GetAllEndpoint<ChampSeasonModel>, IChampSe
         RouteBuilder.AddEndpoint("ChampSeasons");
     }
 
-    IChampSeasonByIdEndpoint IWithIdEndpoint<IChampSeasonByIdEndpoint>.WithId(long id)
+    IChampSeasonByIdEndpoint IWithIdEndpoint<IChampSeasonByIdEndpoint, long>.WithId(long id)
     {
         return new ChampSeasonByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }

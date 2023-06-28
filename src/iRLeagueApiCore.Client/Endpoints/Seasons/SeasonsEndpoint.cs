@@ -17,7 +17,7 @@ internal class SeasonsEndpoint : PostGetAllEndpoint<SeasonModel, PostSeasonModel
         return new CurrentSeasonEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
-    ISeasonByIdEndpoint IWithIdEndpoint<ISeasonByIdEndpoint>.WithId(long id)
+    ISeasonByIdEndpoint IWithIdEndpoint<ISeasonByIdEndpoint, long>.WithId(long id)
     {
         return new SeasonByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }

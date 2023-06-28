@@ -12,7 +12,7 @@ internal class ScoringsEndpoint : PostGetAllEndpoint<ScoringModel, PostScoringMo
         RouteBuilder.AddEndpoint("Scorings");
     }
 
-    IScoringByIdEndpoint IWithIdEndpoint<IScoringByIdEndpoint>.WithId(long id)
+    IScoringByIdEndpoint IWithIdEndpoint<IScoringByIdEndpoint, long>.WithId(long id)
     {
         return new ScoringByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
