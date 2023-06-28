@@ -24,16 +24,16 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         return leagueEntity;
     }
 
-    protected virtual async Task<LeagueModel?> MapToGetLeagueModelAsync(long leagueId, CancellationToken cancellationToken)
+    protected virtual async Task<LeagueModel?> MapToGetLeagueModelAsync(long leagueId, bool includeSubscriptionDetails, CancellationToken cancellationToken)
     {
         return await dbContext.Leagues
             .IgnoreQueryFilters()
             .Where(x => x.Id == leagueId)
-            .Select(MapToGetLeagueModelExpression)
+            .Select(MapToGetLeagueModelExpression(includeSubscriptionDetails))
             .SingleOrDefaultAsync(cancellationToken);
     }
 
-    protected Expression<Func<LeagueEntity, LeagueModel>> MapToGetLeagueModelExpression => x => new LeagueModel()
+    protected Expression<Func<LeagueEntity, LeagueModel>> MapToGetLeagueModelExpression(bool includeSubscriptionDetails = false) => x => new LeagueModel()
     {
         Id = x.Id,
         Name = x.Name,
@@ -55,6 +55,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         LastModifiedByUserName = x.LastModifiedByUserName,
         LastModifiedOn = TreatAsUTCDateTime(x.LastModifiedOn),
         LeaguePublic = x.LeaguePublic,
+        SubscriptionStatus = includeSubscriptionDetails ? x.Subscription : default,
+        SubscriptionExpires = includeSubscriptionDetails ? x.Expires : default,
     };
 
     protected virtual LeagueEntity MapToLeagueEntity(long leagueId, LeagueUser user, PutLeagueModel putLeague, LeagueEntity leagueEntity)

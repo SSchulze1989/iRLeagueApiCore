@@ -23,7 +23,7 @@ public sealed class GetLeaguesHandler : LeagueHandlerBase<GetLeaguesHandler, Get
         return await dbContext.Leagues
             .IgnoreQueryFilters()
             .Where(x => userLeagues.Contains(x.Name) || x.LeaguePublic == Common.Enums.LeaguePublicSetting.PublicListed || includeHidden)
-            .Select(MapToGetLeagueModelExpression)
+            .Select(MapToGetLeagueModelExpression())
             .ToListAsync(cancellationToken);
     }
 }

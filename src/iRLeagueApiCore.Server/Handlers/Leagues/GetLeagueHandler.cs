@@ -1,8 +1,9 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
-public record GetLeagueRequest(long leagueId) : IRequest<LeagueModel>;
+public record GetLeagueRequest(long LeagueId, bool IncludeSubscriptionDetails) : IRequest<LeagueModel>;
 
 public sealed class GetLeagueHandler : LeagueHandlerBase<GetLeagueHandler, GetLeagueRequest>, IRequestHandler<GetLeagueRequest, LeagueModel>
 {
@@ -14,7 +15,7 @@ public sealed class GetLeagueHandler : LeagueHandlerBase<GetLeagueHandler, GetLe
     public async Task<LeagueModel> Handle(GetLeagueRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getLeague = await MapToGetLeagueModelAsync(request.leagueId, cancellationToken) ?? throw new ResourceNotFoundException();
+        var getLeague = await MapToGetLeagueModelAsync(request.LeagueId, request.IncludeSubscriptionDetails, cancellationToken) ?? throw new ResourceNotFoundException();
         return getLeague;
     }
 }
