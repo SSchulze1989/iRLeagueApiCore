@@ -12,7 +12,7 @@ internal sealed class TeamsEndpoint : PostGetAllEndpoint<TeamModel, PostTeamMode
         RouteBuilder.AddEndpoint("Teams");
     }
 
-    ITeamByIdEndpoint IWithIdEndpoint<ITeamByIdEndpoint>.WithId(long id)
+    ITeamByIdEndpoint IWithIdEndpoint<ITeamByIdEndpoint, long>.WithId(long id)
     {
         return new TeamByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }

@@ -7,4 +7,5 @@ public interface IEventResultsEndpoint : IGetAllEndpoint<EventResultModel>, IDel
 {
     IPostEndpoint<bool, ParseSimSessionResult> Upload();
     IPostEndpoint<bool> Calculate();
+    IFetchResultsEndpoint Fetch();
 }
