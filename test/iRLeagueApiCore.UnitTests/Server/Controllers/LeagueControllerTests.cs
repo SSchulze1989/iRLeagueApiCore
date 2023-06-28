@@ -74,7 +74,7 @@ public sealed class LeagueControllerTests : DataAccessTestsBase
     {
         var expectedResult = DefaultGetModel();
         var mediator = MockHelpers.TestMediator<GetLeagueRequest, LeagueModel>(
-            x => x.leagueId == testLeagueId, expectedResult);
+            x => x.LeagueId == testLeagueId, expectedResult);
         var controller = CreateController(mediator);
         var result = await controller.Get(testLeagueId);
         var okResult = Assert.IsType<OkObjectResult>(result.Result);

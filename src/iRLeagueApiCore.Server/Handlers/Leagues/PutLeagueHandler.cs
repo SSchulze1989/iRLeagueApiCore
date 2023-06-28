@@ -18,7 +18,7 @@ public sealed class PutLeagueHandler : LeagueHandlerBase<PutLeagueHandler, PutLe
         var putLeague = await GetLeagueEntityAsync(request.LeagueId, cancellationToken) ?? throw new ResourceNotFoundException();
         MapToLeagueEntity(request.LeagueId, request.User, request.Model, putLeague);
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getLeague = await MapToGetLeagueModelAsync(putLeague.Id, cancellationToken)
+        var getLeague = await MapToGetLeagueModelAsync(putLeague.Id, true, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
         return getLeague;
     }

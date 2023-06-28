@@ -24,12 +24,12 @@ public sealed class GetLeagueDbTestFixture : HandlersTestsBase<GetLeagueHandler,
 
     private GetLeagueRequest DefaultRequest(long leagueId)
     {
-        return new GetLeagueRequest(leagueId);
+        return new GetLeagueRequest(leagueId, false);
     }
 
     protected override void DefaultAssertions(GetLeagueRequest request, LeagueModel result, LeagueDbContext dbContext)
     {
-        var entity = dbContext.Leagues.First(x => x.Id == request.leagueId);
+        var entity = dbContext.Leagues.First(x => x.Id == request.LeagueId);
         result.IsInitialized.Should().Be(entity.IsInitialized);
         base.DefaultAssertions(request, result, dbContext);
     }

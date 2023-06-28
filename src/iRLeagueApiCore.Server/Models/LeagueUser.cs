@@ -13,11 +13,20 @@ public sealed class LeagueUser
     {
         Id = principal.GetUserId() ?? string.Empty;
         Name = principal.Identity?.Name ?? string.Empty;
-        Roles = principal.FindAll(ClaimTypes.Role)
-            .Select(x => x.Value)
-            .Where(role => LeagueRoles.IsLeagueRoleName(leagueName, role) || role == "Admin")
-            .Select(role => role == "Admin" ? role : LeagueRoles.GetRoleName(role))
-            .OfType<string>();
+        if (string.IsNullOrEmpty(leagueName))
+        {
+            Roles = principal.FindAll(ClaimTypes.Role)
+                .Select(x => x.Value)
+                .Where(role => role == "Admin");
+        }
+        else
+        {
+            Roles = principal.FindAll(ClaimTypes.Role)
+                .Select(x => x.Value)
+                .Where(role => LeagueRoles.IsLeagueRoleName(leagueName, role) || role == "Admin")
+                .Select(role => role == "Admin" ? role : LeagueRoles.GetRoleName(role))
+                .OfType<string>();
+        }
     }
 
     /// <summary>
