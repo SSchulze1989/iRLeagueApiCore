@@ -1,6 +1,12 @@
-﻿namespace iRLeagueApiCore.Client.Endpoints;
+﻿using iRLeagueApiCore.Client.Endpoints.Teams;
 
-public interface IWithIdEndpoint<T>
+namespace iRLeagueApiCore.Client.Endpoints;
+
+public interface IWithIdEndpoint<TEndpoint, TId>
 {
-    T WithId(long id);
+    TEndpoint WithId(TId id);
+}
+
+public interface IWithIdEndpoint<T> : IWithIdEndpoint<T, long>
+{
 }

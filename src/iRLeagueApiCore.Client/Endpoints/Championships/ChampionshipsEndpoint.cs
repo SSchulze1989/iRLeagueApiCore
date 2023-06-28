@@ -11,12 +11,12 @@ internal sealed class ChampionshipsEndpoint : PostGetAllEndpoint<ChampionshipMod
         RouteBuilder.AddEndpoint("Championships");
     }
 
-    IChampionshipByIdEndpoint IWithIdEndpoint<IChampionshipByIdEndpoint>.WithId(long id)
+    IChampionshipByIdEndpoint IWithIdEndpoint<IChampionshipByIdEndpoint, long>.WithId(long id)
     {
         return new ChampionshipByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
 
-    ISeasonChampionshipByIdEndpoint IWithIdEndpoint<ISeasonChampionshipByIdEndpoint>.WithId(long id)
+    ISeasonChampionshipByIdEndpoint IWithIdEndpoint<ISeasonChampionshipByIdEndpoint, long>.WithId(long id)
     {
         return new ChampionshipByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }

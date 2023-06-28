@@ -13,7 +13,7 @@ internal class EventsEndpoint : PostGetAllEndpoint<EventModel, PostEventModel>, 
         RouteBuilder.AddEndpoint("Events");
     }
 
-    IEventByIdEndpoint IWithIdEndpoint<IEventByIdEndpoint>.WithId(long id)
+    IEventByIdEndpoint IWithIdEndpoint<IEventByIdEndpoint, long>.WithId(long id)
     {
         return new EventByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }

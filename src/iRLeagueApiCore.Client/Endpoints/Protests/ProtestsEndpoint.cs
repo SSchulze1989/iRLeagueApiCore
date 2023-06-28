@@ -12,7 +12,7 @@ internal sealed class ProtestsEndpoint : PostGetAllEndpoint<ProtestModel, PostPr
         RouteBuilder.AddEndpoint("Protests");
     }
 
-    IProtestByIdEndpoint IWithIdEndpoint<IProtestByIdEndpoint>.WithId(long id)
+    IProtestByIdEndpoint IWithIdEndpoint<IProtestByIdEndpoint, long>.WithId(long id)
     {
         return new ProtestByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }

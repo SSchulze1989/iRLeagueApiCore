@@ -11,7 +11,7 @@ internal class SchedulesEndpoint : PostGetAllEndpoint<ScheduleModel, PostSchedul
         RouteBuilder.AddEndpoint("Schedules");
     }
 
-    IScheduleByIdEndpoint IWithIdEndpoint<IScheduleByIdEndpoint>.WithId(long id)
+    IScheduleByIdEndpoint IWithIdEndpoint<IScheduleByIdEndpoint, long>.WithId(long id)
     {
         return new ScheduleByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
