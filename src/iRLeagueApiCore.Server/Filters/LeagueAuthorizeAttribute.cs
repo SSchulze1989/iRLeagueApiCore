@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Responses;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -41,6 +42,7 @@ public sealed class LeagueAuthorizeAttribute : ActionFilterAttribute
         // get user from httpcontext
         var user = context.HttpContext.User;
         var userName = (user.Identity != null && user.Identity.IsAuthenticated) ? user.Identity.Name : "Anonymous";
+        var leagueUser = new LeagueUser(leagueName, user);
 
         // _logger.LogDebug("Authorizing request for {UserName} on {leagueName}", userName, leagueName);
 

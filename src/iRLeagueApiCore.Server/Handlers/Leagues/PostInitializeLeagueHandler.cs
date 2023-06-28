@@ -21,7 +21,7 @@ public class PostInitializeLeagueHandler : LeagueHandlerBase<PostInitializeLeagu
             ?? throw new ResourceNotFoundException();
         league.IsInitialized = true;
         await dbContext.SaveChangesAsync(cancellationToken);
-        var getLeague = await MapToGetLeagueModelAsync(request.LeagueId, cancellationToken)
+        var getLeague = await MapToGetLeagueModelAsync(request.LeagueId, true, cancellationToken)
             ?? throw new InvalidOperationException("Updated resource not found");
         return getLeague;
     }
