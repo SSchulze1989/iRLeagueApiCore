@@ -1,7 +1,9 @@
 ﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
 internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
 {
-    private IList<(FilterCombination combination, RowFilter<T> rowFilter)> filters;
+    private readonly IList<(FilterCombination combination, RowFilter<T> rowFilter)> filters;
+
+    public IEnumerable<(FilterCombination combination, RowFilter<T> rowFilter)> GetFilters() => filters;
 
     public FilterGroupRowFilter(IEnumerable<(FilterCombination, RowFilter<T>)> filters)
     {
