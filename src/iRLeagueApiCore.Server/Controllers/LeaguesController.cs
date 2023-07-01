@@ -34,8 +34,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     [Route("{leagueId:long}")]
     public async Task<ActionResult<LeagueModel>> Get([FromRoute] long leagueId, CancellationToken cancellationToken = default)
     {
-        var leagueUser = HttpContext.GetLeagueUser()
-            ?? throw new InvalidOperationException("League user was not set for HttpContext");
+        var leagueUser = HttpContext.GetLeagueUser();
         var includeSubscriptionDetails = leagueUser.IsInRole(LeagueRoles.Admin, LeagueRoles.Organizer);
         var request = new GetLeagueRequest(leagueId, includeSubscriptionDetails);
         var getLeague = await mediator.Send(request, cancellationToken);
@@ -47,8 +46,7 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     [Route("/{leagueName}")]
     public async Task<ActionResult<LeagueModel>> GetByName([FromRoute] string leagueName, CancellationToken cancellationToken = default)
     {
-        var leagueUser = HttpContext.GetLeagueUser()
-            ?? throw new InvalidOperationException("League user was not set for HttpContext");
+        var leagueUser = HttpContext.GetLeagueUser();
         var includeSubscriptionDetails = leagueUser.IsInRole(LeagueRoles.Admin, LeagueRoles.Organizer);
         var request = new GetLeagueByNameRequest(leagueName, includeSubscriptionDetails);
         var getLeague = await mediator.Send(request, cancellationToken);

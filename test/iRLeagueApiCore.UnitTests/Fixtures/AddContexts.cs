@@ -61,6 +61,22 @@ public static class AddContexts
         return controller;
     }
 
+    public static T AddControllerContext<T>(T controller, IEnumerable<string> roles) where T : Controller
+    {
+        var user = User;
+        var identity = (ClaimsIdentity?)user.Identity;
+        foreach (var role in roles.Where(x => string.IsNullOrEmpty(x) == false))
+        {
+            identity?.AddClaim(new Claim(ClaimTypes.Role, role));
+        }
+        controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = user }
+        };
+
+        return controller;
+    }
+
     public static T AddControllerContextWithoutLeagueRole<T>(T controller) where T : Controller
     {
         controller.ControllerContext = new ControllerContext()
