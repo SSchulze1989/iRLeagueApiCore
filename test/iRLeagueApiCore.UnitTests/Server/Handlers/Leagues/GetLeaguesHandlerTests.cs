@@ -20,7 +20,7 @@ public sealed class GetLeaguesDbTestFixture : HandlersTestsBase<GetLeaguesHandle
 
     protected override GetLeaguesRequest DefaultRequest()
     {
-        return new GetLeaguesRequest();
+        return new GetLeaguesRequest(Array.Empty<string>());
     }
 
     [Fact]
@@ -47,5 +47,19 @@ public sealed class GetLeaguesDbTestFixture : HandlersTestsBase<GetLeaguesHandle
         var test = await sut.Handle(DefaultRequest(), default);
 
         test.Should().AllSatisfy(x => x.Id.Should().NotBe(privateLeague.Id));
+    }
+
+    [Fact]
+    public async Task ShouldReturnHiddenLeague_IfUserIsMember()
+    {
+        var privateLeague = accessMockHelper.CreateLeague();
+        privateLeague.LeaguePublic = Common.Enums.LeaguePublicSetting.PublicHidden;
+        dbContext.Leagues.Add(privateLeague);
+        await dbContext.SaveChangesAsync();
+        var sut = CreateTestHandler(dbContext, MockHelpers.TestValidator<GetLeaguesRequest>());
+
+        var test = await sut.Handle(new GetLeaguesRequest(new[] { privateLeague.Name }), default);
+
+        test.Should().Contain(x => x.Name == privateLeague.Name);
     }
 }

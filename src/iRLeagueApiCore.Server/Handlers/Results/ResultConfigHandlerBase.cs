@@ -16,6 +16,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     protected virtual async Task<ResultConfigurationEntity?> GetResultConfigEntity(long resultConfigId, CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
+            .Include(x => x.ChampSeason)
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
             .Include(x => x.SourceResultConfig)

@@ -54,6 +54,7 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         LastModifiedByUserId = x.LastModifiedByUserId,
         LastModifiedByUserName = x.LastModifiedByUserName,
         LastModifiedOn = x.LastModifiedOn,
+        LeaguePublic = x.LeaguePublic,
     };
 
     protected virtual LeagueEntity MapToLeagueEntity(long leagueId, LeagueUser user, PutLeagueModel putLeague, LeagueEntity leagueEntity)

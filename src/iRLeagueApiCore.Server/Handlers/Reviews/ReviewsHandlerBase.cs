@@ -45,8 +45,10 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<AddPenaltyEntity> MapToAddPenaltyEntity(PenaltyModel postPenalty, AddPenaltyEntity penaltyEntity, CancellationToken cancellationToken)
+    protected virtual async Task<AddPenaltyEntity> MapToAddPenaltyEntity(PostPenaltyModel postPenalty, AddPenaltyEntity penaltyEntity, CancellationToken cancellationToken)
     {
+        penaltyEntity.Corner = postPenalty.Corner;
+        penaltyEntity.Lap = postPenalty.Lap;
         penaltyEntity.Reason = postPenalty.Reason;
         penaltyEntity.Value = new()
         {

@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record PutPenaltyRequest(long PenaltyId, PenaltyModel Model) : IRequest<PenaltyModel>;
+public record PutPenaltyRequest(long PenaltyId, PutPenaltyModel Model) : IRequest<PenaltyModel>;
 
 public class PutPenaltyHandler : ReviewsHandlerBase<PutPenaltyHandler, PutPenaltyRequest>, 
     IRequestHandler<PutPenaltyRequest, PenaltyModel>
