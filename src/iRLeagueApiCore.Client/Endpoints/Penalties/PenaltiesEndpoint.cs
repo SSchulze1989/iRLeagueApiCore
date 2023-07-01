@@ -5,7 +5,7 @@ using iRLeagueApiCore.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace iRLeagueApiCore.Client.Endpoints.Penalties;
-internal sealed class PenaltiesEndpoint : EndpointBase, IPenaltiesEndpoint, IGetAllEndpoint<PenaltyModel>, IPostEndpoint<PenaltyModel, PenaltyModel>
+internal sealed class PenaltiesEndpoint : EndpointBase, IPenaltiesEndpoint, IGetAllEndpoint<PenaltyModel>, IPostEndpoint<PenaltyModel, PostPenaltyModel>
 {
     public PenaltiesEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) 
         : base(httpClient, routeBuilder)
@@ -23,7 +23,7 @@ internal sealed class PenaltiesEndpoint : EndpointBase, IPenaltiesEndpoint, IGet
         return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<PenaltyModel>>(QueryUrl, cancellationToken);
     }
 
-    async Task<ClientActionResult<PenaltyModel>> IPostEndpoint<PenaltyModel, PenaltyModel>.Post(PenaltyModel model, CancellationToken cancellationToken)
+    async Task<ClientActionResult<PenaltyModel>> IPostEndpoint<PenaltyModel, PostPenaltyModel>.Post(PostPenaltyModel model, CancellationToken cancellationToken)
     {
         return await HttpClientWrapper.PostAsClientActionResult<PenaltyModel>(QueryUrl, model, cancellationToken);
     }

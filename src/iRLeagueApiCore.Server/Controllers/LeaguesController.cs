@@ -5,6 +5,7 @@ using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace iRLeagueApiCore.Server.Controllers;
 
@@ -20,7 +21,9 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
     [Route("")]
     public async Task<ActionResult<IEnumerable<LeagueModel>>> GetAll(CancellationToken cancellationToken = default)
     {
-        var request = new GetLeaguesRequest();
+        var includeHidden = User.IsInRole("Admin");
+        var owned = GetUserLeagues(User);
+        var request = new GetLeaguesRequest(owned, includeHidden);
         var getLeagues = await mediator.Send(request, cancellationToken);
         return Ok(getLeagues);
     }
@@ -88,5 +91,18 @@ public sealed class LeaguesController : LeagueApiController<LeaguesController>
         var request = new PostIntitializeLeagueRequest(leagueId);
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
+    }
+
+    private static IEnumerable<string> GetUserLeagues(ClaimsPrincipal user)
+    {
+        var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role);
+        var leagueRoles = userRoles
+            .Select(x => x.Value.Split(LeagueRoles.RoleDelimiter))
+            .Where(x => x.Length == 2)
+            .Select(x => new { League = x.ElementAt(0), Role = x.ElementAt(1) });
+        var owned = leagueRoles
+            .Select(x => x.League)
+            .Distinct();
+        return owned;
     }
 }

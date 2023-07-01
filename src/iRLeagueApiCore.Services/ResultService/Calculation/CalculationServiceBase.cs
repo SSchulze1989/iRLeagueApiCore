@@ -141,7 +141,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         {
             foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Time))
             {
-                row.Interval += row.Interval.Add(penalty.Time);
+                row.Interval += penalty.Time;
             }
         }
         return rows;
