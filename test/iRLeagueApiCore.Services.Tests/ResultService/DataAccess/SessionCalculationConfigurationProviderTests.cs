@@ -305,7 +305,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var testFilter = sessionConfig.PointRule.GetPointFilters().FirstOrDefault() as ColumnValueRowFilter;
+            var filterGroup = sessionConfig.PointRule.GetPointFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
             testFilter.Comparator.Should().Be(condition.Comparator);
@@ -342,7 +343,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var testFilter = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as ColumnValueRowFilter;
+            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
             testFilter.Comparator.Should().Be(condition.Comparator);
@@ -377,7 +379,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var testFilter = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as ColumnValueRowFilter;
+            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
             testFilter.Comparator.Should().Be(condition.Comparator);
@@ -412,10 +415,100 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var testFilter = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as MemberRowFilter;
+            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as MemberRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.MemberIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
             testFilter.Action.Should().Be(condition.Action);
+        }
+    }
+
+    [Theory]
+    [InlineData(
+        MatchedValueAction.Keep, FilterCombination.And, 
+        MatchedValueAction.Keep, FilterCombination.Or, 
+        MatchedValueAction.Remove, FilterCombination.And)]
+    [InlineData(
+        MatchedValueAction.Remove, FilterCombination.And,
+        MatchedValueAction.Keep, FilterCombination.Or,
+        MatchedValueAction.Remove, FilterCombination.And)]
+    [InlineData(
+        MatchedValueAction.Keep, FilterCombination.And,
+        MatchedValueAction.Keep, FilterCombination.Or,
+        MatchedValueAction.Keep, FilterCombination.Or)]
+    [InlineData(
+        MatchedValueAction.Remove, FilterCombination.And,
+        MatchedValueAction.Remove, FilterCombination.And,
+        MatchedValueAction.Remove, FilterCombination.And)]
+    public async Task GetConfigurations_ShouldProvideCombinedFilters_WhenConfigured(
+        MatchedValueAction action1, FilterCombination combination1,
+        MatchedValueAction action2, FilterCombination combination2,
+        MatchedValueAction action3, FilterCombination combination3)
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var condition1 = fixture.Build<FilterConditionEntity>()
+            .With(x => x.FilterType, FilterType.ColumnProperty)
+            .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
+            .With(x => x.Action, action1)
+            .Without(x => x.FilterOption)
+            .Create();
+        var filter1 = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition1,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Create();
+        var condition2 = fixture.Build<FilterConditionEntity>()
+            .With(x => x.FilterType, FilterType.ColumnProperty)
+            .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Lastname))
+            .With(x => x.Action, action2)
+            .Without(x => x.FilterOption)
+            .Create();
+        var filter2 = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition2,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Create();
+        var condition3 = fixture.Build<FilterConditionEntity>()
+            .With(x => x.FilterType, FilterType.Member)
+            .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
+            .With(x => x.Action, action3)
+            .Without(x => x.FilterOption)
+            .Create();
+        var filter3 = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition3,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Create();
+        config.ResultFilters.Add(filter1);
+        config.ResultFilters.Add(filter2);
+        config.ResultFilters.Add(filter3);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var testFilter1 = filterGroup!.GetFilters().First();
+            testFilter1.combination.Should().Be(combination1);
+            testFilter1.rowFilter.Should().BeOfType<ColumnValueRowFilter>();
+            var testFilter2 = filterGroup.GetFilters().ElementAt(1);
+            testFilter2.combination.Should().Be(combination2);
+            testFilter2.rowFilter.Should().BeOfType<ColumnValueRowFilter>();
+            var testFilter3 = filterGroup.GetFilters().ElementAt(2);
+            testFilter3.combination.Should().Be(combination3);
+            testFilter3.rowFilter.Should().BeOfType<MemberRowFilter>();
         }
     }
 
