@@ -1,17 +1,20 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Controllers;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using MediatR;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 
-public sealed class LeagueControllerTests : DataAccessTestsBase
+public sealed class LeaguesControllerTests : DataAccessTestsBase
 {
     ILogger<LeaguesController> MockLogger { get; }
 
@@ -19,7 +22,7 @@ public sealed class LeagueControllerTests : DataAccessTestsBase
     private const string testFullName = "Full Name";
     private const long testLeagueId = 1;
 
-    public LeagueControllerTests()
+    public LeaguesControllerTests()
     {
         MockLogger = new Mock<ILogger<LeaguesController>>().Object;
     }
@@ -122,5 +125,60 @@ public sealed class LeagueControllerTests : DataAccessTestsBase
         Assert.IsType<NoContentResult>(result);
         var mediatorMock = Mock.Get(mediator);
         mediatorMock.Verify(x => x.Send(It.IsAny<DeleteLeagueRequest>(), default));
+    }
+
+    [Theory]
+    [InlineData(LeagueRoles.Owner, true)]
+    [InlineData(LeagueRoles.Admin, true)]
+    [InlineData(LeagueRoles.Organizer, true)]
+    [InlineData(LeagueRoles.Steward, false)]
+    [InlineData(LeagueRoles.Member, false)]
+    [InlineData("", false)]
+    public async Task Get_ShouldSetIncludeDetails(string leagueRole, bool includeDetails)
+    {
+        var testModel = new LeagueModel()
+        {
+            SubscriptionStatus = includeDetails ? Common.Enums.SubscriptionStatus.FreeTrial : null,
+            SubscriptionExpires = includeDetails ? DateTime.UtcNow : null,
+        };
+        var mediator = MockHelpers.TestMediator<GetLeagueRequest, LeagueModel>(
+            x => x.IncludeSubscriptionDetails == includeDetails,
+            result: testModel);
+        var controller = AddContexts.AddControllerContext(
+            new LeaguesController(MockLogger, mediator), 
+            new[] { LeagueRoles.GetLeagueRoleName(testLeagueName, leagueRole)! });
+        var routeValuesMock = new Mock<IRouteValuesFeature>();
+        routeValuesMock.SetupGet(x => x.RouteValues).Returns(new RouteValueDictionary(new Dictionary<string, object>() { { "leagueName", testLeagueName } }));
+        controller.HttpContext.Features.Set(routeValuesMock.Object);
+        var result = (await controller.Get(testLeagueId)).Result.Should().BeOfType<OkObjectResult>().Subject;
+        var resultModel = result!.Value.Should().BeOfType<LeagueModel>().Subject;
+        result.Value.Should().NotBeNull();
+    }
+
+    [Theory]
+    [InlineData(LeagueRoles.Owner, true)]
+    [InlineData(LeagueRoles.Admin, true)]
+    [InlineData(LeagueRoles.Organizer, true)]
+    [InlineData(LeagueRoles.Steward, false)]
+    [InlineData(LeagueRoles.Member, false)]
+    [InlineData("", false)]
+    public async Task GetByName_ShouldSetIncludeDetails(string leagueRole, bool includeDetails)
+    {
+        var testModel = new LeagueModel()
+        {
+            SubscriptionStatus = includeDetails ? Common.Enums.SubscriptionStatus.FreeTrial : null,
+            SubscriptionExpires = includeDetails ? DateTime.UtcNow : null,
+        };
+        var mediator = MockHelpers.TestMediator<GetLeagueByNameRequest, LeagueModel>(
+            x => x.IncludeSubscriptionDetails == includeDetails,
+            result: testModel);
+        var controller = AddContexts.AddControllerContext(
+            new LeaguesController(MockLogger, mediator),
+            new[] { LeagueRoles.GetLeagueRoleName(testLeagueName, leagueRole)! });
+        var routeValuesMock = new Mock<IRouteValuesFeature>();
+        routeValuesMock.SetupGet(x => x.RouteValues).Returns(new RouteValueDictionary(new Dictionary<string, object>() { { "leagueName", testLeagueName } }));
+        controller.HttpContext.Features.Set(routeValuesMock.Object);
+        var result = (await controller.GetByName(testLeagueName)).Result.Should().BeOfType<OkObjectResult>().Subject;
+        result.Value.Should().NotBeNull();
     }
 }
