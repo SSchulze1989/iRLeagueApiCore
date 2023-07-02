@@ -65,4 +65,6 @@ public sealed class AdminController : LeagueApiController<AdminController>
             return ex.ToActionResult();
         }
     }
+
+    public async Task<>
 }
