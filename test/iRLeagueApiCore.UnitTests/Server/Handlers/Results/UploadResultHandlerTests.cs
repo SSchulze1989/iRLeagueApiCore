@@ -18,9 +18,6 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
     private readonly IResultCalculationQueue calculationQueue;
     private readonly ILogger<UploadResultHandler> logger;
 
-    private long TestLeagueId => dbContext.Leagues.First().Id;
-    private long TestEventId => dbContext.Events.First().EventId;
-
     public UploadResultHandlerTests() : base()
     {
         calculationQueue = Mock.Of<IResultCalculationQueue>();
