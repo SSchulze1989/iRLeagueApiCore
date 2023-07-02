@@ -291,7 +291,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyMostPositionsLostBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
     {
-        var mostPositionsLost = rows.Min(x => x.PositionChange);
+        var mostPositionsLost = rows.Max(x => x.PositionChange);
         foreach (var row in rows)
         {
             if (row.PositionChange == mostPositionsLost)
@@ -304,7 +304,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyMostPositionsGainedBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
     {
-        var mostPositionsGained = rows.Max(x => x.PositionChange);
+        var mostPositionsGained = rows.Min(x => x.PositionChange);
         foreach(var row in rows)
         {
             if (row.PositionChange == mostPositionsGained)
