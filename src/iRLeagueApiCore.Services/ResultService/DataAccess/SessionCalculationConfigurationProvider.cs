@@ -152,9 +152,8 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
 
     private static IEnumerable<RowFilter<ResultRowCalculationResult>> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
     {
-        return pointFilters.Select(x => x.Conditions.FirstOrDefault())
-            .Select(GetRowFilterFromCondition)
-            .NotNull();
+        var group = MapToFilterGroup(pointFilters.Select(x => x.Conditions.FirstOrDefault()));
+        return new[] { group };
     }
 
     private static IReadOnlyDictionary<int, T> PointsPerPlaceToDictionary<T>(IEnumerable<T> points)
@@ -162,6 +161,28 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return points
             .Select((x, i) => new { pos = i + 1, value = x })
             .ToDictionary(k => k.pos, v => v.value);
+    }
+
+    private static FilterCombination GetFilterCombination(FilterConditionEntity? condition, int index)
+    {
+        if (index == 0 || condition is null)
+        {
+            return FilterCombination.And;
+        }
+        return condition.Action switch
+        {
+            MatchedValueAction.Remove => FilterCombination.And,
+            MatchedValueAction.Keep => FilterCombination.Or,
+            _ => FilterCombination.And,
+        };
+    }
+
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionEntity?> filters)
+    {
+        var filterCombination = filters
+            .Select((x, i) => (GetFilterCombination(x, i), GetRowFilterFromCondition(x)))
+            .Where(x => x.Item2 is not null);
+        return new(filterCombination!);
     }
 
     private static RowFilter<ResultRowCalculationResult>? GetRowFilterFromCondition(FilterConditionEntity? condition)
