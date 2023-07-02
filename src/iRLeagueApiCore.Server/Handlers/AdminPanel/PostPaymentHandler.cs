@@ -42,7 +42,7 @@ public sealed class PostPaymentHandler : AdminHandlerBase<PostPaymentHandler, Po
             PlanId = model.PlanId,
             Subscription = subscription,
             SubscriptionId = model.SubscriptionId,
-            Status = model.NextDue < DateTime.UtcNow ? PaymentStatus.Active : PaymentStatus.Inactive,
+            Status = (model.NextDue == null || model.NextDue > DateTime.UtcNow) ? PaymentStatus.Active : PaymentStatus.Inactive,
             Type = model.PaymentType,
             UserId = model.UserId,
         };
