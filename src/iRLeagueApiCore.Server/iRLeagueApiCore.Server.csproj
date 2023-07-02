@@ -67,7 +67,7 @@
 			</XmlReferenceFiles>
 		</ItemGroup>
 		<Message Text="Copying reference files %(XmlReferenceFiles.RootDir)%(Directory)%(Filename)%(Extension) to $(PublishDir)" Importance="High" />
-		<Copy SourceFiles="@(XmlReferenceFiles)" DestinationFolder="$(OutputPath)" />
+		<Copy SourceFiles="@(XmlReferenceFiles)" DestinationFolder="$(PublishDir)" />
 	</Target>
 
 	<PropertyGroup>

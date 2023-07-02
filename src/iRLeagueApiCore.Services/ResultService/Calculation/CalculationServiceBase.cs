@@ -223,23 +223,95 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             {
                 continue;
             }
-            switch (bonusKey)
+            rows = bonusKey switch
             {
-                case 'p':
-                    ApplyPositionBonusPoints(rows, bonusKeyValue, bonusPoints);
-                    break;
-                case 'c':
-                    ApplyCleanestDriverBonusPoints(rows, bonusPoints);
-                    break;
-                case 'f':
-                    ApplyFastestLapBonusPoints(rows, bonusPoints);
-                    break;
-                case 'q':
-                    ApplyStartPositionBonusPoints(rows, bonusKeyValue, bonusPoints);
-                    break;
+                'p' => ApplyPositionBonusPoints(rows, bonusKeyValue, bonusPoints),
+                'c' => ApplyCleanestDriverBonusPoints(rows, bonusPoints),
+                'f' => ApplyFastestLapBonusPoints(rows, bonusPoints),
+                'q' => ApplyStartPositionBonusPoints(rows, bonusKeyValue, bonusPoints),
+                'g' => ApplyMostPositionsGainedBonusPoints(rows, bonusPoints),
+                'd' => ApplyMostPositionsLostBonusPoints(rows, bonusPoints),
+                'l' => ApplyLeadOneLapBonusPoints(rows, bonusPoints),
+                'm' => ApplyLeadMostLapsBonusPoints(rows, bonusPoints),
+                'n' => ApplyNoIncidentsBonusPoints(rows, bonusPoints),
+                'a' => ApplyFastestAverageLapBonusPoints(rows, bonusPoints),
+                _ => rows,
             };
         }
 
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyFastestAverageLapBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        var (row, lapTime) = GetBestLapValue(rows, x => x, x => x.AvgLapTime);
+        if (row is not null)
+        {
+            row.BonusPoints += points;
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyNoIncidentsBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        foreach(var row in rows)
+        {
+            if (row.Incidents == 0)
+            {
+                row.BonusPoints += points;
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyLeadMostLapsBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        var mostLapsLead = rows.Max(x => x.LeadLaps);
+        foreach(var row in rows)
+        {
+            if (row.LeadLaps == mostLapsLead)
+            {
+                row.BonusPoints += points;
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyLeadOneLapBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        foreach(var row in rows)
+        {
+            if (row.LeadLaps > 0)
+            {
+                row.BonusPoints += points;
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyMostPositionsLostBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        var mostPositionsLost = rows.Max(x => x.PositionChange);
+        foreach (var row in rows)
+        {
+            if (row.PositionChange == mostPositionsLost)
+            {
+                row.BonusPoints += points;
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyMostPositionsGainedBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
+    {
+        var mostPositionsGained = rows.Min(x => x.PositionChange);
+        foreach(var row in rows)
+        {
+            if (row.PositionChange == mostPositionsGained)
+            {
+                row.BonusPoints += points;
+            }
+        }
         return rows;
     }
 
