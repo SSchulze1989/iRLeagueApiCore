@@ -48,15 +48,4 @@ public sealed class PostPaymentHandler : AdminHandlerBase<PostPaymentHandler, Po
         };
         return payment;
     }
-
-    private static LeagueEntity UpdateLeagueSubscriptionStatus(LeagueEntity league, PaymentEntity payment)
-    {
-        if (league.Subscription == SubscriptionStatus.Lifetime)
-        {
-            return league;
-        }
-        league.Subscription = SubscriptionStatus.PaidPlan;
-        league.Expires = payment.NextPaymentDue;
-        return league;
-    }
 }
