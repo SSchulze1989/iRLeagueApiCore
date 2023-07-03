@@ -18,7 +18,6 @@ public sealed class LeaguesControllerTests : DataAccessTestsBase
 {
     ILogger<LeaguesController> MockLogger { get; }
 
-    private const string testLeagueName = "TestLeague";
     private const string testFullName = "Full Name";
     private const long testLeagueId = 1;
 
