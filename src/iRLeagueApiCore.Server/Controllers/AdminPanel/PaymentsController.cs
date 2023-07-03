@@ -48,4 +48,12 @@ public class PaymentsController : ControllerBase
         var result = await mediator.Send(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
+
+    [HttpPost("id:Guid/Deactivate")]
+    public async Task<ActionResult<PaymentModel>> Deactivate([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var request = new DeactivatePaymentRequest(id);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
 }

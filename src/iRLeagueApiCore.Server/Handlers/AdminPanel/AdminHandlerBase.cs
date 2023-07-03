@@ -1,4 +1,6 @@
-﻿using iRLeagueApiCore.Server.Models.Payments;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Server.Models.Payments;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
@@ -8,6 +10,17 @@ public class AdminHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReque
     public AdminHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators)
         : base(logger, dbContext, validators)
     {
+    }
+
+    protected virtual LeagueEntity UpdateLeagueSubscriptionStatus(LeagueEntity league, PaymentEntity payment)
+    {
+        if (league.Subscription == SubscriptionStatus.Lifetime)
+        {
+            return league;
+        }
+        league.Subscription = payment.Status == PaymentStatus.Active ? SubscriptionStatus.PaidPlan : SubscriptionStatus.Expired;
+        league.Expires = payment.NextPaymentDue;
+        return league;
     }
 
     protected static Expression<Func<PaymentEntity, PaymentModel>> MapToPaymentModelExpression => payment =>
