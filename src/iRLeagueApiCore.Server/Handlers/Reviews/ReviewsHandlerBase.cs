@@ -123,7 +123,7 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             CommentId = comment.CommentId,
             AuthorName = comment.AuthorName,
             AuthorUserId = comment.AuthorUserId,
-            Date = comment.Date,
+            Date = TreatAsUTCDateTime(comment.Date),
             LeagueId = comment.LeagueId,
             ReviewId = comment.ReviewId.GetValueOrDefault(),
             Text = comment.Text,
@@ -142,10 +142,10 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             }).ToList(),
             CreatedByUserId = comment.CreatedByUserId,
             CreatedByUserName = comment.CreatedByUserName,
-            CreatedOn = comment.CreatedOn,
+            CreatedOn = TreatAsUTCDateTime(comment.CreatedOn),
             LastModifiedByUserId = comment.LastModifiedByUserId,
             LastModifiedByUserName = comment.LastModifiedByUserName,
-            LastModifiedOn = comment.LastModifiedOn,
+            LastModifiedOn = TreatAsUTCDateTime(comment.LastModifiedOn),
         }) : Array.Empty<ReviewCommentModel>(),
         InvolvedMembers = review.InvolvedMembers.Select(member => new MemberInfoModel()
         {
@@ -170,10 +170,10 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         TimeStamp = review.TimeStamp,
         CreatedByUserId = review.CreatedByUserId,
         CreatedByUserName = review.CreatedByUserName,
-        CreatedOn = review.CreatedOn,
+        CreatedOn = TreatAsUTCDateTime(review.CreatedOn),
         LastModifiedByUserId = review.LastModifiedByUserId,
         LastModifiedByUserName = review.LastModifiedByUserName,
-        LastModifiedOn = review.LastModifiedOn,
+        LastModifiedOn = TreatAsUTCDateTime(review.LastModifiedOn),
     };
 
     protected Expression<Func<ReviewPenaltyEntity, PenaltyModel>> MapToReviewPenaltyModelExpression => penalty => new()

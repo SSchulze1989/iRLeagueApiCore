@@ -36,10 +36,10 @@ public class ScheduleHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRe
         SeasonId = x.SeasonId,
         Name = x.Name,
         EventIds = x.Events.Select(x => x.EventId),
-        CreatedOn = x.CreatedOn,
+        CreatedOn = TreatAsUTCDateTime(x.CreatedOn),
         CreatedByUserId = x.CreatedByUserId,
         CreatedByUserName = x.CreatedByUserName,
-        LastModifiedOn = x.LastModifiedOn,
+        LastModifiedOn = TreatAsUTCDateTime(x.LastModifiedOn),
         LastModifiedByUserId = x.LastModifiedByUserId,
         LastModifiedByUserName = x.LastModifiedByUserName
     };

@@ -49,9 +49,9 @@ public abstract class SeasonHandlerBase<THandler, TRequest> : HandlerBase<THandl
         SeasonName = x.SeasonName,
         CreatedByUserId = x.CreatedByUserId,
         CreatedByUserName = x.CreatedByUserName,
-        CreatedOn = x.CreatedOn,
+        CreatedOn = TreatAsUTCDateTime(x.CreatedOn),
         LastModifiedByUserId = x.LastModifiedByUserId,
         LastModifiedByUserName = x.LastModifiedByUserName,
-        LastModifiedOn = x.LastModifiedOn,
+        LastModifiedOn = TreatAsUTCDateTime(x.LastModifiedOn),
     };
 }
