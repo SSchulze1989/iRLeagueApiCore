@@ -50,10 +50,10 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
             .ToList(),
         CreatedByUserId = x.CreatedByUserId,
         CreatedByUserName = x.CreatedByUserName,
-        CreatedOn = x.CreatedOn,
+        CreatedOn = TreatAsUTCDateTime(x.CreatedOn),
         LastModifiedByUserId = x.LastModifiedByUserId,
         LastModifiedByUserName = x.LastModifiedByUserName,
-        LastModifiedOn = x.LastModifiedOn,
+        LastModifiedOn = TreatAsUTCDateTime(x.LastModifiedOn),
         LeaguePublic = x.LeaguePublic,
     };
 
