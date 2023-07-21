@@ -203,11 +203,11 @@ public sealed class ColumnValueRowFilterTests
         var incidents = new[] { 2.0, 4.0, 8.0 };
         var rows = fixture.Build<ResultRowCalculationResult>()
             .With(x => x.Incidents, incidents.CreateSequence())
-            .CreateMany(incidents.Count());
+            .CreateMany(incidents.Length);
         var testRow1 = rows.ElementAt(0);
         var testRow2 = rows.ElementAt(1);
         var testRow3 = rows.ElementAt(2);
-        var sut = CreateSut(propertyName, new[] { "4.0" }, ComparatorType.ForEach, MatchedValueAction.Keep);
+        var sut = CreateSut(propertyName, new[] { "4.0" }, ComparatorType.ForEach, MatchedValueAction.Keep, allowForEach: true);
 
         var test = sut.FilterRows(rows);
 
@@ -219,8 +219,9 @@ public sealed class ColumnValueRowFilterTests
     private ColumnValueRowFilter CreateSut(string propertyName,
                                  IEnumerable<string> filterValues,
                                  ComparatorType comparator = ComparatorType.IsSmallerOrEqual,
-                                 MatchedValueAction action = MatchedValueAction.Keep)
+                                 MatchedValueAction action = MatchedValueAction.Keep,
+                                 bool allowForEach = false)
     {
-        return new ColumnValueRowFilter(propertyName, comparator, filterValues, action);
+        return new ColumnValueRowFilter(propertyName, comparator, filterValues, action, allowForEach);
     }
 }

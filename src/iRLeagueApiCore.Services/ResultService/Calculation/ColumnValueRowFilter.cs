@@ -7,8 +7,21 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
 {
-    public ColumnValueRowFilter(string propertyName, ComparatorType comparator, IEnumerable<string> values, MatchedValueAction action)
+    public bool AllowForEach { get; private set; }
+
+    /// <summary>
+    /// Create an instance of a <see cref="ColumnValueRowFilter"/>
+    /// </summary>
+    /// <param name="propertyName">Name of the property matching the desired column</param>
+    /// <param name="comparator">Type of comparison to execute</param>
+    /// <param name="values">Values corresponding to comparator</param>
+    /// <param name="action">Action to perform: Keep / Remove</param>
+    /// <param name="allowForEach">Enable multiplication of rows using "ForEach" comparator</param>
+    /// <exception cref="ArgumentException"></exception>
+    public ColumnValueRowFilter(string propertyName, ComparatorType comparator, IEnumerable<string> values, MatchedValueAction action, bool allowForEach = false)
     {
+        Action = action;
+        AllowForEach = allowForEach;
         try
         {
             ColumnProperty = GetColumnPropertyInfo(propertyName);
@@ -31,7 +44,6 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         {
             throw new ArgumentException($"Parameter was not of type {ColumnProperty.PropertyType} of column property {ColumnProperty.Name}", nameof(values), ex);
         }
-        Action = action;
     }
 
     public PropertyInfo ColumnProperty { get; }
@@ -43,7 +55,7 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
     public override IEnumerable<T> FilterRows<T>(IEnumerable<T> rows)
     {        
         var match = rows.Where(x => MatchFilterValues(x, ColumnProperty, FilterValues, CompareFunc));
-        if (Comparator == ComparatorType.ForEach)
+        if (Comparator == ComparatorType.ForEach && AllowForEach)
         {
             // special handling for ForEach --> duplicate rows by multiple of values
             match = MultiplyRows(match, ColumnProperty, FilterValues); 
