@@ -5,10 +5,10 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, IPenaltyRow
 {
-    private readonly IEnumerable<RowFilter<TRow>> filters = Array.Empty<RowFilter<TRow>>();
+    private readonly FilterGroupRowFilter<TRow> filters = new(Array.Empty<(FilterCombination, RowFilter<TRow>)>());
 
-    public override IEnumerable<RowFilter<TRow>> GetPointFilters() => filters;
-    public override IEnumerable<RowFilter<TRow>> GetResultFilters() => filters;
+    public override FilterGroupRowFilter<TRow> GetPointFilters() => filters;
+    public override FilterGroupRowFilter<TRow> GetResultFilters() => filters;
 
     public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
     {

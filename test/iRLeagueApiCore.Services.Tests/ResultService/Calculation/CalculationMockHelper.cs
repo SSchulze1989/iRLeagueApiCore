@@ -6,15 +6,15 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 internal static class CalculationMockHelper
 {
     internal static PointRule<ResultRowCalculationResult> MockPointRule(
-        IEnumerable<RowFilter<ResultRowCalculationResult>>? pointFilters = default,
-        IEnumerable<RowFilter<ResultRowCalculationResult>>? finalFilters = default,
+        FilterGroupRowFilter<ResultRowCalculationResult>? pointFilters = default,
+        FilterGroupRowFilter<ResultRowCalculationResult>? finalFilters = default,
         Func<IEnumerable<ResultRowCalculationResult>, IReadOnlyList<ResultRowCalculationResult>>? sortForPoints = default,
         Func<IEnumerable<ResultRowCalculationResult>, IReadOnlyList<ResultRowCalculationResult>>? sortFinal = default,
         Func<ResultRowCalculationResult, int, double>? getRacePoints = default,
         IDictionary<string, int>? bonusPoints = default)
     {
-        pointFilters ??= Array.Empty<RowFilter<ResultRowCalculationResult>>();
-        finalFilters ??= Array.Empty<RowFilter<ResultRowCalculationResult>>();
+        pointFilters ??= new(Array.Empty<(FilterCombination, RowFilter<ResultRowCalculationResult>)>());
+        finalFilters ??= new(Array.Empty<(FilterCombination, RowFilter<ResultRowCalculationResult>)>());
         sortForPoints ??= row => row.ToList();
         sortFinal ??= row => row.ToList();
         getRacePoints ??= (row, pos) => row.RacePoints;
@@ -29,8 +29,8 @@ internal static class CalculationMockHelper
     }
 
     internal static PointRule<T> MockPointRule<T>(
-        IEnumerable<RowFilter<T>> pointFilters,
-        IEnumerable<RowFilter<T>> finalFilters,
+        FilterGroupRowFilter<T> pointFilters,
+        FilterGroupRowFilter<T> finalFilters,
         Func<IEnumerable<T>, IReadOnlyList<T>> sortForPoints,
         Func<IEnumerable<T>, IReadOnlyList<T>> sortFinal,
         Func<T, int, double> getRacePoints,

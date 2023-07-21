@@ -150,10 +150,9 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return pointRule;
     }
 
-    private static IEnumerable<RowFilter<ResultRowCalculationResult>> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
     {
-        var group = MapToFilterGroup(pointFilters.Select(x => x.Conditions.FirstOrDefault()));
-        return new[] { group };
+        return MapToFilterGroup(pointFilters.Select(x => x.Conditions.FirstOrDefault()));
     }
 
     private static IReadOnlyDictionary<int, T> PointsPerPlaceToDictionary<T>(IEnumerable<T> points)

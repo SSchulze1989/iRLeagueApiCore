@@ -305,7 +305,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var filterGroup = sessionConfig.PointRule.GetPointFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var filterGroup = sessionConfig.PointRule.GetPointFilters() as FilterGroupRowFilter<ResultRowCalculationResult>;
             var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
@@ -343,7 +343,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var filterGroup = sessionConfig.PointRule.GetResultFilters() as FilterGroupRowFilter<ResultRowCalculationResult>;
             var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
@@ -379,7 +379,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var filterGroup = sessionConfig.PointRule.GetResultFilters();
             var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
@@ -415,7 +415,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var filterGroup = sessionConfig.PointRule.GetResultFilters();
             var testFilter = filterGroup!.GetFilters().First().rowFilter as MemberRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.MemberIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
@@ -499,7 +499,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         foreach (var sessionConfig in test)
         {
-            var filterGroup = sessionConfig.PointRule.GetResultFilters().FirstOrDefault() as FilterGroupRowFilter<ResultRowCalculationResult>;
+            var filterGroup = sessionConfig.PointRule.GetResultFilters();
             var testFilter1 = filterGroup!.GetFilters().First();
             testFilter1.combination.Should().Be(combination1);
             testFilter1.rowFilter.Should().BeOfType<ColumnValueRowFilter>();

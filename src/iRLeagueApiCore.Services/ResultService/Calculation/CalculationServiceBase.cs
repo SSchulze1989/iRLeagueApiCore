@@ -12,19 +12,13 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     protected static IEnumerable<ResultRowCalculationResult> ApplyPoints(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule,
         SessionCalculationData data)
     {
-        foreach (var filter in pointRule.GetResultFilters())
-        {
-            rows = filter.FilterRows(rows);
-        }
+        rows = pointRule.GetResultFilters().FilterRows(rows);
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
 
         IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
         // Filter for points only
-        foreach (var filter in pointRule.GetPointFilters())
-        {
-            pointRows = filter.FilterRows(pointRows);
-        }
+        pointRows = pointRule.GetResultFilters().FilterRows(pointRows);
 
         // Calculation
         pointRule.ApplyPoints(pointRows.ToList());
