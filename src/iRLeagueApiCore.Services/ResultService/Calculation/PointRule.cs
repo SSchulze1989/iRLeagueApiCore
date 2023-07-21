@@ -6,11 +6,12 @@ internal abstract class PointRule<TRow> where TRow : IPointRow, IPenaltyRow
 {
     public abstract FilterGroupRowFilter<TRow> GetPointFilters();
     public abstract FilterGroupRowFilter<TRow> GetResultFilters();
+    public abstract IEnumerable<AutoPenaltyConfigurationData> GetAutoPenalties();
     public abstract IDictionary<string, int> GetBonusPoints();
     public abstract IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows) where T : TRow;
     public abstract IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows) where T : TRow;
     public abstract IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows) where T : TRow;
 
-    private readonly static DefaultPointRule<TRow> defaultPointRule = new DefaultPointRule<TRow>();
+    private readonly static DefaultPointRule<TRow> defaultPointRule = new();
     public static PointRule<TRow> Default() => defaultPointRule;
 }

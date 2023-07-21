@@ -5,6 +5,11 @@ internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
 
     public IEnumerable<(FilterCombination combination, RowFilter<T> rowFilter)> GetFilters() => filters;
 
+    public FilterGroupRowFilter()
+    {
+        filters = new List<(FilterCombination, RowFilter<T>)>();
+    }
+
     public FilterGroupRowFilter(IEnumerable<(FilterCombination, RowFilter<T>)> filters)
     {
         this.filters = filters.ToList();

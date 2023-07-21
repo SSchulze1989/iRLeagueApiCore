@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
@@ -509,6 +510,57 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             var testFilter3 = filterGroup.GetFilters().ElementAt(2);
             testFilter3.combination.Should().Be(combination3);
             testFilter3.rowFilter.Should().BeOfType<MemberRowFilter>();
+        }
+    }
+
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideAutoPenalties()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+        var autoPenalty = fixture.Build<AutoPenaltyConfigEntity>()
+            .With(x => x.Conditions, () => fixture.Build<FilterConditionModel>()
+                .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Incidents))
+                .With(x => x.FilterType, FilterType.ColumnProperty)
+                .With(x => x.Comparator, ComparatorType.ForEach)
+                .With(x => x.FilterValues, new[] { "4.0" })
+                .CreateMany(1).ToList())
+            .With(x => x.PointRule, pointRule)
+            .With(x => x.Description, "Test Autopenalty")
+            .With(x => x.Points, 42)
+            .With(x => x.Positions, 420)
+            .With(x => x.Time, new TimeSpan(1, 2, 3))
+            .With(x => x.Type, PenaltyType.Position)
+            .Create();
+        pointRule.AutoPenalties.Add(autoPenalty);
+        dbContext.PointRules.Add(pointRule);
+        dbContext.ResultConfigurations.Add(config);
+        config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+        await dbContext.SaveChangesAsync();
+        config = await dbContext.ResultConfigurations
+            .Include(x => x.Scorings)
+                .ThenInclude(x => x.PointsRule)
+            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+        var scorings = await dbContext.Scorings
+            .Include(x => x.ResultConfiguration)
+            .ToListAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            sessionConfig.PointRule.Should().BeAssignableTo(typeof(CalculationPointRuleBase));
+            var sessionConfigPointRule = (CalculationPointRuleBase)sessionConfig.PointRule;
+            sessionConfigPointRule.AutoPenalties.Should().HaveCount(1);
+            var testPenalty = sessionConfigPointRule.AutoPenalties.First();
+            testPenalty.Description.Should().Be("Test Autopenalty");
+            testPenalty.Points.Should().Be(42);
+            testPenalty.Positions.Should().Be(420);
+            testPenalty.Time.Should().Be(new TimeSpan(1, 2, 3));
+            testPenalty.Type.Should().Be(PenaltyType.Position);
+            testPenalty.Conditions.GetFilters().Should().HaveCount(1);
         }
     }
 

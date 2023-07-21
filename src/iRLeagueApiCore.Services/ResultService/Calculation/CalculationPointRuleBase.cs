@@ -12,11 +12,11 @@ internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculatio
     public IEnumerable<SortOptions> PointSortOptions { get; set; } = Array.Empty<SortOptions>();
     public IEnumerable<SortOptions> FinalSortOptions { get; set; } = Array.Empty<SortOptions>();
     public IDictionary<string, int> BonusPoints { get; set; } = new Dictionary<string, int>();
+    public IEnumerable<AutoPenaltyConfigurationData> AutoPenalties { get; set; } = Array.Empty<AutoPenaltyConfigurationData>();
 
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetResultFilters() => ResultFilters;
-
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetPointFilters() => PointFilters;
-
+    public override IEnumerable<AutoPenaltyConfigurationData> GetAutoPenalties() => AutoPenalties;
     public override IDictionary<string, int> GetBonusPoints() => BonusPoints;
 
     public override IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows)
