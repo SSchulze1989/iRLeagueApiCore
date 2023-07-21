@@ -17,7 +17,7 @@ internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
 
     public override IEnumerable<TRow> FilterRows<TRow>(IEnumerable<TRow> rows)
     {
-        var originalRows = rows;
+        var originalRows = rows.ToList();
         foreach(var (combination, filter) in filters)
         {
             rows = combination switch
@@ -27,7 +27,7 @@ internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
                 _ => rows,
             };
         }
-        return originalRows.Where(x => rows.Contains(x));
+        return rows.OrderBy(x => originalRows.IndexOf(x));
     }
 }
 

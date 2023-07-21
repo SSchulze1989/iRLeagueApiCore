@@ -136,6 +136,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var @event = await GetFirstEventEntity();
         // creates default config with null point rule
         var config = accessMockHelper.CreateConfiguration(@event);
+        config.Scorings.ForEeach(x => x.PointsRule = null);
         // for testing null scoring
         config.Scorings.Remove(config.Scorings.Last());
         dbContext.ResultConfigurations.Add(config);

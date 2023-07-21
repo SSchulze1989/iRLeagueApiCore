@@ -13,6 +13,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         SessionCalculationData data)
     {
         rows = pointRule.GetResultFilters().FilterRows(rows);
+        rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
 
@@ -127,6 +128,36 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
 
         return combined.ToList();
+    }
+
+    private static AddPenaltyCalculationData CreateAddPenaltyFromAutoPenalty(ResultRowCalculationResult row, AutoPenaltyConfigurationData autoPenalty, 
+        int penaltyMultiplikator)
+    {
+        var penalty = new AddPenaltyCalculationData()
+        {
+            MemberId = row.MemberId,
+            Points = autoPenalty.Type == PenaltyType.Points ? autoPenalty.Points * penaltyMultiplikator : 0,
+            Positions = autoPenalty.Type == PenaltyType.Position ? autoPenalty.Positions * penaltyMultiplikator : 0,
+            Time = autoPenalty.Type == PenaltyType.Time ? autoPenalty.Time * penaltyMultiplikator : TimeSpan.Zero,
+            Type = autoPenalty.Type,
+        };
+        return penalty;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> CalculateAutoPenalties(IEnumerable<ResultRowCalculationResult> rows, 
+        IEnumerable<AutoPenaltyConfigurationData> autoPenalties)
+    {
+        foreach(var autoPenalty in autoPenalties)
+        {
+            var penaltyRows = autoPenalty.Conditions
+                .FilterRows(rows);
+            var grouped = penaltyRows.GroupBy(x => x);
+            foreach(var row in grouped.Where(x => x.Any()))
+            {
+                row.Key.AddPenalties = row.Key.AddPenalties.Concat(new[] { CreateAddPenaltyFromAutoPenalty(row.Key, autoPenalty, row.Count()) });
+            }
+        }
+        return rows;
     }
 
     private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyTimes(IEnumerable<ResultRowCalculationResult> rows)
