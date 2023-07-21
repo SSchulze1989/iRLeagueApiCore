@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using Castle.Components.DictionaryAdapter.Xml;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore;
 using System.Linq.Expressions;
@@ -193,7 +194,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     private async Task<AutoPenaltyConfigEntity> MapToAutoPenaltyConfigEntity(AutoPenaltyConfiguration model, AutoPenaltyConfigEntity entity,
         CancellationToken cancellationToken)
     {
-        entity.Conditions = model.Conditions.Select(MapToFilterCondition).ToList();
+        entity.Conditions = model.Conditions;
         entity.Description = model.Description;
         entity.Points = model.Points;
         entity.Positions = model.Positions;
@@ -268,13 +269,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 Name = scoring.PointsRule.Name,
                 AutoPenalties = scoring.PointsRule.AutoPenalties.Select(penalty => new AutoPenaltyConfiguration()
                 {
-                    Conditions = penalty.Conditions.Select(condition => new FilterConditionModel()
-                    {
-                        ColumnPropertyName = condition.ColumnPropertyName,
-                        Comparator = condition.Comparator,
-                        FilterType = condition.FilterType,
-                        FilterValues = condition.FilterValues,
-                    }).ToList(),
+                    Conditions = penalty.Conditions,
                     Description = penalty.Description,
                     LeagueId = penalty.LeagueId,
                     PenaltyConfigId = penalty.PenaltyConfigId,
