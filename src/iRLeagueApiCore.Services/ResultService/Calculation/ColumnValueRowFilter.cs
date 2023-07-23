@@ -7,8 +7,21 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
 {
-    public ColumnValueRowFilter(string propertyName, ComparatorType comparator, IEnumerable<string> values, MatchedValueAction action)
+    public bool AllowForEach { get; private set; }
+
+    /// <summary>
+    /// Create an instance of a <see cref="ColumnValueRowFilter"/>
+    /// </summary>
+    /// <param name="propertyName">Name of the property matching the desired column</param>
+    /// <param name="comparator">Type of comparison to execute</param>
+    /// <param name="values">Values corresponding to comparator</param>
+    /// <param name="action">Action to perform: Keep / Remove</param>
+    /// <param name="allowForEach">Enable multiplication of rows using "ForEach" comparator</param>
+    /// <exception cref="ArgumentException"></exception>
+    public ColumnValueRowFilter(string propertyName, ComparatorType comparator, IEnumerable<string> values, MatchedValueAction action, bool allowForEach = false)
     {
+        Action = action;
+        AllowForEach = allowForEach;
         try
         {
             ColumnProperty = GetColumnPropertyInfo(propertyName);
@@ -31,7 +44,6 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         {
             throw new ArgumentException($"Parameter was not of type {ColumnProperty.PropertyType} of column property {ColumnProperty.Name}", nameof(values), ex);
         }
-        Action = action;
     }
 
     public PropertyInfo ColumnProperty { get; }
@@ -41,8 +53,13 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
     public MatchedValueAction Action { get; }
 
     public override IEnumerable<T> FilterRows<T>(IEnumerable<T> rows)
-    {
+    {        
         var match = rows.Where(x => MatchFilterValues(x, ColumnProperty, FilterValues, CompareFunc));
+        if (Comparator == ComparatorType.ForEach && AllowForEach)
+        {
+            // special handling for ForEach --> duplicate rows by multiple of values
+            match = MultiplyRows(match, ColumnProperty, FilterValues); 
+        }
         return Action switch
         {
             MatchedValueAction.Keep => match,
@@ -78,23 +95,38 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         return values.Select(x => Convert.ChangeType(x, type, CultureInfo.InvariantCulture)).Cast<IComparable>();
     }
 
+    private static IEnumerable<T> MultiplyRows<T>(IEnumerable<T> rows, PropertyInfo property, 
+        IEnumerable<IComparable> filterValues)
+    {
+        if (filterValues.Any() == false)
+        {
+            return rows;
+        }
+        var compareValue = Convert.ToDouble(filterValues.First());
+        List<T> multipliedRows = new();
+        foreach (var row in rows)
+        {
+            var value = Convert.ToDouble(property.GetValue(row));
+            var count = (int)(value / compareValue);
+            for (int i=0; i<count; i++)
+            {
+                multipliedRows.Add(row);
+            }
+        }
+        return multipliedRows;
+    }
+
     private static Func<IComparable?, IEnumerable<IComparable>, bool> GetCompareFunction(ComparatorType comparatorType)
         => comparatorType switch
         {
-            ComparatorType.IsBigger => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1; }
-            ,
-            ComparatorType.IsBiggerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == 0; }
-            ,
-            ComparatorType.IsEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 0; }
-            ,
-            ComparatorType.IsSmallerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1 || c == 0; }
-            ,
-            ComparatorType.IsSmaller => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1; }
-            ,
-            ComparatorType.NotEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == -1; }
-            ,
-            ComparatorType.InList => (x, y) => { var c = y.Any(z => x?.CompareTo(z) == 0); return c; }
-            ,
+            ComparatorType.IsBigger => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1; },
+            ComparatorType.IsBiggerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == 0; },
+            ComparatorType.IsEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 0; },
+            ComparatorType.IsSmallerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1 || c == 0; },
+            ComparatorType.IsSmaller => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1; },
+            ComparatorType.NotEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == -1; },
+            ComparatorType.InList => (x, y) => { var c = y.Any(z => x?.CompareTo(z) == 0); return c; },
+            ComparatorType.ForEach => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == 0; },
             _ => (x, y) => true,
         };
 }
