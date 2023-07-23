@@ -56,6 +56,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
         return await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
+                    .ThenInclude(x => x.AutoPenalties)
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.ExtScoringSource)
             .Include(x => x.PointFilters)
