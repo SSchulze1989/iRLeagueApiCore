@@ -20,6 +20,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             .Include(x => x.ChampSeason)
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
+                    .ThenInclude(x => x.AutoPenalties)
             .Include(x => x.SourceResultConfig)
             .Include(x => x.ResultFilters)
                 .ThenInclude(x => x.Conditions)
@@ -187,6 +188,12 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 entities.Add(entity);
             }
             await MapToAutoPenaltyConfigEntity(model, entity, cancellationToken);
+        }
+        var delete = entities
+            .Where(x => models.Any(y => y.PenaltyConfigId == x.PenaltyConfigId) == false);
+        foreach (var deleteEntity in delete)
+        {
+            dbContext.Remove(deleteEntity);
         }
         return entities;
     }
