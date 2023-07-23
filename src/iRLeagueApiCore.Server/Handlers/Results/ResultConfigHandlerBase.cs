@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using Castle.Components.DictionaryAdapter.Xml;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore;
 using System.Linq.Expressions;
@@ -167,9 +168,48 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         pointRuleEntity.PointDropOff = pointRuleModel.PointDropOff;
         pointRuleEntity.PointsPerPlace = pointRuleModel.PointsPerPlace;
         pointRuleEntity.PointsSortOptions = pointRuleModel.PointsSortOptions;
+        pointRuleEntity.AutoPenalties = await MapToAutoPenaltyCollection(pointRuleModel.AutoPenalties, pointRuleEntity.AutoPenalties, cancellationToken);
         UpdateVersionEntity(user, pointRuleEntity);
-        return await Task.FromResult(pointRuleEntity);
+        return pointRuleEntity;
     }
+
+    private async Task<ICollection<AutoPenaltyConfigEntity>> MapToAutoPenaltyCollection(IEnumerable<AutoPenaltyConfiguration> models, ICollection<AutoPenaltyConfigEntity> entities,
+        CancellationToken cancellationToken)
+    {
+        foreach(var model in models)
+        {
+            var entity = entities
+                .Where(x => x.PenaltyConfigId != 0 && x.PenaltyConfigId == model.PenaltyConfigId)
+                .FirstOrDefault();
+            if (entity is null)
+            {
+                entity = new() { LeagueId = dbContext.LeagueProvider.LeagueId };
+                entities.Add(entity);
+            }
+            await MapToAutoPenaltyConfigEntity(model, entity, cancellationToken);
+        }
+        return entities;
+    }
+
+    private async Task<AutoPenaltyConfigEntity> MapToAutoPenaltyConfigEntity(AutoPenaltyConfiguration model, AutoPenaltyConfigEntity entity,
+        CancellationToken cancellationToken)
+    {
+        entity.Conditions = model.Conditions;
+        entity.Description = model.Description;
+        entity.Points = model.Points;
+        entity.Positions = model.Positions;
+        entity.Time = model.Time;
+        entity.Type = model.Type;
+        return await Task.FromResult(entity);
+    }
+
+    private static FilterCondition MapToFilterCondition(FilterConditionModel model) => new()
+    {
+        ColumnPropertyName = model.ColumnPropertyName,
+        Comparator = model.Comparator,
+        FilterType = model.FilterType,
+        FilterValues = model.FilterValues,
+    };
 
     protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PutResultConfigModel putResultConfig, ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
     {
@@ -227,7 +267,17 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 PointsPerPlace = scoring.PointsRule.PointsPerPlace.ToList(),
                 PointsSortOptions = scoring.PointsRule.PointsSortOptions,
                 Name = scoring.PointsRule.Name,
-
+                AutoPenalties = scoring.PointsRule.AutoPenalties.Select(penalty => new AutoPenaltyConfiguration()
+                {
+                    Conditions = penalty.Conditions,
+                    Description = penalty.Description,
+                    LeagueId = penalty.LeagueId,
+                    PenaltyConfigId = penalty.PenaltyConfigId,
+                    Points = penalty.Points,
+                    Positions = penalty.Positions,
+                    Time = penalty.Time,
+                    Type = penalty.Type,
+                }).ToList(),
             } : null,
         }).ToList(),
         FiltersForPoints = resultConfig.PointFilters.Select(filter => new ResultFilterModel()

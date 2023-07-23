@@ -5,6 +5,11 @@ internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
 
     public IEnumerable<(FilterCombination combination, RowFilter<T> rowFilter)> GetFilters() => filters;
 
+    public FilterGroupRowFilter()
+    {
+        filters = new List<(FilterCombination, RowFilter<T>)>();
+    }
+
     public FilterGroupRowFilter(IEnumerable<(FilterCombination, RowFilter<T>)> filters)
     {
         this.filters = filters.ToList();
@@ -12,7 +17,7 @@ internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
 
     public override IEnumerable<TRow> FilterRows<TRow>(IEnumerable<TRow> rows)
     {
-        var originalRows = rows;
+        var originalRows = rows.ToList();
         foreach(var (combination, filter) in filters)
         {
             rows = combination switch
@@ -22,7 +27,7 @@ internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
                 _ => rows,
             };
         }
-        return originalRows.Where(x => rows.Contains(x));
+        return rows.OrderBy(x => originalRows.IndexOf(x));
     }
 }
 

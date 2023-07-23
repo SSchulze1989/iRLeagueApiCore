@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
@@ -142,6 +143,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
         pointRule.BonusPoints = pointsRuleEntity?.BonusPoints ?? new Dictionary<string, int>();
         pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
+        pointRule.AutoPenalties = pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>();
         if (includePointFilters)
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
@@ -150,10 +152,28 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return pointRule;
     }
 
-    private static IEnumerable<RowFilter<ResultRowCalculationResult>> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
+    private static AutoPenaltyConfigurationData MapFromAutoPenaltyConfig(AutoPenaltyConfigEntity penaltyEntity)
     {
-        var group = MapToFilterGroup(pointFilters.Select(x => x.Conditions.FirstOrDefault()));
-        return new[] { group };
+        var penaltyData = new AutoPenaltyConfigurationData
+        {
+            Conditions = MapFromFilterEntities(penaltyEntity.Conditions, allowForEach: true),
+            Description = penaltyEntity.Description,
+            Points = penaltyEntity.Points,
+            Positions = penaltyEntity.Positions,
+            Time = penaltyEntity.Time,
+            Type = penaltyEntity.Type
+        };
+        return penaltyData;
+    }
+
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, bool allowForEach = false)
+    {
+        return MapToFilterGroup(pointFilters, allowForEach: allowForEach);
+    }
+
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
+    {
+        return MapToFilterGroup(pointFilters.Select(x => x.Conditions.FirstOrDefault()));
     }
 
     private static IReadOnlyDictionary<int, T> PointsPerPlaceToDictionary<T>(IEnumerable<T> points)
@@ -161,6 +181,20 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return points
             .Select((x, i) => new { pos = i + 1, value = x })
             .ToDictionary(k => k.pos, v => v.value);
+    }
+
+    private static FilterCombination GetFilterCombination(FilterConditionModel? condition, int index)
+    {
+        if (index == 0 || condition is null)
+        {
+            return FilterCombination.And;
+        }
+        return condition.Action switch
+        {
+            MatchedValueAction.Remove => FilterCombination.And,
+            MatchedValueAction.Keep => FilterCombination.Or,
+            _ => FilterCombination.And,
+        };
     }
 
     private static FilterCombination GetFilterCombination(FilterConditionEntity? condition, int index)
@@ -174,6 +208,27 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             MatchedValueAction.Remove => FilterCombination.And,
             MatchedValueAction.Keep => FilterCombination.Or,
             _ => FilterCombination.And,
+        };
+    }
+
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionModel?> filters,
+        bool allowForEach = false)
+    {
+        var filterCombination = filters
+            .Select((x, i) => (GetFilterCombination(x, i), GetRowFilterFromCondition(x, allowForEach: allowForEach)))
+            .Where(x => x.Item2 is not null);
+        return new(filterCombination!);
+    }
+
+    private static RowFilter<ResultRowCalculationResult>? GetRowFilterFromCondition(FilterConditionModel? condition,
+        bool allowForEach = false)
+    {
+        return condition?.FilterType switch
+        {
+            FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, 
+                condition.FilterValues, condition.Action, allowForEach: allowForEach),
+            FilterType.Member => new MemberRowFilter(condition.FilterValues, condition.Action),
+            _ => null,
         };
     }
 
