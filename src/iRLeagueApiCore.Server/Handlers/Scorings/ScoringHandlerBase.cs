@@ -72,9 +72,9 @@ public class ScoringHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         UseResultSetTeam = scoring.UseResultSetTeam,
         CreatedByUserId = scoring.CreatedByUserId,
         CreatedByUserName = scoring.CreatedByUserName,
-        CreatedOn = scoring.CreatedOn,
+        CreatedOn = TreatAsUTCDateTime(scoring.CreatedOn),
         LastModifiedByUserId = scoring.LastModifiedByUserId,
         LastModifiedByUserName = scoring.LastModifiedByUserName,
-        LastModifiedOn = scoring.LastModifiedOn,
+        LastModifiedOn = TreatAsUTCDateTime(scoring.LastModifiedOn),
     };
 }

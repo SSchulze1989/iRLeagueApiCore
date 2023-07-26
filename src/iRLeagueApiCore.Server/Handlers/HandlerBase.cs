@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Server.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace iRLeagueApiCore.Server.Handlers;
 
@@ -69,6 +70,21 @@ public abstract class HandlerBase<THandler, TRequest>
         return await dbContext.Members
             .Where(x => memberIds.Contains(x.Id))
             .ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Returns a utc date time from the provided datetime without performin a conversion
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    [return: NotNullIfNotNull(nameof(dateTime))]
+    protected static DateTime? TreatAsUTCDateTime(DateTime? dateTime)
+    {
+        if (dateTime is null)
+        {
+            return null;
+        }
+        return new DateTime(dateTime!.Value.Ticks, DateTimeKind.Utc);
     }
 
     protected virtual T CreateVersionEntity<T>(LeagueUser user, T target) where T : IVersionEntity

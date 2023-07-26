@@ -96,7 +96,7 @@ public class EventHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReque
 
     protected virtual Expression<Func<EventEntity, EventModel>> MapToEventModelExpression(bool includeDetails = false) => @event => new EventModel()
     {
-        Date = @event.Date,
+        Date = TreatAsUTCDateTime(@event.Date),
         Duration = @event.Duration,
         EventType = @event.EventType,
         Id = @event.EventId,
@@ -117,10 +117,10 @@ public class EventHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReque
             Duration = session.Duration,
             SessionId = session.SessionId,
             SessionType = session.SessionType,
-            CreatedOn = session.CreatedOn,
+            CreatedOn = TreatAsUTCDateTime(session.CreatedOn),
             CreatedByUserId = session.CreatedByUserId,
             CreatedByUserName = session.CreatedByUserName,
-            LastModifiedOn = session.LastModifiedOn,
+            LastModifiedOn = TreatAsUTCDateTime(session.LastModifiedOn),
             LastModifiedByUserId = session.LastModifiedByUserId,
             LastModifiedByUserName = session.LastModifiedByUserName
         }).ToList(),

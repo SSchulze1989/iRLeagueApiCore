@@ -403,6 +403,45 @@ public sealed class MemberSessionCalculationServiceTests
         testRow2.BonusPoints.Should().Be(1);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldAddAutoPenalties()
+    {
+        var incidents = new[] { 2.0, 4.0, 8.0 }; 
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.Incidents, incidents.CreateSequence())
+            .CreateMany(incidents.Length);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.Incidents),
+            ComparatorType.ForEach,
+            new[] { "4.0" },
+            MatchedValueAction.Keep,
+            allowForEach: true);
+        var autoPenalty = new AutoPenaltyConfigurationData()
+        {
+            Conditions = new FilterGroupRowFilter<ResultRowCalculationResult>(new[] { (FilterCombination.And, filter) }),
+            Description = "Test Autopenalty",
+            Points = 10,
+            Type = PenaltyType.Points,
+        };
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            autoPenalties: new[] { autoPenalty });
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testRow1 = test.ResultRows.ElementAt(1);
+        testRow1.AddPenalties.Should().HaveCount(1);
+        testRow1.AddPenalties.First().Points.Should().Be(autoPenalty.Points);
+        testRow1.PenaltyPoints.Should().Be(autoPenalty.Points);
+        var testRow2 = test.ResultRows.ElementAt(2);
+        testRow2.AddPenalties.Should().HaveCount(1);
+        testRow2.AddPenalties.First().Points.Should().Be(autoPenalty.Points*2);
+        testRow2.PenaltyPoints.Should().Be(autoPenalty.Points*2);
+    }
+
     private MemberSessionCalculationService CreateSut()
     {
         return fixture.Create<MemberSessionCalculationService>();

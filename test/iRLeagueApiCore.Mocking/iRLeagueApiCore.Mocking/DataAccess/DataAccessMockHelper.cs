@@ -242,7 +242,12 @@ public sealed class DataAccessMockHelper
                     .With(x => x.LeagueId, @event.LeagueId)
                     .With(x => x.Index, session.SessionNr)
                     .With(x => x.IsCombinedResult, false)
-                    .Without(x => x.PointsRule)
+                    .With(x => x.PointsRule, () => fixture.Build<PointRuleEntity>()
+                        .With(x => x.LeagueId, @event.LeagueId)
+                        .Without(x => x.Scorings)
+                        .Without(x => x.AutoPenalties)
+                        .Without(x => x.League)
+                        .Create())
                     .Without(x => x.DependendScorings)
                     .Without(x => x.ExtScoringSource)
                     .Without(x => x.ResultConfiguration)
@@ -320,6 +325,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.League, league)
             .With(x => x.LeagueId, league.Id)
             .Without(x => x.Scorings)
+            .Without(x => x.AutoPenalties)
             .Create();
     }
 

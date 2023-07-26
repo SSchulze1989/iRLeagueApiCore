@@ -103,8 +103,8 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
                 LastName = member.Lastname,
                 MemberId = member.Id,
             }).ToList(),
-            CreatedOn = sessionResult.CreatedOn,
-            LastModifiedOn = sessionResult.LastModifiedOn,
+            CreatedOn = TreatAsUTCDateTime(sessionResult.CreatedOn),
+            LastModifiedOn = TreatAsUTCDateTime(sessionResult.LastModifiedOn),
         }),
     };
 }

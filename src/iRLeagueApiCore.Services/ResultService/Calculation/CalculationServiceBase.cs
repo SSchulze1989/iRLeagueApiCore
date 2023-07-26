@@ -12,19 +12,14 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     protected static IEnumerable<ResultRowCalculationResult> ApplyPoints(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule,
         SessionCalculationData data)
     {
-        foreach (var filter in pointRule.GetResultFilters())
-        {
-            rows = filter.FilterRows(rows);
-        }
+        rows = pointRule.GetResultFilters().FilterRows(rows);
+        rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
 
         IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
         // Filter for points only
-        foreach (var filter in pointRule.GetPointFilters())
-        {
-            pointRows = filter.FilterRows(pointRows);
-        }
+        pointRows = pointRule.GetResultFilters().FilterRows(pointRows);
 
         // Calculation
         pointRule.ApplyPoints(pointRows.ToList());
@@ -133,6 +128,36 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
 
         return combined.ToList();
+    }
+
+    private static AddPenaltyCalculationData CreateAddPenaltyFromAutoPenalty(ResultRowCalculationResult row, AutoPenaltyConfigurationData autoPenalty, 
+        int penaltyMultiplikator)
+    {
+        var penalty = new AddPenaltyCalculationData()
+        {
+            MemberId = row.MemberId,
+            Points = autoPenalty.Type == PenaltyType.Points ? autoPenalty.Points * penaltyMultiplikator : 0,
+            Positions = autoPenalty.Type == PenaltyType.Position ? autoPenalty.Positions * penaltyMultiplikator : 0,
+            Time = autoPenalty.Type == PenaltyType.Time ? autoPenalty.Time * penaltyMultiplikator : TimeSpan.Zero,
+            Type = autoPenalty.Type,
+        };
+        return penalty;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> CalculateAutoPenalties(IEnumerable<ResultRowCalculationResult> rows, 
+        IEnumerable<AutoPenaltyConfigurationData> autoPenalties)
+    {
+        foreach(var autoPenalty in autoPenalties)
+        {
+            var penaltyRows = autoPenalty.Conditions
+                .FilterRows(rows);
+            var grouped = penaltyRows.GroupBy(x => x);
+            foreach(var row in grouped.Where(x => x.Any()))
+            {
+                row.Key.AddPenalties = row.Key.AddPenalties.Concat(new[] { CreateAddPenaltyFromAutoPenalty(row.Key, autoPenalty, row.Count()) });
+            }
+        }
+        return rows;
     }
 
     private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyTimes(IEnumerable<ResultRowCalculationResult> rows)

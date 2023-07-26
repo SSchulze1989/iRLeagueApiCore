@@ -82,7 +82,7 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         CommentId = comment.CommentId,
         AuthorName = comment.AuthorName,
         AuthorUserId = comment.AuthorUserId,
-        Date = comment.Date,
+        Date = TreatAsUTCDateTime(comment.Date),
         ReviewId = comment.ReviewId.GetValueOrDefault(),
         Text = comment.Text,
         Votes = comment.ReviewCommentVotes.Select(vote => new VoteModel()
@@ -100,9 +100,9 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         }).ToList(),
         CreatedByUserId = comment.CreatedByUserId,
         CreatedByUserName = comment.CreatedByUserName,
-        CreatedOn = comment.CreatedOn,
+        CreatedOn = TreatAsUTCDateTime(comment.CreatedOn),
         LastModifiedByUserId = comment.LastModifiedByUserId,
         LastModifiedByUserName = comment.LastModifiedByUserName,
-        LastModifiedOn = comment.LastModifiedOn,
+        LastModifiedOn = TreatAsUTCDateTime(comment.LastModifiedOn),
     };
 }

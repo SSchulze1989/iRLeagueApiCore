@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
@@ -195,11 +196,32 @@ public sealed class ColumnValueRowFilterTests
         test.Should().HaveCount(2);
     }
 
+    [Fact]
+    public void FilterRows_ShouldMultiplyRows_WhenComparatorIsForEach()
+    {
+        var propertyName = nameof(ResultRowCalculationResult.Incidents);
+        var incidents = new[] { 2.0, 4.0, 8.0 };
+        var rows = fixture.Build<ResultRowCalculationResult>()
+            .With(x => x.Incidents, incidents.CreateSequence())
+            .CreateMany(incidents.Length);
+        var testRow1 = rows.ElementAt(0);
+        var testRow2 = rows.ElementAt(1);
+        var testRow3 = rows.ElementAt(2);
+        var sut = CreateSut(propertyName, new[] { "4.0" }, ComparatorType.ForEach, MatchedValueAction.Keep, allowForEach: true);
+
+        var test = sut.FilterRows(rows);
+
+        test.Count(x => x.ScoredResultRowId == testRow1.ScoredResultRowId).Should().Be(0);
+        test.Count(x => x.ScoredResultRowId == testRow2.ScoredResultRowId).Should().Be(1);
+        test.Count(x => x.ScoredResultRowId == testRow3.ScoredResultRowId).Should().Be(2);
+    }
+
     private ColumnValueRowFilter CreateSut(string propertyName,
                                  IEnumerable<string> filterValues,
                                  ComparatorType comparator = ComparatorType.IsSmallerOrEqual,
-                                 MatchedValueAction action = MatchedValueAction.Keep)
+                                 MatchedValueAction action = MatchedValueAction.Keep,
+                                 bool allowForEach = false)
     {
-        return new ColumnValueRowFilter(propertyName, comparator, filterValues, action);
+        return new ColumnValueRowFilter(propertyName, comparator, filterValues, action, allowForEach);
     }
 }
