@@ -19,7 +19,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
         IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
         // Filter for points only
-        pointRows = pointRule.GetResultFilters().FilterRows(pointRows);
+        pointRows = pointRule.GetPointFilters().FilterRows(pointRows);
 
         // Calculation
         pointRule.ApplyPoints(pointRows.ToList());
