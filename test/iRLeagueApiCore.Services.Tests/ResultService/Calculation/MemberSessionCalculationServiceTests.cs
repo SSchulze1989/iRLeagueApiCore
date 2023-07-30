@@ -3,6 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 
@@ -440,6 +441,56 @@ public sealed class MemberSessionCalculationServiceTests
         testRow2.AddPenalties.Should().HaveCount(1);
         testRow2.AddPenalties.First().Points.Should().Be(autoPenalty.Points*2);
         testRow2.PenaltyPoints.Should().Be(autoPenalty.Points*2);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldApplyResultFilters()
+    {
+        var pos = Enumerable.Range(1, 5).Select(x => (double)x);
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.FinishPosition, pos.CreateSequence())
+            .CreateMany(pos.Count());
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.FinishPosition),
+            ComparatorType.IsSmallerOrEqual,
+            new[] { "3" },
+            MatchedValueAction.Keep);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            finalFilters: new(new[] { (FilterCombination.And, filter) }));
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveCount(3);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldApplyPointFilters()
+    {
+        var pos = Enumerable.Range(1, 5).Select(x => (double)x);
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.FinishPosition, pos.CreateSequence())
+            .CreateMany(pos.Count());
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.FinishPosition),
+            ComparatorType.IsSmallerOrEqual,
+            new[] { "3" },
+            MatchedValueAction.Keep);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            pointFilters: new(new[] { (FilterCombination.And, filter) }),
+            getRacePoints: (x, p) => 1);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Take(3).Should().Match(x => x.All(r => r.RacePoints == 1));
+        test.ResultRows.Skip(3).Should().Match(x => x.None(r => r.RacePoints == 1));
     }
 
     private MemberSessionCalculationService CreateSut()
