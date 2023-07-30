@@ -54,7 +54,7 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             config.DisplayName = string.IsNullOrWhiteSpace(championship.DisplayName) ? championship.Name : championship.DisplayName;
             config.UseCombinedResult = standingConfig.UseCombinedResult;
             config.ResultKind = champSeason.ResultConfigurations.FirstOrDefault()?.ResultKind ?? standingConfig.ResultKind;
-            config.WeeksCounted = standingConfig.WeeksCounted;
+            config.WeeksCounted = standingConfig.WeeksCounted > 0 ? standingConfig.WeeksCounted : 999;
         }
         return config;
     }
