@@ -71,7 +71,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.7.9</Version>
+		<Version>0.7.10</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
