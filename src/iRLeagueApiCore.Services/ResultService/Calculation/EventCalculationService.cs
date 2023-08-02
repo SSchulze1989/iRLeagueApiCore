@@ -84,7 +84,7 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
     private static SessionCalculationData AssignAddPenalties(SessionCalculationData data, IEnumerable<AddPenaltyCalculationData> addPenalties)
     {
         var sessionPenalties = addPenalties.Where(x => x.SessionNr == data.SessionNr);
-        data.ResultRows.ForEeach(row =>
+        data.ResultRows.ForEach(row =>
             row.AddPenalties = sessionPenalties
                 .Where(x =>
                     (x.MemberId != null && x.MemberId == row.MemberId) ||

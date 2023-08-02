@@ -35,7 +35,7 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
         dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations).SelectMany(x => x.PointFilters));
         dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations).SelectMany(x => x.ResultFilters));
         dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations));
-        deleteSeason.ChampSeasons.ForEeach(x => x.DefaultResultConfig = null);
+        deleteSeason.ChampSeasons.ForEach(x => x.DefaultResultConfig = null);
         dbContext.Seasons.Remove(deleteSeason);
     }
 }

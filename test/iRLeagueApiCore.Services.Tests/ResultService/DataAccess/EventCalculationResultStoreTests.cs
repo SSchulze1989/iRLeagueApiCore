@@ -129,7 +129,7 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
         await dbContext.SaveChangesAsync();
         var config = GetConfiguration(@event, configEntity);
         var result = GetCalculationResult(@event, config);
-        result.SessionResults.Single().ResultRows.ForEeach(x => x.MemberId = null);
+        result.SessionResults.Single().ResultRows.ForEach(x => x.MemberId = null);
         result.SessionResults.Single().ResultRows.First().ScoredMemberResultRowIds = sourceResultEntity
             .ScoredSessionResults.Single().ScoredResultRows.Take(2).Select(x => x.ScoredResultRowId).ToList();
         var sut = CreateSut();
