@@ -134,7 +134,7 @@ public static class MockHelpers
     {
         var roleStoreDict = roles ?? new Dictionary<string, TRole>();
         var normalizer = MockLookupNormalizer();
-        roleStoreDict.ForEeach(x => x.Value.NormalizedName = normalizer.NormalizeName(x.Value.Name));
+        roleStoreDict.ForEach(x => x.Value.NormalizedName = normalizer.NormalizeName(x.Value.Name));
         var store = new Mock<IRoleStore<TRole>>();
         store.Setup(x => x.FindByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((string id, CancellationToken cancellationToken) => roleStoreDict.GetOrDefault(id)!);

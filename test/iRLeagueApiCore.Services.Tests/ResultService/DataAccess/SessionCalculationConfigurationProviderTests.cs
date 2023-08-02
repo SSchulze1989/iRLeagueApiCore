@@ -136,7 +136,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var @event = await GetFirstEventEntity();
         // creates default config with null point rule
         var config = accessMockHelper.CreateConfiguration(@event);
-        config.Scorings.ForEeach(x => x.PointsRule = null);
+        config.Scorings.ForEach(x => x.PointsRule = null);
         // for testing null scoring
         config.Scorings.Remove(config.Scorings.Last());
         dbContext.ResultConfigurations.Add(config);
@@ -160,7 +160,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var sessionNr = 1;
         practice.SessionNr = sessionNr++;
         qualy.SessionNr = sessionNr++;
-        @event.Sessions.ForEeach(x => x.SessionNr = sessionNr++);
+        @event.Sessions.ForEach(x => x.SessionNr = sessionNr++);
         var config = accessMockHelper.CreateConfiguration(@event);
         @event.Sessions.Add(practice);
         @event.Sessions.Add(qualy);
@@ -199,7 +199,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         pointRule.PointDropOff = 0;
         dbContext.PointRules.Add(pointRule);
         dbContext.ResultConfigurations.Add(config);
-        config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
         await dbContext.SaveChangesAsync();
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
@@ -227,7 +227,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         pointRule.PointsPerPlace = new List<int>();
         dbContext.PointRules.Add(pointRule);
         dbContext.ResultConfigurations.Add(config);
-        config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
         await dbContext.SaveChangesAsync();
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
@@ -258,7 +258,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         pointRule.PointsPerPlace = new[] { 3, 2, 1 }.ToList();
         dbContext.PointRules.Add(pointRule);
         dbContext.ResultConfigurations.Add(config);
-        config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
         await dbContext.SaveChangesAsync();
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
@@ -298,7 +298,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             .Without(x => x.ResultFilterResultConfig)
             .Create();
         config.PointFilters.Add(filter);
-        config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
         dbContext.PointRules.Add(pointRule);
         dbContext.ResultConfigurations.Add(config);
         var sut = CreateSut();
@@ -336,7 +336,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             .Without(x => x.ResultFilterResultConfig)
             .Create();
         config.ResultFilters.Add(filter);
-        config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
         dbContext.PointRules.Add(pointRule);
         dbContext.ResultConfigurations.Add(config);
         var sut = CreateSut();
@@ -537,7 +537,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         pointRule.AutoPenalties.Add(autoPenalty);
         dbContext.PointRules.Add(pointRule);
         dbContext.ResultConfigurations.Add(config);
-        config.Scorings.ForEeach(x => { x.PointsRule = pointRule; });
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
         await dbContext.SaveChangesAsync();
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)

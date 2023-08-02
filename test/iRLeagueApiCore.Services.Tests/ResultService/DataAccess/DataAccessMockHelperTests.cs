@@ -143,7 +143,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
             scoringCount = config.Scorings.Count();
             dbContext.ResultConfigurations.Add(config);
             dbContext.PointRules.Add(pointRule);
-            config.Scorings.ForEeach(x => x.PointsRule = pointRule);
+            config.Scorings.ForEach(x => x.PointsRule = pointRule);
             await dbContext.SaveChangesAsync();
         }
 
