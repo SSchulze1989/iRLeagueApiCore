@@ -1,7 +1,9 @@
 ﻿using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
+using Microsoft.AspNetCore.Connections.Features;
 using System.Text.Json;
+using System.Threading;
 using System.Transactions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
@@ -132,10 +134,10 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         return map;
     }
 
-    private async Task<LeagueMemberEntity> GetOrCreateMemberAsync(long leagueId, ParseSessionResultRow data, CancellationToken cancellationToken)
+    private async Task<LeagueMemberEntity> GetOrCreateMemberAsync(long leagueId, ParseSessionResultRow row, CancellationToken cancellationToken)
     {
-        var custId = data.cust_id.ToString();
-        var displayName = data.display_name;
+        var custId = row.cust_id.ToString();
+        var displayName = row.display_name ?? string.Empty;
         var leagueMember = await dbContext.LeagueMembers
             .Include(x => x.Team)
             .Include(x => x.Member)
@@ -148,7 +150,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         {
             var league = await dbContext.Leagues
                 .FirstAsync(x => x.Id == leagueId);
-            var (firstname, lastname) = GetFirstnameLastname(displayName ?? string.Empty);
+            var (firstname, lastname) = GetFirstnameLastname(displayName);
             var member = new MemberEntity()
             {
                 Firstname = firstname,
@@ -165,11 +167,56 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         else
         {
             // update member name
-            var (firstname, lastname) = GetFirstnameLastname(displayName ?? string.Empty);
+            var (firstname, lastname) = GetFirstnameLastname(displayName);
             leagueMember.Member.Firstname = firstname;
             leagueMember.Member.Lastname = lastname;
         }
         return leagueMember;
+    }
+
+    private async Task<TeamEntity?> GetTeamAsync(long? iracingTeamId, CancellationToken cancellationToken)
+    {
+        if (iracingTeamId is null)
+        {
+            return null;
+        }
+
+        iracingTeamId = Math.Abs(iracingTeamId.Value); // get positive value because team is negative in result
+        return await dbContext.Teams
+            .SingleOrDefaultAsync(x => x.IRacingTeamId == iracingTeamId, cancellationToken)
+            ?? dbContext.Teams.Local
+            .SingleOrDefault(x => x.IRacingTeamId == iracingTeamId);
+    }
+
+    private async Task UpdateOrCreateTeamAsync(long leagueId, ParseSessionResultRow row, CancellationToken cancellationToken)
+    {
+        if (row.team_id is null)
+        {
+            return;
+        }
+
+        var iracingTeamId = Math.Abs(row.team_id.Value); // get positive value because team is negative in result
+        var teamName = row.display_name ?? string.Empty;
+        var team = await GetTeamAsync(iracingTeamId, cancellationToken);
+        if (team is null)
+        {
+            var league = await dbContext.Leagues
+                .FirstAsync(x => x.Id == leagueId, cancellationToken);
+            team = new TeamEntity()
+            {
+                League = league,
+                LeagueId = league.Id,
+                IRacingTeamId = iracingTeamId,
+                Name = teamName,
+            };
+            dbContext.Teams.Add(team);
+        }
+
+        foreach(var driverRow in row.driver_results)
+        {
+            var member = await GetOrCreateMemberAsync(leagueId, driverRow, cancellationToken);
+            member.Team = team;
+        }
     }
 
     private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(long leagueId, ParseSimSessionResult sessionData, ParseSessionResult data,
@@ -187,6 +234,10 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         var dataRows = data.results.AsEnumerable();
         if (isTeamResult)
         {
+            foreach(var teamRow in dataRows)
+            {
+                await UpdateOrCreateTeamAsync(leagueId, teamRow, cancellationToken);
+            }
             dataRows = data.results.SelectMany(x => x.driver_results);
         }
         foreach (var row in dataRows)
@@ -251,6 +302,8 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         int laps, CancellationToken cancellationToken)
     {
         var leagueMember = await GetOrCreateMemberAsync(leagueId, data, cancellationToken);
+        var team = await GetTeamAsync(data.team_id, cancellationToken)
+            ?? leagueMember.Team;
         var row = new ResultRowEntity
         {
             LeagueId = leagueId,
@@ -295,7 +348,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
             SimSessionType = -1,
             StartPosition = data.starting_position + 1,
             Status = data.reason_out_id,
-            Team = leagueMember.Team,
+            Team = team,
             RacePoints = data.champ_points
         };
         row.SeasonStartIRating = SeasonStartIratings.TryGetValue(row.Member.Id, out int irating) ? irating : row.OldIRating;

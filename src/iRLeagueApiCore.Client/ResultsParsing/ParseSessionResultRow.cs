@@ -3,7 +3,7 @@
 #pragma warning disable IDE1006 // Benennungsstile
 public sealed class ParseSessionResultRow
 {
-    public long team_id { get; set; }
+    public long? team_id { get; set; }
     public long cust_id { get; set; }
     public string? display_name { get; set; }
     public int finish_position { get; set; }

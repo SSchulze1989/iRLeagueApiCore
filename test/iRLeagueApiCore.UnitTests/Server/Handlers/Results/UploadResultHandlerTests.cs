@@ -75,6 +75,36 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
     }
 
     [Fact]
+    public async Task Handle_ShouldCreateTeam_WhenTeamDoesNotExist()
+    {
+        var rowCount = 2;
+        var names = Enumerable.Range(0, rowCount).Select(x =>
+            new { Firstname = fixture.Create<string>(), Lastname = fixture.Create<string>() })
+            .ToArray();
+        var members = await dbContext.LeagueMembers
+            .Where(x => x.Team == null)
+            .Take(rowCount)
+            .ToListAsync();
+        var newTeam = fixture.Build<TeamEntity>()
+            .With(x => x.Members, members)
+            .Without(x => x.League)
+            .Create();
+        var newTeamRow = CreateTeamResultRow(1, (newTeam.IRacingTeamId!.Value, newTeam.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results.Concat(new[] { newTeamRow }).ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testNewTeam = await dbContext.Teams
+            .FirstOrDefaultAsync(x => x.IRacingTeamId == newTeam.IRacingTeamId);
+        testNewTeam.Should().NotBeNull();
+        testNewTeam!.Name.Should().Be(newTeam.Name);
+        testNewTeam.Members.Should().BeEquivalentTo(members);
+    }
+
+    [Fact]
     public async Task Handle_ShouldAssingPracticeResults()
     {
         var @event = EventBuilder().Create();
@@ -449,9 +479,10 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
                 .ToArray());
     }
 
-    private ParseSessionResultRow CreateResultRow(int pos, LeagueMemberEntity leagueMember)
+    private ParseSessionResultRow CreateResultRow(int pos, LeagueMemberEntity leagueMember, long? teamId = null)
     {
         return fixture.Build<ParseSessionResultRow>()
+            .With(x => x.team_id, teamId)
             .With(x => x.position, pos)
             .With(x => x.cust_id, Convert.ToInt64(leagueMember.Member.IRacingId))
             .With(x => x.display_name, GetMemberFullName(leagueMember.Member))
@@ -472,7 +503,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
                 .With(x => x.car_number, fixture.Create<int>().ToString())
                 .Create())
             .With(x => x.driver_results, team.members
-                .Select(x => CreateResultRow(pos, x))
+                .Select(x => CreateResultRow(pos, x, teamId: team.teamId))
                 .ToArray())
             .Create();
     }
