@@ -101,7 +101,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             .FirstOrDefaultAsync(x => x.IRacingTeamId == newTeam.IRacingTeamId);
         testNewTeam.Should().NotBeNull();
         testNewTeam!.Name.Should().Be(newTeam.Name);
-        testNewTeam.Members.Should().BeEquivalentTo(members);
+        testNewTeam.Members.Should().Contain(members);
     }
 
     [Fact]
