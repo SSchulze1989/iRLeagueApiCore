@@ -102,7 +102,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     /// <returns></returns>
     [HttpPost]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    [RequireSubscription]
+    //[RequireSubscription]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]/Upload")]
     public async Task<ActionResult<bool>> UploadResult([FromRoute] string leagueName, [FromRoute] long eventId,
         [FromBody] ParseSimSessionResult subsessionId, CancellationToken cancellationToken = default)

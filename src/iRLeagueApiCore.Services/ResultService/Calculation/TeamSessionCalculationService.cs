@@ -16,10 +16,15 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
     {
         var memberRows = data.ResultRows.Select(x => new ResultRowCalculationResult(x))
             .OrderBy(x => x.FinalPosition);
-        var teamRows = memberRows
+        var teamRowGroups = memberRows
             .GroupBy(x => x.TeamId)
-            .Where(x => x.Key != null)
-            .Select(x => GetTeamResultRow(x))
+            .Where(x => x.Key != null);
+        // do not aggregate driver points if all members of all teams have the same race points, usually indicating a team based points value
+        bool aggregateDriverPoints = teamRowGroups
+            .Select(x => x.DistinctBy(y => y.RacePoints).Count())
+            .Any(x => x > 1);
+        var teamRows = teamRowGroups
+            .Select(x => GetTeamResultRow(x, aggregateDriverPoints))
             .NotNull()
             .ToList();
         var pointRule = config.PointRule;
@@ -36,7 +41,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
         return Task.FromResult(result);
     }
 
-    private ResultRowCalculationResult? GetTeamResultRow(IEnumerable<ResultRowCalculationResult> teamMemberRows)
+    private ResultRowCalculationResult? GetTeamResultRow(IEnumerable<ResultRowCalculationResult> teamMemberRows, bool aggregateDriverRows)
     {
         // 2. Keep two best driver results
         teamMemberRows = teamMemberRows.Take(config.MaxResultsPerGroup);
@@ -55,6 +60,15 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             MemberId = null,
             Firstname = string.Empty,
             Lastname = string.Empty,
+            Car = dataRow.Car,
+            CarClass = dataRow.CarClass,
+            CarId = dataRow.CarId,
+            CarNumber = dataRow.CarNumber,
+            ClassId = dataRow.ClassId,
+            Status = dataRow.Status,
+            StartPosition = dataRow.StartPosition,
+            FinishPosition = dataRow.FinishPosition,
+            FinalPosition = dataRow.FinalPosition,
         };
         foreach (var memberRow in teamMemberRows)
         {
@@ -62,7 +76,14 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             teamRow.LeadLaps += memberRow.LeadLaps;
             teamRow.Incidents += memberRow.Incidents;
             teamRow.Interval += memberRow.Interval;
-            teamRow.RacePoints += memberRow.RacePoints + memberRow.BonusPoints;
+            if (aggregateDriverRows)
+            {
+                teamRow.RacePoints += memberRow.RacePoints + memberRow.BonusPoints;
+            }
+            else
+            {
+                teamRow.RacePoints = dataRow.RacePoints + dataRow.BonusPoints;
+            }
             teamRow.PenaltyPoints += memberRow.PenaltyPoints;
         }
         teamRow.StartPosition = teamMemberRows.Min(x => x.StartPosition);
