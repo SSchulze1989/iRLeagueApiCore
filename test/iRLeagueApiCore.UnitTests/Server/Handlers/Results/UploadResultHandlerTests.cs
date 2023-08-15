@@ -10,6 +10,7 @@ using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
@@ -17,9 +18,6 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
 {
     private readonly IResultCalculationQueue calculationQueue;
     private readonly ILogger<UploadResultHandler> logger;
-
-    private long TestLeagueId => dbContext.Leagues.First().Id;
-    private long TestEventId => dbContext.Events.First().EventId;
 
     public UploadResultHandlerTests() : base()
     {
@@ -57,9 +55,10 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         var newMemberRows = names.Select((x, i) => fixture.Build<ParseSessionResultRow>()
             .With(x => x.cust_id, dbContext.Members.Select(x => Convert.ToInt64(x.IRacingId)).Max() + 1 + i)
             .With(x => x.display_name, $"{x.Firstname} {x.Lastname}")
+            .Without(x => x.driver_results)
             .Create())
             .ToArray();
-        var result = await CreateFakeResult(false, false, 1);
+        var result = await CreateFakeResult(practice: false, qualy: false, raceCount: 1);
         result.session_results.First().results = result.session_results.First().results.Concat(newMemberRows).ToArray();
         var sut = CreateSut();
         var request = CreateRequest(TestEventId, result);
@@ -74,6 +73,127 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             newMember!.Firstname.Should().Be(name.Firstname);
             newMember.Lastname.Should().Be(name.Lastname);
         }
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCreateTeam_WhenTeamDoesNotExist()
+    {
+        var rowCount = 2;
+        var names = Enumerable.Range(0, rowCount).Select(x =>
+            new { Firstname = fixture.Create<string>(), Lastname = fixture.Create<string>() })
+            .ToArray();
+        var members = await dbContext.LeagueMembers
+            .Where(x => x.Team == null)
+            .Take(rowCount)
+            .ToListAsync();
+        var newTeam = fixture.Build<TeamEntity>()
+            .With(x => x.Members, members)
+            .Without(x => x.League)
+            .Create();
+        var newTeamRow = CreateTeamResultRow(1, (newTeam.IRacingTeamId!.Value, newTeam.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results.Concat(new[] { newTeamRow }).ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testNewTeam = await dbContext.Teams
+            .FirstOrDefaultAsync(x => x.IRacingTeamId == newTeam.IRacingTeamId);
+        testNewTeam.Should().NotBeNull();
+        testNewTeam!.Name.Should().Be(newTeam.Name);
+        testNewTeam.Members.Should().Contain(members);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldAddMemberToTeam_WhenDriverIsInNoTeam()
+    {
+        var team = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync();
+        var addMember = await dbContext.LeagueMembers
+            .Where(x => x.Team == null)
+            .FirstAsync();
+        var rowCount = team.Members.Count();
+        var members = team.Members
+            .ToList();
+        Debug.Assert(members.Contains(addMember) == false);
+        members.Add(addMember);
+        var updateTeamRow = CreateTeamResultRow(1, (team.IRacingTeamId!.Value, team.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results
+            .Concat(new[] { updateTeamRow })
+            .ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testUpdateTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == team.TeamId);
+        testUpdateTeam.Members.Should().Contain(addMember);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldMoveMemberToTeam_WhenDriverIsInAnotherTeam()
+    {
+        var team = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync();
+        var oldTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .Skip(1)
+            .FirstAsync();
+        var moveMember = oldTeam.Members.First();
+        var rowCount = team.Members.Count();
+        var members = team.Members
+            .ToList();
+        Debug.Assert(members.Contains(moveMember) == false);
+        members.Add(moveMember);
+        var updateTeamRow = CreateTeamResultRow(1, (team.IRacingTeamId!.Value, team.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results
+            .Concat(new[] { updateTeamRow })
+            .ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testUpdateTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == team.TeamId);
+        testUpdateTeam.Members.Should().Contain(moveMember);
+        var testUpdateOldTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == oldTeam.TeamId);
+        testUpdateOldTeam.Members.Should().NotContain(moveMember);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldRemoveMemberFromTeam_WhenDriverHasNoTeamInResult()
+    {
+        var team = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync();
+        var removeMember = team.Members.First();
+        var members = team.Members.ToList();
+        members.Remove(removeMember);
+        var updateTeamRow = CreateTeamResultRow(1, (team.IRacingTeamId!.Value, team.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results
+            .Concat(new[] { updateTeamRow })
+            .ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testUpdateTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == team.TeamId);
+        testUpdateTeam.Members.Should().NotContain(removeMember);
     }
 
     [Fact]
@@ -204,7 +324,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             .Create());
         dbContext.Events.Add(@event);
         await dbContext.SaveChangesAsync();
-        var result = await CreateFakeResult(false, false, 1);
+        var result = await CreateFakeResult(practice: false, qualy: false, raceCount: 1);
         var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
 
@@ -260,7 +380,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             .Create());
         dbContext.Events.Add(@event);
         await dbContext.SaveChangesAsync();
-        var result = await CreateFakeResult(false, false, 1);
+        var result = await CreateFakeResult(practice: false, qualy: false, raceCount: 1);
         var maxLaps = result.session_results[0].results.Max(x => x.laps_complete);
         result.session_results[0].results.First().laps_complete = maxLaps;
         var lapsDown = 3;
@@ -278,6 +398,62 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             .FirstAsync(x => x.EventId == @event.EventId);
         var testRow = session.ResultRows.Last();
         testRow.Interval.Should().Be(TimeSpan.FromDays(lapsDown));
+    }
+
+    [Fact]
+    public async Task Handle_ShouldFillResultRowData_FromTeamResults()
+    {
+        var @event = EventBuilder().Create();
+        @event.Sessions.Add(SessionBuilder()
+            .With(x => x.SessionType, SessionType.Race)
+            .Create());
+        dbContext.Events.Add(@event);
+        await dbContext.SaveChangesAsync();
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        var request = CreateRequest(@event.EventId, result);
+        var sut = CreateSut();
+
+        await sut.Handle(request, default);
+
+        var sessionResult = await dbContext.SessionResults
+            .Include(x => x.ResultRows)
+                .ThenInclude(x => x.Member)
+            .FirstAsync(x => x.EventId == @event.EventId);
+        var laps = result.session_results.First().results.Select(y => y.laps_complete).Max();
+        foreach ((var testRow, var resultRow) in sessionResult.ResultRows.Zip(result.session_results.First().results.SelectMany(x => x.driver_results)))
+        {
+            testRow.AvgLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.average_lap / 10000D));
+            testRow.Car.Should().Be(resultRow.car_name);
+            testRow.CarId.Should().Be(resultRow.car_id);
+            testRow.CarNumber.ToString().Should().Be(resultRow.livery.car_number);
+            testRow.ClassId.Should().Be(resultRow.car_class_id);
+            testRow.ClubId.Should().Be(resultRow.club_id);
+            testRow.CompletedLaps.Should().Be(resultRow.laps_complete);
+            testRow.CompletedPct.Should().BeApproximately(resultRow.laps_complete / (double)laps, 0.001);
+            testRow.Division.Should().Be(resultRow.division);
+            testRow.FastestLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.best_lap_time / 10000D));
+            testRow.FastLapNr.Should().Be(resultRow.best_lap_num);
+            testRow.FinishPosition.Should().Be(resultRow.position + 1);
+            testRow.Incidents.Should().Be(resultRow.incidents);
+            testRow.Interval.Should().Be(TimeSpan.FromSeconds(resultRow.interval / 10000D));
+            testRow.IRacingId.Should().Be(resultRow.cust_id.ToString());
+            testRow.LeadLaps.Should().Be(resultRow.laps_lead);
+            testRow.Member.IRacingId.Should().Be(resultRow.cust_id.ToString());
+            testRow.NewCpi.Should().Be((int)resultRow.new_cpi);
+            testRow.NewIRating.Should().Be(resultRow.newi_rating);
+            testRow.NewLicenseLevel.Should().Be(resultRow.new_license_level);
+            testRow.NewSafetyRating.Should().Be(resultRow.new_sub_level);
+            testRow.OldCpi.Should().Be((int)resultRow.old_cpi);
+            testRow.OldIRating.Should().Be(resultRow.oldi_rating);
+            testRow.OldLicenseLevel.Should().Be(resultRow.old_license_level);
+            testRow.OldSafetyRating.Should().Be(resultRow.old_sub_level);
+            testRow.PointsEligible.Should().Be(true);
+            testRow.PositionChange.Should().Be(resultRow.position - resultRow.starting_position);
+            testRow.QualifyingTime.Should().Be(TimeSpan.FromSeconds(resultRow.best_qual_lap_time / 10000D));
+            testRow.QualifyingTimeAt.Should().Be(resultRow.best_qual_lap_at);
+            testRow.StartPosition.Should().Be(resultRow.starting_position + 1);
+            testRow.Status.Should().Be(resultRow.reason_out_id);
+        }
     }
 
     private IPostprocessComposer<EventEntity> EventBuilder()
@@ -313,8 +489,10 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         return new UploadResultRequest(eventId, data);
     }
 
-    private async Task<ParseSimSessionResult> CreateFakeResult(bool practice = true,
+    private async Task<ParseSimSessionResult> CreateFakeResult(
+        bool practice = true,
         bool qualy = true,
+        bool teamResult = false,
         int raceCount = 1)
     {
         var memberCount = 10;
@@ -329,7 +507,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         var sessionNr = (practice ? -1 : 0) + (qualy ? -1 : 0) - raceCount * 2 + 1;
         if (practice)
         {
-            sessionResults.Add(SessionResultBuilder(members)
+            sessionResults.Add(SessionResultBuilder(members, teamResult)
                 .With(x => x.simsession_number, ++sessionNr)
                 .With(x => x.simsession_type, (int)SimSessionType.OpenPractice)
                 .With(x => x.simsession_type_name, "Open Practice")
@@ -338,7 +516,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         }
         if (qualy)
         {
-            sessionResults.Add(SessionResultBuilder(members)
+            sessionResults.Add(SessionResultBuilder(members, teamResult)
                 .With(x => x.simsession_number, ++sessionNr)
                 .With(x => x.simsession_type, (int)SimSessionType.LoneQualifying)
                 .With(x => x.simsession_type_name, "Lone Qualifying")
@@ -349,7 +527,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         var heatNr = 1;
         for (int i = 0; i < raceCount; i++)
         {
-            sessionResults.Add(SessionResultBuilder(members)
+            sessionResults.Add(SessionResultBuilder(members, teamResult)
                 .With(x => x.simsession_number, ++sessionNr)
                 .With(x => x.simsession_type, (int)SimSessionType.Race)
                 .With(x => x.simsession_type_name, "Race")
@@ -357,7 +535,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
                 .Create());
             if (sessionNr != 0)
             {
-                sessionResults.Add(SessionResultBuilder(members)
+                sessionResults.Add(SessionResultBuilder(members, teamResult)
                     .With(x => x.simsession_number, ++sessionNr)
                     .With(x => x.simsession_type, (int)SimSessionType.OpenPractice)
                     .With(x => x.simsession_type_name, "Open Practice")
@@ -370,21 +548,55 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         return result;
     }
 
-    private IPostprocessComposer<ParseSessionResult> SessionResultBuilder(IEnumerable<LeagueMemberEntity> members)
+    private IPostprocessComposer<ParseSessionResult> SessionResultBuilder(IEnumerable<LeagueMemberEntity> members, bool teamResult = false)
     {
+        if (teamResult)
+        {
+            var teams = members.Chunk(3)
+                .Select(x => (fixture.Create<long>(), fixture.Create<string>(), x.AsEnumerable()));
+            return SessionTeamResultBuilder(teams);
+        }
+
         return fixture.Build<ParseSessionResult>()
-            .With(x => x.results, members.Shuffle().Select((member, i) => CreateResultRow(i + 1, member)).ToArray());
+            .With(x => x.results, members.Shuffle()
+                .Select((member, i) => CreateResultRow(i + 1, member))
+                .ToArray());
     }
 
-    private ParseSessionResultRow CreateResultRow(int pos, LeagueMemberEntity leagueMember)
+    private IPostprocessComposer<ParseSessionResult> SessionTeamResultBuilder(IEnumerable<(long teamId, string teamName, IEnumerable<LeagueMemberEntity> members)> teams)
+    {
+        return fixture.Build<ParseSessionResult>()
+            .With(x => x.results, teams.Shuffle()
+                .Select((team, i) => CreateTeamResultRow(i + 1, team))
+                .ToArray());
+    }
+
+    private ParseSessionResultRow CreateResultRow(int pos, LeagueMemberEntity leagueMember, long? teamId = null)
     {
         return fixture.Build<ParseSessionResultRow>()
+            .With(x => x.team_id, teamId)
             .With(x => x.position, pos)
             .With(x => x.cust_id, Convert.ToInt64(leagueMember.Member.IRacingId))
             .With(x => x.display_name, GetMemberFullName(leagueMember.Member))
             .With(x => x.livery, fixture.Build<ParseLivery>()
                 .With(x => x.car_number, fixture.Create<int>().ToString())
                 .Create())
+            .Without(x => x.driver_results)
+            .Create();
+    }
+
+    private ParseSessionResultRow CreateTeamResultRow(int pos, (long teamId, string name, IEnumerable<LeagueMemberEntity> members) team)
+    {
+        return fixture.Build<ParseSessionResultRow>()
+            .With(x => x.position, pos)
+            .With(x => x.team_id, team.teamId)
+            .With(x => x.display_name, team.name)
+            .With(x => x.livery, fixture.Build<ParseLivery>()
+                .With(x => x.car_number, fixture.Create<int>().ToString())
+                .Create())
+            .With(x => x.driver_results, team.members
+                .Select(x => CreateResultRow(pos, x, teamId: team.teamId))
+                .ToArray())
             .Create();
     }
 

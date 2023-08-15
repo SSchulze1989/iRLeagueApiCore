@@ -35,6 +35,11 @@ internal class ResultsEndpoint : GetAllEndpoint<EventResultModel>,
         return await HttpClientWrapper.DeleteAsClientActionResult(QueryUrl, cancellationToken);
     }
 
+    IFetchResultsEndpoint IEventResultsEndpoint.Fetch()
+    {
+        return new FetchEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
     async Task<ClientActionResult<IEnumerable<SeasonEventResultModel>>> IGetEndpoint<IEnumerable<SeasonEventResultModel>>.Get(CancellationToken cancellationToken)
     {
         return await HttpClientWrapper.GetAsClientActionResult<IEnumerable<SeasonEventResultModel>>(QueryUrl, cancellationToken);

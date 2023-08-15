@@ -1,7 +1,9 @@
 ﻿namespace iRLeagueApiCore.Client.ResultsParsing;
 
+#pragma warning disable IDE1006 // Benennungsstile
 public sealed class ParseSessionResultRow
 {
+    public long? team_id { get; set; }
     public long cust_id { get; set; }
     public string? display_name { get; set; }
     public int finish_position { get; set; }
@@ -27,8 +29,9 @@ public sealed class ParseSessionResultRow
     public int position { get; set; }
     public long qual_lap_time { get; set; }
     public int starting_position { get; set; }
+    public int starting_position_in_class { get; set; }
     public int car_class_id { get; set; }
-    public string? car_name { get; set; }
+    public string? car_class_name { get; set; }
     public string? car_class_short_name { get; set; }
     public int club_id { get; set; }
     public string? club_name { get; set; }
@@ -53,9 +56,11 @@ public sealed class ParseSessionResultRow
     public int league_points { get; set; }
     public int league_agg_points { get; set; }
     public int car_id { get; set; }
+    public string? car_name { get; set; }
     public int aggregate_champ_points { get; set; }
     public ParseLivery livery { get; set; } = new();
     public bool watched { get; set; }
     public bool friend { get; set; }
+    public ParseSessionResultRow[] driver_results { get; set; } = Array.Empty<ParseSessionResultRow>();
     public bool ai { get; set; }
 }

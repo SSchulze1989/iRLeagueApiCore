@@ -33,7 +33,7 @@ public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, Pos
         }
         await dbContext.SaveChangesAsync(cancellationToken);
         _logger.LogInformation("League {LeagueName} successfully created", request.Model.Name);
-        var getLeague = await MapToGetLeagueModelAsync(leagueEntity.Id, cancellationToken) 
+        var getLeague = await MapToGetLeagueModelAsync(leagueEntity.Id, true, cancellationToken) 
             ?? throw new ResourceNotFoundException("Created resource not found!");
         return getLeague;
     }

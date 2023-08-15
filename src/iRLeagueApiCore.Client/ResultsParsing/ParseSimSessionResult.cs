@@ -1,5 +1,6 @@
 ﻿namespace iRLeagueApiCore.Client.ResultsParsing;
 
+#pragma warning disable IDE1006 // Benennungsstile
 public sealed class ParseSimSessionResult
 {
     public long subsession_id { get; set; }

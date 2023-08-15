@@ -1,5 +1,6 @@
 ﻿namespace iRLeagueApiCore.Client.ResultsParsing;
 
+#pragma warning disable IDE1006 // Benennungsstile
 public sealed class ParseWeather
 {
     public int type { get; set; }

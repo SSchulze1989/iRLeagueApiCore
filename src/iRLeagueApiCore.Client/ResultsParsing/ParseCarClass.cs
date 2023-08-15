@@ -1,5 +1,6 @@
 ﻿namespace iRLeagueApiCore.Client.ResultsParsing;
 
+#pragma warning disable IDE1006 // Benennungsstile
 public sealed class ParseCarClass
 {
     public int car_class_id { get; set; }
