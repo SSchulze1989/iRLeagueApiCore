@@ -10,6 +10,7 @@ using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
@@ -102,6 +103,97 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         testNewTeam.Should().NotBeNull();
         testNewTeam!.Name.Should().Be(newTeam.Name);
         testNewTeam.Members.Should().Contain(members);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldAddMemberToTeam_WhenDriverIsInNoTeam()
+    {
+        var team = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync();
+        var addMember = await dbContext.LeagueMembers
+            .Where(x => x.Team == null)
+            .FirstAsync();
+        var rowCount = team.Members.Count();
+        var members = team.Members
+            .ToList();
+        Debug.Assert(members.Contains(addMember) == false);
+        members.Add(addMember);
+        var updateTeamRow = CreateTeamResultRow(1, (team.IRacingTeamId!.Value, team.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results
+            .Concat(new[] { updateTeamRow })
+            .ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testUpdateTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == team.TeamId);
+        testUpdateTeam.Members.Should().Contain(addMember);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldMoveMemberToTeam_WhenDriverIsInAnotherTeam()
+    {
+        var team = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync();
+        var oldTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .Skip(1)
+            .FirstAsync();
+        var moveMember = oldTeam.Members.First();
+        var rowCount = team.Members.Count();
+        var members = team.Members
+            .ToList();
+        Debug.Assert(members.Contains(moveMember) == false);
+        members.Add(moveMember);
+        var updateTeamRow = CreateTeamResultRow(1, (team.IRacingTeamId!.Value, team.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results
+            .Concat(new[] { updateTeamRow })
+            .ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testUpdateTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == team.TeamId);
+        testUpdateTeam.Members.Should().Contain(moveMember);
+        var testUpdateOldTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == oldTeam.TeamId);
+        testUpdateOldTeam.Members.Should().NotContain(moveMember);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldRemoveMemberFromTeam_WhenDriverHasNoTeamInResult()
+    {
+        var team = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync();
+        var removeMember = team.Members.First();
+        var members = team.Members.ToList();
+        members.Remove(removeMember);
+        var updateTeamRow = CreateTeamResultRow(1, (team.IRacingTeamId!.Value, team.Name, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
+        result.session_results.First().results = result.session_results.First().results
+            .Concat(new[] { updateTeamRow })
+            .ToArray();
+        var sut = CreateSut();
+        var request = CreateRequest(TestEventId, result);
+
+        await sut.Handle(request, default);
+
+        var testUpdateTeam = await dbContext.Teams
+            .Include(x => x.Members)
+            .FirstAsync(x => x.TeamId == team.TeamId);
+        testUpdateTeam.Members.Should().NotContain(removeMember);
     }
 
     [Fact]
