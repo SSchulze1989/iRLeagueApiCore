@@ -13,6 +13,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         SessionCalculationData data)
     {
         rows = pointRule.GetResultFilters().FilterRows(rows);
+        rows = CalculateCompletedPct(rows);
         rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
@@ -387,6 +388,22 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 row.BonusPoints += points;
             }
         }
+        return rows;
+    }
+
+    protected static IEnumerable<ResultRowCalculationResult> CalculateCompletedPct(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        var laps = rows.Max(x => x.CompletedLaps);
+        if (laps == 0)
+        {
+            return rows;
+        }
+
+        foreach (var row in rows)
+        {
+            row.CompletedPct = row.CompletedLaps / laps;
+        }
+
         return rows;
     }
 }
