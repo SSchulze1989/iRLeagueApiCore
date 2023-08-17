@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Globalization;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
-public sealed class MemberRowFilterTests
+public sealed class IdRowFilterTests
 {
     private static readonly Fixture fixture = new();
 
@@ -26,14 +26,14 @@ public sealed class MemberRowFilterTests
     [MemberData(nameof(TestValidConstructorData))]
     public void Constructor_ShouldNotThrow_WithValidValues(IEnumerable<string> values)
     {
-        _ = new MemberRowFilter(values, MatchedValueAction.Keep);
+        _ = new IdRowFilter<long>(values, x => x.MemberId.GetValueOrDefault(), MatchedValueAction.Keep);
     }
 
     [Theory]
     [MemberData(nameof(TestInvalidConstructorData))]
     public void Constructor_ShouldThrow_WithInvalidValues(IEnumerable<string> values)
     {
-        var test = () => new MemberRowFilter(values, MatchedValueAction.Keep);
+        var test = () => new IdRowFilter<long>(values, x => x.MemberId.GetValueOrDefault(), MatchedValueAction.Keep);
         test.Should().Throw<ArgumentException>();
     }
 
@@ -44,7 +44,7 @@ public sealed class MemberRowFilterTests
         var rows = fixture.CreateMany<ResultRowCalculationResult>(10).ToList();
         var memberIds = rows.Select(x => x.MemberId).Take(valueCount).ToList();
         rows = rows.Shuffle().ToList();
-        var sut = new MemberRowFilter(memberIds.Select(x => x.ToString()).NotNull(), MatchedValueAction.Keep);
+        var sut = new IdRowFilter<long>(memberIds.Select(x => x.ToString()).NotNull(), x => x.MemberId.GetValueOrDefault(), MatchedValueAction.Keep);
 
         var test = sut.FilterRows(rows);
 
@@ -62,7 +62,7 @@ public sealed class MemberRowFilterTests
         var rows = fixture.CreateMany<ResultRowCalculationResult>(10).ToList();
         var memberIds = rows.Select(x => x.MemberId).Take(valueCount).ToList();
         rows = rows.Shuffle().ToList();
-        var sut = new MemberRowFilter(memberIds.Select(x => x.ToString()).NotNull(), MatchedValueAction.Remove);
+        var sut = new IdRowFilter<long>(memberIds.Select(x => x.ToString()).NotNull(), x => x.MemberId.GetValueOrDefault(), MatchedValueAction.Remove);
 
         var test = sut.FilterRows(rows);
 
