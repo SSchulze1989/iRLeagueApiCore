@@ -227,7 +227,8 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         {
             FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, 
                 condition.FilterValues, condition.Action, allowForEach: allowForEach),
-            FilterType.Member => new MemberRowFilter(condition.FilterValues, condition.Action),
+            FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
+            FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),
             _ => null,
         };
     }
@@ -245,7 +246,8 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return condition?.FilterType switch
         {
             FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, condition.FilterValues, condition.Action),
-            FilterType.Member => new MemberRowFilter(condition.FilterValues, condition.Action),
+            FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
+            FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),
             _ => null,
         };
     }

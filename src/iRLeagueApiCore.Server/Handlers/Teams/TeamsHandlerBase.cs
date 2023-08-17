@@ -43,6 +43,7 @@ public abstract class TeamsHandlerBase<THandler, TRequest> : HandlerBase<THandle
         entity.TeamColor = model.TeamColor;
         entity.TeamHomepage = model.TeamHomepage;
         entity.Members = await MapToTeamMemberListAsync(model.Members, entity.Members, cancellationToken);
+        entity.IRacingTeamId = model.IRacingTeamId;
         return UpdateVersionEntity(user, entity);
     }
 
@@ -76,6 +77,7 @@ public abstract class TeamsHandlerBase<THandler, TRequest> : HandlerBase<THandle
         TeamColor = team.TeamColor,
         TeamHomepage = team.TeamHomepage,
         TeamId = team.TeamId,
+        IRacingTeamId = team.IRacingTeamId,
         Name = team.Name,
         Profile = team.Profile,
     };
