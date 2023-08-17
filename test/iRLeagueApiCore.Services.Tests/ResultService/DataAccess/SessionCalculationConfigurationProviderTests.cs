@@ -418,9 +418,43 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         foreach (var sessionConfig in test)
         {
             var filterGroup = sessionConfig.PointRule.GetResultFilters();
-            var testFilter = filterGroup!.GetFilters().First().rowFilter as MemberRowFilter;
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as IdRowFilter<long>;
             testFilter.Should().NotBeNull();
-            testFilter!.MemberIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
+            testFilter!.MatchIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
+            testFilter.Action.Should().Be(condition.Action);
+        }
+    }
+
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideTeamRowFilter_WhenConfigured()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var condition = fixture.Build<FilterConditionEntity>()
+            .With(x => x.FilterType, FilterType.Member)
+            .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
+            .Without(x => x.FilterOption)
+            .Create();
+        var filter = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Create();
+        config.ResultFilters.Add(filter);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var filterGroup = sessionConfig.PointRule.GetResultFilters();
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as IdRowFilter<long>;
+            testFilter.Should().NotBeNull();
+            testFilter!.MatchIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
             testFilter.Action.Should().Be(condition.Action);
         }
     }
@@ -510,7 +544,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             testFilter2.rowFilter.Should().BeOfType<ColumnValueRowFilter>();
             var testFilter3 = filterGroup.GetFilters().ElementAt(2);
             testFilter3.combination.Should().Be(combination3);
-            testFilter3.rowFilter.Should().BeOfType<MemberRowFilter>();
+            testFilter3.rowFilter.Should().BeOfType<IdRowFilter<long>>();
         }
     }
 
