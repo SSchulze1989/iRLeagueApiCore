@@ -23,9 +23,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                     .ThenInclude(x => x.AutoPenalties)
             .Include(x => x.SourceResultConfig)
             .Include(x => x.ResultFilters)
-                .ThenInclude(x => x.Conditions)
             .Include(x => x.PointFilters)
-                .ThenInclude(x => x.Conditions)
             .Where(x => x.ResultConfigId == resultConfigId)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -104,7 +102,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         var condition = filterOptionEntity.Conditions.FirstOrDefault();
         if (condition is null)
         {
-            condition = new FilterConditionEntity();
+            condition = new FilterConditionModel();
             filterOptionEntity.Conditions.Add(condition);
         }
         condition.Comparator = filterModel.Comparator;

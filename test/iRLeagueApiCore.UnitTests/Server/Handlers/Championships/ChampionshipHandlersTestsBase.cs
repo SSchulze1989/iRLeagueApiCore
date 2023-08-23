@@ -1,4 +1,5 @@
-﻿using iRLeagueDatabaseCore.Models;
+﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Xunit.Sdk;
 
@@ -73,7 +74,7 @@ public abstract class ChampionshipHandlersTestsBase<THandler, TRequest, TResult>
             .ForEach(x => CompareFilterConditionEntity(x.First, x.Second));
     }
 
-    protected void CompareFilterConditionEntity(FilterConditionEntity test, FilterConditionEntity expected)
+    protected void CompareFilterConditionEntity(FilterConditionModel test, FilterConditionModel expected)
     {
         test.FilterType.Should().Be(expected.FilterType);
         test.FilterValues.Should().BeEquivalentTo(expected.FilterValues);
