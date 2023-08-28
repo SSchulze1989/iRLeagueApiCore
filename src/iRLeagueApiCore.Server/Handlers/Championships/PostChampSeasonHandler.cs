@@ -101,7 +101,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
     {
         var target = CreateVersionEntity(user, new FilterOptionEntity()
         {
-            Conditions = source.Conditions.Select(x => new FilterConditionEntity()
+            Conditions = source.Conditions.Select(x => new FilterConditionModel()
             {
                 Action = x.Action,
                 ColumnPropertyName = x.ColumnPropertyName,
@@ -193,6 +193,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             return new List<ResultConfigurationEntity>();
         }
 
+
         var resultConfigs = await dbContext.ResultConfigurations
             .Where(x => prevResultConfigIds.Contains(x.ResultConfigId))
             .Include(x => x.League)
@@ -204,11 +205,8 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
                 .ThenInclude(x => x.ChampSeason)
                     .ThenInclude(x => x.Championship)
             .Include(x => x.PointFilters)
-                .ThenInclude(x => x.Conditions)
             .Include(x => x.Scorings)
-                .ThenInclude(x => x.PointsRule)
             .Include(x => x.ResultFilters)
-                .ThenInclude(x => x.Conditions)
             .ToListAsync(cancellationToken);
         return resultConfigs.Select(x => CopyResultConfigurationEntity(user, targetChampSeason, x)).ToList();
     }

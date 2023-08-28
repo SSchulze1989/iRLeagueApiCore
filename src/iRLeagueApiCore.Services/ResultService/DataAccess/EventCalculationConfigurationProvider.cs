@@ -60,9 +60,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.ExtScoringSource)
             .Include(x => x.PointFilters)
-                .ThenInclude(x => x.Conditions)
             .Include(x => x.ResultFilters)
-                .ThenInclude(x => x.Conditions)
             .FirstOrDefaultAsync(x => x.ResultConfigId == resultConfigId, cancellationToken)
             ?? throw new InvalidOperationException($"No result configuration with id:{resultConfigId} found");
     }

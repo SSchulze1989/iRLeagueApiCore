@@ -285,9 +285,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
         var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
                     .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
-                    .Without(x => x.FilterOption)
                     .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -323,9 +322,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
         var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
                     .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
-                    .Without(x => x.FilterOption)
                     .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -360,10 +358,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.ColumnProperty)
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -396,10 +393,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.Member)
             .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -430,10 +426,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.Member)
             .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -483,11 +478,10 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition1 = fixture.Build<FilterConditionEntity>()
+        var condition1 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.ColumnProperty)
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
             .With(x => x.Action, action1)
-            .Without(x => x.FilterOption)
             .Create();
         var filter1 = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -497,11 +491,10 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
             .Create();
-        var condition2 = fixture.Build<FilterConditionEntity>()
+        var condition2 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.ColumnProperty)
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Lastname))
             .With(x => x.Action, action2)
-            .Without(x => x.FilterOption)
             .Create();
         var filter2 = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -511,11 +504,10 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
             .Create();
-        var condition3 = fixture.Build<FilterConditionEntity>()
+        var condition3 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.Member)
             .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
             .With(x => x.Action, action3)
-            .Without(x => x.FilterOption)
             .Create();
         var filter3 = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]

@@ -197,20 +197,6 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         };
     }
 
-    private static FilterCombination GetFilterCombination(FilterConditionEntity? condition, int index)
-    {
-        if (index == 0 || condition is null)
-        {
-            return FilterCombination.And;
-        }
-        return condition.Action switch
-        {
-            MatchedValueAction.Remove => FilterCombination.And,
-            MatchedValueAction.Keep => FilterCombination.Or,
-            _ => FilterCombination.And,
-        };
-    }
-
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionModel?> filters,
         bool allowForEach = false)
     {
@@ -227,25 +213,6 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         {
             FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, 
                 condition.FilterValues, condition.Action, allowForEach: allowForEach),
-            FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
-            FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),
-            _ => null,
-        };
-    }
-
-    private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionEntity?> filters)
-    {
-        var filterCombination = filters
-            .Select((x, i) => (GetFilterCombination(x, i), GetRowFilterFromCondition(x)))
-            .Where(x => x.Item2 is not null);
-        return new(filterCombination!);
-    }
-
-    private static RowFilter<ResultRowCalculationResult>? GetRowFilterFromCondition(FilterConditionEntity? condition)
-    {
-        return condition?.FilterType switch
-        {
-            FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, condition.FilterValues, condition.Action),
             FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
             FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),
             _ => null,
