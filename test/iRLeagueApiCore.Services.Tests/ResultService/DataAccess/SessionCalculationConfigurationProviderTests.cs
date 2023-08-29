@@ -599,6 +599,45 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         }
     }
 
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideChampSeasonFilters()
+    {
+        var @event = await GetFirstEventEntity();
+        var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
+        var champseason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        var config = accessMockHelper.CreateConfiguration(@event);
+        config.ChampSeason = champseason;
+        var condition = fixture.Build<FilterConditionModel>()
+            .With(x => x.FilterType, FilterType.Member)
+            .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
+            .Create();
+        var filter = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
+            .Create();
+        champseason.Filters.Add(filter);
+        dbContext.Championships.Add(championship);
+        dbContext.ChampSeasons.Add(champseason);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var filterGroup = sessionConfig.PointRule.GetChampSeasonFilters();
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as IdRowFilter<long>;
+            testFilter.Should().NotBeNull();
+            testFilter!.MatchIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
+            testFilter.Action.Should().Be(condition.Action);
+        }
+    }
+
     private SessionCalculationConfigurationProvider CreateSut()
     {
         return fixture.Create<SessionCalculationConfigurationProvider>();

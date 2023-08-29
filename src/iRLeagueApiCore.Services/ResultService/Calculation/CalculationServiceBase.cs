@@ -12,6 +12,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     protected static IEnumerable<ResultRowCalculationResult> ApplyPoints(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule,
         SessionCalculationData data)
     {
+        rows = pointRule.GetChampSeasonFilters().FilterRows(rows);
         rows = pointRule.GetResultFilters().FilterRows(rows);
         rows = CalculateCompletedPct(rows);
         rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());

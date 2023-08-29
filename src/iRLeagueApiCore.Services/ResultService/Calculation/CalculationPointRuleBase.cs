@@ -17,6 +17,7 @@ internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculatio
 
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetResultFilters() => ResultFilters;
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetPointFilters() => PointFilters;
+    public override FilterGroupRowFilter<ResultRowCalculationResult> GetChampSeasonFilters() => ChampSeasonFilters;
     public override IEnumerable<AutoPenaltyConfigurationData> GetAutoPenalties() => AutoPenalties;
     public override IDictionary<string, int> GetBonusPoints() => BonusPoints;
 
