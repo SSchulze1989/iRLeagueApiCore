@@ -295,6 +295,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.PointFilters.Add(filter);
         config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
@@ -332,6 +333,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
@@ -369,6 +371,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         dbContext.ResultConfigurations.Add(config);
@@ -404,6 +407,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         dbContext.ResultConfigurations.Add(config);
@@ -437,6 +441,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         dbContext.ResultConfigurations.Add(config);
@@ -490,6 +495,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         var condition2 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.ColumnProperty)
@@ -503,6 +509,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         var condition3 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.Member)
@@ -516,6 +523,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter1);
         config.ResultFilters.Add(filter2);

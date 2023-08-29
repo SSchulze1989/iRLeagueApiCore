@@ -385,6 +385,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.StandingConfiguration, () => CreateStandingConfiguration(championship.League))
             .With(x => x.ResultConfigurations, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(nResultConfigs).ToList())
             .With(x => x.IsActive, true)
+            .Without(x => x.Filters)
             .Without(x => x.DefaultResultConfig)
             .Without(x => x.Standings)
             .Without(x => x.EventResults);
