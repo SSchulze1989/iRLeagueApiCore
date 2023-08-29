@@ -30,6 +30,7 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         target.StandingConfiguration = await MapToStandingConfigurationAsync(user, model.StandingConfig, cancellationToken);
         target.ResultConfigurations = await MapToResultConfigurationListAsync(model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
         target.DefaultResultConfig = target.ResultConfigurations.FirstOrDefault(x => x.ResultConfigId == model.DefaultResultConfig?.ResultConfigId);
+        target.Filters = await MapToFilterOptionListAsync(user, model.Filters, target.Filters, cancellationToken); 
         return await Task.FromResult(target);
     }
 
@@ -117,5 +118,11 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
             UseCombinedResult = champSeason.StandingConfiguration.UseCombinedResult,
             WeeksCounted = champSeason.StandingConfiguration.WeeksCounted,
         },
+        Filters = champSeason.Filters.Select(filter => new ResultFilterModel()
+        {
+            LeagueId = filter.LeagueId,
+            FilterOptionId = filter.FilterOptionId,
+            Condition = filter.Conditions.FirstOrDefault() ?? new(),
+        }).ToList(),
     };
 }
