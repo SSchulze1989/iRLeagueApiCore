@@ -18,6 +18,7 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
             .Include(x => x.StandingConfiguration)
             .Include(x => x.ResultConfigurations)
             .Include(x => x.DefaultResultConfig)
+            .Include(x => x.Filters)
             .Where(x => x.ChampSeasonId == champSeasonId)
             .FirstOrDefaultAsync(cancellationToken);
     }
