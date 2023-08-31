@@ -28,6 +28,10 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
         var configEntity = await GetResultConfigurationEntity(resultConfigId, cancellationToken);
         var eventEntity = await GetEventEntity(eventId, resultConfigId, cancellationToken);
         var champSeasonEntity = await GetChampSeasonEntity(eventEntity, configEntity, cancellationToken);
+        if (configEntity is not null)
+        {
+            configEntity.ChampSeason = champSeasonEntity;
+        }
         var resultConfiguration = await GetEventResultCalculationConfiguration(eventEntity, champSeasonEntity, configEntity, cancellationToken);
         return resultConfiguration;
     }

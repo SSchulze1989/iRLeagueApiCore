@@ -7,8 +7,9 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculationResult>
 {
-    public FilterGroupRowFilter<ResultRowCalculationResult> PointFilters { get; set; } = new(Array.Empty<(FilterCombination, RowFilter<ResultRowCalculationResult>)>());
-    public FilterGroupRowFilter<ResultRowCalculationResult> ResultFilters { get; set; } = new(Array.Empty<(FilterCombination, RowFilter<ResultRowCalculationResult>)>());
+    public FilterGroupRowFilter<ResultRowCalculationResult> PointFilters { get; set; } = new();
+    public FilterGroupRowFilter<ResultRowCalculationResult> ChampSeasonFilters { get; set; } = new();
+    public FilterGroupRowFilter<ResultRowCalculationResult> ResultFilters { get; set; } = new();
     public IEnumerable<SortOptions> PointSortOptions { get; set; } = Array.Empty<SortOptions>();
     public IEnumerable<SortOptions> FinalSortOptions { get; set; } = Array.Empty<SortOptions>();
     public IDictionary<string, int> BonusPoints { get; set; } = new Dictionary<string, int>();
@@ -16,6 +17,7 @@ internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculatio
 
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetResultFilters() => ResultFilters;
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetPointFilters() => PointFilters;
+    public override FilterGroupRowFilter<ResultRowCalculationResult> GetChampSeasonFilters() => ChampSeasonFilters;
     public override IEnumerable<AutoPenaltyConfigurationData> GetAutoPenalties() => AutoPenalties;
     public override IDictionary<string, int> GetBonusPoints() => BonusPoints;
 

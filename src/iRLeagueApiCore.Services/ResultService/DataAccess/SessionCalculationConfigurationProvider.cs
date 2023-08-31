@@ -143,6 +143,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
         pointRule.BonusPoints = pointsRuleEntity?.BonusPoints ?? new Dictionary<string, int>();
         pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
+        pointRule.ChampSeasonFilters = configurationEntity.ChampSeason != null ? MapFromFilterEntities(configurationEntity.ChampSeason.Filters) : new();
         pointRule.AutoPenalties = pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>();
         if (includePointFilters)
         {

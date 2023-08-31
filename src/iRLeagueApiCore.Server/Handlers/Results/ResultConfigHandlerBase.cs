@@ -72,48 +72,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         return await Task.FromResult(standingConfigurationEntities);
     }
 
-    private async Task<ICollection<FilterOptionEntity>> MapToFilterOptionListAsync(LeagueUser user, IEnumerable<ResultFilterModel> filterModels,
-        ICollection<FilterOptionEntity> filterEntities, CancellationToken cancellationToken)
-    {
-        foreach (var filterModel in filterModels)
-        {
-            var filterOptionEntity = filterModel.FilterOptionId == 0 ? null : filterEntities
-                .FirstOrDefault(x => x.FilterOptionId == filterModel.FilterOptionId);
-            if (filterOptionEntity is null)
-            {
-                filterOptionEntity = CreateVersionEntity(user, new FilterOptionEntity());
-                filterEntities.Add(filterOptionEntity);
-                filterOptionEntity.LeagueId = dbContext.LeagueProvider.LeagueId;
-            }
-            await MapToFilterOptionEntityAsync(user, filterModel, filterOptionEntity, cancellationToken);
-        }
-        var deleteFilterEntities = filterEntities
-            .Where(x => filterModels.Any(y => y.FilterOptionId == x.FilterOptionId) == false);
-        foreach (var deleteFilterEntity in deleteFilterEntities)
-        {
-            filterEntities.Remove(deleteFilterEntity);
-        }
-        return filterEntities;
-    }
-
-    private Task<FilterOptionEntity> MapToFilterOptionEntityAsync(LeagueUser user, ResultFilterModel filterModel, FilterOptionEntity filterOptionEntity,
-        CancellationToken cancellationToken)
-    {
-        var condition = filterOptionEntity.Conditions.FirstOrDefault();
-        if (condition is null)
-        {
-            condition = new FilterConditionModel();
-            filterOptionEntity.Conditions.Add(condition);
-        }
-        condition.Comparator = filterModel.Condition.Comparator;
-        condition.FilterType = filterModel.Condition.FilterType;
-        condition.ColumnPropertyName = filterModel.Condition.ColumnPropertyName;
-        condition.FilterValues = filterModel.Condition.FilterValues;
-        condition.Action = filterModel.Condition.Action;
-        UpdateVersionEntity(user, filterOptionEntity);
-        return Task.FromResult(filterOptionEntity);
-    }
-
     private async Task<ICollection<ScoringEntity>> MapToScoringList(LeagueUser user, ICollection<ScoringModel> scoringModels,
         ICollection<ScoringEntity> scoringEntities, CancellationToken cancellationToken)
     {

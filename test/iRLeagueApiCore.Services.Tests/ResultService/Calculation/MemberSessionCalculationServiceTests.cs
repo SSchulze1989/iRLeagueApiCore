@@ -458,7 +458,31 @@ public sealed class MemberSessionCalculationServiceTests
             new[] { "3" },
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            finalFilters: new(new[] { (FilterCombination.And, filter) }));
+            resultFilters: new(new[] { (FilterCombination.And, filter) }));
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveCount(3);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldApplyChampSeasonFilters()
+    {
+        var pos = Enumerable.Range(1, 5).Select(x => (double)x);
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.FinishPosition, pos.CreateSequence())
+            .CreateMany(pos.Count());
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.FinishPosition),
+            ComparatorType.IsSmallerOrEqual,
+            new[] { "3" },
+            MatchedValueAction.Keep);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            champSeasonFilters: new(new[] { (FilterCombination.And, filter) }));
         fixture.Register(() => config);
         var sut = CreateSut();
 

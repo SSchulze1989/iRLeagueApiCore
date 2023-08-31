@@ -9,6 +9,7 @@ internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, 
 
     public override FilterGroupRowFilter<TRow> GetPointFilters() => filters;
     public override FilterGroupRowFilter<TRow> GetResultFilters() => filters;
+    public override FilterGroupRowFilter<TRow> GetChampSeasonFilters() => filters;
 
     public override IEnumerable<AutoPenaltyConfigurationData> GetAutoPenalties() => Array.Empty<AutoPenaltyConfigurationData>();
 
