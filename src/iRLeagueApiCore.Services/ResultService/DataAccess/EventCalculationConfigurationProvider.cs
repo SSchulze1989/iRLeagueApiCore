@@ -45,6 +45,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
 
         return await dbContext.ChampSeasons
             .Include(x => x.Championship)
+            .Include(x => x.Filters)
             .Where(x => x.SeasonId == eventEntity.Schedule.SeasonId)
             .Where(x => x.ResultConfigurations.Contains(configEntity))
             .FirstOrDefaultAsync(cancellationToken);

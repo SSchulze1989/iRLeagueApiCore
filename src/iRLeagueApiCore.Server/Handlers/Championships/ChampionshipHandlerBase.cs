@@ -15,6 +15,7 @@ public class ChampionshipHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     {
         return await dbContext.Championships
             .Include(x => x.ChampSeasons)
+                .ThenInclude(x => x.Filters)
             .Where(x => x.ChampionshipId == championshipId)
             .FirstOrDefaultAsync(cancellationToken);
     }
