@@ -23,7 +23,7 @@
 	// }
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "dotnet nuget add source https://nuget.pkg.github.com/SSchulze1989/index.json --username SSchulze1989 --password ${GITHUB_TOKEN} --store-password-in-clear-text --name github",
+	"postCreateCommand": "dotnet nuget add source https://nuget.pkg.github.com/SSchulze1989/index.json --username SSchulze1989 --password ${GITHUB_TOKEN} --store-password-in-clear-text --name github"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
