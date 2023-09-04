@@ -112,6 +112,8 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
             standingRow.Top3 += row.FinalPosition <= 3 ? 1 : 0;
             standingRow.Wins += row.FinalPosition == 1 ? 1 : 0;
             standingRow.Races += 1;
+            standingRow.RacesScored += row.PointsEligible ? 1 : 0;
+            standingRow.RacesInPoints += row.RacePoints > 0 ? 1 : 0;
         }
 
         return standingRow;
