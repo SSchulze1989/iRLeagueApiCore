@@ -137,6 +137,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         rowEntity.ClubName = row.ClubName;
         rowEntity.CompletedLaps = row.CompletedLaps;
         rowEntity.CompletedPct = row.CompletedPct;
+        rowEntity.Division = row.Division;
         rowEntity.FastestLapTime = row.FastestLapTime;
         rowEntity.FastLapNr = row.FastLapNr;
         rowEntity.FinalPosition = row.FinalPosition;
@@ -155,6 +156,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         rowEntity.OldLicenseLevel = row.OldLicenseLevel;
         rowEntity.OldSafetyRating = row.OldSafetyRating;
         rowEntity.PenaltyPoints = row.PenaltyPoints;
+        rowEntity.PointsEligible = row.PointsEligible;
         rowEntity.PositionChange = row.PositionChange;
         rowEntity.QualifyingTime = row.QualifyingTime;
         rowEntity.RacePoints = row.RacePoints;

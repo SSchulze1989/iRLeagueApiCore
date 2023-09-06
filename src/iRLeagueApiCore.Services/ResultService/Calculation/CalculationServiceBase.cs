@@ -24,9 +24,13 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
         // Calculation
         pointRule.ApplyPoints(pointRows.ToList());
-        // remove points from filtered rows
+        // remove points from filtered rows and set points eligible 
+        pointRows.ForEach(x => x.PointsEligible  = true);
         rows.Except(pointRows)
-            .ForEach(x => x.RacePoints = 0);
+            .ForEach(x => {
+                x.RacePoints = 0;
+                x.PointsEligible = false;
+            });
 
         IEnumerable<ResultRowCalculationResult> finalRows = rows;
         ApplyAddPenaltyPoints(finalRows);

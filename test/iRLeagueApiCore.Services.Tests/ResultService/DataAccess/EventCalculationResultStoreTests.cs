@@ -174,6 +174,81 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
         test!.ChampSeasonId.Should().Be(champSeason.ChampSeasonId);
     }
 
+    [Fact]
+    public async Task StoreCalculationResult_ShouldStoreResultRowData()
+    {
+        var @event = await GetFirstEventEntity();
+        @event.ScoredEventResults.Clear();
+        var configEntity = accessMockHelper.CreateConfiguration(@event);
+        var resultEntity = accessMockHelper.CreateScoredResult(@event, configEntity);
+        var testRowEntity = resultEntity.ScoredSessionResults.First().ScoredResultRows.First();
+        dbContext.ResultConfigurations.Add(configEntity);
+        await dbContext.SaveChangesAsync();
+        var config = GetConfiguration(@event);
+        var result = GetCalculationResult(@event, config, resultEntity);
+        await dbContext.SaveChangesAsync();
+        var sut = CreateSut();
+
+        await sut.StoreCalculationResult(result);
+
+        var testResult = await dbContext.ScoredEventResults
+            .Where(x => x.EventId == @event.EventId)
+            .FirstOrDefaultAsync();
+        testResult.Should().NotBeNull();
+        var compareRow = result.SessionResults
+            .OrderBy(x => x.SessionNr)
+            .First()
+            .ResultRows
+            .First();
+        var testRow = testResult!.ScoredSessionResults
+            .OrderBy(x => x.SessionNr)
+            .FirstOrDefault()?
+            .ScoredResultRows
+            .FirstOrDefault(x => x.MemberId == compareRow.MemberId);
+        testRow.Should().NotBeNull();
+
+        testRow!.StartPosition.Should().Be(compareRow.StartPosition);
+        testRow.FinishPosition.Should().Be(compareRow.FinishPosition);
+        testRow.CarNumber.Should().Be(compareRow.CarNumber);
+        testRow.ClassId.Should().Be(compareRow.ClassId);
+        testRow.Car.Should().Be(compareRow.Car);
+        testRow.CarClass.Should().Be(compareRow.CarClass);
+        testRow.CompletedLaps.Should().Be(compareRow.CompletedLaps);
+        testRow.LeadLaps.Should().Be(compareRow.LeadLaps);
+        testRow.FastLapNr.Should().Be(compareRow.FastLapNr);
+        testRow.Incidents.Should().Be(compareRow.Incidents);
+        testRow.Status.Should().Be(compareRow.Status);
+        testRow.QualifyingTime.Should().Be(compareRow.QualifyingTime);
+        testRow.Interval.Should().Be(compareRow.Interval);
+        testRow.AvgLapTime.Should().Be(compareRow.AvgLapTime);
+        testRow.FastestLapTime.Should().Be(compareRow.FastestLapTime);
+        testRow.PositionChange.Should().Be(compareRow.PositionChange);
+        testRow.OldIRating.Should().Be(compareRow.OldIrating);
+        testRow.NewIRating.Should().Be(compareRow.NewIrating);
+        testRow.SeasonStartIRating.Should().Be(compareRow.SeasonStartIrating);
+        testRow.License.Should().Be(compareRow.License);
+        testRow.OldSafetyRating.Should().Be(compareRow.OldSafetyRating);
+        testRow.NewSafetyRating.Should().Be(compareRow.NewSafetyRating);
+        testRow.OldCpi.Should().Be(compareRow.OldCpi);
+        testRow.NewCpi.Should().Be(compareRow.NewCpi);
+        testRow.ClubId.Should().Be(compareRow.ClubId);
+        testRow.ClubName.Should().Be(compareRow.ClubName);
+        testRow.CarId.Should().Be(compareRow.CarId);
+        testRow.CompletedPct.Should().Be(compareRow.CompletedPct);
+        testRow.Division.Should().Be(compareRow.Division);
+        testRow.OldLicenseLevel.Should().Be(compareRow.OldLicenseLevel);
+        testRow.NewLicenseLevel.Should().Be(compareRow.NewLicenseLevel);
+        testRow.RacePoints.Should().Be(compareRow.RacePoints);
+        testRow.MemberId.Should().Be(compareRow.MemberId);
+        testRow.TeamId.Should().Be(compareRow.TeamId);
+        testRow.BonusPoints.Should().Be(compareRow.BonusPoints);
+        testRow.PenaltyPoints.Should().Be(compareRow.PenaltyPoints);
+        testRow.FinalPosition.Should().Be(compareRow.FinalPosition);
+        testRow.FinalPositionChange.Should().Be(compareRow.FinalPositionChange);
+        testRow.TotalPoints.Should().Be(compareRow.TotalPoints);
+        testRow.PointsEligible.Should().Be(compareRow.PointsEligible);
+}
+
     private EventCalculationResultStore CreateSut()
     {
         return fixture.Create<EventCalculationResultStore>();
@@ -234,9 +309,11 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
             .With(x => x.SessionResults, resultEntity?.ScoredSessionResults.Select(sessionResult => fixture.Build<SessionCalculationResult>()
                 .With(x => x.LeagueId, sessionResult.LeagueId)
                 .With(x => x.SessionResultId, sessionResult.SessionResultId)
+                .With(x => x.SessionNr, sessionResult.SessionNr)
                 .With(x => x.ResultRows, sessionResult.ScoredResultRows.Select(resultRow => fixture.Build<ResultRowCalculationResult>()
                     .With(x => x.MemberId, resultRow.MemberId)
                     .With(x => x.TeamId, resultRow.TeamId)
+                    .With(x => x.PointsEligible, true)
                     .Create()).ToList())
                 .Create()).ToList()
                 ?? config.SessionResultConfigurations.Select(sessionConfig => fixture.Build<SessionCalculationResult>()

@@ -520,6 +520,33 @@ public sealed class MemberSessionCalculationServiceTests
         test.ResultRows.Skip(3).Should().Match(x => x.All(r => r.RacePoints == 0));
     }
 
+    [Fact]
+    public async Task Calculate_ShouldSetPointsEligible()
+    {
+        var pos = Enumerable.Range(1, 5).Select(x => (double)x);
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.FinishPosition, pos.CreateSequence())
+            .With(x => x.RacePoints, 2)
+            .CreateMany(pos.Count());
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.FinishPosition),
+            ComparatorType.IsSmallerOrEqual,
+            new[] { "3" },
+            MatchedValueAction.Keep);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            pointFilters: new(new[] { (FilterCombination.And, filter) }),
+            getRacePoints: (x, p) => 1);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Take(3).Should().Match(x => x.All(r => r.PointsEligible == true));
+        test.ResultRows.Skip(3).Should().Match(x => x.All(r => r.PointsEligible == false));
+    }
+
     private MemberSessionCalculationService CreateSut()
     {
         return fixture.Create<MemberSessionCalculationService>();
