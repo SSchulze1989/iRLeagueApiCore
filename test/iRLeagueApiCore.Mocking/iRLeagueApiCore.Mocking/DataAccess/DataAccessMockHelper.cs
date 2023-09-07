@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore;
 using iRLeagueDatabaseCore.Models;
@@ -200,7 +201,9 @@ public sealed class DataAccessMockHelper
             .ToList();
     }
 
-    public EventResultEntity CreateResult(EventEntity @event, IEnumerable<LeagueMemberEntity> members)
+    public EventResultEntity CreateResult(
+        EventEntity @event, 
+        IEnumerable<LeagueMemberEntity> members)
     {
         return fixture.Build<EventResultEntity>()
             .With(x => x.LeagueId, @event.LeagueId)
@@ -211,8 +214,22 @@ public sealed class DataAccessMockHelper
             .Create();
     }
 
-    public IEnumerable<SessionResultEntity> CreateSessionResults(EventEntity @event, IEnumerable<LeagueMemberEntity> members)
+    public IEnumerable<SessionResultEntity> CreateSessionResults(
+        EventEntity @event, 
+        IEnumerable<LeagueMemberEntity> members,
+        IEnumerable<double>? startPositions = null,
+        IEnumerable<double>? positions = null,
+        IEnumerable<double>? racePoints = null)
     {
+        startPositions ??= Enumerable.Range(1, members.Count()).Select(x => (double)x);
+        positions ??= startPositions;
+        racePoints ??= Enumerable.Range(1, members.Count())
+            .Reverse()
+            .Select(x => x * 10.0);
+
+        var startPosSeq = startPositions.CreateSequence();
+        var positionsSeq = positions.CreateSequence();
+        var racePointsSeq = racePoints.CreateSequence();
         return @event.Sessions.Select(session => fixture.Build<SessionResultEntity>()
             .With(x => x.LeagueId, session.LeagueId)
             .With(x => x.EventId, @event.EventId)
@@ -223,6 +240,9 @@ public sealed class DataAccessMockHelper
                 .With(x => x.LeagueMember, member)
                 .With(x => x.Team, member.Team)
                 .With(x => x.TeamId, member.TeamId)
+                .With(x => x.FinishPosition, positionsSeq)
+                .With(x => x.StartPosition, startPosSeq)
+                .With(x => x.RacePoints, racePointsSeq)
                 .Without(x => x.SubResult)
                 .Create()).ToList())
             .Without(x => x.IRSimSessionDetails)
@@ -413,6 +433,16 @@ public sealed class DataAccessMockHelper
             .Without(x => x.AcceptedReviewVotes)
             .Without(x => x.CommentReviewVotes)
             .CreateMany();
+    }
+
+    public IPostprocessComposer<FilterOptionEntity> FilterOptionBuilder()
+    {
+        return fixture.Build<FilterOptionEntity>()
+            .Without(x => x.Conditions)
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.PointFilterResultConfigId)
+            .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfigId);
     }
 
     public void SetCurrentLeague(LeagueEntity league)
