@@ -73,24 +73,24 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             .OrderBy(x => x.SessionNr)
             .Select((x, i) => (x, i)))
         {
-            var sessionConfiguration = new SessionCalculationConfiguration()
+            var scoring = session.SessionType != SessionType.Race ? null : scorings.ElementAtOrDefault(raceIndex++);
+            var sessionConfiguration = new SessionCalculationConfiguration
             {
                 LeagueId = session.LeagueId,
                 Name = session.Name,
                 SessionId = session.SessionId,
                 SessionNr = session.SessionNr,
                 ResultKind = configurationEntity.ResultKind,
+                SessionType = session.SessionType,
+                SessionResultId = sessionResultIds.ElementAtOrDefault(index)
             };
-            var scoring = session.SessionType != SessionType.Race ? null : scorings.ElementAtOrDefault(raceIndex++);
-            sessionConfiguration.SessionType = session.SessionType;
-            sessionConfiguration.SessionResultId = sessionResultIds.ElementAtOrDefault(index);
             sessionConfiguration = MapFromScoringEntity(scoring, configurationEntity, sessionConfiguration);
             sessionConfigurations.Add(sessionConfiguration);
         }
         var combinedScoring = configurationEntity.Scorings.FirstOrDefault(x => x.IsCombinedResult);
         if (combinedScoring != null)
         {
-            var sessionConfiguration = new SessionCalculationConfiguration()
+            var sessionConfiguration = new SessionCalculationConfiguration
             {
                 LeagueId = configurationEntity.LeagueId,
                 Name = combinedScoring.Name,
@@ -99,9 +99,9 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 ResultKind = configurationEntity.ResultKind,
                 IsCombinedResult = true,
                 UseExternalSourcePoints = combinedScoring.UseExternalSourcePoints,
+                SessionType = SessionType.Race,
+                SessionResultId = null,
             };
-            sessionConfiguration.SessionType = SessionType.Race;
-            sessionConfiguration.SessionResultId = null;
             sessionConfiguration = MapFromScoringEntity(combinedScoring, configurationEntity, sessionConfiguration, includePointFilters: false);
             sessionConfigurations.Add(sessionConfiguration);
         }
@@ -148,6 +148,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
         }
+        else
+        {
+            pointRule.PointFilters = CreatePointsEligibleFilter();
+        }
 
         return pointRule;
     }
@@ -165,6 +169,13 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         };
         return penaltyData;
     }
+
+    private static FilterGroupRowFilter<ResultRowCalculationResult> CreatePointsEligibleFilter() => new(
+        new (FilterCombination, RowFilter<ResultRowCalculationResult>)[] {
+            (FilterCombination.And, new ColumnValueRowFilter(nameof(ResultRowCalculationResult.PointsEligible), ComparatorType.IsEqual, 
+                new[] { true.ToString() }, MatchedValueAction.Keep))
+        }
+    );
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, bool allowForEach = false)
     {
