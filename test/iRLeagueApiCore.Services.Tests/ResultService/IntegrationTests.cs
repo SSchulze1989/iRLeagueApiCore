@@ -1,4 +1,5 @@
 ﻿using Aydsko.iRacingData.Stats;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
@@ -38,17 +39,17 @@ public sealed class IntegrationTests : DataAccessTestsBase
             accessMockHelper.CreateSession(@event, Common.Enums.SessionType.Race),
         }.ToList();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.FinishPosition))
             .With(x => x.FilterValues, new[] {"3"})
             .With(x => x.Comparator, Common.Enums.ComparatorType.IsSmallerOrEqual)
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
             {
                     condition,
             })
+            .Without(x => x.ChampSeason)
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
             .Create();
@@ -62,7 +63,6 @@ public sealed class IntegrationTests : DataAccessTestsBase
         @event.ScoredEventResults.Clear();
         @event.ResultConfigs.Add(config);
         dbContext.Events.Add(@event);
-        dbContext.FilterConditions.Add(condition);
         dbContext.FilterOptions.Add(filter);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
@@ -122,17 +122,17 @@ public sealed class IntegrationTests : DataAccessTestsBase
             .Without(x => x.ExtScoringSource)
             .Without(x => x.ResultConfiguration)
             .Create();
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.FinishPosition))
             .With(x => x.FilterValues, new[] { "3" })
             .With(x => x.Comparator, Common.Enums.ComparatorType.IsSmallerOrEqual)
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
             {
                     condition,
             })
+            .Without(x => x.ChampSeason)
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
             .Create();
@@ -147,7 +147,6 @@ public sealed class IntegrationTests : DataAccessTestsBase
         @event.ScoredEventResults.Clear();
         @event.ResultConfigs.Add(config);
         dbContext.Events.Add(@event);
-        dbContext.FilterConditions.Add(condition);
         dbContext.FilterOptions.Add(filter);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
