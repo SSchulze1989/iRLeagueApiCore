@@ -73,6 +73,8 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
                 RacePointsChange = standingRow.RacePointsChange,
                 Races = standingRow.Races,
                 RacesCounted = standingRow.RacesCounted,
+                RacesScored = standingRow.RacesScored,
+                RacesInPoints = standingRow.RacesInPoints,
                 StartIrating = standingRow.StartIrating,
                 TeamColor = standingRow.Team == null ? string.Empty : standingRow.Team.TeamColor,
                 TeamId = standingRow.TeamId,
