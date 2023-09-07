@@ -158,9 +158,11 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     LeadLaps = row.LeadLaps,
                     License = row.License,
                     NewIrating = row.NewIRating,
+                    NewCpi = row.NewCpi,
                     NewLicenseLevel = row.NewLicenseLevel,
                     NewSafetyRating = row.NewSafetyRating,
                     OldIrating = row.OldIRating,
+                    OldCpi = row.OldCpi,
                     OldLicenseLevel = row.OldLicenseLevel,
                     OldSafetyRating = row.OldSafetyRating,
                     QualifyingTime = row.QualifyingTime,
@@ -170,6 +172,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     StartPosition = row.StartPosition,
                     Status = row.Status,
                     TotalPoints = row.RacePoints,
+                    PointsEligible = row.PointsEligible,
                 })
             })
     };
@@ -221,6 +224,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 StartPosition = row.StartPosition,
                 Status = row.Status,
                 TotalPoints = row.RacePoints,
+                PointsEligible = row.PointsEligible,
             })
         })
     };

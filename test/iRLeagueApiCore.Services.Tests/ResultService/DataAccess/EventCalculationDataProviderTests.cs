@@ -136,6 +136,67 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         testPenalty.Points.Should().Be(addPenalty.Value.Points);
     }
 
+    [Fact]
+    public async Task GetData_ShouldProvideResultRowData()
+    {
+        var @event = await GetFirstEventEntity();
+        var rawResult = @event.EventResult;
+        var config = GetConfiguration(@event);
+        var sut = CreateSut();
+
+        var test = (await sut.GetData(config))!;
+
+        test.Should().NotBeNull();
+        var compareRow = rawResult.SessionResults.First().ResultRows.First();
+        var testRow = test.SessionResults
+            .FirstOrDefault()?
+            .ResultRows
+            .FirstOrDefault();
+        testRow.Should().NotBeNull();
+
+        testRow!.AvgLapTime.Should().Be(compareRow.AvgLapTime);
+        testRow.Car.Should().Be(compareRow.Car);
+        testRow.MemberId.Should().Be(compareRow.MemberId);
+        testRow.Firstname.Should().Be(compareRow.Member.Firstname);
+        testRow.Lastname.Should().Be(compareRow.Member.Lastname);
+        testRow.TeamId.Should().Be(compareRow.TeamId);
+        testRow.TeamName.Should().Be(compareRow.Team?.Name ?? string.Empty);
+        testRow.TeamColor.Should().Be(compareRow.Team?.TeamColor ?? string.Empty);
+        testRow.StartPosition.Should().Be(compareRow.StartPosition);
+        testRow.FinishPosition.Should().Be(compareRow.FinishPosition);
+        testRow.CarNumber.Should().Be(compareRow.CarNumber);
+        testRow.ClassId.Should().Be(compareRow.ClassId);
+        testRow.ClubId.Should().Be(compareRow.ClubId);
+        testRow.ClubName.Should().Be(compareRow.ClubName);
+        testRow.Car.Should().Be(compareRow.Car);
+        testRow.CarClass.Should().Be(compareRow.CarClass);
+        testRow.CompletedLaps.Should().Be(compareRow.CompletedLaps);
+        testRow.LeadLaps.Should().Be(compareRow.LeadLaps);
+        testRow.FastLapNr.Should().Be(compareRow.FastLapNr);
+        testRow.Incidents.Should().Be(compareRow.Incidents);
+        testRow.Status.Should().Be(compareRow.Status);
+        testRow.QualifyingTime.Should().Be(compareRow.QualifyingTime);
+        testRow.Interval.Should().Be(compareRow.Interval);
+        testRow.AvgLapTime.Should().Be(compareRow.AvgLapTime);
+        testRow.FastestLapTime.Should().Be(compareRow.FastestLapTime);
+        testRow.PositionChange.Should().Be(compareRow.PositionChange);
+        testRow.OldIrating.Should().Be(compareRow.OldIRating);
+        testRow.NewIrating.Should().Be(compareRow.NewIRating);
+        testRow.SeasonStartIrating.Should().Be(compareRow.SeasonStartIRating);
+        testRow.License.Should().Be(compareRow.License);
+        testRow.NewCpi.Should().Be(compareRow.NewCpi);
+        testRow.OldCpi.Should().Be(compareRow.OldCpi);
+        testRow.OldSafetyRating.Should().Be(compareRow.OldSafetyRating);
+        testRow.NewSafetyRating.Should().Be(compareRow.NewSafetyRating);
+        testRow.CarId.Should().Be(compareRow.CarId);
+        testRow.CompletedPct.Should().Be(compareRow.CompletedPct);
+        testRow.Division.Should().Be(compareRow.Division);
+        testRow.OldLicenseLevel.Should().Be(compareRow.OldLicenseLevel);
+        testRow.NewLicenseLevel.Should().Be(compareRow.NewLicenseLevel);
+        testRow.RacePoints.Should().Be(compareRow.RacePoints);
+        testRow.PointsEligible.Should().Be(compareRow.PointsEligible);
+    }
+
     private EventCalculationDataProvider CreateSut()
     {
         return fixture.Create<EventCalculationDataProvider>();

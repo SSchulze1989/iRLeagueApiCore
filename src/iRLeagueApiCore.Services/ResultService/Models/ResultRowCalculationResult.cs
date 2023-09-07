@@ -53,6 +53,7 @@ internal sealed class ResultRowCalculationResult : ResultRowCalculationData
         TotalPoints = data.TotalPoints;
         FinalPosition = data.FinalPosition;
         FinalPositionChange = data.FinalPositionChange;
+        PointsEligible = data.PointsEligible;
     }
 
     public bool IsScored { get; set; }
