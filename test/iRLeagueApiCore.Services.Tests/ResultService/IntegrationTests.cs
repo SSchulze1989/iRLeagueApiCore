@@ -43,6 +43,7 @@ public sealed class IntegrationTests : DataAccessTestsBase
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.FinishPosition))
             .With(x => x.FilterValues, new[] {"3"})
             .With(x => x.Comparator, Common.Enums.ComparatorType.IsSmallerOrEqual)
+            .With(x => x.Action, Common.Enums.MatchedValueAction.Keep)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -126,6 +127,7 @@ public sealed class IntegrationTests : DataAccessTestsBase
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.FinishPosition))
             .With(x => x.FilterValues, new[] { "3" })
             .With(x => x.Comparator, Common.Enums.ComparatorType.IsSmallerOrEqual)
+            .With(x => x.Action, Common.Enums.MatchedValueAction.Keep)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
