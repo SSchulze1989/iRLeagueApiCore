@@ -4,6 +4,7 @@ using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 
@@ -391,7 +392,11 @@ public sealed class MemberSessionCalculationServiceTests
             .CreateMany(3);
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            bonusPoints: new Dictionary<string, int>() { { "q1", 2 }, { "q2", 1 } });
+            bonusPoints: new BonusPointModel[]
+            {
+                new() { Type = BonusPointType.QualyPosition, Value = 1, Points = 2 },
+                new() { Type = BonusPointType.QualyPosition, Value = 2, Points = 1 },
+            });
         fixture.Register(() => config);
         var sut = CreateSut();
 

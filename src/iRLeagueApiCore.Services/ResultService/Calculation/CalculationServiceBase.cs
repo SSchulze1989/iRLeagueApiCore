@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using System.ComponentModel;
@@ -238,7 +239,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return rows;
     }
 
-    private static IEnumerable<ResultRowCalculationResult> ApplyBonusPoints(IEnumerable<ResultRowCalculationResult> rows, IDictionary<string, int> BonusPoints)
+    private static IEnumerable<ResultRowCalculationResult> ApplyBonusPoints(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<BonusPointModel> BonusPoints)
     {
         if (rows.None())
         {
@@ -250,25 +251,21 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
         foreach (var bonus in BonusPoints)
         {
-            var bonusKey = bonus.Key[0];
-            int bonusKeyValue = 0;
-            int bonusPoints = bonus.Value;
-            if (bonus.Key.Length > 1 && int.TryParse(bonus.Key[1..], out bonusKeyValue) == false)
+            var bonusType = bonus.Type;
+            var bonusKeyValue = (int)bonus.Value;
+            var bonusPoints = (int)bonus.Points;
+            rows = bonusType switch
             {
-                continue;
-            }
-            rows = bonusKey switch
-            {
-                'p' => ApplyPositionBonusPoints(rows, bonusKeyValue, bonusPoints),
-                'c' => ApplyCleanestDriverBonusPoints(rows, bonusPoints),
-                'f' => ApplyFastestLapBonusPoints(rows, bonusPoints),
-                'q' => ApplyStartPositionBonusPoints(rows, bonusKeyValue, bonusPoints),
-                'g' => ApplyMostPositionsGainedBonusPoints(rows, bonusPoints),
-                'd' => ApplyMostPositionsLostBonusPoints(rows, bonusPoints),
-                'l' => ApplyLeadOneLapBonusPoints(rows, bonusPoints),
-                'm' => ApplyLeadMostLapsBonusPoints(rows, bonusPoints),
-                'n' => ApplyNoIncidentsBonusPoints(rows, bonusPoints),
-                'a' => ApplyFastestAverageLapBonusPoints(rows, bonusPoints),
+                BonusPointType.Position => ApplyPositionBonusPoints(rows, bonusKeyValue, bonusPoints),
+                BonusPointType.CleanestDriver => ApplyCleanestDriverBonusPoints(rows, bonusPoints),
+                BonusPointType.FastestLap => ApplyFastestLapBonusPoints(rows, bonusPoints),
+                BonusPointType.QualyPosition => ApplyStartPositionBonusPoints(rows, bonusKeyValue, bonusPoints),
+                BonusPointType.MostPositionsGained => ApplyMostPositionsGainedBonusPoints(rows, bonusPoints),
+                BonusPointType.MostPositionsLost => ApplyMostPositionsLostBonusPoints(rows, bonusPoints),
+                BonusPointType.LeadOneLap => ApplyLeadOneLapBonusPoints(rows, bonusPoints),
+                BonusPointType.LeadMostLaps => ApplyLeadMostLapsBonusPoints(rows, bonusPoints),
+                BonusPointType.NoIncidents => ApplyNoIncidentsBonusPoints(rows, bonusPoints),
+                BonusPointType.FastestAverageLap => ApplyFastestAverageLapBonusPoints(rows, bonusPoints),
                 _ => rows,
             };
         }
