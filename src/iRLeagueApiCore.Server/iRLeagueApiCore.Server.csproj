@@ -23,7 +23,7 @@
     <PackageReference Include="Aydsko.iRacingData" Version="2303.0.0" />
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.9.0-dev.6" CopyToOutputDirectory="lib/net6.0">
+	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.9.0-dev.7" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
     <PackageReference Include="iRLeagueDatabaseCore" Version="0.9.0-dev.5" />
 	<PackageReference Include="MediatR" Version="10.0.1" />

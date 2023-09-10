@@ -13,7 +13,7 @@ internal static class CalculationMockHelper
         Func<IEnumerable<ResultRowCalculationResult>, IReadOnlyList<ResultRowCalculationResult>>? sortForPoints = default,
         Func<IEnumerable<ResultRowCalculationResult>, IReadOnlyList<ResultRowCalculationResult>>? sortFinal = default,
         Func<ResultRowCalculationResult, int, double>? getRacePoints = default,
-        IEnumerable<BonusPointModel>? bonusPoints = default,
+        IEnumerable<BonusPointConfiguration>? bonusPoints = default,
         IEnumerable<AutoPenaltyConfigurationData>? autoPenalties = default)
     {
         pointFilters ??= new(Array.Empty<(FilterCombination, RowFilter<ResultRowCalculationResult>)>());
@@ -22,7 +22,7 @@ internal static class CalculationMockHelper
         sortForPoints ??= row => row.ToList();
         sortFinal ??= row => row.ToList();
         getRacePoints ??= (row, pos) => row.RacePoints;
-        bonusPoints ??= Array.Empty<BonusPointModel>();
+        bonusPoints ??= Array.Empty<BonusPointConfiguration>();
         autoPenalties ??= Array.Empty<AutoPenaltyConfigurationData>();
         return MockPointRule<ResultRowCalculationResult>(
             pointFilters,
@@ -42,7 +42,7 @@ internal static class CalculationMockHelper
         Func<IEnumerable<T>, IReadOnlyList<T>> sortForPoints,
         Func<IEnumerable<T>, IReadOnlyList<T>> sortFinal,
         Func<T, int, double> getRacePoints,
-        IEnumerable<BonusPointModel> bonusPoints,
+        IEnumerable<BonusPointConfiguration> bonusPoints,
         IEnumerable<AutoPenaltyConfigurationData> autoPenalties) where T : IPointRow, IPenaltyRow
     {
         var mockRule = new Mock<PointRule<T>>();

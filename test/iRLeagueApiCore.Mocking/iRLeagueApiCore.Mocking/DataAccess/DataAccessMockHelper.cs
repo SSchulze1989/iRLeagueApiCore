@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore;
@@ -264,6 +265,7 @@ public sealed class DataAccessMockHelper
                     .With(x => x.IsCombinedResult, false)
                     .With(x => x.PointsRule, () => fixture.Build<PointRuleEntity>()
                         .With(x => x.LeagueId, @event.LeagueId)
+                        .With(x => x.BonusPoints, new List<BonusPointModel>())
                         .Without(x => x.Scorings)
                         .Without(x => x.AutoPenalties)
                         .Without(x => x.League)
@@ -344,6 +346,7 @@ public sealed class DataAccessMockHelper
         return fixture.Build<PointRuleEntity>()
             .With(x => x.League, league)
             .With(x => x.LeagueId, league.Id)
+            .With(x => x.BonusPoints, new List<BonusPointModel>())
             .Without(x => x.Scorings)
             .Without(x => x.AutoPenalties)
             .Create();

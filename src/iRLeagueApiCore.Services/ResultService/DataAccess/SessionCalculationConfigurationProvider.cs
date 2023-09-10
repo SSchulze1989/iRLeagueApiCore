@@ -141,10 +141,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
 
         pointRule.PointSortOptions = pointsRuleEntity?.PointsSortOptions ?? Array.Empty<SortOptions>();
         pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
-        pointRule.BonusPoints = pointsRuleEntity?.BonusPoints ?? Array.Empty<BonusPointModel>();
+        pointRule.BonusPoints = (pointsRuleEntity?.BonusPoints.Select(MapFromBonusPointModel) ?? Array.Empty<BonusPointConfiguration>()).ToList();
         pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
         pointRule.ChampSeasonFilters = configurationEntity.ChampSeason != null ? MapFromFilterEntities(configurationEntity.ChampSeason.Filters) : new();
-        pointRule.AutoPenalties = pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>();
+        pointRule.AutoPenalties = (pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>()).ToList();
         if (includePointFilters)
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
@@ -155,6 +155,18 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         }
 
         return pointRule;
+    }
+
+    private static BonusPointConfiguration MapFromBonusPointModel(BonusPointModel bonusPoint)
+    {
+        var bonusPointConfig = new BonusPointConfiguration()
+        {
+            Type = bonusPoint.Type,
+            Value = (int)bonusPoint.Value,
+            Points = (int)bonusPoint.Points,
+            Conditions = MapFromFilterEntities(bonusPoint.Conditions, allowForEach: true),
+        };
+        return bonusPointConfig;
     }
 
     private static AutoPenaltyConfigurationData MapFromAutoPenaltyConfig(AutoPenaltyConfigEntity penaltyEntity)

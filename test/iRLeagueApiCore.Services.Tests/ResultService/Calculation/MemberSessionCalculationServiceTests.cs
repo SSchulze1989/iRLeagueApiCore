@@ -392,7 +392,7 @@ public sealed class MemberSessionCalculationServiceTests
             .CreateMany(3);
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            bonusPoints: new BonusPointModel[]
+            bonusPoints: new BonusPointConfiguration[]
             {
                 new() { Type = BonusPointType.QualyPosition, Value = 1, Points = 2 },
                 new() { Type = BonusPointType.QualyPosition, Value = 2, Points = 1 },
@@ -407,6 +407,47 @@ public sealed class MemberSessionCalculationServiceTests
         var testRow2 = test.ResultRows.ElementAt(1);
         testRow1.BonusPoints.Should().Be(2);
         testRow2.BonusPoints.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldApplyCustomBonusPoints()
+    {
+        var startPositions = new double[] { 3, 2, 1 }.CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.StartPosition, startPositions)
+            .With(x => x.LeadLaps, 0)
+            .CreateMany(3);
+        data.ResultRows.First().LeadLaps = 16;
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        RowFilter<ResultRowCalculationResult> condition1 = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.StartPosition), ComparatorType.IsEqual, new[] { "1" },
+                MatchedValueAction.Keep, allowForEach: true);
+        RowFilter<ResultRowCalculationResult> condition2 = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.StartPosition), ComparatorType.IsEqual, new[] { "2" },
+                MatchedValueAction.Keep, allowForEach: true);
+        RowFilter<ResultRowCalculationResult> condition3 = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.LeadLaps), ComparatorType.ForEach, new[] { "5" },
+                MatchedValueAction.Keep, allowForEach: true);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            bonusPoints: new BonusPointConfiguration[]
+            {
+                new() { Type = BonusPointType.Custom, Points = 2, Conditions = new(new[] { (FilterCombination.And, condition1) }) },
+                new() { Type = BonusPointType.Custom, Points = 1, Conditions = new(new[] { (FilterCombination.And, condition2) }) },
+                new() { Type = BonusPointType.Custom, Points = 2, Conditions = new(new[] { (FilterCombination.And, condition3) }) }, 
+            });
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveSameCount(data.ResultRows);
+        var testRow1 = test.ResultRows.ElementAt(2);
+        var testRow2 = test.ResultRows.ElementAt(1);
+        var testRow3 = test.ResultRows.ElementAt(0);
+        testRow1.BonusPoints.Should().Be(2);
+        testRow2.BonusPoints.Should().Be(1);
+        testRow3.BonusPoints.Should().Be(6);
     }
 
     [Fact]

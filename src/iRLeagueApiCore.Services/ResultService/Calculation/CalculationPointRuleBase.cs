@@ -13,14 +13,14 @@ internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculatio
     public FilterGroupRowFilter<ResultRowCalculationResult> ResultFilters { get; set; } = new();
     public IEnumerable<SortOptions> PointSortOptions { get; set; } = Array.Empty<SortOptions>();
     public IEnumerable<SortOptions> FinalSortOptions { get; set; } = Array.Empty<SortOptions>();
-    public IEnumerable<BonusPointModel> BonusPoints { get; set; } = Array.Empty<BonusPointModel>();
+    public IEnumerable<BonusPointConfiguration> BonusPoints { get; set; } = Array.Empty<BonusPointConfiguration>();
     public IEnumerable<AutoPenaltyConfigurationData> AutoPenalties { get; set; } = Array.Empty<AutoPenaltyConfigurationData>();
 
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetResultFilters() => ResultFilters;
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetPointFilters() => PointFilters;
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetChampSeasonFilters() => ChampSeasonFilters;
     public override IEnumerable<AutoPenaltyConfigurationData> GetAutoPenalties() => AutoPenalties;
-    public override IEnumerable<BonusPointModel> GetBonusPoints() => BonusPoints;
+    public override IEnumerable<BonusPointConfiguration> GetBonusPoints() => BonusPoints;
 
     public override IReadOnlyList<T> SortFinal<T>(IEnumerable<T> rows)
     {

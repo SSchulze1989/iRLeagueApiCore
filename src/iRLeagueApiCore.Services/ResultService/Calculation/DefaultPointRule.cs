@@ -27,7 +27,7 @@ internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, 
 
     public override IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
 
-    public override IEnumerable<BonusPointModel> GetBonusPoints() => Array.Empty<BonusPointModel>();
+    public override IEnumerable<BonusPointConfiguration> GetBonusPoints() => Array.Empty<BonusPointConfiguration>();
 
     private static IReadOnlyList<T> DefaultSort<T>(IEnumerable<T> rows) where T : TRow
     {

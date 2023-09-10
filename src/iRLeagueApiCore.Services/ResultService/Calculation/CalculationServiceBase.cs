@@ -239,7 +239,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return rows;
     }
 
-    private static IEnumerable<ResultRowCalculationResult> ApplyBonusPoints(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<BonusPointModel> BonusPoints)
+    private static IEnumerable<ResultRowCalculationResult> ApplyBonusPoints(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<BonusPointConfiguration> BonusPoints)
     {
         if (rows.None())
         {
@@ -266,10 +266,22 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 BonusPointType.LeadMostLaps => ApplyLeadMostLapsBonusPoints(rows, bonusPoints),
                 BonusPointType.NoIncidents => ApplyNoIncidentsBonusPoints(rows, bonusPoints),
                 BonusPointType.FastestAverageLap => ApplyFastestAverageLapBonusPoints(rows, bonusPoints),
+                BonusPointType.Custom => ApplyCustomBonusPoints(rows, bonus.Conditions, bonusPoints),
                 _ => rows,
             };
         }
 
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyCustomBonusPoints(IEnumerable<ResultRowCalculationResult> rows, FilterGroupRowFilter<ResultRowCalculationResult> conditions,
+        int bonusPoints)
+    {
+        var bonusRows = conditions.FilterRows(rows);
+        foreach (var row in bonusRows)
+        {
+            row.BonusPoints += bonusPoints;
+        }
         return rows;
     }
 
