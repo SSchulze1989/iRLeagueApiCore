@@ -123,6 +123,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 row.LeadLaps += groupRow.LeadLaps;
                 row.PenaltyPoints += groupRow.PenaltyPoints;
                 row.RacePoints += groupRow.RacePoints;
+                row.PointsEligible |= groupRow.PointsEligible;
             }
             row.StartPosition = group.Last().StartPosition;
             row.AvgLapTime = GetAverageLapValue(group, x => x.AvgLapTime, x => x.CompletedLaps);
