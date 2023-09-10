@@ -37,7 +37,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 .FirstOrDefaultAsync(x => x.ResultConfigId == postResultConfig.SourceResultConfig.ResultConfigId, cancellationToken)
             : null;
         resultConfigEntity.Name = postResultConfig.Name;
-        resultConfigEntity.ResultKind = postResultConfig.ResultKind;
         resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
         resultConfigEntity.Scorings = await MapToScoringList(user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
         resultConfigEntity.PointFilters = await MapToFilterOptionListAsync(user, postResultConfig.FiltersForPoints,
@@ -207,7 +206,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         Name = resultConfig.Name,
         DisplayName = resultConfig.DisplayName,
         IsDefaultConfig = resultConfig.ResultConfigId == resultConfig.ChampSeason.DefaultResultConfigId,
-        ResultKind = resultConfig.ResultKind,
         ResultsPerTeam = resultConfig.ResultsPerTeam,
         Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()
         {
