@@ -159,7 +159,6 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         {
             DisplayName = source.DisplayName,
             Name = source.Name,
-            ResultKind = source.ResultKind,
             ResultsPerTeam = source.ResultsPerTeam,
             SourceResultConfig = GetSourceResultConfigurationEntity(currentChampSeason, source),
             ResultFilters = source.ResultFilters.Select(x => CopyFilterOptionEntity(user, x)).ToList(),

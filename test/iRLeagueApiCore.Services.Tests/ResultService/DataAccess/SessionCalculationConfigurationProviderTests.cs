@@ -80,7 +80,12 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        config.ResultKind = ResultKind.Member;
+        var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        champSeason.ResultKind = ResultKind.Member;
+        champSeason.ResultConfigurations.Add(config);
+        championship.ChampSeasons.Add(champSeason);
+        dbContext.Championships.Add(championship);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = fixture.Create<SessionCalculationConfigurationProvider>();
@@ -98,7 +103,12 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        config.ResultKind = ResultKind.Team;
+        var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        champSeason.ResultKind = ResultKind.Team;
+        champSeason.ResultConfigurations.Add(config);
+        championship.ChampSeasons.Add(champSeason);
+        dbContext.Championships.Add(championship);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = fixture.Create<SessionCalculationConfigurationProvider>();
