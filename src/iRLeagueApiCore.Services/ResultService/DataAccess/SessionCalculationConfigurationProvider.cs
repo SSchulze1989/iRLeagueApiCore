@@ -164,7 +164,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             Type = bonusPoint.Type,
             Value = (int)bonusPoint.Value,
             Points = (int)bonusPoint.Points,
-            Conditions = MapFromFilterEntities(bonusPoint.Conditions, allowForEach: true),
+            Conditions = MapFromFilterEntities(bonusPoint.Conditions, allowForEach: true, overrideFilterCombination: FilterCombination.And),
         };
         return bonusPointConfig;
     }
@@ -173,7 +173,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     {
         var penaltyData = new AutoPenaltyConfigurationData
         {
-            Conditions = MapFromFilterEntities(penaltyEntity.Conditions, allowForEach: true),
+            Conditions = MapFromFilterEntities(penaltyEntity.Conditions, allowForEach: true, overrideFilterCombination: FilterCombination.And),
             Description = penaltyEntity.Description,
             Points = penaltyEntity.Points,
             Positions = penaltyEntity.Positions,
@@ -190,9 +190,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         }
     );
 
-    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, bool allowForEach = false)
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, 
+        bool allowForEach = false, FilterCombination? overrideFilterCombination = null)
     {
-        return MapToFilterGroup(pointFilters, allowForEach: allowForEach);
+        return MapToFilterGroup(pointFilters, allowForEach: allowForEach, overrideFilterCombination: overrideFilterCombination);
     }
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
@@ -222,10 +223,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     }
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionModel?> filters,
-        bool allowForEach = false)
+        bool allowForEach = false, FilterCombination? overrideFilterCombination = null)
     {
         var filterCombination = filters
-            .Select((x, i) => (GetFilterCombination(x, i), GetRowFilterFromCondition(x, allowForEach: allowForEach)))
+            .Select((x, i) => (overrideFilterCombination ?? GetFilterCombination(x, i), GetRowFilterFromCondition(x, allowForEach: allowForEach)))
             .Where(x => x.Item2 is not null);
         return new(filterCombination!);
     }
