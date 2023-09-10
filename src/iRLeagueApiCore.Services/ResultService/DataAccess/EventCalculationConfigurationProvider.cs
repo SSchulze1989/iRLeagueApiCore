@@ -28,6 +28,10 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
         var configEntity = await GetResultConfigurationEntity(resultConfigId, cancellationToken);
         var eventEntity = await GetEventEntity(eventId, resultConfigId, cancellationToken);
         var champSeasonEntity = await GetChampSeasonEntity(eventEntity, configEntity, cancellationToken);
+        if (configEntity is not null)
+        {
+            configEntity.ChampSeason = champSeasonEntity;
+        }
         var resultConfiguration = await GetEventResultCalculationConfiguration(eventEntity, champSeasonEntity, configEntity, cancellationToken);
         return resultConfiguration;
     }
@@ -41,6 +45,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
 
         return await dbContext.ChampSeasons
             .Include(x => x.Championship)
+            .Include(x => x.Filters)
             .Where(x => x.SeasonId == eventEntity.Schedule.SeasonId)
             .Where(x => x.ResultConfigurations.Contains(configEntity))
             .FirstOrDefaultAsync(cancellationToken);
@@ -60,9 +65,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.ExtScoringSource)
             .Include(x => x.PointFilters)
-                .ThenInclude(x => x.Conditions)
             .Include(x => x.ResultFilters)
-                .ThenInclude(x => x.Conditions)
             .FirstOrDefaultAsync(x => x.ResultConfigId == resultConfigId, cancellationToken)
             ?? throw new InvalidOperationException($"No result configuration with id:{resultConfigId} found");
     }

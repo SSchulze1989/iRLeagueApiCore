@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Services.ResultService.Calculation;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 
@@ -27,7 +28,10 @@ public sealed class MemberStandingCalculationServiceTests
         var memberId = fixture.Create<long>();
         var testRowData = TestRowBuilder()
             .With(x => x.MemberId, memberId)
+            .With(x => x.PointsEligible, true)
             .CreateMany(nEvents * nRaces);
+        testRowData.TakeLast(2).ForEach(x => x.PointsEligible = false);
+        testRowData.TakeLast(3).ForEach(x => x.RacePoints = x.BonusPoints = 0);
         var data = CalculationDataBuilder(3, 2, true).Create();
         var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
             .Zip(testRowData);
@@ -66,6 +70,8 @@ public sealed class MemberStandingCalculationServiceTests
         testRow.Top10.Should().Be(testRowData.Count(x => x.FinalPosition <= 10));
         testRow.Top5.Should().Be(testRowData.Count(x => x.FinalPosition <= 5));
         testRow.Top3.Should().Be(testRowData.Count(x => x.FinalPosition <= 3));
+        testRow.RacesScored.Should().Be(testRowData.Count() - 2);
+        testRow.RacesInPoints.Should().Be(testRowData.Count() - 3);
     }
 
     [Fact]

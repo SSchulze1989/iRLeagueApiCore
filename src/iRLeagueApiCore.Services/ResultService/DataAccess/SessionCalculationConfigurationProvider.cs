@@ -49,7 +49,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 MaxResultsPerGroup = configurationEntity?.ResultsPerTeam ?? 1,
                 Name = x.Name,
                 UpdateTeamOnRecalculation = false,
-                ResultKind = configurationEntity?.ResultKind ?? ResultKind.Member,
+                ResultKind = configurationEntity?.ChampSeason.ResultKind ?? ResultKind.Member,
             });
         return configurations;
     }
@@ -80,7 +80,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 Name = session.Name,
                 SessionId = session.SessionId,
                 SessionNr = session.SessionNr,
-                ResultKind = configurationEntity.ResultKind,
+                ResultKind = configurationEntity.ChampSeason?.ResultKind ?? ResultKind.Member,
                 SessionType = session.SessionType,
                 SessionResultId = sessionResultIds.ElementAtOrDefault(index)
             };
@@ -96,7 +96,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 Name = combinedScoring.Name,
                 SessionId = null,
                 SessionNr = 999,
-                ResultKind = configurationEntity.ResultKind,
+                ResultKind = configurationEntity.ChampSeason?.ResultKind ?? ResultKind.Member,
                 IsCombinedResult = true,
                 UseExternalSourcePoints = combinedScoring.UseExternalSourcePoints,
                 SessionType = SessionType.Race,
@@ -141,9 +141,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
 
         pointRule.PointSortOptions = pointsRuleEntity?.PointsSortOptions ?? Array.Empty<SortOptions>();
         pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
-        pointRule.BonusPoints = pointsRuleEntity?.BonusPoints ?? new Dictionary<string, int>();
+        pointRule.BonusPoints = (pointsRuleEntity?.BonusPoints.Select(MapFromBonusPointModel) ?? Array.Empty<BonusPointConfiguration>()).ToList();
         pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
-        pointRule.AutoPenalties = pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>();
+        pointRule.ChampSeasonFilters = configurationEntity.ChampSeason != null ? MapFromFilterEntities(configurationEntity.ChampSeason.Filters) : new();
+        pointRule.AutoPenalties = (pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>()).ToList();
         if (includePointFilters)
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
@@ -156,11 +157,23 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return pointRule;
     }
 
+    private static BonusPointConfiguration MapFromBonusPointModel(BonusPointModel bonusPoint)
+    {
+        var bonusPointConfig = new BonusPointConfiguration()
+        {
+            Type = bonusPoint.Type,
+            Value = (int)bonusPoint.Value,
+            Points = (int)bonusPoint.Points,
+            Conditions = MapFromFilterEntities(bonusPoint.Conditions, allowForEach: true, overrideFilterCombination: FilterCombination.And),
+        };
+        return bonusPointConfig;
+    }
+
     private static AutoPenaltyConfigurationData MapFromAutoPenaltyConfig(AutoPenaltyConfigEntity penaltyEntity)
     {
         var penaltyData = new AutoPenaltyConfigurationData
         {
-            Conditions = MapFromFilterEntities(penaltyEntity.Conditions, allowForEach: true),
+            Conditions = MapFromFilterEntities(penaltyEntity.Conditions, allowForEach: true, overrideFilterCombination: FilterCombination.And),
             Description = penaltyEntity.Description,
             Points = penaltyEntity.Points,
             Positions = penaltyEntity.Positions,
@@ -177,9 +190,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         }
     );
 
-    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, bool allowForEach = false)
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, 
+        bool allowForEach = false, FilterCombination? overrideFilterCombination = null)
     {
-        return MapToFilterGroup(pointFilters, allowForEach: allowForEach);
+        return MapToFilterGroup(pointFilters, allowForEach: allowForEach, overrideFilterCombination: overrideFilterCombination);
     }
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
@@ -208,25 +222,11 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         };
     }
 
-    private static FilterCombination GetFilterCombination(FilterConditionEntity? condition, int index)
-    {
-        if (index == 0 || condition is null)
-        {
-            return FilterCombination.And;
-        }
-        return condition.Action switch
-        {
-            MatchedValueAction.Remove => FilterCombination.And,
-            MatchedValueAction.Keep => FilterCombination.Or,
-            _ => FilterCombination.And,
-        };
-    }
-
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionModel?> filters,
-        bool allowForEach = false)
+        bool allowForEach = false, FilterCombination? overrideFilterCombination = null)
     {
         var filterCombination = filters
-            .Select((x, i) => (GetFilterCombination(x, i), GetRowFilterFromCondition(x, allowForEach: allowForEach)))
+            .Select((x, i) => (overrideFilterCombination ?? GetFilterCombination(x, i), GetRowFilterFromCondition(x, allowForEach: allowForEach)))
             .Where(x => x.Item2 is not null);
         return new(filterCombination!);
     }
@@ -238,25 +238,6 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         {
             FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, 
                 condition.FilterValues, condition.Action, allowForEach: allowForEach),
-            FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
-            FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),
-            _ => null,
-        };
-    }
-
-    private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionEntity?> filters)
-    {
-        var filterCombination = filters
-            .Select((x, i) => (GetFilterCombination(x, i), GetRowFilterFromCondition(x)))
-            .Where(x => x.Item2 is not null);
-        return new(filterCombination!);
-    }
-
-    private static RowFilter<ResultRowCalculationResult>? GetRowFilterFromCondition(FilterConditionEntity? condition)
-    {
-        return condition?.FilterType switch
-        {
-            FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, condition.FilterValues, condition.Action),
             FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
             FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),
             _ => null,

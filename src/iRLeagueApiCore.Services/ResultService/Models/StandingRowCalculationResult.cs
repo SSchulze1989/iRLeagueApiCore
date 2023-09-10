@@ -19,6 +19,8 @@ internal sealed class StandingRowCalculationResult
         TotalPointsChange = data.TotalPointsChange;
         Races = data.Races;
         RacesCounted = data.RacesCounted;
+        RacesInPoints = data.RacesInPoints;
+        RacesScored = data.RacesScored;
         DroppedResultCount = data.DroppedResultCount;
         CompletedLaps = data.CompletedLaps;
         CompletedLapsChange = data.CompletedLapsChange;
@@ -53,6 +55,8 @@ internal sealed class StandingRowCalculationResult
     public int TotalPointsChange { get; set; }
     public int Races { get; set; }
     public int RacesCounted { get; set; }
+    public int RacesScored { get; set; }
+    public int RacesInPoints { get; set; }
     public int DroppedResultCount { get; set; }
     public int CompletedLaps { get; set; }
     public int CompletedLapsChange { get; set; }

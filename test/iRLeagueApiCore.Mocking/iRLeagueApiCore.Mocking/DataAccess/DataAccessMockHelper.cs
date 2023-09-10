@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore;
@@ -267,6 +268,7 @@ public sealed class DataAccessMockHelper
                         .Without(x => x.Scorings)
                         .Without(x => x.AutoPenalties)
                         .Without(x => x.League)
+                        .Without(x => x.BonusPoints)
                         .Create())
                     .Without(x => x.DependendScorings)
                     .Without(x => x.ExtScoringSource)
@@ -346,6 +348,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.LeagueId, league.Id)
             .Without(x => x.Scorings)
             .Without(x => x.AutoPenalties)
+            .Without(x => x.BonusPoints)
             .Create();
     }
 
@@ -405,6 +408,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.StandingConfiguration, () => CreateStandingConfiguration(championship.League))
             .With(x => x.ResultConfigurations, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(nResultConfigs).ToList())
             .With(x => x.IsActive, true)
+            .Without(x => x.Filters)
             .Without(x => x.DefaultResultConfig)
             .Without(x => x.Standings)
             .Without(x => x.EventResults);

@@ -106,6 +106,8 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             rowEntity.RacePointsChange = row.RacePointsChange;
             rowEntity.Races = row.Races;
             rowEntity.RacesCounted = row.RacesCounted;
+            rowEntity.RacesScored = row.RacesScored;
+            rowEntity.RacesInPoints = row.RacesInPoints;
             rowEntity.Team = requiredEntities.Teams.FirstOrDefault(x => x.TeamId == row.TeamId);
             rowEntity.Top10 = row.Top10;
             rowEntity.Top3 = row.Top3;

@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Extensions;
@@ -254,7 +255,12 @@ public sealed class DbTestFixture : DataAccessTestsBase
         var pointRule = new PointRuleEntity()
         {
             Name = "Pointrule 1",
-            BonusPoints = new Dictionary<string, int>() { { "p1", 5 }, { "p2", 3 }, { "p3", 1 } },
+            BonusPoints = new BonusPointModel[]
+            {
+                new() { Type = BonusPointType.Position, Value = 1, Points = 5 },
+                new() { Type = BonusPointType.Position, Value = 2, Points = 3 },
+                new() { Type = BonusPointType.Position, Value = 3, Points = 1 },
+            },
             FinalSortOptions = new SortOptions[] { SortOptions.TotalPtsAsc, SortOptions.PenPtsDesc },
             MaxPoints = 30,
             PointDropOff = 1,

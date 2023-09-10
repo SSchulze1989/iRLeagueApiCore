@@ -23,9 +23,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                     .ThenInclude(x => x.AutoPenalties)
             .Include(x => x.SourceResultConfig)
             .Include(x => x.ResultFilters)
-                .ThenInclude(x => x.Conditions)
             .Include(x => x.PointFilters)
-                .ThenInclude(x => x.Conditions)
             .Where(x => x.ResultConfigId == resultConfigId)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -39,7 +37,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 .FirstOrDefaultAsync(x => x.ResultConfigId == postResultConfig.SourceResultConfig.ResultConfigId, cancellationToken)
             : null;
         resultConfigEntity.Name = postResultConfig.Name;
-        resultConfigEntity.ResultKind = postResultConfig.ResultKind;
         resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
         resultConfigEntity.Scorings = await MapToScoringList(user, postResultConfig.Scorings, resultConfigEntity.Scorings, cancellationToken);
         resultConfigEntity.PointFilters = await MapToFilterOptionListAsync(user, postResultConfig.FiltersForPoints,
@@ -72,48 +69,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         standingConfigEntity.WeeksCounted = standingConfigModel.WeeksCounted;
         UpdateVersionEntity(user, standingConfigEntity);
         return await Task.FromResult(standingConfigurationEntities);
-    }
-
-    private async Task<ICollection<FilterOptionEntity>> MapToFilterOptionListAsync(LeagueUser user, IEnumerable<ResultFilterModel> filterModels,
-        ICollection<FilterOptionEntity> filterEntities, CancellationToken cancellationToken)
-    {
-        foreach (var filterModel in filterModels)
-        {
-            var filterOptionEntity = filterModel.FilterOptionId == 0 ? null : filterEntities
-                .FirstOrDefault(x => x.FilterOptionId == filterModel.FilterOptionId);
-            if (filterOptionEntity is null)
-            {
-                filterOptionEntity = CreateVersionEntity(user, new FilterOptionEntity());
-                filterEntities.Add(filterOptionEntity);
-                filterOptionEntity.LeagueId = dbContext.LeagueProvider.LeagueId;
-            }
-            await MapToFilterOptionEntityAsync(user, filterModel, filterOptionEntity, cancellationToken);
-        }
-        var deleteFilterEntities = filterEntities
-            .Where(x => filterModels.Any(y => y.FilterOptionId == x.FilterOptionId) == false);
-        foreach (var deleteFilterEntity in deleteFilterEntities)
-        {
-            filterEntities.Remove(deleteFilterEntity);
-        }
-        return filterEntities;
-    }
-
-    private Task<FilterOptionEntity> MapToFilterOptionEntityAsync(LeagueUser user, ResultFilterModel filterModel, FilterOptionEntity filterOptionEntity,
-        CancellationToken cancellationToken)
-    {
-        var condition = filterOptionEntity.Conditions.FirstOrDefault();
-        if (condition is null)
-        {
-            condition = new FilterConditionEntity();
-            filterOptionEntity.Conditions.Add(condition);
-        }
-        condition.Comparator = filterModel.Comparator;
-        condition.FilterType = filterModel.FilterType;
-        condition.ColumnPropertyName = filterModel.ColumnPropertyName;
-        condition.FilterValues = filterModel.FilterValues;
-        condition.Action = filterModel.Action;
-        UpdateVersionEntity(user, filterOptionEntity);
-        return Task.FromResult(filterOptionEntity);
     }
 
     private async Task<ICollection<ScoringEntity>> MapToScoringList(LeagueUser user, ICollection<ScoringModel> scoringModels,
@@ -251,7 +206,6 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         Name = resultConfig.Name,
         DisplayName = resultConfig.DisplayName,
         IsDefaultConfig = resultConfig.ResultConfigId == resultConfig.ChampSeason.DefaultResultConfigId,
-        ResultKind = resultConfig.ResultKind,
         ResultsPerTeam = resultConfig.ResultsPerTeam,
         Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()
         {
@@ -287,26 +241,20 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 }).ToList(),
             } : null,
         }).ToList(),
-        FiltersForPoints = resultConfig.PointFilters.Select(filter => new ResultFilterModel()
-        {
-            LeagueId = filter.LeagueId,
-            FilterOptionId = filter.FilterOptionId,
-            FilterType = filter.Conditions.First().FilterType,
-            FilterValues = filter.Conditions.First().FilterValues,
-            Action = filter.Conditions.First().Action,
-            ColumnPropertyName = filter.Conditions.First().ColumnPropertyName,
-            Comparator = filter.Conditions.First().Comparator,
-        }).ToList(),
-        FiltersForResult = resultConfig.ResultFilters.Select(filter => new ResultFilterModel()
-        {
-            LeagueId = filter.LeagueId,
-            FilterOptionId = filter.FilterOptionId,
-            FilterType = filter.Conditions.First().FilterType,
-            FilterValues = filter.Conditions.First().FilterValues,
-            Action = filter.Conditions.First().Action,
-            ColumnPropertyName = filter.Conditions.First().ColumnPropertyName,
-            Comparator = filter.Conditions.First().Comparator,
-        }).ToList(),
+        FiltersForPoints = resultConfig.PointFilters
+            .Select(filter => new ResultFilterModel()
+            {
+                LeagueId = filter.LeagueId,
+                FilterOptionId = filter.FilterOptionId,
+                Condition = filter.Conditions.FirstOrDefault() ?? new(),
+            }).ToList(),
+        FiltersForResult = resultConfig.ResultFilters
+            .Select(filter => new ResultFilterModel()
+            {
+                LeagueId = filter.LeagueId,
+                FilterOptionId = filter.FilterOptionId,
+                Condition = filter.Conditions.FirstOrDefault() ?? new(),
+            }).ToList(),
     };
 
     public Expression<Func<ScoringEntity, ScoringModel>> MapToGetScoringModelExpression => source => new ScoringModel()

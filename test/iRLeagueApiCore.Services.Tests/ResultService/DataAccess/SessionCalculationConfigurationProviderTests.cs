@@ -80,7 +80,12 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        config.ResultKind = ResultKind.Member;
+        var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        champSeason.ResultKind = ResultKind.Member;
+        champSeason.ResultConfigurations.Add(config);
+        championship.ChampSeasons.Add(champSeason);
+        dbContext.Championships.Add(championship);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = fixture.Create<SessionCalculationConfigurationProvider>();
@@ -98,7 +103,12 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        config.ResultKind = ResultKind.Team;
+        var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
+        var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        champSeason.ResultKind = ResultKind.Team;
+        champSeason.ResultConfigurations.Add(config);
+        championship.ChampSeasons.Add(champSeason);
+        dbContext.Championships.Add(championship);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = fixture.Create<SessionCalculationConfigurationProvider>();
@@ -285,9 +295,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
         var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
                     .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
-                    .Without(x => x.FilterOption)
                     .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -296,6 +305,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.PointFilters.Add(filter);
         config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
@@ -323,9 +333,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
         var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
                     .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
-                    .Without(x => x.FilterOption)
                     .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -334,6 +343,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
@@ -360,10 +370,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.ColumnProperty)
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -372,6 +381,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         dbContext.ResultConfigurations.Add(config);
@@ -396,10 +406,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.Member)
             .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -408,6 +417,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         dbContext.ResultConfigurations.Add(config);
@@ -430,10 +440,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition = fixture.Build<FilterConditionEntity>()
+        var condition = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.Member)
             .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
-            .Without(x => x.FilterOption)
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -442,6 +451,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter);
         dbContext.ResultConfigurations.Add(config);
@@ -483,11 +493,10 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
-        var condition1 = fixture.Build<FilterConditionEntity>()
+        var condition1 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.ColumnProperty)
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Firstname))
             .With(x => x.Action, action1)
-            .Without(x => x.FilterOption)
             .Create();
         var filter1 = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -496,12 +505,12 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
-        var condition2 = fixture.Build<FilterConditionEntity>()
+        var condition2 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.ColumnProperty)
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Lastname))
             .With(x => x.Action, action2)
-            .Without(x => x.FilterOption)
             .Create();
         var filter2 = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -510,12 +519,12 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
-        var condition3 = fixture.Build<FilterConditionEntity>()
+        var condition3 = fixture.Build<FilterConditionModel>()
             .With(x => x.FilterType, FilterType.Member)
             .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
             .With(x => x.Action, action3)
-            .Without(x => x.FilterOption)
             .Create();
         var filter3 = fixture.Build<FilterOptionEntity>()
             .With(x => x.Conditions, new[]
@@ -524,6 +533,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             })
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
             .Create();
         config.ResultFilters.Add(filter1);
         config.ResultFilters.Add(filter2);
@@ -596,6 +606,96 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             testPenalty.Time.Should().Be(new TimeSpan(1, 2, 3));
             testPenalty.Type.Should().Be(PenaltyType.Position);
             testPenalty.Conditions.GetFilters().Should().HaveCount(1);
+        }
+    }
+
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideChampSeasonFilters()
+    {
+        var @event = await GetFirstEventEntity();
+        var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
+        var champseason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
+        var config = accessMockHelper.CreateConfiguration(@event);
+        config.ChampSeason = champseason;
+        var condition = fixture.Build<FilterConditionModel>()
+            .With(x => x.FilterType, FilterType.Member)
+            .With(x => x.FilterValues, fixture.CreateMany<long>().Select(x => x.ToString()).ToList())
+            .Create();
+        var filter = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
+            .Create();
+        champseason.Filters.Add(filter);
+        dbContext.Championships.Add(championship);
+        dbContext.ChampSeasons.Add(champseason);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var filterGroup = sessionConfig.PointRule.GetChampSeasonFilters();
+            var testFilter = filterGroup!.GetFilters().First().rowFilter as IdRowFilter<long>;
+            testFilter.Should().NotBeNull();
+            testFilter!.MatchIds.Select(x => x.ToString()).Should().BeEquivalentTo(condition.FilterValues);
+            testFilter.Action.Should().Be(condition.Action);
+        }
+    }
+
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideBonusPointConfiguration()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+        var bonusPoint = fixture.Build<BonusPointModel>()
+            .With(x => x.Type, BonusPointType.Custom)
+            .With(x => x.Value, 420)
+            .With(x => x.Points, 42)
+            .With(x => x.Conditions, new[]
+            {
+                new FilterConditionModel()
+                {
+                    FilterType = FilterType.ColumnProperty,
+                    ColumnPropertyName = nameof(ResultRowCalculationResult.CompletedLaps),
+                    FilterValues = new[] { "10" },
+                    Action = MatchedValueAction.Keep,
+                    Comparator = ComparatorType.IsEqual,
+                },
+            })
+            .Create();
+        pointRule.BonusPoints.Add(bonusPoint);
+        dbContext.PointRules.Add(pointRule);
+        dbContext.ResultConfigurations.Add(config);
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
+        await dbContext.SaveChangesAsync();
+        config = await dbContext.ResultConfigurations
+            .Include(x => x.Scorings)
+                .ThenInclude(x => x.PointsRule)
+            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+        var scorings = await dbContext.Scorings
+            .Include(x => x.ResultConfiguration)
+            .ToListAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            sessionConfig.PointRule.Should().BeAssignableTo(typeof(CalculationPointRuleBase));
+            var sessionConfigPointRule = (CalculationPointRuleBase)sessionConfig.PointRule;
+            sessionConfigPointRule.BonusPoints.Should().HaveCount(1);
+            var testBonusPoint = sessionConfigPointRule.BonusPoints.First();
+            testBonusPoint.Points.Should().Be(42);
+            testBonusPoint.Value.Should().Be(420);
+            testBonusPoint.Type.Should().Be(BonusPointType.Custom);
+            testBonusPoint.Conditions.GetFilters().Should().HaveCount(1);
         }
     }
 
