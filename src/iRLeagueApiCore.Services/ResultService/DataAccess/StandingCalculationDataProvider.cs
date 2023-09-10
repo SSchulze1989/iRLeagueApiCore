@@ -145,6 +145,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
                 OldCpi = row.OldCpi,
                 PenaltyPoints = row.PenaltyPoints,
                 ScoredMemberResultRowIds = row.TeamResultRows.Select(x => x.ScoredResultRowId).ToList(),
+                PointsEligible = row.PointsEligible,
             })
         })
     };
