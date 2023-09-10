@@ -118,6 +118,7 @@ public sealed class IntegrationTests : DataAccessTestsBase
                 .Without(x => x.Scorings)
                 .Without(x => x.AutoPenalties)
                 .Without(x => x.League)
+                .Without(x => x.BonusPoints)
                 .Create())
             .Without(x => x.DependendScorings)
             .Without(x => x.ExtScoringSource)
