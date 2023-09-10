@@ -638,6 +638,57 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         }
     }
 
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideBonusPointConfiguration()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+        var bonusPoint = fixture.Build<BonusPointModel>()
+            .With(x => x.Type, BonusPointType.Custom)
+            .With(x => x.Value, 420)
+            .With(x => x.Points, 42)
+            .With(x => x.Conditions, new[]
+            {
+                new FilterConditionModel()
+                {
+                    FilterType = FilterType.ColumnProperty,
+                    ColumnPropertyName = nameof(ResultRowCalculationResult.CompletedLaps),
+                    FilterValues = new[] { "10" },
+                    Action = MatchedValueAction.Keep,
+                    Comparator = ComparatorType.IsEqual,
+                },
+            })
+            .Create();
+        pointRule.BonusPoints.Add(bonusPoint);
+        dbContext.PointRules.Add(pointRule);
+        dbContext.ResultConfigurations.Add(config);
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
+        await dbContext.SaveChangesAsync();
+        config = await dbContext.ResultConfigurations
+            .Include(x => x.Scorings)
+                .ThenInclude(x => x.PointsRule)
+            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+        var scorings = await dbContext.Scorings
+            .Include(x => x.ResultConfiguration)
+            .ToListAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            sessionConfig.PointRule.Should().BeAssignableTo(typeof(CalculationPointRuleBase));
+            var sessionConfigPointRule = (CalculationPointRuleBase)sessionConfig.PointRule;
+            sessionConfigPointRule.BonusPoints.Should().HaveCount(1);
+            var testBonusPoint = sessionConfigPointRule.BonusPoints.First();
+            testBonusPoint.Points.Should().Be(42);
+            testBonusPoint.Value.Should().Be(420);
+            testBonusPoint.Type.Should().Be(BonusPointType.Custom);
+            testBonusPoint.Conditions.GetFilters().Should().HaveCount(1);
+        }
+    }
+
     private SessionCalculationConfigurationProvider CreateSut()
     {
         return fixture.Create<SessionCalculationConfigurationProvider>();

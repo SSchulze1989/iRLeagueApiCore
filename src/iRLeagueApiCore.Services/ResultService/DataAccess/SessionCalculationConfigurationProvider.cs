@@ -141,10 +141,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
 
         pointRule.PointSortOptions = pointsRuleEntity?.PointsSortOptions ?? Array.Empty<SortOptions>();
         pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
-        pointRule.BonusPoints = pointsRuleEntity?.BonusPoints ?? new Dictionary<string, int>();
+        pointRule.BonusPoints = (pointsRuleEntity?.BonusPoints.Select(MapFromBonusPointModel) ?? Array.Empty<BonusPointConfiguration>()).ToList();
         pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
         pointRule.ChampSeasonFilters = configurationEntity.ChampSeason != null ? MapFromFilterEntities(configurationEntity.ChampSeason.Filters) : new();
-        pointRule.AutoPenalties = pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>();
+        pointRule.AutoPenalties = (pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>()).ToList();
         if (includePointFilters)
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
@@ -157,11 +157,23 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return pointRule;
     }
 
+    private static BonusPointConfiguration MapFromBonusPointModel(BonusPointModel bonusPoint)
+    {
+        var bonusPointConfig = new BonusPointConfiguration()
+        {
+            Type = bonusPoint.Type,
+            Value = (int)bonusPoint.Value,
+            Points = (int)bonusPoint.Points,
+            Conditions = MapFromFilterEntities(bonusPoint.Conditions, allowForEach: true, overrideFilterCombination: FilterCombination.And),
+        };
+        return bonusPointConfig;
+    }
+
     private static AutoPenaltyConfigurationData MapFromAutoPenaltyConfig(AutoPenaltyConfigEntity penaltyEntity)
     {
         var penaltyData = new AutoPenaltyConfigurationData
         {
-            Conditions = MapFromFilterEntities(penaltyEntity.Conditions, allowForEach: true),
+            Conditions = MapFromFilterEntities(penaltyEntity.Conditions, allowForEach: true, overrideFilterCombination: FilterCombination.And),
             Description = penaltyEntity.Description,
             Points = penaltyEntity.Points,
             Positions = penaltyEntity.Positions,
@@ -178,9 +190,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         }
     );
 
-    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, bool allowForEach = false)
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, 
+        bool allowForEach = false, FilterCombination? overrideFilterCombination = null)
     {
-        return MapToFilterGroup(pointFilters, allowForEach: allowForEach);
+        return MapToFilterGroup(pointFilters, allowForEach: allowForEach, overrideFilterCombination: overrideFilterCombination);
     }
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterOptionEntity> pointFilters)
@@ -210,10 +223,10 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     }
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapToFilterGroup(IEnumerable<FilterConditionModel?> filters,
-        bool allowForEach = false)
+        bool allowForEach = false, FilterCombination? overrideFilterCombination = null)
     {
         var filterCombination = filters
-            .Select((x, i) => (GetFilterCombination(x, i), GetRowFilterFromCondition(x, allowForEach: allowForEach)))
+            .Select((x, i) => (overrideFilterCombination ?? GetFilterCombination(x, i), GetRowFilterFromCondition(x, allowForEach: allowForEach)))
             .Where(x => x.Item2 is not null);
         return new(filterCombination!);
     }

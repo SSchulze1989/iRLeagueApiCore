@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
@@ -26,7 +27,7 @@ internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, 
 
     public override IReadOnlyList<T> SortForPoints<T>(IEnumerable<T> rows) => DefaultPointRule<TRow>.DefaultSort(rows);
 
-    public override IDictionary<string, int> GetBonusPoints() => new Dictionary<string, int>();
+    public override IEnumerable<BonusPointConfiguration> GetBonusPoints() => Array.Empty<BonusPointConfiguration>();
 
     private static IReadOnlyList<T> DefaultSort<T>(IEnumerable<T> rows) where T : TRow
     {
