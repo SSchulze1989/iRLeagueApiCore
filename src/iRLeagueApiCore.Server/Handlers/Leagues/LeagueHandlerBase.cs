@@ -19,6 +19,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         leagueEntity.LeaguePublic = postLeague.LeaguePublic;
         leagueEntity.Description = postLeague.Description;
         leagueEntity.DescriptionPlain = postLeague.DescriptionPlain;
+        leagueEntity.ProtestFormAccess = postLeague.ProtestFormAccess;
+        leagueEntity.EnableLiveReviews = postLeague.EnableLiveReviews;
         CreateVersionEntity(user, leagueEntity);
         UpdateVersionEntity(user, leagueEntity);
         return leagueEntity;
@@ -42,8 +44,10 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         DescriptionPlain = x.DescriptionPlain,
         IsInitialized = x.IsInitialized,
         EnableProtests = x.EnableProtests,
+        EnableLiveReviews = x.EnableLiveReviews,
         ProtestCoolDownPeriod = x.ProtestCoolDownPeriod,
         ProtestsClosedAfter = x.ProtestsClosedAfter,
+        ProtestFormAccess = x.ProtestFormAccess,
         ProtestsPublic = x.ProtestsPublic,
         SeasonIds = x.Seasons
             .Select(season => season.SeasonId)
@@ -69,6 +73,8 @@ public class LeagueHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         leagueEntity.ProtestsClosedAfter = putLeague.ProtestsClosedAfter;
         leagueEntity.ProtestsPublic = putLeague.ProtestsPublic;
         leagueEntity.LeaguePublic = putLeague.LeaguePublic;
+        leagueEntity.ProtestFormAccess = putLeague.ProtestFormAccess;
+        leagueEntity.EnableLiveReviews = putLeague.EnableLiveReviews;
         UpdateVersionEntity(user, leagueEntity);
         return leagueEntity;
     }
