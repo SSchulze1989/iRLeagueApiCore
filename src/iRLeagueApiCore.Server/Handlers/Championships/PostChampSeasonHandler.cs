@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore;
 using System.Threading;
 
@@ -45,6 +46,8 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
                 .ThenInclude(x => x.Season)
                     .ThenInclude(x => x.Schedules)
                         .ThenInclude(x => x.Events)
+            .Include(x => x.ChampSeasons)
+                .ThenInclude(x => x.Filters)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var season = await dbContext.Seasons
@@ -69,12 +72,24 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         // find previous season settings and copy
         champSeason.StandingConfiguration = await CreateOrCopyStandingConfigEntity(user, prevChampSeason?.StandingConfigId, cancellationToken);
         champSeason.ResultConfigurations = await CopyResultConfigurationEntities(user, champSeason, prevChampSeason?.ResultConfigurations.Select(x => x.ResultConfigId), cancellationToken);
+        champSeason.Filters = CopyChampSeasonFilterEntities(user, prevChampSeason?.Filters);
         UpdateVersionEntity(user, champSeason);
 
         championship.ChampSeasons.Add(champSeason);
         season.ChampSeasons.Add(champSeason);
         //dbContext.ChampSeasons.Add(champSeason);
         return champSeason;
+    }
+
+    private ICollection<FilterOptionEntity> CopyChampSeasonFilterEntities(LeagueUser user, ICollection<FilterOptionEntity>? filters)
+    {
+        var copyFilters = filters?.Select(x => CreateVersionEntity(user, new FilterOptionEntity()
+        {
+            Conditions = x.Conditions,
+
+        })) ?? new List<FilterOptionEntity>();
+        copyFilters.ForEach(x => UpdateVersionEntity(user, x));
+        return copyFilters.ToList();
     }
 
     private async Task<StandingConfigurationEntity> CreateOrCopyStandingConfigEntity(LeagueUser user, long? prevStandingConfigId, CancellationToken cancellationToken)
@@ -101,14 +116,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
     {
         var target = CreateVersionEntity(user, new FilterOptionEntity()
         {
-            Conditions = source.Conditions.Select(x => new FilterConditionModel()
-            {
-                Action = x.Action,
-                ColumnPropertyName = x.ColumnPropertyName,
-                Comparator = x.Comparator,
-                FilterType = x.FilterType,
-                FilterValues = x.FilterValues,
-            }).ToList(),
+            Conditions = source.Conditions,
         });
         UpdateVersionEntity(user, target);
         return target;
@@ -130,9 +138,23 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             PointDropOff = source.PointDropOff,
             PointsPerPlace = source.PointsPerPlace,
             PointsSortOptions = source.PointsSortOptions,
+            AutoPenalties = CopyAutoPenalties(source.AutoPenalties),
         });
         UpdateVersionEntity(user, target);
         return target;
+    }
+
+    private static ICollection<AutoPenaltyConfigEntity> CopyAutoPenalties(ICollection<AutoPenaltyConfigEntity> autoPenalties)
+    {
+        return autoPenalties.Select(x => new AutoPenaltyConfigEntity()
+        {
+            Conditions = x.Conditions,
+            Description = x.Description,
+            Points = x.Points,
+            Positions = x.Positions,
+            Time = x.Time,
+            Type = x.Type,
+        }).ToList();
     }
 
     private ScoringEntity CopyScoringEntity(LeagueUser user, ScoringEntity source)
@@ -205,6 +227,8 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
                     .ThenInclude(x => x.Championship)
             .Include(x => x.PointFilters)
             .Include(x => x.Scorings)
+                .ThenInclude(x => x.PointsRule)
+                    .ThenInclude(x => x.AutoPenalties)
             .Include(x => x.ResultFilters)
             .ToListAsync(cancellationToken);
         return resultConfigs.Select(x => CopyResultConfigurationEntity(user, targetChampSeason, x)).ToList();
