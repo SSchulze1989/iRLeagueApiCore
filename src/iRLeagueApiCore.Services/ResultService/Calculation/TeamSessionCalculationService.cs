@@ -85,6 +85,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
                 teamRow.RacePoints = dataRow.RacePoints + dataRow.BonusPoints;
             }
             teamRow.PenaltyPoints += memberRow.PenaltyPoints;
+            teamRow.PointsEligible |= memberRow.PointsEligible;
         }
         teamRow.StartPosition = teamMemberRows.Min(x => x.StartPosition);
         (_, teamRow.QualifyingTime) = GetBestLapValue(teamMemberRows, x => x.MemberId, x => x.QualifyingTime);
