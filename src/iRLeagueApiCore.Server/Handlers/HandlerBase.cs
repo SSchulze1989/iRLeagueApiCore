@@ -190,17 +190,18 @@ public abstract class HandlerBase<THandler, TRequest>
     protected Task<FilterOptionEntity> MapToFilterOptionEntityAsync(LeagueUser user, ResultFilterModel filterModel, FilterOptionEntity filterOptionEntity,
         CancellationToken cancellationToken)
     {
-        var condition = filterOptionEntity.Conditions.FirstOrDefault();
-        if (condition is null)
+
+        filterOptionEntity.Conditions = new[]
         {
-            condition = new FilterConditionModel();
-            filterOptionEntity.Conditions.Add(condition);
-        }
-        condition.Comparator = filterModel.Condition.Comparator;
-        condition.FilterType = filterModel.Condition.FilterType;
-        condition.ColumnPropertyName = filterModel.Condition.ColumnPropertyName;
-        condition.FilterValues = filterModel.Condition.FilterValues;
-        condition.Action = filterModel.Condition.Action;
+            new FilterConditionModel()
+            {
+                Comparator = filterModel.Condition.Comparator,
+                FilterType = filterModel.Condition.FilterType,
+                ColumnPropertyName = filterModel.Condition.ColumnPropertyName,
+                FilterValues = filterModel.Condition.FilterValues,
+                Action = filterModel.Condition.Action
+            }
+        }.ToList();
         UpdateVersionEntity(user, filterOptionEntity);
         return Task.FromResult(filterOptionEntity);
     }
