@@ -1,6 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore;
 using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
@@ -46,17 +45,15 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
         var entity =  await dbContext.StandingConfigurations
             .Where(x => x.StandingConfigId == model.StandingConfigId && model.StandingConfigId != 0)
             .FirstOrDefaultAsync(cancellationToken);
-        if (entity is null)
+        entity ??= CreateVersionEntity(user, new StandingConfigurationEntity()
         {
-            entity = CreateVersionEntity(user, new StandingConfigurationEntity()
-            {
-                LeagueId = dbContext.LeagueProvider.LeagueId,
-            });
-        }
+            LeagueId = dbContext.LeagueProvider.LeagueId,
+        });
         entity.Name = model.Name;
         entity.ResultKind = model.ResultKind;
         entity.UseCombinedResult = model.UseCombinedResult;
         entity.WeeksCounted = model.WeeksCounted;
+        entity.SortOptions = model.SortOptions;
         UpdateVersionEntity(user, entity);
         return entity;
     }
@@ -120,6 +117,7 @@ public class ChampSeasonHandlerBase<THandler, TRequest> : HandlerBase<THandler, 
             ResultKind = champSeason.StandingConfiguration.ResultKind,
             UseCombinedResult = champSeason.StandingConfiguration.UseCombinedResult,
             WeeksCounted = champSeason.StandingConfiguration.WeeksCounted,
+            SortOptions = champSeason.StandingConfiguration.SortOptions,
         },
         Filters = champSeason.Filters.Select(filter => new ResultFilterModel()
         {
