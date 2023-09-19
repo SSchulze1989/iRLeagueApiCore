@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Services.ResultService.Models;
 
-internal sealed class StandingRowCalculationResult
+internal class StandingRowCalculationResult
 {
     public StandingRowCalculationResult() { }
     public StandingRowCalculationResult(StandingRowCalculationResult data)

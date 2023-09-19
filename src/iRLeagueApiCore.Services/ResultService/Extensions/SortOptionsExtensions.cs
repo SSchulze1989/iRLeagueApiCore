@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Models;
+using MySqlX.XDevAPI.Relational;
 
 namespace iRLeagueApiCore.Services.ResultService.Extensions;
 
@@ -37,6 +38,38 @@ internal static class SortOptionsExtensions
             SortOptions.TotalPtsWoBonusDesc => row => -(row.RacePoints - row.PenaltyPoints),
             SortOptions.TotalPtsWoPenaltyAsc => row => row.RacePoints + row.BonusPoints,
             SortOptions.TotalPtsWoPenaltyDesc => row => -(row.RacePoints + row.BonusPoints),
+            _ => row => 0,
+        };
+    }
+
+    public static Func<T, object> GetStandingSortingValue<T>(this SortOptions sortOption) where T : StandingRowCalculationResult
+    {
+        return sortOption switch
+        {
+            SortOptions.ComplLapsAsc => row => row.CompletedLaps,
+            SortOptions.ComplLapsDesc => row => -row.CompletedLaps,
+            SortOptions.IncsAsc => row => row.Incidents,
+            SortOptions.IncsDesc => row => -row.Incidents,
+            SortOptions.LeadLapsAsc => row => row.LeadLaps,
+            SortOptions.LeadLapsDesc => row => -row.LeadLaps,
+            SortOptions.PenPtsAsc => row => row.PenaltyPoints,
+            SortOptions.PenPtsDesc => row => -row.PenaltyPoints,
+            SortOptions.PosAsc => row => row.Position,
+            SortOptions.PosDesc => row => -row.Position,
+            SortOptions.RacePtsAsc => row => row.RacePoints,
+            SortOptions.RacePtsDesc => row => -row.RacePoints,
+            SortOptions.TotalPtsAsc => row => row.TotalPoints,
+            SortOptions.TotalPtsDesc => row => -row.TotalPoints,
+            SortOptions.LastRaceOrderAsc => row => row.ResultRows.LastOrDefault()?.FinalPosition ?? 999,
+            SortOptions.LastRaceOrderDesc => row => -(row.ResultRows.LastOrDefault()?.FinalPosition ?? 999),
+            SortOptions.WinsAsc => row => row.Wins,
+            SortOptions.WinsDesc => row => -row.Wins,
+            SortOptions.Top3Asc => row => row.Top3,
+            SortOptions.Top3Desc => row => -row.Top3,
+            SortOptions.Top5Asc => row => row.Top5,
+            SortOptions.Top5Desc => row => -row.Top5,
+            SortOptions.Top10Asc => row => row.Top10,
+            SortOptions.Top10Desc => row => -row.Top10,
             _ => row => 0,
         };
     }

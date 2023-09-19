@@ -1,4 +1,7 @@
 ﻿using AutoFixture.Dsl;
+using DbIntegrationTests;
+using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
@@ -9,6 +12,15 @@ namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 public sealed class MemberStandingCalculationServiceTests
 {
     private readonly Fixture fixture = new();
+
+    public static IEnumerable<object[]> TestSortOptions()
+    {
+        yield return new object[] { SortOptions.RacePtsAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).RacePoints) };
+        yield return new object[] { SortOptions.RacePtsDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).RacePoints) };
+        yield return new object[] { SortOptions.TotalPtsAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).TotalPoints) };
+        yield return new object[] { SortOptions.TotalPtsDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).TotalPoints) };
+        yield return new object[] { SortOptions.LastRaceOrderAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).ResultRows.Last().FinalPosition) };
+    }
 
     [Fact]
     public async Task Calculate_ShouldNotThrow()
@@ -144,8 +156,13 @@ public sealed class MemberStandingCalculationServiceTests
         data.CurrentEventResult.SessionResults.First().ResultRows.ElementAt(0).TotalPoints = racePoints + bonusPoints;
         data.CurrentEventResult.SessionResults.First().ResultRows.ElementAt(1).TotalPoints = racePoints + bonusPoints - penaltyPoints;
         var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
-            .With(x => x.ResultKind, Common.Enums.ResultKind.Member)
+            .With(x => x.ResultKind, ResultKind.Member)
             .With(x => x.WeeksCounted, nEvents)
+            .With(x => x.SortOptions, new[]
+            {
+                SortOptions.TotalPtsDesc,
+                SortOptions.PenPtsAsc,
+            })
             .Create();
         var sut = CreateSut(config);
 
@@ -154,6 +171,33 @@ public sealed class MemberStandingCalculationServiceTests
         var testOrder = test.StandingRows
             .OrderByDescending(x => x.TotalPoints)
             .ThenBy(x => x.PenaltyPoints);
+        var positions = Enumerable.Range(1, testOrder.Count());
+        testOrder.Should().BeInAscendingOrder(x => x.Position);
+        testOrder.Select(x => x.Position).Should().BeEquivalentTo(positions);
+        test.StandingRows.Should().BeEquivalentTo(testOrder);
+    }
+
+    [Theory]
+    [MemberData(nameof(TestSortOptions))]
+    public async Task Calculate_ShouldAssignPositions_BySortOption(SortOptions sortOption, Func<object, double> testSortFunc)
+    {
+        var nEvents = 3;
+        var nRaces = 1;
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
+            .With(x => x.ResultKind, ResultKind.Member)
+            .With(x => x.WeeksCounted, nEvents)
+            .With(x => x.SortOptions, new[]
+            {
+                sortOption,
+            })
+            .Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        var testOrder = test.StandingRows
+            .OrderBy(x => testSortFunc(x));
         var positions = Enumerable.Range(1, testOrder.Count());
         testOrder.Should().BeInAscendingOrder(x => x.Position);
         testOrder.Select(x => x.Position).Should().BeEquivalentTo(positions);
@@ -188,20 +232,27 @@ public sealed class MemberStandingCalculationServiceTests
 
     private IPostprocessComposer<StandingCalculationData> CalculationDataBuilder(int nEvents = 3, int nRacesPerEvent = 3, bool hasCombinedResult = false)
     {
+        var memberIds = fixture.CreateMany<long>(10);
         return fixture.Build<StandingCalculationData>()
-            .With(x => x.PreviousEventResults, () => EventResultDataBuilder(nRacesPerEvent, hasCombinedResult).CreateMany(nEvents - 1).ToList())
-            .With(x => x.CurrentEventResult, () => EventResultDataBuilder(nRacesPerEvent, hasCombinedResult).Create());
+            .With(x => x.PreviousEventResults, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult).CreateMany(nEvents - 1).ToList())
+            .With(x => x.CurrentEventResult, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult).Create());
     }
 
-    private IPostprocessComposer<EventCalculationResult> EventResultDataBuilder(int nRaces = 2, bool hasCombinedResult = false)
+    private IPostprocessComposer<EventCalculationResult> EventResultDataBuilder(IEnumerable<long> memberIds, int nRaces = 2, bool hasCombinedResult = false)
     {
         return fixture.Build<EventCalculationResult>()
-            .With(x => x.SessionResults, () => SessionResultDataBuilder().CreateMany(nRaces));
+            .With(x => x.SessionResults, () => SessionResultDataBuilder(memberIds).CreateMany(nRaces));
     }
 
-    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder()
+    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds)
     {
-        return fixture.Build<SessionCalculationResult>();
+        var getMemberIds = memberIds.ToList();
+        return fixture
+            .Build<SessionCalculationResult>()
+            .With(x => x.ResultRows, fixture.Build<ResultRowCalculationResult>()
+                .With(x => x.MemberId, () => getMemberIds.PopRandom())
+                .CreateMany(memberIds.Count())
+            );
     }
 
     private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId, 
