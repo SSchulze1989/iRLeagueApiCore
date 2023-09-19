@@ -55,6 +55,7 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             config.UseCombinedResult = standingConfig.UseCombinedResult;
             config.ResultKind = champSeason.ResultKind;
             config.WeeksCounted = standingConfig.WeeksCounted > 0 ? standingConfig.WeeksCounted : 999;
+            config.SortOptions = standingConfig.SortOptions;
         }
         return config;
     }
