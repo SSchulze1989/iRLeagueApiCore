@@ -19,7 +19,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         var memberStandingRows = CalculateMemberStandingRows(previousMemberEventResults, currentMemberEventResult);
 
         // Sort and apply positions standings previous
-        memberStandingRows = SortStandingRows(memberStandingRows, x => x.previous)
+        memberStandingRows = SortStandingRows(memberStandingRows, x => x.previous, config.SortOptions)
             .ToList();
         foreach (var (memberStandingRow, position) in memberStandingRows.Select((x, i) => (x, i + 1)))
         {
@@ -27,7 +27,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         }
 
         // Sort and apply positions standings current
-        memberStandingRows = SortStandingRows(memberStandingRows, x => x.current)
+        memberStandingRows = SortStandingRows(memberStandingRows, x => x.current, config.SortOptions)
             .ToList();
 
         var finalStandingRows = new List<StandingRowCalculationResult>();

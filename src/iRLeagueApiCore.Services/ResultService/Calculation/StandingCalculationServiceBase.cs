@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
@@ -132,13 +133,13 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         return standingRow;
     }
 
-    protected static IOrderedEnumerable<T> SortStandingRows<T>(IEnumerable<T> rows, Func<T, StandingRowCalculationResult> standingRowSelector)
+    protected static IEnumerable<T> SortStandingRows<T>(IEnumerable<T> rows, Func<T, StandingRowCalculationResult> standingRowSelector, IEnumerable<SortOptions> sortOptions)
     {
-        return rows
-            .OrderByDescending(x => standingRowSelector(x).TotalPoints)
-            .ThenBy(x => standingRowSelector(x).PenaltyPoints)
-            .ThenByDescending(x => standingRowSelector(x).Wins)
-            .ThenBy(x => standingRowSelector(x).Incidents);
+        foreach(var sortOption in sortOptions.Reverse())
+        {
+            rows = rows.OrderBy(x => sortOption.GetStandingSortingValue<StandingRowCalculationResult>()(standingRowSelector(x)));
+        }
+        return rows;
     }
 
     protected static StandingRowCalculationResult DiffStandingRows(StandingRowCalculationResult previous, StandingRowCalculationResult current)

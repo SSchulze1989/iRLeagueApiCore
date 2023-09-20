@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,15 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             config.UseCombinedResult = standingConfig.UseCombinedResult;
             config.ResultKind = champSeason.ResultKind;
             config.WeeksCounted = standingConfig.WeeksCounted > 0 ? standingConfig.WeeksCounted : 999;
+            config.SortOptions = standingConfig.SortOptions;
+        }
+        // Add default sorting options if none are configured
+        if (config.SortOptions.None())
+        {
+            config.SortOptions.Add(SortOptions.TotalPtsDesc);
+            config.SortOptions.Add(SortOptions.PenPtsAsc);
+            config.SortOptions.Add(SortOptions.WinsDesc);
+            config.SortOptions.Add(SortOptions.IncsAsc);
         }
         return config;
     }
