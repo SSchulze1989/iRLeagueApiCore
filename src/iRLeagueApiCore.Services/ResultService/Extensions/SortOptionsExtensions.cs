@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Models;
 using MySqlX.XDevAPI.Relational;
+using System.Runtime.CompilerServices;
 
 namespace iRLeagueApiCore.Services.ResultService.Extensions;
 
@@ -70,6 +71,14 @@ internal static class SortOptionsExtensions
             SortOptions.Top5Desc => row => -row.Top5,
             SortOptions.Top10Asc => row => row.Top10,
             SortOptions.Top10Desc => row => -row.Top10,
+            SortOptions.RacesAsc => row => row.Races,
+            SortOptions.RacesDesc => row => -row.Races,
+            SortOptions.RacesCountedAsc => row => row.RacesCounted,
+            SortOptions.RacesCountedDesc => row => -row.RacesCounted,
+            SortOptions.RacesScoredAsc => row => row.RacesScored,
+            SortOptions.RacesScoredDesc => row => -row.RacesScored,
+            SortOptions.RacesInPointsAsc => row => row.RacesInPoints,
+            SortOptions.RacesInPointsDesc => row => -row.RacesInPoints,
             _ => row => 0,
         };
     }

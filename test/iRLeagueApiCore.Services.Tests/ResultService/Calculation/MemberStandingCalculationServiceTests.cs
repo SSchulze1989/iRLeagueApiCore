@@ -20,6 +20,23 @@ public sealed class MemberStandingCalculationServiceTests
         yield return new object[] { SortOptions.TotalPtsAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).TotalPoints) };
         yield return new object[] { SortOptions.TotalPtsDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).TotalPoints) };
         yield return new object[] { SortOptions.LastRaceOrderAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).ResultRows.Last().FinalPosition) };
+        yield return new object[] { SortOptions.LastRaceOrderDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).ResultRows.Last().FinalPosition) };
+        yield return new object[] { SortOptions.WinsAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).Wins) };
+        yield return new object[] { SortOptions.WinsDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).Wins) };
+        yield return new object[] { SortOptions.Top3Asc, new Func<object, double>(x => ((StandingRowCalculationResult)x).Top3) };
+        yield return new object[] { SortOptions.Top3Desc, new Func<object, double>(x => -((StandingRowCalculationResult)x).Top3) };
+        yield return new object[] { SortOptions.Top5Asc, new Func<object, double>(x => ((StandingRowCalculationResult)x).Top5) };
+        yield return new object[] { SortOptions.Top5Desc, new Func<object, double>(x => -((StandingRowCalculationResult)x).Top5) };
+        yield return new object[] { SortOptions.Top10Asc, new Func<object, double>(x => ((StandingRowCalculationResult)x).Top10) };
+        yield return new object[] { SortOptions.Top10Desc, new Func<object, double>(x => -((StandingRowCalculationResult)x).Top10) };
+        yield return new object[] { SortOptions.RacesAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).Races) };
+        yield return new object[] { SortOptions.RacesDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).Races) };
+        yield return new object[] { SortOptions.RacesCountedAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).RacesCounted) };
+        yield return new object[] { SortOptions.RacesCountedDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).RacesCounted) };
+        yield return new object[] { SortOptions.RacesScoredAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).RacesScored) };
+        yield return new object[] { SortOptions.RacesScoredDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).RacesScored) };
+        yield return new object[] { SortOptions.RacesInPointsAsc, new Func<object, double>(x => ((StandingRowCalculationResult)x).RacesInPoints) };
+        yield return new object[] { SortOptions.RacesInPointsDesc, new Func<object, double>(x => -((StandingRowCalculationResult)x).RacesInPoints) };
     }
 
     [Fact]
@@ -251,7 +268,7 @@ public sealed class MemberStandingCalculationServiceTests
             .Build<SessionCalculationResult>()
             .With(x => x.ResultRows, fixture.Build<ResultRowCalculationResult>()
                 .With(x => x.MemberId, () => getMemberIds.PopRandom())
-                .CreateMany(memberIds.Count())
+                .CreateMany(memberIds.Count() - 1)
             );
     }
 
