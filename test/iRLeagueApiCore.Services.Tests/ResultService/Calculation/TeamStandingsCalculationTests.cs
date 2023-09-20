@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Dsl;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
@@ -143,8 +144,13 @@ public sealed class TeamStandingCalculationServiceTests
         data.CurrentEventResult.SessionResults.First().ResultRows.ElementAt(0).TotalPoints = racePoints + bonusPoints;
         data.CurrentEventResult.SessionResults.First().ResultRows.ElementAt(1).TotalPoints = racePoints + bonusPoints - penaltyPoints;
         var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
-            .With(x => x.ResultKind, Common.Enums.ResultKind.Member)
+            .With(x => x.ResultKind, ResultKind.Member)
             .With(x => x.WeeksCounted, nEvents)
+            .With(x => x.SortOptions, new[]
+            {
+                SortOptions.TotalPtsDesc,
+                SortOptions.PenPtsAsc,
+            })
             .Create();
         var sut = CreateSut(config);
 

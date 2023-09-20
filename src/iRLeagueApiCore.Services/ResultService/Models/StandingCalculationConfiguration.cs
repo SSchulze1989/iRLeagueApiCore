@@ -15,4 +15,5 @@ internal sealed class StandingCalculationConfiguration
     public int WeeksCounted { get; set; }
     public bool UseCombinedResult { get; set; }
     public ResultKind ResultKind { get; set; }
+    public ICollection<SortOptions> SortOptions { get; set; } = new List<SortOptions>();
 }
