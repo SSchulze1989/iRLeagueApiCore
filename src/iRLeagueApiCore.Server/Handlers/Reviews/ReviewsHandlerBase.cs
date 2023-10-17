@@ -33,6 +33,7 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         reviewEntity.IncidentNr = postModel.IncidentNr;
         reviewEntity.TimeStamp = postModel.TimeStamp;
         reviewEntity.InvolvedMembers = await GetMemberListAsync(postModel.InvolvedMembers.Select(x => x.MemberId), cancellationToken);
+        reviewEntity.InvolvedTeams = await GetTeamListAsync(postModel.InvolvedTeams.Select(x => x.TeamId), cancellationToken);
         reviewEntity.ResultLongText = postModel.ResultText;
         reviewEntity.AcceptedReviewVotes = await MapToAcceptedVoteList(postModel.VoteResults, reviewEntity.AcceptedReviewVotes, cancellationToken);
         return UpdateVersionEntity(user, reviewEntity);
@@ -152,6 +153,12 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             MemberId = member.Id,
             FirstName = member.Firstname,
             LastName = member.Lastname,
+        }).ToList(),
+        InvolvedTeams = review.InvolvedTeams.Select(team => new TeamInfoModel()
+        {
+            TeamId = team.TeamId,
+            Name = team.Name,
+            TeamColor = team.TeamColor,
         }).ToList(),
         ResultText = review.ResultLongText,
         VoteResults = review.AcceptedReviewVotes.Select(vote => new VoteModel()

@@ -73,6 +73,13 @@ public abstract class HandlerBase<THandler, TRequest>
             .ToListAsync(cancellationToken);
     }
 
+    protected virtual async Task<ICollection<TeamEntity>> GetTeamListAsync(IEnumerable<long> teamIds, CancellationToken cancellationToken)
+    {
+        return await dbContext.Teams
+            .Where(x => teamIds.Contains(x.TeamId))
+            .ToListAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Returns a utc date time from the provided datetime without performin a conversion
     /// </summary>

@@ -12,7 +12,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
     {
         var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data, config.UseCombinedResult);
 
-        Func<ResultRowCalculationResult, long?> keySelector = x => x.MemberId;
+        static long? keySelector(ResultRowCalculationResult x) => x.MemberId;
         var previousMemberEventResults = GetGroupedEventResults(previousSessionResults, keySelector);
         var currentMemberEventResult = GetGroupedEventResult(currentSessionResults, keySelector);
 
