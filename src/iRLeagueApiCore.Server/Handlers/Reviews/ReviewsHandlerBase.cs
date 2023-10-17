@@ -90,8 +90,9 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         CancellationToken cancellationToken)
     {
         voteEntity.Description = voteModel.Description;
-        voteEntity.MemberAtFault = await GetMemberEntityAsync((voteModel.MemberAtFault?.MemberId).GetValueOrDefault(), cancellationToken);
-        voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId);
+        voteEntity.MemberAtFault = await GetMemberEntityAsync(voteModel.MemberAtFault?.MemberId, cancellationToken);
+        voteEntity.TeamAtFault = await GetTeamEntityAsync(voteModel.TeamAtFault?.TeamId, cancellationToken);
+        voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId, cancellationToken);
         return voteEntity;
     }
 
@@ -172,6 +173,12 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
                 MemberId = vote.MemberAtFault.Id,
                 FirstName = vote.MemberAtFault.Firstname,
                 LastName = vote.MemberAtFault.Lastname,
+            } : default,
+            TeamAtFault = vote.TeamAtFault != null ? new TeamInfoModel()
+            {
+                TeamId = vote.TeamAtFault.TeamId,
+                Name = vote.TeamAtFault.Name,
+                TeamColor = vote.TeamAtFault.TeamColor,
             } : default,
         }).ToList(),
         TimeStamp = review.TimeStamp,

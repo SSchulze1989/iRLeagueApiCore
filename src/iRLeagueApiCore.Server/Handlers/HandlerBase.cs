@@ -60,6 +60,12 @@ public abstract class HandlerBase<THandler, TRequest>
             .FirstOrDefaultAsync(x => x.Id == memberId, cancellationToken);
     }
 
+    protected virtual async Task<TeamEntity?> GetTeamEntityAsync(long? teamId, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Teams
+            .FirstOrDefaultAsync(x => x.TeamId == teamId, cancellationToken);
+    }
+
     protected virtual async Task<VoteCategoryEntity?> GetVoteCategoryEntityAsync(long leagueId, long? voteCategoryId, CancellationToken cancellationToken = default)
     {
         return await dbContext.VoteCategories

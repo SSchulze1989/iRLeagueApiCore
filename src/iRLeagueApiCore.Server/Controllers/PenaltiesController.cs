@@ -41,11 +41,11 @@ public sealed class PenaltiesController : LeagueApiController<PenaltiesControlle
     }
 
     [HttpPost]
-    [Route("/{leagueName}/ScoredSessionResults/{resultId:long}/Drivers/{memberId:long}/[controller]")]
-    public async Task<ActionResult<PenaltyModel>> PostPenaltyToResult([FromRoute] string leagueName, [FromRoute] long resultId, [FromRoute] long memberId,
+    [Route("/{leagueName}/ScoredSessionResults/{resultId:long}/Drivers/{resultRowId:long}/[controller]")]
+    public async Task<ActionResult<PenaltyModel>> PostPenaltyToResult([FromRoute] string leagueName, [FromRoute] long resultId, [FromRoute] long resultRowId,
         [FromBody] PostPenaltyModel postPenalty, CancellationToken cancellationToken)
     {
-        var request = new PostPenaltyToResultRequest(resultId, memberId, postPenalty);
+        var request = new PostPenaltyToResultRequest(resultId, resultRowId, postPenalty);
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
     }
