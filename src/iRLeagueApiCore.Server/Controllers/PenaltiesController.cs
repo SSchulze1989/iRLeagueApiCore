@@ -41,7 +41,7 @@ public sealed class PenaltiesController : LeagueApiController<PenaltiesControlle
     }
 
     [HttpPost]
-    [Route("/{leagueName}/ScoredSessionResults/{resultId:long}/Drivers/{resultRowId:long}/[controller]")]
+    [Route("/{leagueName}/ScoredSessionResults/{resultId:long}/Rows/{resultRowId:long}/[controller]")]
     public async Task<ActionResult<PenaltyModel>> PostPenaltyToResult([FromRoute] string leagueName, [FromRoute] long resultId, [FromRoute] long resultRowId,
         [FromBody] PostPenaltyModel postPenalty, CancellationToken cancellationToken)
     {
