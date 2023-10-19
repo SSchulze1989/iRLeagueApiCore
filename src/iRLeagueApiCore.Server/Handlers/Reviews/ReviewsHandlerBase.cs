@@ -200,9 +200,18 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         EventId = penalty.ResultRow.ScoredSessionResult.ScoredEventResult.EventId,
         SessionNr = penalty.ResultRow.ScoredSessionResult.SessionNr,
         SessionName = penalty.ResultRow.ScoredSessionResult.Name,
-        MemberId = penalty.ResultRow.MemberId.GetValueOrDefault(),
-        Firstname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Firstname : string.Empty,
-        Lastname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Lastname : string.Empty,
+        Member = penalty.ResultRow.Member == null ? default : new()
+        {
+            MemberId = penalty.ResultRow.Member.Id,
+            FirstName = penalty.ResultRow.Member.Firstname,
+            LastName = penalty.ResultRow.Member.Lastname,
+        },
+        Team = penalty.ResultRow.Team == null ? default : new()
+        {
+            TeamId = penalty.ResultRow.Team.TeamId,
+            Name = penalty.ResultRow.Team.Name,
+            TeamColor = penalty.ResultRow.Team.TeamColor,
+        },
         Reason = $"{penalty.ReviewVote.VoteCategory.Text} - {penalty.Review.IncidentKind}",
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,
@@ -223,12 +232,21 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         AddPenaltyId = penalty.AddPenaltyId,
         Lap = penalty.Lap,
         Corner = penalty.Corner,
-        MemberId = penalty.ScoredResultRow.MemberId.GetValueOrDefault(),
+        Member = penalty.ScoredResultRow.Member == null ? default : new()
+        {
+            MemberId = penalty.ScoredResultRow.Member.Id,
+            FirstName = penalty.ScoredResultRow.Member.Firstname,
+            LastName = penalty.ScoredResultRow.Member.Lastname,
+        },
+        Team = penalty.ScoredResultRow.Team == null ? default : new()
+        {
+            TeamId = penalty.ScoredResultRow.Team.TeamId,
+            Name = penalty.ScoredResultRow.Team.Name,
+            TeamColor = penalty.ScoredResultRow.Team.TeamColor,
+        },
         EventId = penalty.ScoredResultRow.ScoredSessionResult.ScoredEventResult.EventId,
         SessionNr = penalty.ScoredResultRow.ScoredSessionResult.SessionNr,
         SessionName = penalty.ScoredResultRow.ScoredSessionResult.Name,
-        Firstname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Firstname : string.Empty,
-        Lastname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Lastname : string.Empty,
         Reason = penalty.Reason,
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,
