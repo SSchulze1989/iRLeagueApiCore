@@ -29,8 +29,8 @@ public sealed class PostPenaltyToResultHandlerTests : ReviewsHandlersTestsBase<P
             .Include(x => x.ScoredResultRows)
                  .ThenInclude(x => x.Member)
             .FirstAsync();
-        var member = result.ScoredResultRows.First().Member;
-        var request = new PostPenaltyToResultRequest(result.SessionResultId, member.Id, new()
+        var row = result.ScoredResultRows.First();
+        var request = new PostPenaltyToResultRequest(result.SessionResultId, row.ScoredResultRowId, new()
         {
             Reason = "Test Penalty",
             Type = type,

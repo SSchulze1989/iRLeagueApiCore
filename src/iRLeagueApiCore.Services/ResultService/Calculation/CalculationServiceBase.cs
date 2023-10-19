@@ -213,9 +213,19 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyReviewPenalties(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<AcceptedReviewVoteCalculationData> reviewVotes)
     {
+        Func<ResultRowCalculationResult, AcceptedReviewVoteCalculationData, bool> compareIds;
+        if (rows.Any(x => x.MemberId != null))
+        {
+            compareIds = (row, vote) => vote.MemberAtFaultId == row.MemberId;
+        }
+        else
+        {
+            compareIds = (row, vote) => vote.TeamAtFaultId == row.TeamId;
+        }
+
         foreach (var row in rows)
         {
-            var rowVotes = reviewVotes.Where(x => x.MemberAtFaultId == row.MemberId);
+            var rowVotes = reviewVotes.Where(vote => compareIds(row, vote));
             foreach (var vote in rowVotes)
             {
                 var penalty = new ReviewPenaltyCalculationResult()

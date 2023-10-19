@@ -214,6 +214,41 @@ public sealed class TeamSessionCalculationServiceTests
         }
     }
 
+    [Fact]
+    public async Task Calculate_ShouldApplyReviewPenalty()
+    {
+        var groupRowCount = 3;
+        var teamCount = 3;
+        var teamIds = fixture.CreateMany<long?>(teamCount);
+        var rowsPerTeam = 3;
+        var data = GetCalculationData();
+        data.ResultRows = GetTestRows(teamIds, rowsPerTeam);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.MaxResultsPerGroup = groupRowCount;
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            sortFinal: x => x.OrderBy(x => x.TeamId).ToList());
+
+        var testTeamId = teamIds.OrderBy(x => x).First();
+        var testTeamRows = data.ResultRows.Where(x => x.TeamId == testTeamId).ToList();
+        testTeamRows.ForEach(x => x.PenaltyPoints = 0);
+        var voteData = new AcceptedReviewVoteCalculationData()
+        {
+            TeamAtFaultId = testTeamId,
+            DefaultPenalty = 3,
+        };
+        data.AcceptedReviewVotes = new[] { voteData };
+        
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.ResultRows.Single(x => x.TeamId == testTeamId);
+
+        testRow.PenaltyPoints.Should().Be(voteData.DefaultPenalty);
+        testRow.TotalPoints.Should().Be(testRow.RacePoints + testRow.BonusPoints - testRow.PenaltyPoints);
+    }
+
     private TeamSessionCalculationService CreateSut()
     {
         return fixture.Create<TeamSessionCalculationService>();
