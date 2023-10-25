@@ -16,7 +16,7 @@ internal class ResultRowCalculationData : IPointRow, IPenaltyRow
     public string TeamColor { get; set; } = string.Empty;
     public double StartPosition { get; set; }
     public double FinishPosition { get; set; }
-    public int CarNumber { get; set; }
+    public string CarNumber { get; set; } = string.Empty;
     public int ClassId { get; set; }
     public int ClubId { get; set; }
     public string ClubName { get; set; } = string.Empty;
