@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Members;
+﻿using iRLeagueApiCore.Client.Endpoints.Cars;
+using iRLeagueApiCore.Client.Endpoints.Members;
 using iRLeagueApiCore.Client.Endpoints.Protests;
 using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
@@ -6,6 +7,7 @@ using iRLeagueApiCore.Client.Endpoints.Standings;
 using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Common.Models.Standings;
 
@@ -22,6 +24,11 @@ internal class EventByIdEndpoint : UpdateEndpoint<EventModel, PutEventModel>, IE
     public IGetAllEndpoint<MemberModel> Members()
     {
         return new MembersEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    public IGetEndpoint<CarListModel> Cars()
+    {
+        return new CarsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
     IGetAllEndpoint<ProtestModel> IEventByIdEndpoint.Protests()

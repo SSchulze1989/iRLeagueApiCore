@@ -188,7 +188,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         //row.Car = FIXME is this data important??
         row.CarClass = sessionData.CarClasses.FirstOrDefault(x => x.CarClassId == data.CarClassId)?.ShortName ?? string.Empty;
         row.CarId = data.CarId;
-        row.CarNumber = int.TryParse(data.Livery.CarNumber, out int carNumber) ? carNumber : -1; // Todo: change to string!
+        row.CarNumber = data.Livery.CarNumber ?? string.Empty;
         row.ClassId = data.CarClassId;
         row.ClubId = data.ClubId;
         row.ClubName = data.ClubName;
