@@ -12,7 +12,6 @@ namespace iRLeagueApiCore.Server.Controllers;
 [Authorize]
 [TypeFilter(typeof(LeagueAuthorizeAttribute))]
 [TypeFilter(typeof(SetTenantLeagueIdAttribute))]
-[RequireLeagueRole]
 [Route("{leagueName}/[controller]")]
 public sealed class MembersController : LeagueApiController<MembersController>
 {
