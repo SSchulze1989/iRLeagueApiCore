@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Reviews;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 
 namespace iRLeagueApiCore.Server.Validation.Reviews;
 
@@ -14,9 +15,15 @@ public sealed class PostReviewModelValidator : AbstractValidator<PostReviewModel
         RuleFor(x => x.InvolvedMembers)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage("At least one driver required")
+            .WithMessage("At least one driver or team required")
+            .When(x => x.InvolvedTeams.None())
             .MustAsync(EachMemberIsValid)
-            .WithMessage("Member does not exist");
+            .WithMessage("Member does not exist")
+            .When(x => x.InvolvedMembers.Any());
+        RuleFor(x => x.InvolvedTeams)
+            .NotEmpty()
+            .WithMessage("At least one driver or team required")
+            .When(x => x.InvolvedMembers.None());
         RuleFor(x => x.IncidentKind)
             .NotEmpty()
             .WithMessage("Incident Kind is required");

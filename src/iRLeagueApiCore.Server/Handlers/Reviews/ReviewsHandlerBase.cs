@@ -16,6 +16,7 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     {
         return await dbContext.IncidentReviews
             .Include(x => x.InvolvedMembers)
+            .Include(x => x.InvolvedTeams)
             .Include(x => x.AcceptedReviewVotes)
                 .ThenInclude(x => x.ReviewPenaltys)
             .Where(x => x.ReviewId == reviewId)
