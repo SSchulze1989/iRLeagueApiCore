@@ -617,6 +617,29 @@ public sealed class MemberSessionCalculationServiceTests
         test.ResultRows.Skip(3).Should().Match(x => x.All(r => r.PointsEligible == false));
     }
 
+    [Fact]
+    public async Task Calculate_ShouldApplyDsqPenalty()
+    {
+        const int rowCount = 3;
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.Status, (int)RaceStatus.Running)
+            .CreateMany(rowCount);
+        var addPenalty = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Disqualification)
+            .Create();
+        var penaltyRow = data.ResultRows.ElementAt(0);
+        penaltyRow.AddPenalties = new[] { addPenalty };
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
+        testResultRow.Status.Should().Be((int)RaceStatus.Disqualified);
+    }
+
     private MemberSessionCalculationService CreateSut()
     {
         return fixture.Create<MemberSessionCalculationService>();
