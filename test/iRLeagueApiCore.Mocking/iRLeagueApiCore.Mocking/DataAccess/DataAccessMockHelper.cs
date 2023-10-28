@@ -146,6 +146,7 @@ public sealed class DataAccessMockHelper
                 .With(x => x.League, league)
                 .With(x => x.LeagueId, league.Id)
                 .With(x => x.Members, members.Take(2).ToList())
+                .Without(x => x.InvolvedReviews)
                 .Create())
             .ToList();
 
@@ -361,6 +362,7 @@ public sealed class DataAccessMockHelper
             .Without(x => x.AcceptedReviewVotes)
             .Without(x => x.Comments)
             .Without(x => x.InvolvedMembers)
+            .Without(x => x.InvolvedTeams)
             .Without(x => x.ReviewPenaltys)
             .Create()).ToList();
     }
@@ -379,6 +381,7 @@ public sealed class DataAccessMockHelper
     {
         return fixture.Build<ReviewCommentVoteEntity>()
             .Without(x => x.MemberAtFault)
+            .Without(x => x.TeamAtFault)
             .Without(x => x.VoteCategory)
             .Without(x => x.Comment)
             .CreateMany();
@@ -424,6 +427,7 @@ public sealed class DataAccessMockHelper
     {
         return fixture.Build<AcceptedReviewVoteEntity>()
             .Without(x => x.MemberAtFault)
+            .Without(x => x.TeamAtFault)
             .Without(x => x.Review)
             .Without(x => x.ReviewPenaltys)
             .Without(x => x.VoteCategory);

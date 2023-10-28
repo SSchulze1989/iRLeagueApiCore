@@ -23,11 +23,10 @@ public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFr
         var resultMembers = await dbContext.EventResults
             .Where(x => x.EventId == eventId)
             .Select(x => x.SessionResults
-                    .SelectMany(y => y.ResultRows)
-                    .Select(y => y.MemberId))
+                .SelectMany(y => y.ResultRows)
+                .Select(y => y.MemberId))
             .SelectMany(x => x!)
-            .ToListAsync(cancellationToken)
-            ?? throw new ResourceNotFoundException();
+            .ToListAsync(cancellationToken);
         var scoredResultMembers = await dbContext.ScoredEventResults
             .Where(x => x.EventId == eventId)
             .Select(x => x.ScoredSessionResults

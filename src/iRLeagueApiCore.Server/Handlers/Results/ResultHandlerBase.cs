@@ -41,6 +41,7 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
                 .OrderBy(x => x.FinalPosition)
                 .Select(row => new ResultRowModel()
             {
+                ScoredResultRowId = row.ScoredResultRowId,
                 MemberId = row.MemberId,
                 Interval = new Interval(row.Interval),
                 FastestLapTime = row.FastestLapTime,

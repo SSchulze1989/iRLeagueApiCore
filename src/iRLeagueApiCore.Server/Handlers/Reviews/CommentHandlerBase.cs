@@ -17,7 +17,7 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         return await dbContext.ReviewComments
             .Include(x => x.ReviewCommentVotes)
             .Where(x => x.CommentId == commentId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
     protected virtual async Task<ReviewCommentEntity> MapToReviewCommentEntityAsync(LeagueUser user, PostReviewCommentModel postComment,
@@ -39,7 +39,8 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     {
         voteEntity.Description = voteModel.Description;
         voteEntity.MemberAtFault = await GetMemberEntityAsync(voteModel.MemberAtFault?.MemberId, cancellationToken);
-        voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId);
+        voteEntity.TeamAtFault = await GetTeamEntityAsync(voteModel.TeamAtFault?.TeamId, cancellationToken);
+        voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId, cancellationToken);
         return voteEntity;
     }
 
@@ -91,12 +92,18 @@ public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             Description = vote.Description,
             VoteCategoryId = vote.VoteCategoryId.GetValueOrDefault(),
             VoteCategoryText = vote.VoteCategory.Text,
-            MemberAtFault = vote.MemberAtFault == null ? null : new MemberInfoModel()
+            MemberAtFault = vote.MemberAtFault == null ? default : new()
             {
                 MemberId = vote.MemberAtFault.Id,
                 FirstName = vote.MemberAtFault.Firstname,
                 LastName = vote.MemberAtFault.Lastname
-            }
+            },
+            TeamAtFault = vote.TeamAtFault == null ? default : new()
+            {
+                TeamId = vote.TeamAtFault.TeamId,
+                Name = vote.TeamAtFault.Name,
+                TeamColor = vote.TeamAtFault.TeamColor,
+            },
         }).ToList(),
         CreatedByUserId = comment.CreatedByUserId,
         CreatedByUserName = comment.CreatedByUserName,

@@ -69,6 +69,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             StartPosition = dataRow.StartPosition,
             FinishPosition = dataRow.FinishPosition,
             FinalPosition = dataRow.FinalPosition,
+            AddPenalties = dataRow.AddPenalties,
         };
         foreach (var memberRow in teamMemberRows)
         {
@@ -86,6 +87,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             }
             teamRow.PenaltyPoints += memberRow.PenaltyPoints;
             teamRow.PointsEligible |= memberRow.PointsEligible;
+            teamRow.AddPenalties = teamRow.AddPenalties.Concat(memberRow.AddPenalties.Where(x => x.MemberId != null));
         }
         teamRow.StartPosition = teamMemberRows.Min(x => x.StartPosition);
         (_, teamRow.QualifyingTime) = GetBestLapValue(teamMemberRows, x => x.MemberId, x => x.QualifyingTime);

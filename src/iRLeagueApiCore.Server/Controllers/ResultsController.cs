@@ -88,7 +88,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
         CancellationToken cancellationToken = default)
     {
         var request = new DeleteResultRequest(eventId);
-        var getResults = await mediator.Send(request, cancellationToken);
+        await mediator.Send(request, cancellationToken);
         return NoContent();
     }
 

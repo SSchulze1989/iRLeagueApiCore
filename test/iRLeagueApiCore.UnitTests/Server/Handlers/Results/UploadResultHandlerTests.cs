@@ -89,6 +89,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         var newTeam = fixture.Build<TeamEntity>()
             .With(x => x.Members, members)
             .Without(x => x.League)
+            .Without(x => x.InvolvedReviews)
             .Create();
         var newTeamRow = CreateTeamResultRow(1, (newTeam.IRacingTeamId!.Value, newTeam.Name, members));
         var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);

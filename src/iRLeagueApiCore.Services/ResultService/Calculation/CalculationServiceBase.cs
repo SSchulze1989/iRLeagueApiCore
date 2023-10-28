@@ -173,7 +173,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyTimes(IEnumerable<ResultRowCalculationResult> rows)
     {
-        foreach (var row in rows)
+        foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Time)))
         {
             foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Time))
             {
@@ -185,7 +185,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyPoints(IEnumerable<ResultRowCalculationResult> rows)
     {
-        foreach (var row in rows)
+        foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Points)))
         {
             foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Points))
             {
@@ -198,7 +198,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     private static IReadOnlyList<ResultRowCalculationResult> ApplyAddPenaltyPositions(IEnumerable<ResultRowCalculationResult> rows)
     {
         var modRows = rows.ToList();
-        foreach (var row in rows.Reverse()) // Start from the back to keep order between mutliple drivers with penalties
+        foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Position)).Reverse()) // Start from the back to keep order between mutliple drivers with penalties
         {
             var movePositions = row.AddPenalties.Where(x => x.Type == PenaltyType.Position).Sum(x => x.Positions);
             if (movePositions == 0)
@@ -213,9 +213,19 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyReviewPenalties(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<AcceptedReviewVoteCalculationData> reviewVotes)
     {
+        Func<ResultRowCalculationResult, AcceptedReviewVoteCalculationData, bool> compareIds;
+        if (rows.Any(x => x.MemberId != null))
+        {
+            compareIds = (row, vote) => vote.MemberAtFaultId == row.MemberId;
+        }
+        else
+        {
+            compareIds = (row, vote) => vote.TeamAtFaultId == row.TeamId;
+        }
+
         foreach (var row in rows)
         {
-            var rowVotes = reviewVotes.Where(x => x.MemberAtFaultId == row.MemberId);
+            var rowVotes = reviewVotes.Where(vote => compareIds(row, vote));
             foreach (var vote in rowVotes)
             {
                 var penalty = new ReviewPenaltyCalculationResult()
