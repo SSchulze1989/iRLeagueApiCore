@@ -469,6 +469,73 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         }
     }
 
+    [Fact]
+    public async Task GetConfigurations_ShouldProvideDsqFilter_WhenNoStatusFilterConfigured()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var filterGroup = sessionConfig.PointRule.GetPointFilters();
+            var testFilter = filterGroup!.GetFilters()
+                .Where(x => x.combination == FilterCombination.And)
+                .Select(x => x.rowFilter)
+                .OfType<ColumnValueRowFilter>()
+                .SingleOrDefault(x => x.ColumnProperty.Name == nameof(ResultRowCalculationResult.Status));
+            testFilter.Should().NotBeNull();
+            testFilter!.Comparator.Should().Be(ComparatorType.IsEqual);
+            testFilter.Action.Should().Be(MatchedValueAction.Remove);
+            testFilter.FilterValues.Should().BeEquivalentTo(new[] { (int)RaceStatus.Disqualified });
+        }
+    }
+
+    [Fact]
+    public async Task GetConfigurations_ShouldNotProvideDsqFilter_WhenStatusFilterConfigured()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var condition = fixture.Build<FilterConditionModel>()
+            .With(x => x.FilterType, FilterType.ColumnProperty)
+            .With(x => x.Comparator, ComparatorType.NotEqual)
+            .With(x => x.Action, MatchedValueAction.Keep)
+            .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Status))
+            .With(x => x.FilterValues, new[] { ((int)RaceStatus.Disconnected).ToString() })
+            .Create();
+        var filter = fixture.Build<FilterOptionEntity>()
+            .With(x => x.Conditions, new[]
+            {
+                    condition,
+            })
+            .Without(x => x.PointFilterResultConfig)
+            .Without(x => x.ResultFilterResultConfig)
+            .Without(x => x.ChampSeason)
+            .Create();
+        config.PointFilters.Add(filter);
+        dbContext.ResultConfigurations.Add(config);
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            var filterGroup = sessionConfig.PointRule.GetPointFilters();
+            var testFilter = filterGroup!.GetFilters()
+                .Where(x => x.combination == FilterCombination.And)
+                .Select(x => x.rowFilter)
+                .OfType<ColumnValueRowFilter>()
+                .SingleOrDefault(x => x.ColumnProperty.Name == nameof(ResultRowCalculationResult.Status));
+            testFilter.Should().NotBeNull();
+            testFilter!.Comparator.Should().Be(ComparatorType.NotEqual);
+            testFilter.Action.Should().Be(MatchedValueAction.Keep);
+            testFilter.FilterValues.Should().BeEquivalentTo(new[] { (int)RaceStatus.Disconnected });
+        }
+    }
+
     [Theory]
     [InlineData(
         MatchedValueAction.Keep, FilterCombination.And, 

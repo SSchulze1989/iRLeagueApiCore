@@ -154,6 +154,19 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             pointRule.PointFilters = CreatePointsEligibleFilter();
         }
 
+        // Add normal status filter for Disqualified drivers, when status is not explicitly filtered already.
+        var hasStatusPointFilter = configurationEntity.PointFilters.Any(x => x.Conditions.Any(y => y.ColumnPropertyName == nameof(ResultRowCalculationResult.Status)));
+        if (hasStatusPointFilter == false)
+        {
+            var statusFilter = (FilterCombination.And, new ColumnValueRowFilter(
+                nameof(ResultRowCalculationResult.Status), 
+                ComparatorType.IsEqual, 
+                new[] { ((int)RaceStatus.Disqualified).ToString() }, 
+                MatchedValueAction.Remove) as RowFilter<ResultRowCalculationResult>);
+            pointRule.PointFilters = new FilterGroupRowFilter<ResultRowCalculationResult>(
+                pointRule.PointFilters.GetFilters().Concat(new[] { statusFilter }));
+        }
+
         return pointRule;
     }
 
