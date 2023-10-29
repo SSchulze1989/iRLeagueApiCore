@@ -20,6 +20,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         ApplyAddPenaltyDsq(rows);
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
+        rows = ApplyAddPenaltyPositions(rows);
 
         IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
         // Filter for points only
@@ -41,7 +42,6 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         ApplyBonusPoints(pointRows, pointRule.GetBonusPoints());
         ApplyTotalPoints(finalRows);
         finalRows = pointRule.SortFinal(finalRows);
-        finalRows = ApplyAddPenaltyPositions(finalRows);
         // Set final position
         foreach ((var row, var position) in finalRows.Select((x, i) => (x, i + 1)))
         {
