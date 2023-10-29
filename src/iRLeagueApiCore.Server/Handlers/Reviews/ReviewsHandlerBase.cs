@@ -16,6 +16,7 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
     {
         return await dbContext.IncidentReviews
             .Include(x => x.InvolvedMembers)
+            .Include(x => x.InvolvedTeams)
             .Include(x => x.AcceptedReviewVotes)
                 .ThenInclude(x => x.ReviewPenaltys)
             .Where(x => x.ReviewId == reviewId)
@@ -33,6 +34,7 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         reviewEntity.IncidentNr = postModel.IncidentNr;
         reviewEntity.TimeStamp = postModel.TimeStamp;
         reviewEntity.InvolvedMembers = await GetMemberListAsync(postModel.InvolvedMembers.Select(x => x.MemberId), cancellationToken);
+        reviewEntity.InvolvedTeams = await GetTeamListAsync(postModel.InvolvedTeams.Select(x => x.TeamId), cancellationToken);
         reviewEntity.ResultLongText = postModel.ResultText;
         reviewEntity.AcceptedReviewVotes = await MapToAcceptedVoteList(postModel.VoteResults, reviewEntity.AcceptedReviewVotes, cancellationToken);
         return UpdateVersionEntity(user, reviewEntity);
@@ -89,8 +91,9 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         CancellationToken cancellationToken)
     {
         voteEntity.Description = voteModel.Description;
-        voteEntity.MemberAtFault = await GetMemberEntityAsync((voteModel.MemberAtFault?.MemberId).GetValueOrDefault(), cancellationToken);
-        voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId);
+        voteEntity.MemberAtFault = await GetMemberEntityAsync(voteModel.MemberAtFault?.MemberId, cancellationToken);
+        voteEntity.TeamAtFault = await GetTeamEntityAsync(voteModel.TeamAtFault?.TeamId, cancellationToken);
+        voteEntity.VoteCategory = await GetVoteCategoryEntityAsync(voteEntity.LeagueId, voteModel.VoteCategoryId, cancellationToken);
         return voteEntity;
     }
 
@@ -153,6 +156,12 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
             FirstName = member.Firstname,
             LastName = member.Lastname,
         }).ToList(),
+        InvolvedTeams = review.InvolvedTeams.Select(team => new TeamInfoModel()
+        {
+            TeamId = team.TeamId,
+            Name = team.Name,
+            TeamColor = team.TeamColor,
+        }).ToList(),
         ResultText = review.ResultLongText,
         VoteResults = review.AcceptedReviewVotes.Select(vote => new VoteModel()
         {
@@ -165,6 +174,12 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
                 MemberId = vote.MemberAtFault.Id,
                 FirstName = vote.MemberAtFault.Firstname,
                 LastName = vote.MemberAtFault.Lastname,
+            } : default,
+            TeamAtFault = vote.TeamAtFault != null ? new TeamInfoModel()
+            {
+                TeamId = vote.TeamAtFault.TeamId,
+                Name = vote.TeamAtFault.Name,
+                TeamColor = vote.TeamAtFault.TeamColor,
             } : default,
         }).ToList(),
         TimeStamp = review.TimeStamp,
@@ -186,9 +201,18 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         EventId = penalty.ResultRow.ScoredSessionResult.ScoredEventResult.EventId,
         SessionNr = penalty.ResultRow.ScoredSessionResult.SessionNr,
         SessionName = penalty.ResultRow.ScoredSessionResult.Name,
-        MemberId = penalty.ResultRow.MemberId.GetValueOrDefault(),
-        Firstname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Firstname : string.Empty,
-        Lastname = penalty.ResultRow.Member != null ? penalty.ResultRow.Member.Lastname : string.Empty,
+        Member = penalty.ResultRow.Member == null ? default : new()
+        {
+            MemberId = penalty.ResultRow.Member.Id,
+            FirstName = penalty.ResultRow.Member.Firstname,
+            LastName = penalty.ResultRow.Member.Lastname,
+        },
+        Team = penalty.ResultRow.Team == null ? default : new()
+        {
+            TeamId = penalty.ResultRow.Team.TeamId,
+            Name = penalty.ResultRow.Team.Name,
+            TeamColor = penalty.ResultRow.Team.TeamColor,
+        },
         Reason = $"{penalty.ReviewVote.VoteCategory.Text} - {penalty.Review.IncidentKind}",
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,
@@ -209,12 +233,21 @@ public class ReviewsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TReq
         AddPenaltyId = penalty.AddPenaltyId,
         Lap = penalty.Lap,
         Corner = penalty.Corner,
-        MemberId = penalty.ScoredResultRow.MemberId.GetValueOrDefault(),
+        Member = penalty.ScoredResultRow.Member == null ? default : new()
+        {
+            MemberId = penalty.ScoredResultRow.Member.Id,
+            FirstName = penalty.ScoredResultRow.Member.Firstname,
+            LastName = penalty.ScoredResultRow.Member.Lastname,
+        },
+        Team = penalty.ScoredResultRow.Team == null ? default : new()
+        {
+            TeamId = penalty.ScoredResultRow.Team.TeamId,
+            Name = penalty.ScoredResultRow.Team.Name,
+            TeamColor = penalty.ScoredResultRow.Team.TeamColor,
+        },
         EventId = penalty.ScoredResultRow.ScoredSessionResult.ScoredEventResult.EventId,
         SessionNr = penalty.ScoredResultRow.ScoredSessionResult.SessionNr,
         SessionName = penalty.ScoredResultRow.ScoredSessionResult.Name,
-        Firstname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Firstname : string.Empty,
-        Lastname = penalty.ScoredResultRow.Member != null ? penalty.ScoredResultRow.Member.Lastname : string.Empty,
         Reason = penalty.Reason,
         Type = penalty.Value.Type,
         Points = (int)penalty.Value.Points,

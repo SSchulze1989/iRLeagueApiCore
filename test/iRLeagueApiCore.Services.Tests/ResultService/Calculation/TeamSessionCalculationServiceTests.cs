@@ -159,6 +159,100 @@ public sealed class TeamSessionCalculationServiceTests
         test.ResultRows.Select(x => x.FinalPosition).Should().BeEquivalentTo(expectedFinalPositions);
     }
 
+    [Theory]
+    [InlineData(PenaltyType.Points)]
+    [InlineData(PenaltyType.Time)]
+    [InlineData(PenaltyType.Position)]
+    [InlineData(PenaltyType.Disqualification)]
+    public async Task Calculate_ShouldApplyTeamPenalties(PenaltyType penaltyType)
+    {
+        var groupRowCount = 3;
+        var teamCount = 3;
+        var teamIds = fixture.CreateMany<long?>(teamCount);
+        var rowsPerTeam = 3;
+        var data = GetCalculationData();
+        data.ResultRows = GetTestRows(teamIds, rowsPerTeam);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.MaxResultsPerGroup = groupRowCount;
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            sortForPoints: x => x.OrderBy(x => x.TeamId).ToList());
+
+        var testTeamId = teamIds.OrderBy(x => x).First();
+        var testTeamRows = data.ResultRows.Where(x => x.TeamId ==  testTeamId).ToList();
+        testTeamRows.ForEach(x => x.PenaltyPoints = 0);
+        var penalty = new AddPenaltyCalculationData()
+        {
+            TeamId = testTeamId,
+            Type = penaltyType,
+            Points = 3,
+            Time = TimeSpan.FromSeconds(3),
+            Positions = 1,
+        };
+        testTeamRows.ForEach(x => x.AddPenalties = new[] { penalty });
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.ResultRows.Single(x => x.TeamId == testTeamId);
+
+        switch (penaltyType) 
+        {
+            case PenaltyType.Points:
+                testRow.PenaltyPoints.Should().Be(penalty.Points);
+                testRow.TotalPoints.Should().Be(testRow.RacePoints + testRow.BonusPoints - testRow.PenaltyPoints);
+                break;
+            case PenaltyType.Time:
+                var interval = TimeSpan.FromSeconds(testTeamRows.Sum(x => x.Interval.TotalSeconds));
+                testRow.Interval.Should().Be(interval + penalty.Time);
+                break;
+            case PenaltyType.Position:
+                var position = test.ResultRows.OrderBy(x => x.TeamId).ToList().IndexOf(testRow) + 1;
+                testRow.FinalPosition.Should().Be(position + penalty.Positions);
+                break;
+            case PenaltyType.Disqualification:
+                testRow.Status.Should().Be((int)RaceStatus.Disqualified);
+                break;
+            default:
+                break;
+        }
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldApplyReviewPenalty()
+    {
+        var groupRowCount = 3;
+        var teamCount = 3;
+        var teamIds = fixture.CreateMany<long?>(teamCount);
+        var rowsPerTeam = 3;
+        var data = GetCalculationData();
+        data.ResultRows = GetTestRows(teamIds, rowsPerTeam);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.MaxResultsPerGroup = groupRowCount;
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            sortFinal: x => x.OrderBy(x => x.TeamId).ToList());
+
+        var testTeamId = teamIds.OrderBy(x => x).First();
+        var testTeamRows = data.ResultRows.Where(x => x.TeamId == testTeamId).ToList();
+        testTeamRows.ForEach(x => x.PenaltyPoints = 0);
+        var voteData = new AcceptedReviewVoteCalculationData()
+        {
+            TeamAtFaultId = testTeamId,
+            DefaultPenalty = 3,
+        };
+        data.AcceptedReviewVotes = new[] { voteData };
+        
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.ResultRows.Single(x => x.TeamId == testTeamId);
+
+        testRow.PenaltyPoints.Should().Be(voteData.DefaultPenalty);
+        testRow.TotalPoints.Should().Be(testRow.RacePoints + testRow.BonusPoints - testRow.PenaltyPoints);
+    }
+
     private TeamSessionCalculationService CreateSut()
     {
         return fixture.Create<TeamSessionCalculationService>();

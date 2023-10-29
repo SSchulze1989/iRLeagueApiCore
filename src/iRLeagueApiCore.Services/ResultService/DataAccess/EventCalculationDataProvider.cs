@@ -127,6 +127,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     {
                         DefaultPenalty = vote.VoteCategory == null ? 0 : vote.VoteCategory.DefaultPenalty,
                         MemberAtFaultId = vote.MemberAtFaultId,
+                        TeamAtFaultId = vote.TeamAtFaultId,
                         ReviewId = vote.ReviewId,
                         VoteCategoryId = vote.VoteCategoryId,
                         ReviewVoteId = vote.ReviewVoteId,

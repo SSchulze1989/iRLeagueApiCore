@@ -27,8 +27,7 @@ public sealed class PostVoteCategoryHandler : VoteCategoriesHandlerBase<PostVote
 
     private async Task<VoteCategoryEntity> CreateVoteCategoryEntityAsync(CancellationToken cancellationToken)
     {
-        var league = await dbContext.Leagues
-            .FirstOrDefaultAsync(cancellationToken)
+        var league = await GetCurrentLeagueEntityAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var voteCategory = new VoteCategoryEntity();
         league.VoteCategories.Add(voteCategory);

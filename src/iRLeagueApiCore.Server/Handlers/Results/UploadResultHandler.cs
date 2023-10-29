@@ -311,7 +311,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
             Car = data.car_name,
             CarClass = sessionData.car_classes.FirstOrDefault(x => x.car_class_id == data.car_class_id)?.short_name ?? string.Empty,
             CarId = data.car_id,
-            CarNumber = int.TryParse(data.livery.car_number, out int carNumber) ? carNumber : -1, // Todo: change to string!
+            CarNumber = data.livery.car_number ?? string.Empty,
             ClassId = data.car_class_id,
             ClubId = data.club_id,
             ClubName = data.club_name,

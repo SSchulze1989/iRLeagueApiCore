@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
@@ -41,6 +42,7 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
                 .OrderBy(x => x.FinalPosition)
                 .Select(row => new ResultRowModel()
             {
+                ScoredResultRowId = row.ScoredResultRowId,
                 MemberId = row.MemberId,
                 Interval = new Interval(row.Interval),
                 FastestLapTime = row.FastestLapTime,
@@ -79,7 +81,7 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
                 PositionChange = row.PositionChange,
                 QualifyingTime = row.QualifyingTime,
                 SeasonStartIrating = row.SeasonStartIRating,
-                Status = row.Status,
+                Status = (RaceStatus)row.Status,
                 TeamId = row.TeamId,
                 TeamColor = (row.Team != null) ? row.Team.TeamColor : string.Empty,
             }),

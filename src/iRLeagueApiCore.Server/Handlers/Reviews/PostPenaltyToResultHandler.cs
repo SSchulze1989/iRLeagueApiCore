@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record PostPenaltyToResultRequest(long ResultId, long MemberId, PostPenaltyModel Model) : IRequest<PenaltyModel>;
+public record PostPenaltyToResultRequest(long ResultId, long ScoredResultRowId, PostPenaltyModel Model) : IRequest<PenaltyModel>;
 public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResultHandler, PostPenaltyToResultRequest>, 
     IRequestHandler<PostPenaltyToResultRequest, PenaltyModel>
 {
@@ -14,7 +14,7 @@ public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResult
     public async Task<PenaltyModel> Handle(PostPenaltyToResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var postPenalty = await CreatePenalty(request.ResultId, request.MemberId, cancellationToken);
+        var postPenalty = await CreatePenalty(request.ResultId, request.ScoredResultRowId, cancellationToken);
         postPenalty = await MapToAddPenaltyEntity(request.Model, postPenalty, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         var getPenaltyEntity = await dbContext.AddPenaltys
@@ -25,7 +25,7 @@ public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResult
         return getPenalty;
     }
 
-    private async Task<AddPenaltyEntity> CreatePenalty(long resultId, long memberId, CancellationToken cancellationToken)
+    private async Task<AddPenaltyEntity> CreatePenalty(long resultId, long scoredResultRowId, CancellationToken cancellationToken)
     {
         var result = await dbContext.ScoredSessionResults
             .Include(x => x.ScoredResultRows)
@@ -34,7 +34,7 @@ public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResult
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         var resultRow = result.ScoredResultRows
-            .Where(x => x.Member.Id == memberId)
+            .Where(x => x.ScoredResultRowId == scoredResultRowId)
             .FirstOrDefault()
             ?? throw new ResourceNotFoundException();
 

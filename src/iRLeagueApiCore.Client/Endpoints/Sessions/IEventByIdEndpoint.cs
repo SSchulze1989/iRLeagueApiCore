@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Common.Models.Standings;
 
@@ -12,4 +13,5 @@ public interface IEventByIdEndpoint : IUpdateEndpoint<EventModel, PutEventModel>
     IGetAllEndpoint<MemberModel> Members();
     IGetAllEndpoint<StandingsModel> Standings();
     IGetAllEndpoint<ProtestModel> Protests();
+    IGetEndpoint<CarListModel> Cars();
 }
