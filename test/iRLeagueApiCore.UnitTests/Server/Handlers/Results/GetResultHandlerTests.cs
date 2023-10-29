@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.UnitTests.Fixtures;
@@ -118,7 +119,7 @@ public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHan
         Assert.Equal(expected.QualifyingTime, test.QualifyingTime);
         Assert.Equal(expected.SeasonStartIrating, test.SeasonStartIRating);
         Assert.Equal(expected.StartPosition, test.StartPosition);
-        Assert.Equal(expected.Status, test.Status);
+        Assert.Equal(expected.Status, (RaceStatus)test.Status);
         Assert.Equal(expected.TeamName, test.Team?.Name ?? string.Empty);
         Assert.Equal(expected.TeamId, test.TeamId);
         Assert.Equal(expected.TotalPoints, test.TotalPoints);

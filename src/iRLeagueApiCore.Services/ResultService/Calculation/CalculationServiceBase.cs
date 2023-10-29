@@ -17,6 +17,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         rows = pointRule.GetResultFilters().FilterRows(rows);
         rows = CalculateCompletedPct(rows);
         rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
+        ApplyAddPenaltyDsq(rows);
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
 
@@ -124,6 +125,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 row.PenaltyPoints += groupRow.PenaltyPoints;
                 row.RacePoints += groupRow.RacePoints;
                 row.PointsEligible |= groupRow.PointsEligible;
+                row.Status = Math.Min(row.Status, groupRow.Status);
             }
             row.StartPosition = group.Last().StartPosition;
             row.AvgLapTime = GetAverageLapValue(group, x => x.AvgLapTime, x => x.CompletedLaps);
@@ -166,6 +168,18 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             foreach(var row in grouped.Where(x => x.Any()))
             {
                 row.Key.AddPenalties = row.Key.AddPenalties.Concat(new[] { CreateAddPenaltyFromAutoPenalty(row.Key, autoPenalty, row.Count()) });
+            }
+        }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyDsq(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Disqualification)))
+        {
+            foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Disqualification))
+            {
+                row.Status = (int)RaceStatus.Disqualified;
             }
         }
         return rows;

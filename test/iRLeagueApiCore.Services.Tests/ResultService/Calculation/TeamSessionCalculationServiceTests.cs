@@ -163,6 +163,7 @@ public sealed class TeamSessionCalculationServiceTests
     [InlineData(PenaltyType.Points)]
     [InlineData(PenaltyType.Time)]
     [InlineData(PenaltyType.Position)]
+    [InlineData(PenaltyType.Disqualification)]
     public async Task Calculate_ShouldApplyTeamPenalties(PenaltyType penaltyType)
     {
         var groupRowCount = 3;
@@ -208,6 +209,9 @@ public sealed class TeamSessionCalculationServiceTests
             case PenaltyType.Position:
                 var position = test.ResultRows.OrderBy(x => x.TeamId).ToList().IndexOf(testRow) + 1;
                 testRow.FinalPosition.Should().Be(position + penalty.Positions);
+                break;
+            case PenaltyType.Disqualification:
+                testRow.Status.Should().Be((int)RaceStatus.Disqualified);
                 break;
             default:
                 break;
