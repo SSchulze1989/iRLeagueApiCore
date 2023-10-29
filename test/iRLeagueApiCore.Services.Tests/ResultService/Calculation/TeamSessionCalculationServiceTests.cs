@@ -175,7 +175,7 @@ public sealed class TeamSessionCalculationServiceTests
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.MaxResultsPerGroup = groupRowCount;
         config.PointRule = CalculationMockHelper.MockPointRule(
-            sortFinal: x => x.OrderBy(x => x.TeamId).ToList());
+            sortForPoints: x => x.OrderBy(x => x.TeamId).ToList());
 
         var testTeamId = teamIds.OrderBy(x => x).First();
         var testTeamRows = data.ResultRows.Where(x => x.TeamId ==  testTeamId).ToList();
