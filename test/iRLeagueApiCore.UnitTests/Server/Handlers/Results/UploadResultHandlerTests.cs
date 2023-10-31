@@ -351,7 +351,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             testRow.FastLapNr.Should().Be(resultRow.best_lap_num);
             testRow.FinishPosition.Should().Be(resultRow.position+1);
             testRow.Incidents.Should().Be(resultRow.incidents);
-            testRow.Interval.Should().Be(TimeSpan.FromSeconds(resultRow.interval / 10000D));
+            testRow.Interval.Should().Be(TimeSpan.FromSeconds(resultRow.class_interval / 10000D));
             testRow.IRacingId.Should().Be(resultRow.cust_id.ToString());
             testRow.LeadLaps.Should().Be(resultRow.laps_lead);
             testRow.Member.IRacingId.Should().Be(resultRow.cust_id.ToString());
@@ -386,7 +386,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         result.session_results[0].results.First().laps_complete = maxLaps;
         var lapsDown = 3;
         var setupRow = result.session_results[0].results.Last();
-        setupRow.interval = -1;
+        setupRow.class_interval = -1;
         setupRow.laps_complete = maxLaps - lapsDown;
         var request = CreateRequest(@event.EventId, result);
         var sut = CreateSut();
@@ -436,7 +436,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             testRow.FastLapNr.Should().Be(resultRow.best_lap_num);
             testRow.FinishPosition.Should().Be(resultRow.position + 1);
             testRow.Incidents.Should().Be(resultRow.incidents);
-            testRow.Interval.Should().Be(TimeSpan.FromSeconds(resultRow.interval / 10000D));
+            testRow.Interval.Should().Be(TimeSpan.FromSeconds(resultRow.class_interval / 10000D));
             testRow.IRacingId.Should().Be(resultRow.cust_id.ToString());
             testRow.LeadLaps.Should().Be(resultRow.laps_lead);
             testRow.Member.IRacingId.Should().Be(resultRow.cust_id.ToString());

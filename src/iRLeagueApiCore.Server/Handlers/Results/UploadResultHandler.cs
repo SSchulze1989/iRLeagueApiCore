@@ -323,7 +323,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
             FastLapNr = data.best_lap_num,
             FinishPosition = data.position + 1,
             Incidents = data.incidents,
-            Interval = ParseInterval(data.interval, data.laps_complete, laps),
+            Interval = ParseInterval(data.class_interval, data.laps_complete, laps),
             IRacingId = data.cust_id.ToString(),
             LeadLaps = data.laps_lead,
             License = sessionData.license_category,
