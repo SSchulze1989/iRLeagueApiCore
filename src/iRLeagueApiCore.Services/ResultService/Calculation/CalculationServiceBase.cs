@@ -8,9 +8,16 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 abstract internal class CalculationServiceBase : ICalculationService<SessionCalculationData, SessionCalculationResult>
 {
+    protected readonly SessionCalculationConfiguration config;
+
+    protected CalculationServiceBase(SessionCalculationConfiguration config)
+    {
+        this.config = config;
+    }
+
     public abstract Task<SessionCalculationResult> Calculate(SessionCalculationData data);
 
-    protected static IEnumerable<ResultRowCalculationResult> ApplyPoints(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule,
+    protected IEnumerable<ResultRowCalculationResult> ApplyPoints(IEnumerable<ResultRowCalculationResult> rows, PointRule<ResultRowCalculationResult> pointRule,
         SessionCalculationData data)
     {
         rows = pointRule.GetChampSeasonFilters().FilterRows(rows);

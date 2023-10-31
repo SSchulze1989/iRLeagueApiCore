@@ -5,11 +5,8 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 internal sealed class MemberSessionCalculationService : CalculationServiceBase
 {
-    private readonly SessionCalculationConfiguration config;
-
-    public MemberSessionCalculationService(SessionCalculationConfiguration config)
+    public MemberSessionCalculationService(SessionCalculationConfiguration config) : base(config)
     {
-        this.config = config;
     }
 
     public override Task<SessionCalculationResult> Calculate(SessionCalculationData data)

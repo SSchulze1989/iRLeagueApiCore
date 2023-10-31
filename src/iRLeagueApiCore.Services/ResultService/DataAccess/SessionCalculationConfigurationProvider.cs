@@ -49,6 +49,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 MaxResultsPerGroup = configurationEntity?.ResultsPerTeam ?? 1,
                 Name = x.Name,
                 UpdateTeamOnRecalculation = false,
+                IntervalCalculation = IntervalCalculationType.Reported,
                 ResultKind = configurationEntity?.ChampSeason.ResultKind ?? ResultKind.Member,
             });
         return configurations;
@@ -82,6 +83,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 SessionNr = session.SessionNr,
                 ResultKind = configurationEntity.ChampSeason?.ResultKind ?? ResultKind.Member,
                 SessionType = session.SessionType,
+                IntervalCalculation = configurationEntity.IntervalCalculation,
                 SessionResultId = sessionResultIds.ElementAtOrDefault(index)
             };
             sessionConfiguration = MapFromScoringEntity(scoring, configurationEntity, sessionConfiguration);
@@ -101,6 +103,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 UseExternalSourcePoints = combinedScoring.UseExternalSourcePoints,
                 SessionType = SessionType.Race,
                 SessionResultId = null,
+                IntervalCalculation = configurationEntity.IntervalCalculation,
             };
             sessionConfiguration = MapFromScoringEntity(combinedScoring, configurationEntity, sessionConfiguration, includePointFilters: false);
             sessionConfigurations.Add(sessionConfiguration);

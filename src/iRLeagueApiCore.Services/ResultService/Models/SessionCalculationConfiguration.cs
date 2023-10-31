@@ -24,6 +24,7 @@ internal sealed class SessionCalculationConfiguration
     /// Use the points coming from a selected external source in a combined result configuration
     /// </summary>
     public bool UseExternalSourcePoints { get; set; }
+    public IntervalCalculationType IntervalCalculation { get; set; }
 
     public PointRule<ResultRowCalculationResult> PointRule { get; set; } = PointRule<ResultRowCalculationResult>.Default();
 }

@@ -43,6 +43,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             resultConfigEntity.PointFilters, cancellationToken);
         resultConfigEntity.ResultFilters = await MapToFilterOptionListAsync(user, postResultConfig.FiltersForResult,
             resultConfigEntity.ResultFilters, cancellationToken);
+        resultConfigEntity.IntervalCalculation = postResultConfig.IntervalCalculation;
         UpdateVersionEntity(user, resultConfigEntity);
         return await Task.FromResult(resultConfigEntity);
     }
@@ -255,6 +256,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 FilterOptionId = filter.FilterOptionId,
                 Condition = filter.Conditions.FirstOrDefault() ?? new(),
             }).ToList(),
+        IntervalCalculation = resultConfig.IntervalCalculation,
     };
 
     public Expression<Func<ScoringEntity, ScoringModel>> MapToGetScoringModelExpression => source => new ScoringModel()

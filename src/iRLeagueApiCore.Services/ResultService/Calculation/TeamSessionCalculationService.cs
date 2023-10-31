@@ -1,15 +1,13 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 internal sealed class TeamSessionCalculationService : CalculationServiceBase
 {
-    private readonly SessionCalculationConfiguration config;
-
-    public TeamSessionCalculationService(SessionCalculationConfiguration config)
+    public TeamSessionCalculationService(SessionCalculationConfiguration config) : base(config)
     {
-        this.config = config;
     }
 
     public override Task<SessionCalculationResult> Calculate(SessionCalculationData data)
@@ -70,13 +68,13 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
             FinishPosition = dataRow.FinishPosition,
             FinalPosition = dataRow.FinalPosition,
             AddPenalties = dataRow.AddPenalties,
+            Interval = dataRow.Interval,
         };
         foreach (var memberRow in teamMemberRows)
         {
             teamRow.CompletedLaps += memberRow.CompletedLaps;
             teamRow.LeadLaps += memberRow.LeadLaps;
             teamRow.Incidents += memberRow.Incidents;
-            teamRow.Interval += memberRow.Interval;
             if (aggregateDriverRows)
             {
                 teamRow.RacePoints += memberRow.RacePoints + memberRow.BonusPoints;

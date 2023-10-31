@@ -141,7 +141,7 @@ public abstract class HandlerBase<THandler, TRequest>
 
     protected static TimeSpan ParseInterval(TimeSpan value, int completedLaps, int sessionLaps)
     {
-        if (value > TimeSpan.Zero)
+        if (value >= TimeSpan.Zero)
         {
             return value;
         }
