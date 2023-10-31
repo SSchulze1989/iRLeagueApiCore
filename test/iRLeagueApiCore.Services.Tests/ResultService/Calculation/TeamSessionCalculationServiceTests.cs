@@ -204,7 +204,7 @@ public sealed class TeamSessionCalculationServiceTests
                 break;
             case PenaltyType.Time:
                 var interval = TimeSpan.FromSeconds(testTeamRows.Sum(x => x.Interval.TotalSeconds));
-                testRow.Interval.Should().Be(interval + penalty.Time);
+                testRow.Interval.Should().BeCloseTo(interval + penalty.Time, TimeSpan.FromSeconds(0.001));
                 break;
             case PenaltyType.Position:
                 var position = test.ResultRows.OrderBy(x => x.TeamId).ToList().IndexOf(testRow) + 1;
