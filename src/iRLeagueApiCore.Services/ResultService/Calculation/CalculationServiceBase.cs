@@ -16,6 +16,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         rows = pointRule.GetChampSeasonFilters().FilterRows(rows);
         rows = pointRule.GetResultFilters().FilterRows(rows);
         rows = CalculateCompletedPct(rows);
+        rows = CalculateIntervals(rows);
         rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
         ApplyAddPenaltyDsq(rows);
         ApplyAddPenaltyTimes(rows);
@@ -443,6 +444,19 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             row.CompletedPct = row.CompletedLaps / laps;
         }
 
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> CalculateIntervals(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        int totalLaps = (int)rows.Max(x => x.CompletedLaps);
+        foreach (var row in rows)
+        {
+            if (row.Interval.Days > 0)
+            {
+                row.Interval = TimeSpan.FromDays(totalLaps - row.CompletedLaps);
+            }
+        }
         return rows;
     }
 }
