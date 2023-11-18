@@ -23,7 +23,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         rows = pointRule.GetChampSeasonFilters().FilterRows(rows);
         rows = pointRule.GetResultFilters().FilterRows(rows);
         rows = CalculateCompletedPct(rows);
-        rows = CalculateIntervals(rows);
+        rows = CalculateIntervals(rows, config.IntervalCalculation);
         rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
         ApplyAddPenaltyDsq(rows);
         ApplyAddPenaltyTimes(rows);
@@ -454,8 +454,21 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return rows;
     }
 
-    private static IEnumerable<ResultRowCalculationResult> CalculateIntervals(IEnumerable<ResultRowCalculationResult> rows)
+    private static IEnumerable<ResultRowCalculationResult> CalculateIntervals(IEnumerable<ResultRowCalculationResult> rows, IntervalCalculationType intervalCalculation)
+        => intervalCalculation switch
     {
+        IntervalCalculationType.Reported => CalculateIntervalsReported(rows),
+        IntervalCalculationType.AvgLapTime => CalculateIntervalsAvgLapTime(rows),
+        _ => rows
+    };
+
+    private static IEnumerable<ResultRowCalculationResult> CalculateIntervalsReported(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        if (rows.Any() == false)
+        {
+            return rows;
+        }
+
         int totalLaps = (int)rows.Max(x => x.CompletedLaps);
         foreach (var row in rows)
         {
@@ -464,6 +477,11 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 row.Interval = TimeSpan.FromDays(totalLaps - row.CompletedLaps);
             }
         }
+        return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> CalculateIntervalsAvgLapTime(IEnumerable<ResultRowCalculationResult> rows)
+    {
         return rows;
     }
 }
