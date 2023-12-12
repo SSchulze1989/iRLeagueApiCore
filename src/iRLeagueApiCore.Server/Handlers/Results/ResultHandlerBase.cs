@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
@@ -10,6 +11,19 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
     {
     }
 
+    protected async Task<AddBonusEntity?> GetAddBonusEntity(long AddBonusId, CancellationToken cancellationToken)
+    {
+        return await dbContext.AddBonuses
+            .FirstOrDefaultAsync(x => x.AddBonusId == AddBonusId, cancellationToken);
+    }
+
+    protected AddBonusEntity MapToAddBonusEntity(AddBonusEntity entity, PostAddBonusModel model)
+    {
+        entity.Reason = model.Reason;
+        entity.BonusPoints = model.BonusPoints;
+        return entity;
+    }
+
     protected async Task<IEnumerable<EventResultModel>> MapToGetResultModelsFromEventAsync(long eventId, CancellationToken cancellationToken)
     {
         return await dbContext.ScoredEventResults
@@ -17,6 +31,21 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
             .Select(MapToEventResultModelExpression)
             .ToListAsync(cancellationToken);
     }
+
+    protected async Task<AddBonusModel?> MapToAddBonusModel(long addBonusId, CancellationToken cancellationToken)
+    {
+        return await dbContext.AddBonuses
+            .Where(x => x.AddBonusId == addBonusId)
+            .Select(MapToAddBonusModelExpression)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    protected Expression<Func<AddBonusEntity, AddBonusModel>> MapToAddBonusModelExpression => bonus => new()
+    {
+        AddBonusId = bonus.AddBonusId,
+        Reason = bonus.Reason,
+        BonusPoints = bonus.BonusPoints,
+    };
 
     public Expression<Func<ScoredEventResultEntity, EventResultModel>> MapToEventResultModelExpression => result => new EventResultModel()
     {
@@ -46,6 +75,12 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
                 MemberId = row.MemberId,
                 Interval = new Interval(row.Interval),
                 FastestLapTime = row.FastestLapTime,
+                AddBonuses = row.AddBonuses.Select(bonus => new AddBonusModel()
+                {
+                    AddBonusId = bonus.AddBonusId,
+                    Reason = bonus.Reason,
+                    BonusPoints = bonus.BonusPoints,
+                }),
                 AvgLapTime = row.AvgLapTime,
                 Firstname = (row.Member != null) ? row.Member.Firstname : string.Empty,
                 Lastname = (row.Member != null) ? row.Member.Lastname : string.Empty,
