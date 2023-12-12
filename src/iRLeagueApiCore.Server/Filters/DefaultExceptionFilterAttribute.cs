@@ -41,7 +41,7 @@ public sealed class DefaultExceptionFilterAttribute : Attribute, IExceptionFilte
 
     private IActionResult UnauthorizedActionResult(UnauthorizedAccessException unauthorizedAccess, HttpContext context)
     {
-        _logger.LogInformation("Permission denied for user", context.User.Identity?.Name);
+        _logger.LogInformation("Permission denied for {User}", context.User.Identity?.Name ?? "Anonymous");
         return new ForbidResult();
     }
 }
