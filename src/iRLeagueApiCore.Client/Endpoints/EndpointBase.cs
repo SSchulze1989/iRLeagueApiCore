@@ -16,6 +16,13 @@ internal class EndpointBase : IEndpoint
         RouteBuilder = routeBuilder.Copy();
     }
 
+    public EndpointBase(HttpClientWrapper httpClient, RouteBuilder routeBuilder, string endpoint)
+    {
+        HttpClientWrapper = httpClient;
+        RouteBuilder = routeBuilder.Copy();
+        RouteBuilder.AddEndpoint(endpoint);
+    }
+
     void IEndpoint.AddEndpoint(string endpoint)
     {
         RouteBuilder.AddEndpoint(endpoint);

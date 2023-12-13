@@ -17,4 +17,9 @@ internal class ResultByIdEndpoint : GetEndpoint<EventResultModel>, IResultByIdEn
     {
         return new PenaltiesEndpoint(HttpClientWrapper, RouteBuilder);
     }
+
+    public IWithIdEndpoint<IResultRowByIdEndpoint> Rows()
+    {
+        return new ResultRowsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
 }

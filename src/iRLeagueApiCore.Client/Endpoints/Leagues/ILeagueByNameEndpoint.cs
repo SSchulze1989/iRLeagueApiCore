@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Championships;
+﻿using iRLeagueApiCore.Client.Endpoints.Bonuses;
+using iRLeagueApiCore.Client.Endpoints.Championships;
 using iRLeagueApiCore.Client.Endpoints.Members;
 using iRLeagueApiCore.Client.Endpoints.Penalties;
 using iRLeagueApiCore.Client.Endpoints.Protests;
@@ -35,5 +36,6 @@ public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     IChampionshipsEndpoint Championships();
     IChampSeasonsEndpoint ChampSeasons();
     IPenaltiesEndpoint Penalties();
+    IBonusesEndpoint Bonuses();
     ICustomEndpoint<T> CustomEndpoint<T>(string route);
 }

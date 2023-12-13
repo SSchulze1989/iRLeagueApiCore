@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Championships;
+﻿using iRLeagueApiCore.Client.Endpoints.Bonuses;
+using iRLeagueApiCore.Client.Endpoints.Championships;
 using iRLeagueApiCore.Client.Endpoints.Members;
 using iRLeagueApiCore.Client.Endpoints.Penalties;
 using iRLeagueApiCore.Client.Endpoints.Protests;
@@ -108,13 +109,18 @@ internal sealed class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueBy
         return new PenaltiesEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
-    ICustomEndpoint<T> ILeagueByNameEndpoint.CustomEndpoint<T>(string route)
+    IBonusesEndpoint ILeagueByNameEndpoint.Bonuses()
     {
-        return new CustomEndpoint<T>(HttpClientWrapper, RouteBuilder, route);
+        return new BonusesEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
     IResultsEndpoint ILeagueByNameEndpoint.Results()
     {
         return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    ICustomEndpoint<T> ILeagueByNameEndpoint.CustomEndpoint<T>(string route)
+    {
+        return new CustomEndpoint<T>(HttpClientWrapper, RouteBuilder, route);
     }
 }
