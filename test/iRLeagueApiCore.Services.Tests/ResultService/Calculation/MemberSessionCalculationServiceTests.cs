@@ -4,7 +4,6 @@ using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Extensions;
-using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 
@@ -640,6 +639,36 @@ public sealed class MemberSessionCalculationServiceTests
         testResultRow.Status.Should().Be((int)RaceStatus.Disqualified);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldApplyAddBonusPoints()
+    {
+        var startPositions = new double[] { 3, 2, 1 }.CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.StartPosition, startPositions)
+            .CreateMany(3);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            sortFinal: x => x.OrderByDescending(x => x.TotalPoints).ToList());
+        var addBonus = new AddBonusCalculationData()
+        {
+            MemberId = data.ResultRows.ElementAt(2).MemberId,
+            Reason = "Testbonus",
+            BonusPoints = 42,
+        };
+        data.ResultRows.ElementAt(2).AddBonuses = new[] { addBonus };
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveSameCount(data.ResultRows);
+        var testRow = test.ResultRows.ElementAt(0);
+        testRow.MemberId.Should().Be(data.ResultRows.ElementAt(2).MemberId);
+        testRow.FinalPosition.Should().Be(1);
+        testRow.BonusPoints.Should().Be(42);
+    }
+
     private MemberSessionCalculationService CreateSut()
     {
         return fixture.Create<MemberSessionCalculationService>();
@@ -666,7 +695,8 @@ public sealed class MemberSessionCalculationServiceTests
             .Without(x => x.RacePoints)
             .Without(x => x.BonusPoints)
             .Without(x => x.PenaltyPoints)
-            .Without(x => x.AddPenalties);
+            .Without(x => x.AddPenalties)
+            .Without(x => x.AddBonuses);
     }
 
     private IEnumerable<ResultRowCalculationData> GetTestRows()

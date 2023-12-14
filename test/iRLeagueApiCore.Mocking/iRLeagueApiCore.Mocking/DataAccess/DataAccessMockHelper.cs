@@ -334,6 +334,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.Team, row.Team)
             .With(x => x.TeamId, row.TeamId)
             .Without(x => x.AddPenalties)
+            .Without(x => x.AddBonuses)
             .Without(x => x.ReviewPenalties)
             .Without(x => x.ScoredSessionResult)
             .Without(x => x.TeamResultRows)

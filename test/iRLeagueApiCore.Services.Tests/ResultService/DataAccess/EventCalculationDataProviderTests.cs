@@ -137,6 +137,39 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
     }
 
     [Fact]
+    public async Task GetData_ShouldProvideAddBonuses()
+    {
+        var @event = await GetFirstEventEntity();
+        var rawResult = @event.EventResult;
+        var configEntity = accessMockHelper.CreateConfiguration(@event);
+        var scoredResult = accessMockHelper.CreateScoredResult(@event, configEntity);
+        var addBonus = new AddBonusEntity()
+        {
+            LeagueId = scoredResult.LeagueId,
+            ScoredResultRow = scoredResult.ScoredSessionResults.First().ScoredResultRows.First(),
+            Reason = "Testbonus",
+            BonusPoints = 42,
+        };
+        dbContext.ResultConfigurations.Add(configEntity);
+        dbContext.ScoredEventResults.Add(scoredResult);
+        dbContext.AddBonuses.Add(addBonus);
+        await dbContext.SaveChangesAsync();
+        var config = GetConfiguration(@event);
+        config.ResultId = scoredResult.ResultId;
+        var sut = CreateSut();
+
+        var test = (await sut.GetData(config))!;
+
+        test.Should().NotBeNull();
+        test.AddBonuses.Should().NotBeEmpty();
+        var testPenalty = test.AddBonuses.First();
+        testPenalty.SessionNr.Should().Be(scoredResult.ScoredSessionResults.First().SessionNr);
+        testPenalty.MemberId.Should().Be(addBonus.ScoredResultRow.MemberId);
+        testPenalty.Reason.Should().Be(addBonus.Reason);
+        testPenalty.BonusPoints.Should().Be(addBonus.BonusPoints);
+    }
+
+    [Fact]
     public async Task GetData_ShouldProvideResultRowData()
     {
         var @event = await GetFirstEventEntity();

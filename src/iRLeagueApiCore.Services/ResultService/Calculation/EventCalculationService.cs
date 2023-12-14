@@ -17,14 +17,14 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
         this.sessionCalculationServiceProvider = sessionCalculationServiceProvider;
     }
 
-    public async Task<EventCalculationResult> Calculate(EventCalculationData data)
+    public async Task<EventCalculationResult> Calculate(EventCalculationData eventData)
     {
-        if (config.EventId != data.EventId)
+        if (config.EventId != eventData.EventId)
         {
-            throw new InvalidOperationException($"EventId in configuration and provided data set does not match -> config:{config.EventId} | data:{data.EventId}");
+            throw new InvalidOperationException($"EventId in configuration and provided data set does not match -> config:{config.EventId} | data:{eventData.EventId}");
         }
 
-        EventCalculationResult result = new(data);
+        EventCalculationResult result = new(eventData);
         result.ResultId = config.ResultId;
         result.ResultConfigId = config.ResultConfigId;
         result.ChampSeasonId = config.ChampSeasonId;
@@ -32,13 +32,14 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
         List<SessionCalculationResult> sessionResults = new();
         foreach (var sessionConfig in config.SessionResultConfigurations.Where(x => x.IsCombinedResult == false).OrderBy(x => x.SessionNr))
         {
-            var sessionData = data.SessionResults
+            var sessionData = eventData.SessionResults
                 .FirstOrDefault(x => x.SessionNr == sessionConfig.SessionNr);
             if (sessionData == null)
             {
                 continue;
             }
-            sessionData = AssignAddPenalties(sessionData, data.AddPenalties);
+            sessionData = AssignAddPenalties(sessionData, eventData.AddPenalties);
+            sessionData = AssignAddBonuses(sessionData, eventData.AddBonuses);
 
             var sessionCalculationService = sessionCalculationServiceProvider.GetCalculationService(sessionConfig);
             sessionResults.Add(await sessionCalculationService.Calculate(sessionData));
@@ -47,9 +48,9 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
         {
             var combinedConfig = config.SessionResultConfigurations.First(x => x.IsCombinedResult);
             IEnumerable<ResultRowCalculationData> combinedRows;
-            if (data.SessionResults.Any(x => x.SessionNr == 999) && combinedConfig.UseExternalSourcePoints)
+            if (eventData.SessionResults.Any(x => x.SessionNr == 999) && combinedConfig.UseExternalSourcePoints)
             {
-                combinedRows = data.SessionResults.First(x => x.SessionNr == 999).ResultRows;
+                combinedRows = eventData.SessionResults.First(x => x.SessionNr == 999).ResultRows;
             }
             else
             {
@@ -71,7 +72,8 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
                     SessionNr = 999,
                     ResultRows = combinedRows,
                 };
-                combinedData = AssignAddPenalties(combinedData, data.AddPenalties);
+                combinedData = AssignAddPenalties(combinedData, eventData.AddPenalties);
+                combinedData = AssignAddBonuses(combinedData, eventData.AddBonuses);
                 var combinedCalculationService = sessionCalculationServiceProvider.GetCalculationService(combinedConfig);
                 sessionResults.Add(await combinedCalculationService.Calculate(combinedData));
             }
@@ -86,6 +88,18 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
         var sessionPenalties = addPenalties.Where(x => x.SessionNr == data.SessionNr);
         data.ResultRows.ForEach(row =>
             row.AddPenalties = sessionPenalties
+                .Where(x =>
+                    (x.MemberId != null && x.MemberId == row.MemberId) ||
+                    (x.MemberId == null && x.TeamId != null && x.TeamId == row.TeamId))
+                .ToList());
+        return data;
+    }
+
+    private static SessionCalculationData AssignAddBonuses(SessionCalculationData data, IEnumerable<AddBonusCalculationData> addBonuses)
+    {
+        var sessionBonuses = addBonuses.Where(x => x.SessionNr == data.SessionNr);
+        data.ResultRows.ForEach(row =>
+            row.AddBonuses = sessionBonuses
                 .Where(x =>
                     (x.MemberId != null && x.MemberId == row.MemberId) ||
                     (x.MemberId == null && x.TeamId != null && x.TeamId == row.TeamId))

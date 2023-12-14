@@ -24,7 +24,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
             return data;
         }
 
-        data = await AssociatePenalties(config, data, cancellationToken);
+        data = await AssociateAddedData(config, data, cancellationToken);
         // Fill Qualy lap
         data = FillQualyLapTime(config, data);
         return data;
@@ -83,12 +83,13 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         return data;
     }
 
-    private async Task<EventCalculationData> AssociatePenalties(EventCalculationConfiguration config, EventCalculationData data, CancellationToken cancellationToken)
+    private async Task<EventCalculationData> AssociateAddedData(EventCalculationConfiguration config, EventCalculationData data, CancellationToken cancellationToken)
     {
         // get existing scoredresultrows
         var scoredResultRows = await dbContext.ScoredResultRows
             .Include(x => x.ScoredSessionResult)
             .Include(x => x.AddPenalties)
+            .Include(x => x.AddBonuses)
             .Where(x => x.ScoredSessionResult.ResultId == config.ResultId)
             .ToListAsync(cancellationToken);
         if (scoredResultRows.None())
@@ -108,6 +109,18 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     Positions = x.Value.Positions,
                     Time = x.Value.Time,
                 }));
+
+        data.AddBonuses = scoredResultRows
+            .SelectMany(row => row.AddBonuses
+                .Select(x => new AddBonusCalculationData()
+                {
+                    SessionNr = row.ScoredSessionResult.SessionNr,
+                    MemberId = row.MemberId,
+                    TeamId = row.TeamId,
+                    Reason = x.Reason,
+                    BonusPoints = x.BonusPoints,
+                }));
+
         return data;
     }
 

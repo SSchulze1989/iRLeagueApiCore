@@ -41,6 +41,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         ApplyAddPenaltyPoints(finalRows);
         ApplyReviewPenalties(finalRows, data.AcceptedReviewVotes);
         ApplyBonusPoints(pointRows, pointRule.GetBonusPoints());
+        ApplyAddBonusPoints(pointRows);
         ApplyTotalPoints(finalRows);
         finalRows = pointRule.SortFinal(finalRows);
         // Set final position
@@ -254,6 +255,15 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             }
         }
         return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> ApplyAddBonusPoints(IEnumerable<ResultRowCalculationResult> pointRows)
+    {
+        foreach(var row in pointRows)
+        {
+            row.BonusPoints += row.AddBonuses.Sum(x => x.BonusPoints);
+        }
+        return pointRows;
     }
 
     private static IEnumerable<ResultRowCalculationResult> ApplyTotalPoints(IEnumerable<ResultRowCalculationResult> rows)
