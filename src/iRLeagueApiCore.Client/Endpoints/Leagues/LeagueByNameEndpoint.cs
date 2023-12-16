@@ -119,6 +119,11 @@ internal sealed class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueBy
         return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
+    ISessionResultsEndpoint ILeagueByNameEndpoint.SessionResults()
+    {
+        return new SessionResultsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
     ICustomEndpoint<T> ILeagueByNameEndpoint.CustomEndpoint<T>(string route)
     {
         return new CustomEndpoint<T>(HttpClientWrapper, RouteBuilder, route);

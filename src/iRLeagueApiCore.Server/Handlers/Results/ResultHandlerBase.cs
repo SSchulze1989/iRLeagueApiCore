@@ -45,6 +45,22 @@ public class ResultHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequ
         AddBonusId = bonus.AddBonusId,
         Reason = bonus.Reason,
         BonusPoints = bonus.BonusPoints,
+        Member = bonus.ScoredResultRow.Member == null ? default : new()
+        {
+            MemberId = bonus.ScoredResultRow.Member.Id,
+            FirstName = bonus.ScoredResultRow.Member.Firstname,
+            LastName = bonus.ScoredResultRow.Member.Lastname,
+        },
+        Team = bonus.ScoredResultRow.Team == null ? default : new()
+        {
+            TeamId = bonus.ScoredResultRow.Team.TeamId,
+            Name = bonus.ScoredResultRow.Team.Name,
+            TeamColor = bonus.ScoredResultRow.Team.TeamColor,
+        },
+        EventId = bonus.ScoredResultRow.ScoredSessionResult.ScoredEventResult.EventId,
+        SessionNr = bonus.ScoredResultRow.ScoredSessionResult.SessionNr,
+        SessionName = bonus.ScoredResultRow.ScoredSessionResult.Name,
+        ResultRowId = bonus.ScoredResultRowId,
     };
 
     public Expression<Func<ScoredEventResultEntity, EventResultModel>> MapToEventResultModelExpression => result => new EventResultModel()

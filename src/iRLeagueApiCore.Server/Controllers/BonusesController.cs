@@ -38,6 +38,16 @@ public class BonusesController : LeagueApiController<BonusesController>
         return Ok(result);
     }
 
+    [HttpGet]
+    [Route("/{leagueName}/ScoredSessionResults/{resultId:long}/[controller]")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<AddBonusModel>>> GetBonusesFromSessionResult([FromRoute] string leagueName, [FromRoute] long resultId, CancellationToken cancellationToken)
+    {
+        var request = new GetBonusesFromSessionResultRequest(resultId);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpPut]
     [Route("{id:long}")]
     public async Task<ActionResult<AddBonusModel>> PutBonus([FromRoute] string leagueName, [FromRoute] long id,

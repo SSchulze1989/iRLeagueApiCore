@@ -5,5 +5,4 @@ namespace iRLeagueApiCore.Client.Endpoints.Results;
 public interface IResultByIdEndpoint : IGetEndpoint<EventResultModel>
 {
     IGetAllEndpoint<PenaltyModel> Penalties();
-    IWithIdEndpoint<IResultRowByIdEndpoint> Rows();
 }

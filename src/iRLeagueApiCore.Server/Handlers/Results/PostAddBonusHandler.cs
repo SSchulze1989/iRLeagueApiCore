@@ -42,6 +42,7 @@ public class PostAddBonusHandler : ResultHandlerBase<PostAddBonusHandler, PostAd
             ScoredResultRow = row,
             ScoredResultRowId = scoredResultRowId,
         };
+        dbContext.AddBonuses.Add(bonusEntity);
 
         return bonusEntity;
     }
