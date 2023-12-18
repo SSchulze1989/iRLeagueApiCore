@@ -352,7 +352,7 @@ public sealed class MemberSessionCalculationServiceTests
     {
         const int rowCount = 3;
         const int spread = 5;
-        const int penaltyIndex = 0;
+        const int penaltyIndex = 1;
         // create fixed intervals to test sorting
         var points = Enumerable.Range(0, rowCount)
             .Select(x => (rowCount - x) * spread)
@@ -365,11 +365,11 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Type, PenaltyType.Points)
             .With(x => x.Points, spread + 1)
             .Create();
-        var penaltyRow = data.ResultRows.ElementAt(0);
+        var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
         penaltyRow.AddPenalties = new[] { addPenalty };
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            sortFinal: x => x.OrderBy(x => x.TotalPoints).ToList());
+            sortFinal: x => x.OrderByDescending(x => x.TotalPoints).ToList());
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -379,6 +379,41 @@ public sealed class MemberSessionCalculationServiceTests
         var expIndex = penaltyIndex + 1;
         testResultRow.PenaltyPoints.Should().Be(addPenalty.Points);
         testResultRow.TotalPoints.Should().Be(testResultRow.RacePoints - testResultRow.PenaltyPoints);
+        test.ResultRows.ToList().IndexOf(testResultRow).Should().Be(expIndex);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldApplyNegativePointsPenaltyAsBonus()
+    {
+        const int rowCount = 3;
+        const int spread = 5;
+        const int penaltyIndex = 1;
+        // create fixed intervals to test sorting
+        var points = Enumerable.Range(0, rowCount)
+            .Select(x => (rowCount - x) * spread)
+            .CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.RacePoints, () => points())
+            .CreateMany(rowCount);
+        var addPenalty = fixture.Build<AddPenaltyCalculationData>()
+            .With(x => x.Type, PenaltyType.Points)
+            .With(x => x.Points, -(spread + 1))
+            .Create();
+        var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
+        penaltyRow.AddPenalties = new[] { addPenalty };
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            sortFinal: x => x.OrderByDescending(x => x.TotalPoints).ToList());
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
+        var expIndex = penaltyIndex - 1;
+        testResultRow.BonusPoints.Should().Be(-addPenalty.Points);
+        testResultRow.TotalPoints.Should().Be(testResultRow.RacePoints + testResultRow.BonusPoints);
         test.ResultRows.ToList().IndexOf(testResultRow).Should().Be(expIndex);
     }
 
