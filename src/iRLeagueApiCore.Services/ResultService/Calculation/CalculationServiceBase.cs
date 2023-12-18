@@ -204,7 +204,14 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         {
             foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Points))
             {
-                row.PenaltyPoints += penalty.Points;
+                if (penalty.Points < 0)
+                {
+                    row.BonusPoints -= penalty.Points;
+                }
+                else
+                {
+                    row.PenaltyPoints += penalty.Points;
+                }
             }
         }
         return rows;
@@ -250,7 +257,14 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                     PenaltyPoints = vote.DefaultPenalty,
                 };
                 row.ReviewPenalties.Add(penalty);
-                row.PenaltyPoints += penalty.PenaltyPoints;
+                if (penalty.PenaltyPoints < 0)
+                {
+                    row.BonusPoints -= penalty.PenaltyPoints;
+                }
+                else
+                {
+                    row.PenaltyPoints += penalty.PenaltyPoints;
+                }
             }
         }
         return rows;
