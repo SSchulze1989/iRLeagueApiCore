@@ -447,7 +447,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     protected static IEnumerable<ResultRowCalculationResult> CalculateCompletedPct(IEnumerable<ResultRowCalculationResult> rows)
     {
-        var laps = rows.Max(x => x.CompletedLaps);
+        var laps = rows.MaxOrDefault(x => x.CompletedLaps);
         if (laps == 0)
         {
             return rows;
@@ -463,7 +463,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> CalculateIntervals(IEnumerable<ResultRowCalculationResult> rows)
     {
-        int totalLaps = (int)rows.Max(x => x.CompletedLaps);
+        int totalLaps = (int)rows.MaxOrDefault(x => x.CompletedLaps);
         foreach (var row in rows)
         {
             if (row.Interval.Days > 0)
