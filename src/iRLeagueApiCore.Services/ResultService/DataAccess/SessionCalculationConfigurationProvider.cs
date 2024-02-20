@@ -46,7 +46,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 SessionId = x.SessionId,
                 SessionNr = x.SessionNr,
                 UseResultSetTeam = false,
-                MaxResultsPerGroup = (configurationEntity?.ResultsPerTeam is null or <=0) ? 999 : configurationEntity.ResultsPerTeam,
+                MaxResultsPerGroup = (configurationEntity?.ResultsPerTeam is null or <=0) ? int.MaxValue : configurationEntity.ResultsPerTeam,
                 Name = x.Name,
                 UpdateTeamOnRecalculation = false,
                 ResultKind = configurationEntity?.ChampSeason.ResultKind ?? ResultKind.Member,
@@ -112,7 +112,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         SessionCalculationConfiguration sessionConfiguration, bool includePointFilters = true)
     {
         sessionConfiguration.PointRule = GetPointRuleFromEntity(scoring?.PointsRule, configurationEntity, includePointFilters: includePointFilters);
-        sessionConfiguration.MaxResultsPerGroup = (configurationEntity.ResultsPerTeam <= 0) ? 999 : configurationEntity.ResultsPerTeam;
+        sessionConfiguration.MaxResultsPerGroup = (configurationEntity.ResultsPerTeam <= 0) ? int.MaxValue : configurationEntity.ResultsPerTeam;
         sessionConfiguration.UseResultSetTeam = scoring?.UseResultSetTeam ?? false;
         sessionConfiguration.UpdateTeamOnRecalculation = scoring?.UpdateTeamOnRecalculation ?? false;
         sessionConfiguration.ScoringId = scoring?.ScoringId;
