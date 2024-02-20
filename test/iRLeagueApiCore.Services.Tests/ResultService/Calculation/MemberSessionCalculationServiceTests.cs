@@ -675,6 +675,22 @@ public sealed class MemberSessionCalculationServiceTests
         testResultRow.Status.Should().Be((int)RaceStatus.Disqualified);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldNotCrashOnEmptyRows()
+    {
+        const int rowCount = 0;
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .CreateMany(rowCount);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = async () => await sut.Calculate(data);
+
+        await test.Should().NotThrowAsync();
+    }
+
     private MemberSessionCalculationService CreateSut()
     {
         return fixture.Create<MemberSessionCalculationService>();

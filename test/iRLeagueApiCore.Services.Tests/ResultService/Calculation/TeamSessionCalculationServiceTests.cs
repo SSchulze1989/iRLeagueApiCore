@@ -253,6 +253,22 @@ public sealed class TeamSessionCalculationServiceTests
         testRow.TotalPoints.Should().Be(testRow.RacePoints + testRow.BonusPoints - testRow.PenaltyPoints);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldNotCrashOnEmptyRows()
+    {
+        const int rowCount = 0;
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .CreateMany(rowCount);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = async () => await sut.Calculate(data);
+
+        await test.Should().NotThrowAsync();
+    }
+
     private TeamSessionCalculationService CreateSut()
     {
         return fixture.Create<TeamSessionCalculationService>();
