@@ -1,4 +1,6 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
+﻿using Microsoft.Extensions.Logging;
+using System.IdentityModel.Tokens.Jwt;
+using System.Reflection.Metadata;
 
 namespace iRLeagueApiCore.Client.Http;
 internal sealed class DefaultTokenStore : ITokenStore
@@ -44,7 +46,7 @@ internal sealed class DefaultTokenStore : ITokenStore
         if (string.IsNullOrEmpty(accessToken) == false)
         {
             // set expiration date
-            var jwtToken = new JsonWebTokenHandler().ReadToken(accessToken);
+            var jwtToken = new JwtSecurityTokenHandler().ReadToken(accessToken);
             AccessTokenExpires = jwtToken.ValidTo;
         }
         TokenChanged?.Invoke(this, EventArgs.Empty);
