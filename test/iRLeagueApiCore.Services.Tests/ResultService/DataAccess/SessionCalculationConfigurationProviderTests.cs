@@ -29,6 +29,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             sessionConfig.ScoringId.Should().BeNull();
             sessionConfig.UpdateTeamOnRecalculation.Should().BeFalse();
             sessionConfig.UseResultSetTeam.Should().BeFalse();
+            sessionConfig.MaxResultsPerGroup.Should().Be(int.MaxValue);
         }
     }
 
@@ -763,6 +764,29 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             testBonusPoint.Value.Should().Be(420);
             testBonusPoint.Type.Should().Be(BonusPointType.Custom);
             testBonusPoint.Conditions.GetFilters().Should().HaveCount(1);
+        }
+    }
+
+    [Theory]
+    [InlineData(1, 1)]
+    [InlineData(3, 3)]
+    [InlineData(0, int.MaxValue)]
+    [InlineData(-1, int.MaxValue)]
+    [InlineData(-42, int.MaxValue)]
+    public async Task GetConfigurations_ShouldProvideConfigWithMaximuResultsPerTeam(int maxResultsPerTeam, int expected)
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        config.ResultsPerTeam = maxResultsPerTeam;
+        dbContext.ResultConfigurations.Add(config);
+        await dbContext.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach(var sessionConfig in test)
+        {
+            sessionConfig.MaxResultsPerGroup.Should().Be(expected);
         }
     }
 

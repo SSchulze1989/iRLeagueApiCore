@@ -47,4 +47,25 @@ public static class EnumerableExtensions
     /// <param name="predicate"></param>
     /// <returns></returns>
     public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => !enumerable.Any(predicate);
+    /// <summary>
+    /// Returns the maximum value or the default if the sequence is empty
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <returns></returns>
+    public static T MaxOrDefault<T>(this IEnumerable<T> enumerable)
+    {
+        return enumerable.Any() ? enumerable.Max()! : default(T)!;
+    }
+    /// <summary>
+    /// Returns the maximum value or the default if the sequence is empty
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static T MaxOrDefault<TSource, T>(this IEnumerable<TSource> enumerable, Func<TSource, T> selector)
+    {
+        return enumerable.Any() ? enumerable.Max(selector)! : default(T)!;
+    }
 }

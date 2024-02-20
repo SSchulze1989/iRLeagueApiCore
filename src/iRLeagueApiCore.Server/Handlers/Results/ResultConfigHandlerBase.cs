@@ -210,6 +210,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()
         {
             Id = scoring.ScoringId,
+            Index = scoring.Index,
             MaxResultsPerGroup = scoring.MaxResultsPerGroup,
             Name = scoring.Name,
             ShowResults = scoring.ShowResults,
@@ -240,7 +241,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                     Type = penalty.Type,
                 }).ToList(),
             } : null,
-        }).ToList(),
+        }).OrderBy(x => x.Index).ToList(),
         FiltersForPoints = resultConfig.PointFilters
             .Select(filter => new ResultFilterModel()
             {
