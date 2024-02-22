@@ -132,7 +132,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                         VoteCategoryId = vote.VoteCategoryId,
                         ReviewVoteId = vote.ReviewVoteId,
                     }),
-                Sof = sessionResult.IRSimSessionDetails.EventStrengthOfField,
+                Sof = sessionResult.IRSimSessionDetails == null ? 0 : sessionResult.IRSimSessionDetails.EventStrengthOfField,
                 ResultRows = sessionResult.ResultRows.Select(row => new ResultRowCalculationData()
                 {
                     ScoredResultRowId = null,
