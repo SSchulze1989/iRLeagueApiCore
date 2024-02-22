@@ -20,5 +20,9 @@ public static class FormulaParameters
         new(["avglapsession", "session_fastes_avg_lap"], "Fastest avg. lap in the session", (sessionData, _) => sessionData.FastestAvgLap.TotalSeconds),
     };
 
+    internal static IDictionary<string, FormulaParameter> ParameterDict => Parameters
+        .SelectMany(x => x.Aliases.Select(y => (name: y, parameter: x)))
+        .ToDictionary(k => k.name, v => v.parameter);
+
     public static IEnumerable<(string[] aliases, string description)> ParameterInfo => Parameters.Select(x => (x.Aliases, x.Description));
 }
