@@ -27,13 +27,12 @@ internal class FormulaPointRule : CalculationPointRuleBase
             e.Parameters[parameter.Key] = rows.Select(row => parameter.Value.valueFunc.Invoke(_sessionData, row)).ToArray();
         }
         // calculate
-        var points = e.Evaluate() as IList<object>;
-        if (points is null)
+        if (e.Evaluate() is not IList<object> points)
         {
             return rows;
         }
         // assign points to rows
-        foreach(var (row, rowPoints) in rows.Zip(points))
+        foreach (var (row, rowPoints) in rows.Zip(points))
         {
             row.RacePoints = Convert.ToDouble(rowPoints);
             if (!_allowNegativePoints)
