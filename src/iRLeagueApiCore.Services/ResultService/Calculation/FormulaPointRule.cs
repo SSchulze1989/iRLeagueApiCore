@@ -1,5 +1,6 @@
 ﻿
 using iRLeagueApiCore.Services.ResultService.Models;
+using MySqlX.XDevAPI.Relational;
 using NCalc;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
@@ -19,15 +20,22 @@ internal class FormulaPointRule : CalculationPointRuleBase
 
     public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
     {
-        foreach(var row in rows)
+        // prepare parameters
+        var e = new NCalc.Expression(_formula, EvaluateOptions.IterateParameters);
+        foreach (var parameter in _parameters)
         {
-            var e = new NCalc.Expression(_formula);
-            foreach(var parameter in _parameters)
-            {
-                e.Parameters[parameter.Key] = parameter.Value.valueFunc.Invoke(_sessionData, row);
-            }
-            var eval = e.Evaluate();
-            row.RacePoints = Convert.ToDouble(eval);
+            e.Parameters[parameter.Key] = rows.Select(row => parameter.Value.valueFunc.Invoke(_sessionData, row)).ToArray();
+        }
+        // calculate
+        var points = e.Evaluate() as IList<object>;
+        if (points is null)
+        {
+            return rows;
+        }
+        // assign points to rows
+        foreach(var (row, rowPoints) in rows.Zip(points))
+        {
+            row.RacePoints = Convert.ToDouble(rowPoints);
             if (!_allowNegativePoints)
             {
                 row.RacePoints = Math.Max(row.RacePoints, 0);
