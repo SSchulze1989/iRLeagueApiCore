@@ -16,8 +16,8 @@ public static class FormulaParameters
         new(["qlap", "qualy_lap"], "Personal qualy lap", (_, rowData) => rowData.QualifyingTime.TotalSeconds),
         new(["avglap", "avg_lap"], "Personal avg. lap", (_, rowData) => rowData.AvgLapTime.TotalSeconds),
         new(["flapsession", "session_fastest_lap"], "Fastest lap in the session", (sessionData, _) => sessionData.FastestLap.TotalSeconds),
-        new(["qlapsession", "session_qualy_lap"], "Fastest qaly lap in the session", (sessionData, _) => sessionData.FastestQualyLap.TotalSeconds),
-        new(["avglapsession", "session_fastes_avg_lap"], "Fastest avg. lap in the session", (sessionData, _) => sessionData.FastestAvgLap.TotalSeconds),
+        new(["qlapsession", "session_fastest_qualy_lap"], "Fastest qaly lap in the session", (sessionData, _) => sessionData.FastestQualyLap.TotalSeconds),
+        new(["avglapsession", "session_fastest_avg_lap"], "Fastest avg. lap in the session", (sessionData, _) => sessionData.FastestAvgLap.TotalSeconds),
     };
 
     internal static IDictionary<string, FormulaParameter> ParameterDict => Parameters
