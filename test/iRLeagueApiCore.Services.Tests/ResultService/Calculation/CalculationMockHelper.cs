@@ -56,8 +56,8 @@ internal static class CalculationMockHelper
             .Setup(x => x.SortFinal(It.IsAny<IEnumerable<T>>()))
             .Returns((IEnumerable<T> rows) => sortFinal(rows).ToList());
         mockRule
-            .Setup(x => x.ApplyPoints(It.IsAny<IReadOnlyList<T>>()))
-            .Returns((IEnumerable<T> rows) =>
+            .Setup(x => x.ApplyPoints(It.IsAny<SessionCalculationData>(), It.IsAny<IReadOnlyList<T>>()))
+            .Returns((SessionCalculationData _, IEnumerable<T> rows) =>
             {
                 foreach ((T row, int pos) in rows.Select((x, i) => (x, i + 1)))
                 {

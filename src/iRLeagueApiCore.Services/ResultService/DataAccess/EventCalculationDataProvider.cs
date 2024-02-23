@@ -26,7 +26,8 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
 
         data = await AssociatePenalties(config, data, cancellationToken);
         // Fill Qualy lap
-        data = FillQualyLapTime(config, data);
+        data = FillQualyLap(config, data);
+        data = FillFastestLapTimes(data);
         return data;
     }
 
@@ -51,7 +52,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
     /// <param name="config"></param>
     /// <param name="data"></param>
     /// <returns></returns>
-    private static EventCalculationData FillQualyLapTime(EventCalculationConfiguration config, EventCalculationData data)
+    private static EventCalculationData FillQualyLap(EventCalculationConfiguration config, EventCalculationData data)
     {
         // find driver qualy laps
         var qualySessionNr = config.SessionResultConfigurations.FirstOrDefault(x => x.SessionType == Common.Enums.SessionType.Qualifying)?.SessionNr;
@@ -83,6 +84,29 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         return data;
     }
 
+    private EventCalculationData FillFastestLapTimes(EventCalculationData data)
+    {
+        foreach (var sessionResult in data.SessionResults)
+        {
+            sessionResult.FastestLap = sessionResult.ResultRows
+                .Select(x => x.FastestLapTime)
+                .Where(LapIsValid)
+                .OrderBy(x => x)
+                .FirstOrDefault();
+            sessionResult.FastestQualyLap = sessionResult.ResultRows
+                .Select(x => x.QualifyingTime)
+                .Where(LapIsValid)
+                .OrderBy(x => x)
+                .FirstOrDefault();
+            sessionResult.FastestAvgLap = sessionResult.ResultRows
+                .Select(x => x.AvgLapTime)
+                .Where(LapIsValid)
+                .OrderBy(x => x)
+                .FirstOrDefault();
+        }
+        return data;
+    }
+
     private async Task<EventCalculationData> AssociatePenalties(EventCalculationConfiguration config, EventCalculationData data, CancellationToken cancellationToken)
     {
         // get existing scoredresultrows
@@ -109,6 +133,11 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     Time = x.Value.Time,
                 }));
         return data;
+    }
+
+    private static bool LapIsValid(TimeSpan lap)
+    {
+        return lap > TimeSpan.Zero;
     }
 
     private static Expression<Func<EventResultEntity, EventCalculationData>> MapToEventResultCalculationDataExpression => eventResult => new EventCalculationData()

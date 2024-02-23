@@ -1,6 +1,8 @@
-﻿using iRLeagueApiCore.Common.Enums;
+﻿using DbIntegrationTests;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -195,6 +197,44 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         testRow.NewLicenseLevel.Should().Be(compareRow.NewLicenseLevel);
         testRow.RacePoints.Should().Be(compareRow.RacePoints);
         testRow.PointsEligible.Should().Be(compareRow.PointsEligible);
+    }
+
+    [Fact]
+    public async Task GetData_ShouldProvideSessionLapTimes()
+    {
+        var @event = await GetFirstEventEntity();
+        var fastestLap = fixture.Create<TimeSpan>();
+        var fastestQualyLap = fixture.Create<TimeSpan>();
+        var fastestAvgLap = fixture.Create<TimeSpan>();
+        var rawResult = @event.EventResult;
+        foreach(var session in rawResult.SessionResults)
+        {
+            session.ResultRows.ForEach(x =>
+            {
+                x.FastestLapTime = fastestLap + fixture.Create<TimeSpan>();
+                x.QualifyingTime = fastestQualyLap + fixture.Create<TimeSpan>();
+                x.AvgLapTime = fastestAvgLap + fixture.Create<TimeSpan>();
+            });
+            session.ResultRows.GetRandom().FastestLapTime = TimeSpan.Zero;
+            session.ResultRows.GetRandom().FastestLapTime = fastestLap;
+            session.ResultRows.GetRandom().QualifyingTime = TimeSpan.Zero;
+            session.ResultRows.GetRandom().QualifyingTime = fastestQualyLap;
+            session.ResultRows.GetRandom().AvgLapTime = TimeSpan.Zero;
+            session.ResultRows.GetRandom().AvgLapTime = fastestAvgLap;
+        }
+        await dbContext.SaveChangesAsync();
+        var config = GetConfiguration(@event);
+        var sut = CreateSut();
+
+        var test = (await sut.GetData(config))!;
+
+        test.Should().NotBeNull();
+        foreach(var session in test.SessionResults)
+        {
+            session.FastestLap.Should().Be(fastestLap);
+            session.FastestQualyLap.Should().Be(fastestQualyLap);
+            session.FastestAvgLap.Should().Be(fastestAvgLap);
+        }
     }
 
     private EventCalculationDataProvider CreateSut()

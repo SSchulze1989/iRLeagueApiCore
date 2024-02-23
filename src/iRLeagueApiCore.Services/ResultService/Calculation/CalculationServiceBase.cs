@@ -28,7 +28,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         pointRows = pointRule.GetPointFilters().FilterRows(pointRows);
 
         // Calculation
-        pointRule.ApplyPoints(pointRows.ToList());
+        pointRule.ApplyPoints(data, pointRows.ToList());
         // remove points from filtered rows and set points eligible 
         pointRows.ForEach(x => x.PointsEligible  = true);
         rows.Except(pointRows)

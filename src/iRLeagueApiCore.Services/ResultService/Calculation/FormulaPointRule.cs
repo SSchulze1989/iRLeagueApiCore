@@ -7,24 +7,22 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation;
 internal class FormulaPointRule : CalculationPointRuleBase
 {
     private string _formula;
-    private SessionCalculationResult _sessionData;
     private bool _allowNegativePoints;
     private static IDictionary<string, FormulaParameter> _parameters = FormulaParameters.ParameterDict;
 
-    public FormulaPointRule(string formula, SessionCalculationResult sessionData, bool allowNegativePoints)
+    public FormulaPointRule(string formula, bool allowNegativePoints)
     {
         _formula = formula;
-        _sessionData = sessionData;
         _allowNegativePoints = allowNegativePoints;
     }
 
-    public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
+    public override IReadOnlyList<T> ApplyPoints<T>(SessionCalculationData session, IReadOnlyList<T> rows)
     {
         // prepare parameters
         var e = new NCalc.Expression(_formula, EvaluateOptions.IterateParameters);
         foreach (var parameter in _parameters)
         {
-            e.Parameters[parameter.Key] = rows.Select(row => parameter.Value.valueFunc.Invoke(_sessionData, row)).ToArray();
+            e.Parameters[parameter.Key] = rows.Select(row => parameter.Value.valueFunc.Invoke(session, row)).ToArray();
         }
         // calculate
         if (e.Evaluate() is not IList<object> points)

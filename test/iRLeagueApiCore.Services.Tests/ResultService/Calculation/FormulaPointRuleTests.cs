@@ -42,15 +42,15 @@ public sealed class FormulaPointRuleTests
             .With(x => x.AvgLapTime, TimeSpan.FromSeconds(420))
             .With(x => x.StartPosition, 2)
             .CreateMany(1);
-        var sessionData = SessionDataBuilder(fixture, rows)
+        var session = SessionDataBuilder(fixture, rows)
             .With(x => x.Sof, 1234)
             .With(x => x.FastestLap, TimeSpan.FromSeconds(1.23))
             .With(x => x.FastestQualyLap, TimeSpan.FromSeconds(12.3))
             .With(x => x.FastestAvgLap, TimeSpan.FromSeconds(123.0))
             .Create();
-        var sut = GetPointRule(formula, sessionData, allowNegativePoints: false);
+        var sut = GetPointRule(formula, allowNegativePoints: false);
 
-        var test = sut.ApplyPoints(rows.ToList()).ToList();
+        var test = sut.ApplyPoints(session, rows.ToList()).ToList();
 
         test.First().RacePoints.Should().Be(expected);
     }
@@ -62,10 +62,10 @@ public sealed class FormulaPointRuleTests
     public void Should_ApplyPointsBasedOnPosition(string formula, double[] expected, bool allowNegativePoints)
     {
         var rows = GetTestRows(fixture, expected.Length);
-        var sessionData = GetSessionData(fixture, rows);
-        var sut = GetPointRule(formula, sessionData, allowNegativePoints);
+        var session = GetSessionData(fixture, rows);
+        var sut = GetPointRule(formula, allowNegativePoints);
 
-        var test = sut.ApplyPoints(rows.ToList()).ToList();
+        var test = sut.ApplyPoints(session, rows.ToList()).ToList();
 
         foreach (var (row, points) in test.Zip(expected))
         {
@@ -82,10 +82,10 @@ public sealed class FormulaPointRuleTests
     public void Should_ApplyPointsBasedOnCount(string formula, double[] expected, bool allowNegativePoints)
     {
         var rows = GetTestRows(fixture, expected.Length);
-        var sessionData = GetSessionData(fixture, rows);
-        var sut = GetPointRule(formula, sessionData, allowNegativePoints);
+        var session = GetSessionData(fixture, rows);
+        var sut = GetPointRule(formula, allowNegativePoints);
 
-        var test = sut.ApplyPoints(rows.ToList()).ToList();
+        var test = sut.ApplyPoints(session, rows.ToList()).ToList();
 
         foreach (var (row, points) in test.Zip(expected))
         {
@@ -107,19 +107,19 @@ public sealed class FormulaPointRuleTests
         return TestRowsBuilder(fixture, count).CreateMany(count).ToList();
     }
 
-    private static IPostprocessComposer<SessionCalculationResult> SessionDataBuilder(Fixture fixture, IEnumerable<ResultRowCalculationResult> rows)
+    private static IPostprocessComposer<SessionCalculationData> SessionDataBuilder(Fixture fixture, IEnumerable<ResultRowCalculationResult> rows)
     {
-        return fixture.Build<SessionCalculationResult>()
+        return fixture.Build<SessionCalculationData>()
             .With(x => x.ResultRows, rows);
     }
 
-    private static SessionCalculationResult GetSessionData(Fixture fixture, IEnumerable<ResultRowCalculationResult> rows)
+    private static SessionCalculationData GetSessionData(Fixture fixture, IEnumerable<ResultRowCalculationResult> rows)
     {
         return SessionDataBuilder(fixture, rows).Create();
     }
 
-    private static FormulaPointRule GetPointRule(string formula, SessionCalculationResult sessionData, bool allowNegativePoints)
+    private static FormulaPointRule GetPointRule(string formula, bool allowNegativePoints)
     {
-        return new(formula, sessionData, allowNegativePoints);
+        return new(formula, allowNegativePoints);
     }
 }

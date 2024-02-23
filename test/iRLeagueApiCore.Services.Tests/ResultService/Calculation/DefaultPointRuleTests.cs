@@ -25,7 +25,7 @@ public sealed class DefaultPointRuleTests
         var rows = GetTestRows(fixture);
         var sut = GetPointRule(fixture);
 
-        var test = sut.ApplyPoints(rows.ToList());
+        var test = sut.ApplyPoints(fixture.Create<SessionCalculationData>(), rows.ToList());
 
         foreach (var row in test)
         {

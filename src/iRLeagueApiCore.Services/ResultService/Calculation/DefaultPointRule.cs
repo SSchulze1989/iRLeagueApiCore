@@ -14,7 +14,7 @@ internal class DefaultPointRule<TRow> : PointRule<TRow> where TRow : IPointRow, 
 
     public override IEnumerable<AutoPenaltyConfigurationData> GetAutoPenalties() => Array.Empty<AutoPenaltyConfigurationData>();
 
-    public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
+    public override IReadOnlyList<T> ApplyPoints<T>(SessionCalculationData _, IReadOnlyList<T> rows)
     {
         foreach (var row in rows)
         {
