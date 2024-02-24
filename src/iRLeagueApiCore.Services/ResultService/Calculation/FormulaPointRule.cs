@@ -6,20 +6,20 @@ using NCalc;
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 internal class FormulaPointRule : CalculationPointRuleBase
 {
-    private string _formula;
-    private bool _allowNegativePoints;
+    public string Formula { get; }
+    public bool AllowNegativePoints { get; }
     private static IDictionary<string, FormulaParameter> _parameters = FormulaParameters.ParameterDict;
 
     public FormulaPointRule(string formula, bool allowNegativePoints)
     {
-        _formula = formula;
-        _allowNegativePoints = allowNegativePoints;
+        Formula = formula;
+        AllowNegativePoints = allowNegativePoints;
     }
 
     public override IReadOnlyList<T> ApplyPoints<T>(SessionCalculationData session, IReadOnlyList<T> rows)
     {
         // prepare parameters
-        var e = new NCalc.Expression(_formula, EvaluateOptions.IterateParameters);
+        var e = new NCalc.Expression(Formula, EvaluateOptions.IterateParameters);
         foreach (var parameter in _parameters)
         {
             e.Parameters[parameter.Key] = rows.Select(row => parameter.Value.valueFunc.Invoke(session, row)).ToArray();
@@ -33,7 +33,7 @@ internal class FormulaPointRule : CalculationPointRuleBase
         foreach (var (row, rowPoints) in rows.Zip(points))
         {
             row.RacePoints = Convert.ToDouble(rowPoints);
-            if (!_allowNegativePoints)
+            if (!AllowNegativePoints)
             {
                 row.RacePoints = Math.Max(row.RacePoints, 0);
             }

@@ -46,7 +46,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 SessionId = x.SessionId,
                 SessionNr = x.SessionNr,
                 UseResultSetTeam = false,
-                MaxResultsPerGroup = (configurationEntity?.ResultsPerTeam is null or <=0) ? int.MaxValue : configurationEntity.ResultsPerTeam,
+                MaxResultsPerGroup = (configurationEntity?.ResultsPerTeam is null or <= 0) ? int.MaxValue : configurationEntity.ResultsPerTeam,
                 Name = x.Name,
                 UpdateTeamOnRecalculation = false,
                 ResultKind = configurationEntity?.ChampSeason.ResultKind ?? ResultKind.Member,
@@ -125,19 +125,13 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     {
         CalculationPointRuleBase pointRule;
 
-        if (pointsRuleEntity?.PointsPerPlace.Any() == true)
+        pointRule = pointsRuleEntity switch
         {
-            pointRule = new PerPlacePointRule(PointsPerPlaceToDictionary<double>(pointsRuleEntity.PointsPerPlace
-                .Select(x => (double)x)));
-        }
-        else if (pointsRuleEntity?.MaxPoints > 0)
-        {
-            pointRule = new MaxPointRule(pointsRuleEntity.MaxPoints, pointsRuleEntity.PointDropOff);
-        }
-        else
-        {
-            pointRule = new UseResultPointsPointRule();
-        }
+            var rule when rule?.RuleType == PointRuleType.PointList && rule.PointsPerPlace.Any() => new PerPlacePointRule(PointsPerPlaceToDictionary(rule.PointsPerPlace.Select(x => (double)x))),
+            var rule when rule?.RuleType == PointRuleType.MaxPointsDropOff && rule.MaxPoints > 0 => new MaxPointRule(rule.MaxPoints, rule.PointDropOff),
+            var rule when rule?.RuleType == PointRuleType.Formula && string.IsNullOrEmpty(rule.Formula) == false => new FormulaPointRule(rule.Formula, false),
+            _ => new UseResultPointsPointRule()
+        };
 
         pointRule.PointSortOptions = pointsRuleEntity?.PointsSortOptions ?? Array.Empty<SortOptions>();
         pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
@@ -159,9 +153,9 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         if (hasStatusPointFilter == false)
         {
             var statusFilter = (FilterCombination.And, new ColumnValueRowFilter(
-                nameof(ResultRowCalculationResult.Status), 
-                ComparatorType.IsEqual, 
-                new[] { ((int)RaceStatus.Disqualified).ToString() }, 
+                nameof(ResultRowCalculationResult.Status),
+                ComparatorType.IsEqual,
+                new[] { ((int)RaceStatus.Disqualified).ToString() },
                 MatchedValueAction.Remove) as RowFilter<ResultRowCalculationResult>);
             pointRule.PointFilters = new FilterGroupRowFilter<ResultRowCalculationResult>(
                 pointRule.PointFilters.GetFilters().Concat(new[] { statusFilter }));
@@ -198,12 +192,12 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> CreatePointsEligibleFilter() => new(
         new (FilterCombination, RowFilter<ResultRowCalculationResult>)[] {
-            (FilterCombination.And, new ColumnValueRowFilter(nameof(ResultRowCalculationResult.PointsEligible), ComparatorType.IsEqual, 
+            (FilterCombination.And, new ColumnValueRowFilter(nameof(ResultRowCalculationResult.PointsEligible), ComparatorType.IsEqual,
                 new[] { true.ToString() }, MatchedValueAction.Keep))
         }
     );
 
-    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters, 
+    private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters,
         bool allowForEach = false, FilterCombination? overrideFilterCombination = null)
     {
         return MapToFilterGroup(pointFilters, allowForEach: allowForEach, overrideFilterCombination: overrideFilterCombination);
@@ -249,7 +243,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     {
         return condition?.FilterType switch
         {
-            FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator, 
+            FilterType.ColumnProperty => new ColumnValueRowFilter(condition.ColumnPropertyName, condition.Comparator,
                 condition.FilterValues, condition.Action, allowForEach: allowForEach),
             FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
             FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),

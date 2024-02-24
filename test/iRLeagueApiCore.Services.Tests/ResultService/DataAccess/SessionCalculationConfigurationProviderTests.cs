@@ -163,6 +163,41 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     }
 
     [Fact]
+    public async Task GetConfigurations_ShouldProvideFormulaPointRule_WhenFormulaConfigured()
+    {
+        var formula = fixture.Create<string>();
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
+        pointRule.PointsPerPlace = new List<int>();
+        pointRule.MaxPoints = 0;
+        pointRule.PointDropOff = 0;
+        pointRule.RuleType = PointRuleType.Formula;
+        pointRule.Formula = formula;
+        dbContext.PointRules.Add(pointRule);
+        dbContext.ResultConfigurations.Add(config);
+        config.Scorings.ForEach(x => { x.PointsRule = pointRule; });
+        await dbContext.SaveChangesAsync();
+        config = await dbContext.ResultConfigurations
+            .Include(x => x.Scorings)
+                .ThenInclude(x => x.PointsRule)
+            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+        var scorings = await dbContext.Scorings
+            .Include(x => x.ResultConfiguration)
+            .ToListAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            sessionConfig.PointRule.Should().BeOfType(typeof(FormulaPointRule));
+            var sessionConfigPointRule = (FormulaPointRule)sessionConfig.PointRule;
+            sessionConfigPointRule.Formula.Should().Be(formula);
+        }
+    }
+
+    [Fact]
     public async Task GetConfigurations_ShouldProvideDefaultConfiguration_WhenSessionIsPracticeOrQualifying()
     {
         var @event = await GetFirstEventEntity();
@@ -230,12 +265,13 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     }
 
     [Fact]
-    public async Task GetConfigurations_ShouldProvideMaxPointRule_WhenNoPointsPerNotPlaceConfigured()
+    public async Task GetConfigurations_ShouldProvideMaxPointRule_WhenMaxPointsConfigured()
     {
         var @event = await GetFirstEventEntity();
         var config = accessMockHelper.CreateConfiguration(@event);
         var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
         pointRule.PointsPerPlace = new List<int>();
+        pointRule.RuleType = PointRuleType.MaxPointsDropOff;
         dbContext.PointRules.Add(pointRule);
         dbContext.ResultConfigurations.Add(config);
         config.Scorings.ForEach(x => { x.PointsRule = pointRule; });

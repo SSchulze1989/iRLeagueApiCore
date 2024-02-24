@@ -350,9 +350,11 @@ public sealed class DataAccessMockHelper
         return fixture.Build<PointRuleEntity>()
             .With(x => x.League, league)
             .With(x => x.LeagueId, league.Id)
+            .Without(x => x.RuleType)
             .Without(x => x.Scorings)
             .Without(x => x.AutoPenalties)
             .Without(x => x.BonusPoints)
+            .Without(x => x.Formula)
             .Create();
     }
 
