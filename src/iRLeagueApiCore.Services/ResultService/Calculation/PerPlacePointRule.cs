@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
+﻿using iRLeagueApiCore.Services.ResultService.Models;
+
+namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
 internal sealed class PerPlacePointRule : CalculationPointRuleBase
 {
@@ -9,7 +11,7 @@ internal sealed class PerPlacePointRule : CalculationPointRuleBase
         PointsPerPlace = pointPerPlace;
     }
 
-    public override IReadOnlyList<T> ApplyPoints<T>(IReadOnlyList<T> rows)
+    public override IReadOnlyList<T> ApplyPoints<T>(SessionCalculationData _, IReadOnlyList<T> rows)
     {
         foreach ((var row, var pos) in rows.Select((x, i) => (x, i + 1)))
         {

@@ -3,7 +3,7 @@
   <PropertyGroup />
 
   <ItemGroup>
-    <PackageReference Include="iRLeagueApiCore.Common" Version="0.11.0" />
+    <PackageReference Include="iRLeagueApiCore.Common" Version="0.11.1-dev.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />

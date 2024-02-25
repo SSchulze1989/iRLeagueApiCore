@@ -117,6 +117,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
     private async Task<PointRuleEntity> MapToPointRuleEntityAsync(LeagueUser user, PointRuleModel pointRuleModel, PointRuleEntity pointRuleEntity,
         CancellationToken cancellationToken)
     {
+        pointRuleEntity.RuleType = pointRuleModel.RuleType;
         pointRuleEntity.BonusPoints = pointRuleModel.BonusPoints;
         pointRuleEntity.FinalSortOptions = pointRuleModel.FinalSortOptions;
         pointRuleEntity.MaxPoints = pointRuleModel.MaxPoints;
@@ -124,6 +125,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
         pointRuleEntity.PointDropOff = pointRuleModel.PointDropOff;
         pointRuleEntity.PointsPerPlace = pointRuleModel.PointsPerPlace;
         pointRuleEntity.PointsSortOptions = pointRuleModel.PointsSortOptions;
+        pointRuleEntity.Formula = pointRuleModel.Formula;
         pointRuleEntity.AutoPenalties = await MapToAutoPenaltyCollection(pointRuleModel.AutoPenalties, pointRuleEntity.AutoPenalties, cancellationToken);
         UpdateVersionEntity(user, pointRuleEntity);
         return pointRuleEntity;
@@ -220,6 +222,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
             UseSourcePoints = scoring.UseExternalSourcePoints,
             PointRule = scoring.PointsRule != null ? new PointRuleModel()
             {
+                RuleType = scoring.PointsRule.RuleType,
                 BonusPoints = scoring.PointsRule.BonusPoints,
                 FinalSortOptions = scoring.PointsRule.FinalSortOptions,
                 LeagueId = scoring.LeagueId,
@@ -229,6 +232,7 @@ public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler,
                 PointsPerPlace = scoring.PointsRule.PointsPerPlace.ToList(),
                 PointsSortOptions = scoring.PointsRule.PointsSortOptions,
                 Name = scoring.PointsRule.Name,
+                Formula = scoring.PointsRule.Formula,
                 AutoPenalties = scoring.PointsRule.AutoPenalties.Select(penalty => new AutoPenaltyConfiguration()
                 {
                     Conditions = penalty.Conditions,
