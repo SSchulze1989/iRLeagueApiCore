@@ -1,7 +1,7 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
-internal record FormulaParameter(string[] Aliases, string Description, Func<SessionCalculationData, ResultRowCalculationData, object> valueFunc);
+internal record FormulaParameter(string[] Aliases, string Description, Func<SessionCalculationData, ResultRowCalculationData, double> valueFunc);
 
 public static class FormulaParameters
 {
@@ -16,7 +16,7 @@ public static class FormulaParameters
         new(["qlap", "qualy_lap"], "Personal qualy lap", (_, row) => row.QualifyingTime.TotalSeconds),
         new(["avglap", "avg_lap"], "Personal avg. lap", (_, row) => row.AvgLapTime.TotalSeconds),
         new(["flapsession", "session_fastest_lap"], "Fastest lap in the session", (session, _) => session.FastestLap.TotalSeconds),
-        new(["qlapsession", "session_fastest_qualy_lap"], "Fastest qaly lap in the session", (session, _) => session.FastestQualyLap.TotalSeconds),
+        new(["qlapsession", "session_fastest_qualy_lap"], "Fastest qualy lap in the session", (session, _) => session.FastestQualyLap.TotalSeconds),
         new(["avglapsession", "session_fastest_avg_lap"], "Fastest avg. lap in the session", (session, _) => session.FastestAvgLap.TotalSeconds),
     };
 

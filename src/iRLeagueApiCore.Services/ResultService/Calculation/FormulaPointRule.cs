@@ -20,9 +20,9 @@ internal class FormulaPointRule : CalculationPointRuleBase
     {
         // prepare parameters
         var e = new NCalc.Expression(Formula, EvaluateOptions.IterateParameters);
-        foreach (var parameter in _parameters)
+        foreach (var (key, parameter) in _parameters)
         {
-            e.Parameters[parameter.Key] = rows.Select(row => parameter.Value.valueFunc.Invoke(session, row)).ToArray();
+            e.Parameters[key] = rows.Select(row => parameter.valueFunc.Invoke(session, row)).ToArray();
         }
         // calculate
         if (e.Evaluate() is not IList<object> points)
