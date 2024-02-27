@@ -10,6 +10,7 @@ internal sealed class SessionCalculationResult
     {
         LeagueId = data.LeagueId;
         SessionId = data.SessionId;
+        Sof = data.Sof;
     }
 
     public long LeagueId { get; set; }
@@ -18,6 +19,7 @@ internal sealed class SessionCalculationResult
     public long? SessionResultId { get; set; }
     public long? ScoringId { get; set; }
     public string Name { get; set; } = string.Empty;
+    public int Sof { get; set; }
     public TimeSpan FastestLap { get; set; }
     public TimeSpan FastestQualyLap { get; set; }
     public TimeSpan FastestAvgLap { get; set; }

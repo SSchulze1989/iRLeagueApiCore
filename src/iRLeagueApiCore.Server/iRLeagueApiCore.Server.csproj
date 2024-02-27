@@ -23,9 +23,9 @@
     <PackageReference Include="Aydsko.iRacingData" Version="2303.0.0" />
     <PackageReference Include="FluentValidation" Version="11.0.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
-	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.11.0" CopyToOutputDirectory="lib/net6.0">
+	  <PackageReference Include="iRLeagueApiCore.Common" Version="0.11.1" CopyToOutputDirectory="lib/net6.0">
 	  </PackageReference>
-    <PackageReference Include="iRLeagueDatabaseCore" Version="0.11.0" />
+    <PackageReference Include="iRLeagueDatabaseCore" Version="0.11.1" />
 	<PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
@@ -72,7 +72,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.11.2</Version>
+		<Version>0.11.3</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 

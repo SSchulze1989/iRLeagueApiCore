@@ -247,6 +247,9 @@ public sealed class DataAccessMockHelper
                 .With(x => x.RacePoints, racePointsSeq)
                 .Without(x => x.SubResult)
                 .Create()).ToList())
+            .With(x => x.IRSimSessionDetails, fixture.Build<IRSimSessionDetailsEntity>()
+                .With(x => x.Event, @event)
+                .Create())
             .Without(x => x.IRSimSessionDetails)
             .Without(x => x.Result)
             .Create())
@@ -347,9 +350,11 @@ public sealed class DataAccessMockHelper
         return fixture.Build<PointRuleEntity>()
             .With(x => x.League, league)
             .With(x => x.LeagueId, league.Id)
+            .Without(x => x.RuleType)
             .Without(x => x.Scorings)
             .Without(x => x.AutoPenalties)
             .Without(x => x.BonusPoints)
+            .Without(x => x.Formula)
             .Create();
     }
 
