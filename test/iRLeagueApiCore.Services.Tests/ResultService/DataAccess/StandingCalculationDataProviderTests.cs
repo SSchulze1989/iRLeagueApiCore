@@ -158,6 +158,42 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         result.SessionResults.Should().HaveCountGreaterThanOrEqualTo(@event.Sessions.Count);
     }
 
+    [Fact]
+    public async Task GetData_ShouldReturnNull_WhenNoResultFound()
+    {
+        var season = await GetFirstSeasonAsync();
+        var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
+        var @event = events.ElementAt(0);
+        var config = CreateStandingConfiguration(season, @event);
+        var sut = CreateSut();
+
+        var test = await sut.GetData(config);
+
+        test.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetData_ShouldProvideOnlyPreviousResults_WhenNoCurrentEventResultFound()
+    {
+        var prevCount = 2;
+        var season = await GetFirstSeasonAsync();
+        var championship = await dbContext.Championships.FirstAsync();
+        var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
+        AddMultipleScoredEventResults(events, null, prevCount);
+        await dbContext.SaveChangesAsync();
+        var @event = events.ElementAt(prevCount);
+        var config = CreateStandingConfiguration(season, @event);
+        var sut = CreateSut();
+
+        var test = await sut.GetData(config);
+
+        test.Should().NotBeNull();
+        test!.EventId.Should().Be(@event.EventId);
+        test.PreviousEventResults.Should().HaveCount(prevCount);
+        test.CurrentEventResult.EventId.Should().Be(@event.EventId);
+        test.CurrentEventResult.SessionResults.Should().BeEmpty();
+    }
+
     private async Task<SeasonEntity> GetFirstSeasonAsync()
     {
         return await dbContext.Seasons
