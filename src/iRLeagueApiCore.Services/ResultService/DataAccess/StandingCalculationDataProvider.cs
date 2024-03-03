@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,13 +17,13 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
         var season = await GetSeasonEntityAsync(config.SeasonId, cancellationToken)
             ?? throw new InvalidOperationException($"No season with id {config.SeasonId} found");
         var currentEvent = await GetCurrentEventEntityAsync(config.EventId, cancellationToken)
-            ?? throw new InvalidOperationException($"No season with id {config.EventId} found");
+            ?? throw new InvalidOperationException($"No event with id {config.EventId} found");
         // 2. Load all results from events prior to configured event
         var resultConfigIds = config.ResultConfigs.Count() == 0 ? new[] { default(long?) } : config.ResultConfigs.Cast<long?>();
         var previousResults = await GetPreviousResultsAsync(season.SeasonId, resultConfigIds, currentEvent.Date, cancellationToken);
         // 3. Load results from latest event
         var currentResults = await GetCurrentEventResultAsync(currentEvent.EventId, resultConfigIds, cancellationToken);
-        if (currentResults is null)
+        if (currentResults is null && previousResults.None())
         {
             return null;
         }
@@ -34,7 +35,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
             EventId = config.EventId,
             SeasonId = config.SeasonId,
             PreviousEventResults = previousResults.ToList(),
-            CurrentEventResult = currentResults
+            CurrentEventResult = currentResults ?? new() { LeagueId = config.LeagueId, EventId = currentEvent.EventId },
         };
 
         return data;
