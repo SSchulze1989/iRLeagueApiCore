@@ -118,7 +118,7 @@ public sealed class AuthenticateController : Controller
             ValidateAudience = true,
             ValidAudience = _configuration["JWT:ValidAudience"],
             ValidIssuer = _configuration["JWT:ValidIssuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? string.Empty))
         };
         
         try
@@ -235,7 +235,7 @@ public sealed class AuthenticateController : Controller
             new Claim("idKey", loginKey),
         };
 
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? string.Empty));
 
         var token = new JwtSecurityToken(
             issuer: _configuration["JWT:ValidIssuer"],
@@ -288,7 +288,7 @@ public sealed class AuthenticateController : Controller
 
         authClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
 
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? string.Empty));
 
         var token = new JwtSecurityToken(
             issuer: _configuration["JWT:ValidIssuer"],

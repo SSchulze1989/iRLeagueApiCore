@@ -250,7 +250,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         details.RaceRubber = data.TrackState.RaceRubber;
         details.DamageModel = data.DamageModel;
         details.EndTime = data.EndTime.UtcDateTime;
-        details.EventAverageLap = ParseTime(data.EventAverageLap);
+        details.EventAverageLap = data.EventAverageLap;
         details.EventLapsComplete = data.EventLapsComplete;
         details.EventStrengthOfField = data.EventStrengthOfField;
         details.Fog = data.Weather.Fog;
@@ -269,14 +269,14 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         details.QualifyRubber = data.TrackState.QualifyRubber;
         details.RaceGripCompound = data.TrackState.RaceGripCompound;
         details.RaceRubber = data.TrackState.RaceRubber;
-        details.RelHumidity = data.Weather.RelHumidity;
+        details.RelHumidity = data.Weather.RelativeHumidity;
         details.SessionName = data.SeasonName;
-        details.SimStartUtcOffset = ParseTime(data.Weather.SimulatedStartUtcOffset);
+        details.SimStartUtcOffset = data.Weather.SimulatedStartUtcOffset;
         details.SimStartUtcTime = data.Weather.SimulatedStartUtcTime.UtcDateTime;
         details.Skies = data.Weather.Skies;
         details.StartTime = data.StartTime.UtcDateTime;
-        details.TempUnits = data.Weather.TempUnits;
-        details.TempValue = data.Weather.TempValue;
+        details.TempUnits = data.Weather.TemperatureUnits;
+        details.TempValue = data.Weather.TemperatureValue;
         details.TimeOfDay = data.Weather.TimeOfDay;
         details.TrackName = data.Track.TrackName;
         return details;

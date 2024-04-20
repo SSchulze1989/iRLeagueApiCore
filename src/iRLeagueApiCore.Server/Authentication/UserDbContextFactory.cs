@@ -11,7 +11,8 @@ public sealed class UserDbContextFactory : IDbContextFactory<UserDbContext>
 
     public UserDbContext CreateDbContext()
     {
-        var dbConnectionString = _configuration.GetConnectionString("UserDb");
+        var dbConnectionString = _configuration.GetConnectionString("UserDb")
+            ?? throw new KeyNotFoundException("No connection string was registered for \"UserDb\"");
         var optionsBuilder = new DbContextOptionsBuilder<UserDbContext>();
         optionsBuilder.UseMySQL(dbConnectionString);
 

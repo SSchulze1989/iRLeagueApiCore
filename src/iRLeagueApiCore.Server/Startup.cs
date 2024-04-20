@@ -158,7 +158,7 @@ public sealed class Startup
                 ValidateAudience = true,
                 ValidAudience = Configuration["JWT:ValidAudience"],
                 ValidIssuer = Configuration["JWT:ValidIssuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"] ?? string.Empty))
             };
         });
 
@@ -196,14 +196,11 @@ public sealed class Startup
             var credential = new CredentialList(Configuration.GetSection("Credentials"))
                 .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
                 ?? new();
-            CookieCollection cookies = new();
             options.Username = credential.UserName;
             options.Password = credential.Password;
             options.PasswordIsEncoded = true;
             options.UserAgentProductName = "iRLeagueApiCore";
             options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
-            options.SaveCookies = saveCookies => cookies = saveCookies;
-            options.RestoreCookies = () => cookies;
         });
     }
 
