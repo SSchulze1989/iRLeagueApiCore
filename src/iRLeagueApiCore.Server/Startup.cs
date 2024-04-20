@@ -189,8 +189,17 @@ public sealed class Startup
 
         services.AddIRacingDataApi(options =>
         {
+            var credential = new CredentialList(Configuration.GetSection("Credentials"))
+                .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
+                ?? new();
+            CookieCollection cookies = new();
+            options.Username = credential.UserName;
+            options.Password = credential.Password;
+            options.PasswordIsEncoded = true;
             options.UserAgentProductName = "iRLeagueApiCore";
             options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
+            options.SaveCookies = saveCookies => cookies = saveCookies;
+            options.RestoreCookies = () => cookies;
         });
     }
 
