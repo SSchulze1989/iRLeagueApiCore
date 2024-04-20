@@ -25,9 +25,9 @@ public sealed class TracksController : LeagueApiController<TracksController>
 
     [HttpPost("UpdateTracks")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult> ImportTracks([FromBody] IracingAuthModel authData, CancellationToken cancellationToken)
+    public async Task<ActionResult> ImportTracks(CancellationToken cancellationToken)
     {
-        var request = new ImportTracksCommand(authData);
+        var request = new ImportTracksCommand();
         await mediator.Send(request, cancellationToken);
         return Ok();
     }
