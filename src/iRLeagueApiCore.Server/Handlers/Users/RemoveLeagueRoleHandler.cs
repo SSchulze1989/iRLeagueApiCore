@@ -6,15 +6,14 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record RemoveLeagueRoleRequest(string LeagueName, string UserId, string RoleName) : IRequest<LeagueUserModel>;
 
-public sealed class RemoveLeagueRoleHandler : UsersHandlerBase<RemoveLeagueRoleHandler, RemoveLeagueRoleRequest>,
-    IRequestHandler<RemoveLeagueRoleRequest, LeagueUserModel>
+public sealed class RemoveLeagueRoleHandler : UsersHandlerBase<RemoveLeagueRoleHandler,  RemoveLeagueRoleRequest, LeagueUserModel>
 {
     public RemoveLeagueRoleHandler(ILogger<RemoveLeagueRoleHandler> logger, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<RemoveLeagueRoleRequest>> validators) : base(logger, userManager, validators)
     {
     }
 
-    public async Task<LeagueUserModel> Handle(RemoveLeagueRoleRequest request, CancellationToken cancellationToken)
+    public override async Task<LeagueUserModel> Handle(RemoveLeagueRoleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var user = await GetUserAsync(request.UserId)

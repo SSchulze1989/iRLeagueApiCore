@@ -4,14 +4,13 @@ namespace iRLeagueApiCore.Server.Handlers.Members;
 
 public record GetMembersFromEventRequest(long EventId) : IRequest<IEnumerable<MemberModel>>;
 
-public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler, GetMembersFromEventRequest>,
-    IRequestHandler<GetMembersFromEventRequest, IEnumerable<MemberModel>>
+public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler,  GetMembersFromEventRequest, IEnumerable<MemberModel>>
 {
     public GetMembersFromEventHandler(ILogger<GetMembersFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetMembersFromEventRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<MemberModel>> Handle(GetMembersFromEventRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<MemberModel>> Handle(GetMembersFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getMembers = await GetMembersFromEvent(request.EventId, cancellationToken);

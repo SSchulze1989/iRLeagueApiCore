@@ -4,15 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Standings;
 
 public record GetStandingsFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<StandingsModel>>;
 
-public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler, GetStandingsFromSeasonRequest>,
-    IRequestHandler<GetStandingsFromSeasonRequest, IEnumerable<StandingsModel>>
+public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler,  GetStandingsFromSeasonRequest, IEnumerable<StandingsModel>>
 {
     public GetStandingsFromSeasonHandler(ILogger<GetStandingsFromSeasonHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetStandingsFromSeasonRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<StandingsModel>> Handle(GetStandingsFromSeasonRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<StandingsModel>> Handle(GetStandingsFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getStandings = await MapToStandingModelFromSeasonAsync(request.SeasonId, cancellationToken);

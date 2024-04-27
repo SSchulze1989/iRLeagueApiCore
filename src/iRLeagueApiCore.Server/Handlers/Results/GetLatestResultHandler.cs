@@ -4,13 +4,13 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetLatestResultRequest() : IRequest<IEnumerable<EventResultModel>>;
 
-public class GetLatestResultHandler : ResultHandlerBase<GetLatestResultHandler, GetLatestResultRequest>, IRequestHandler<GetLatestResultRequest, IEnumerable<EventResultModel>>
+public class GetLatestResultHandler : ResultHandlerBase<GetLatestResultHandler,  GetLatestResultRequest, IEnumerable<EventResultModel>>
 {
     public GetLatestResultHandler(ILogger<GetLatestResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetLatestResultRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<EventResultModel>> Handle(GetLatestResultRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<EventResultModel>> Handle(GetLatestResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var latestEventWithResult = await GetLatestEventWithResult(cancellationToken);

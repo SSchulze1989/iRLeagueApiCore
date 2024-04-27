@@ -7,8 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 
 public record SetLeagueSubscriptionRequest(long LeagueId, SetLeagueSubscriptionModel Model) : IRequest<LeagueModel>;
 
-public class SetLeagueSubscriptionHandler : LeagueHandlerBase<SetLeagueSubscriptionHandler, SetLeagueSubscriptionRequest>,
-    IRequestHandler<SetLeagueSubscriptionRequest, LeagueModel>
+public class SetLeagueSubscriptionHandler : LeagueHandlerBase<SetLeagueSubscriptionHandler,  SetLeagueSubscriptionRequest, LeagueModel>
 {
     public SetLeagueSubscriptionHandler(ILogger<SetLeagueSubscriptionHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<SetLeagueSubscriptionRequest>> validators) 
@@ -16,7 +15,7 @@ public class SetLeagueSubscriptionHandler : LeagueHandlerBase<SetLeagueSubscript
     {
     }
 
-    public async Task<LeagueModel> Handle(SetLeagueSubscriptionRequest request, CancellationToken cancellationToken)
+    public override async Task<LeagueModel> Handle(SetLeagueSubscriptionRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var league = await GetLeagueEntityAsync(request.LeagueId, cancellationToken)

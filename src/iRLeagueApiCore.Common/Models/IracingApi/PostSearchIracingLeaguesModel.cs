@@ -1,4 +1,4 @@
-﻿namespace iRLeagueApiCore.Common.Models.Leagues;
+﻿namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
 public sealed class PostSearchIracingLeaguesModel

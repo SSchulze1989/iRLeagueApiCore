@@ -5,8 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record PostIntitializeLeagueRequest(long LeagueId) : IRequest<LeagueModel>;
 
-public class PostInitializeLeagueHandler : LeagueHandlerBase<PostInitializeLeagueHandler, PostIntitializeLeagueRequest>,
-    IRequestHandler<PostIntitializeLeagueRequest, LeagueModel>
+public class PostInitializeLeagueHandler : LeagueHandlerBase<PostInitializeLeagueHandler,  PostIntitializeLeagueRequest, LeagueModel>
 {
     public PostInitializeLeagueHandler(ILogger<PostInitializeLeagueHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<PostIntitializeLeagueRequest>> validators) : 
@@ -14,7 +13,7 @@ public class PostInitializeLeagueHandler : LeagueHandlerBase<PostInitializeLeagu
     {
     }
 
-    public async Task<LeagueModel> Handle(PostIntitializeLeagueRequest request, CancellationToken cancellationToken)
+    public override async Task<LeagueModel> Handle(PostIntitializeLeagueRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var league = await GetLeagueEntityAsync(request.LeagueId, cancellationToken)

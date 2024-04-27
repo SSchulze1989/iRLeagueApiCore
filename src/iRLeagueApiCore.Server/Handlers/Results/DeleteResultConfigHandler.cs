@@ -4,8 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record DeleteResultConfigRequest(long ResultConfigId) : IRequest;
 
-public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest>,
-    IRequestHandler<DeleteResultConfigRequest>
+public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest, Unit>
 {
     public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<DeleteResultConfigRequest>> validators) 
@@ -13,7 +12,7 @@ public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteRe
     {
     }
 
-    public async Task<Unit> Handle(DeleteResultConfigRequest request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(DeleteResultConfigRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var deleteResultConfig = await GetResultConfigEntity(request.ResultConfigId, cancellationToken)

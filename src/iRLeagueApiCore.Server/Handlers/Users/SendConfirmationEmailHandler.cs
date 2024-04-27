@@ -6,8 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record SendConfirmationEmailRequest(string Email, string LinkTemplate) : IRequest;
 
-public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEmailHandler, SendConfirmationEmailRequest>, 
-    IRequestHandler<SendConfirmationEmailRequest, Unit>
+public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEmailHandler,  SendConfirmationEmailRequest, Unit>
 {
     private readonly IEmailClient emailClient;
 
@@ -17,7 +16,7 @@ public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEma
         this.emailClient = emailClient;
     }
 
-    public async Task<Unit> Handle(SendConfirmationEmailRequest request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(SendConfirmationEmailRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var user = await userManager.FindByEmailAsync(request.Email)

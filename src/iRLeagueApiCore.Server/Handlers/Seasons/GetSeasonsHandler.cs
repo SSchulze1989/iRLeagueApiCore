@@ -4,14 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record GetSeasonsRequest() : IRequest<IEnumerable<SeasonModel>>;
 
-public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler, GetSeasonsRequest>, IRequestHandler<GetSeasonsRequest, IEnumerable<SeasonModel>>
+public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler,  GetSeasonsRequest, IEnumerable<SeasonModel>>
 {
     public GetSeasonsHandler(ILogger<GetSeasonsHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetSeasonsRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<SeasonModel>> Handle(GetSeasonsRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<SeasonModel>> Handle(GetSeasonsRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getSeasons = await GetSeasonsEntityAsync(cancellationToken);

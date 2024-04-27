@@ -6,15 +6,14 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetUserListRequest(string LeagueName) : IRequest<IEnumerable<LeagueUserModel>>;
 
-public sealed class GetUserListHandler : UsersHandlerBase<GetUserListHandler, GetUserListRequest>,
-    IRequestHandler<GetUserListRequest, IEnumerable<LeagueUserModel>>
+public sealed class GetUserListHandler : UsersHandlerBase<GetUserListHandler,  GetUserListRequest, IEnumerable<LeagueUserModel>>
 {
     public GetUserListHandler(ILogger<GetUserListHandler> logger, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<GetUserListRequest>> validators) : base(logger, userManager, validators)
     {
     }
 
-    public async Task<IEnumerable<LeagueUserModel>> Handle(GetUserListRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<LeagueUserModel>> Handle(GetUserListRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var leagueUsers = await GetUserEntitiesWithLeagueRole(request.LeagueName, cancellationToken);

@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 
 public record DeactivatePaymentRequest(Guid Id) : IRequest<PaymentModel>;
 
-public class DeactivatePaymentHandler : AdminHandlerBase<DeactivatePaymentHandler, DeactivatePaymentRequest>, 
+public class DeactivatePaymentHandler : AdminHandlerBase<DeactivatePaymentHandler, DeactivatePaymentRequest, PaymentModel>, 
     IRequestHandler<DeactivatePaymentRequest, PaymentModel>
 {
     public DeactivatePaymentHandler(ILogger<DeactivatePaymentHandler> logger, LeagueDbContext dbContext,
@@ -13,7 +13,7 @@ public class DeactivatePaymentHandler : AdminHandlerBase<DeactivatePaymentHandle
     {
     }
 
-    public async Task<PaymentModel> Handle(DeactivatePaymentRequest request, CancellationToken cancellationToken)
+    public override async Task<PaymentModel> Handle(DeactivatePaymentRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var payment = await dbContext.Payments

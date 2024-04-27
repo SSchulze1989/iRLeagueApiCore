@@ -6,8 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record PostResultConfigToChampSeasonRequest(long ChampSeasonId, LeagueUser User, PostResultConfigModel Model) : IRequest<ResultConfigModel>;
 
-public sealed class PostResultConfigToChampSeasonHandler : ResultConfigHandlerBase<PostResultConfigToChampSeasonHandler, PostResultConfigToChampSeasonRequest>,
-    IRequestHandler<PostResultConfigToChampSeasonRequest, ResultConfigModel>
+public sealed class PostResultConfigToChampSeasonHandler : ResultConfigHandlerBase<PostResultConfigToChampSeasonHandler,  PostResultConfigToChampSeasonRequest, ResultConfigModel>
 {
     public PostResultConfigToChampSeasonHandler(ILogger<PostResultConfigToChampSeasonHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<PostResultConfigToChampSeasonRequest>> validators) :
@@ -15,7 +14,7 @@ public sealed class PostResultConfigToChampSeasonHandler : ResultConfigHandlerBa
     {
     }
 
-    public async Task<ResultConfigModel> Handle(PostResultConfigToChampSeasonRequest request, CancellationToken cancellationToken)
+    public override async Task<ResultConfigModel> Handle(PostResultConfigToChampSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postResultConfig = await CreateResultConfigEntity(request.ChampSeasonId, request.User, cancellationToken);

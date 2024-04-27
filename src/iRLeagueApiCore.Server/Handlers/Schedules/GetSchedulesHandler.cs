@@ -4,13 +4,13 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
 public record GetSchedulesRequest() : IRequest<IEnumerable<ScheduleModel>>;
 
-public sealed class GetSchedulesHandler : ScheduleHandlerBase<GetSchedulesHandler, GetSchedulesRequest>, IRequestHandler<GetSchedulesRequest, IEnumerable<ScheduleModel>>
+public sealed class GetSchedulesHandler : ScheduleHandlerBase<GetSchedulesHandler,  GetSchedulesRequest, IEnumerable<ScheduleModel>>
 {
     public GetSchedulesHandler(ILogger<GetSchedulesHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetSchedulesRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<ScheduleModel>> Handle(GetSchedulesRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<ScheduleModel>> Handle(GetSchedulesRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getSchedules = await MapToGetScheduleModelsAsync(cancellationToken);

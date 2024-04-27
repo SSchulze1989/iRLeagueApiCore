@@ -1,24 +1,18 @@
 ﻿using Aydsko.iRacingData;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Leagues;
-using iRLeagueApiCore.Server.Models;
 
-namespace iRLeagueApiCore.Server.Handlers.Leagues;
+namespace iRLeagueApiCore.Server.Handlers.IracingApi;
 
 public record SearchIracingLeaguesRequest(string Search, int Page, int PageSize) : IRequest<PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>>;
 
-public class SearchIracingLeaguesHandler : HandlerBase<SearchIracingLeaguesHandler, SearchIracingLeaguesRequest>,
-    IRequestHandler<SearchIracingLeaguesRequest, PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>>
+public class SearchIracingLeaguesHandler : IracingApiHandlerBase<SearchIracingLeaguesHandler,  SearchIracingLeaguesRequest, PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>>
 {
-    private readonly IDataClient dataClient;
-
-    public SearchIracingLeaguesHandler(ILogger<SearchIracingLeaguesHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<SearchIracingLeaguesRequest>> validators, IDataClient dataClient)
-        : base(logger, dbContext, validators)
+    public SearchIracingLeaguesHandler(ILogger<SearchIracingLeaguesHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<SearchIracingLeaguesRequest>> validators,
+        IDataClient dataClient) : base(logger, dbContext, validators, dataClient)
     {
-        this.dataClient = dataClient;
     }
 
-    public async Task<PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>> Handle(SearchIracingLeaguesRequest request, CancellationToken cancellationToken)
+    public override async Task<PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>> Handle(SearchIracingLeaguesRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var lowerbound = (request.Page - 1) * request.PageSize + 1;

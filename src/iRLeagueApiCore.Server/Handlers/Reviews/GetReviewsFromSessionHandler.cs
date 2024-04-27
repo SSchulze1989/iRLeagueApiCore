@@ -4,15 +4,14 @@ using iRLeagueApiCore.Server.Extensions;
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetReviewsFromSessionRequest(long SessionId, bool IncludeComments) : IRequest<IEnumerable<ReviewModel>>;
-public sealed class GetReviewsFromSessionHandler : ReviewsHandlerBase<GetReviewsFromSessionHandler, GetReviewsFromSessionRequest>,
-    IRequestHandler<GetReviewsFromSessionRequest, IEnumerable<ReviewModel>>
+public sealed class GetReviewsFromSessionHandler : ReviewsHandlerBase<GetReviewsFromSessionHandler,  GetReviewsFromSessionRequest, IEnumerable<ReviewModel>>
 {
     public GetReviewsFromSessionHandler(ILogger<GetReviewsFromSessionHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetReviewsFromSessionRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<ReviewModel>> Handle(GetReviewsFromSessionRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<ReviewModel>> Handle(GetReviewsFromSessionRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getReviews = await MapToGetReviewsFromSessionAsync(request.SessionId, request.IncludeComments, cancellationToken);

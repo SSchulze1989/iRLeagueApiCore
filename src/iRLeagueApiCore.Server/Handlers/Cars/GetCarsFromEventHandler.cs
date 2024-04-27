@@ -7,15 +7,14 @@ namespace iRLeagueApiCore.Server.Handlers.Cars;
 
 public record GetCarsFromEventRequest(long EventId) : IRequest<CarListModel>;
 
-public class GetCarsFromEventHandler : HandlerBase<GetCarsFromEventHandler, GetCarsFromEventRequest>, 
-    IRequestHandler<GetCarsFromEventRequest, CarListModel>
+public class GetCarsFromEventHandler : HandlerBase<GetCarsFromEventHandler, GetCarsFromEventRequest, CarListModel>
 {
     public GetCarsFromEventHandler(ILogger<GetCarsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetCarsFromEventRequest>> validators) : 
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<CarListModel> Handle(GetCarsFromEventRequest request, CancellationToken cancellationToken)
+    public override async Task<CarListModel> Handle(GetCarsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken).ConfigureAwait(false);
         var eventCars = (await GetEventCarsPerMemberAsync(request.EventId, cancellationToken));

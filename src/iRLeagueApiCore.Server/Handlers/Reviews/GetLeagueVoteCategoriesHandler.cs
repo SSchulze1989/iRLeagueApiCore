@@ -4,15 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetLeagueVoteCategoriesRequest() : IRequest<IEnumerable<VoteCategoryModel>>;
 
-public sealed class GetLeagueVoteCategoriesHandler : VoteCategoriesHandlerBase<GetLeagueVoteCategoriesHandler, GetLeagueVoteCategoriesRequest>,
-    IRequestHandler<GetLeagueVoteCategoriesRequest, IEnumerable<VoteCategoryModel>>
+public sealed class GetLeagueVoteCategoriesHandler : VoteCategoriesHandlerBase<GetLeagueVoteCategoriesHandler,  GetLeagueVoteCategoriesRequest, IEnumerable<VoteCategoryModel>>
 {
     public GetLeagueVoteCategoriesHandler(ILogger<GetLeagueVoteCategoriesHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetLeagueVoteCategoriesRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<VoteCategoryModel>> Handle(GetLeagueVoteCategoriesRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<VoteCategoryModel>> Handle(GetLeagueVoteCategoriesRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
 

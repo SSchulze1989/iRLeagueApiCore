@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public class ChampionshipHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+public abstract class ChampionshipHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     public ChampionshipHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
         base(logger, dbContext, validators)

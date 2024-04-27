@@ -2,15 +2,14 @@
 
 public record DeleteResultRequest(long EventId) : IRequest;
 
-public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler, DeleteResultRequest>,
-    IRequestHandler<DeleteResultRequest, Unit>
+public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler,  DeleteResultRequest, Unit>
 {
     public DeleteResultHandler(ILogger<DeleteResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteResultRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<Unit> Handle(DeleteResultRequest request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(DeleteResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var deleteEventResults = await GetScoredEventResults(request.EventId, cancellationToken);

@@ -2,14 +2,14 @@
 
 public record DeleteScheduleRequest(long ScheduleId) : IRequest;
 
-public sealed class DeleteScheduleHandler : ScheduleHandlerBase<DeleteScheduleHandler, DeleteScheduleRequest>, IRequestHandler<DeleteScheduleRequest>
+public sealed class DeleteScheduleHandler : ScheduleHandlerBase<DeleteScheduleHandler,  DeleteScheduleRequest, Unit>
 {
     public DeleteScheduleHandler(ILogger<DeleteScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteScheduleRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<Unit> Handle(DeleteScheduleRequest request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(DeleteScheduleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         await DeleteSchedule(request.ScheduleId, cancellationToken);

@@ -4,14 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record GetScoringsRequest() : IRequest<IEnumerable<ScoringModel>>;
 
-public sealed class GetScoringsHandler : ScoringHandlerBase<GetScoringsHandler, GetScoringsRequest>, IRequestHandler<GetScoringsRequest, IEnumerable<ScoringModel>>
+public sealed class GetScoringsHandler : ScoringHandlerBase<GetScoringsHandler,  GetScoringsRequest, IEnumerable<ScoringModel>>
 {
     public GetScoringsHandler(ILogger<GetScoringsHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringsRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<ScoringModel>> Handle(GetScoringsRequest request, CancellationToken cancellationToken = default)
+    public override async Task<IEnumerable<ScoringModel>> Handle(GetScoringsRequest request, CancellationToken cancellationToken = default)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         return await MapToGetScoringModelsAsync(cancellationToken);

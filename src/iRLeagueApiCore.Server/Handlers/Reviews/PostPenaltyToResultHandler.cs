@@ -3,15 +3,14 @@
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostPenaltyToResultRequest(long ResultId, long ScoredResultRowId, PostPenaltyModel Model) : IRequest<PenaltyModel>;
-public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResultHandler, PostPenaltyToResultRequest>, 
-    IRequestHandler<PostPenaltyToResultRequest, PenaltyModel>
+public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResultHandler,  PostPenaltyToResultRequest, PenaltyModel>
 {
     public PostPenaltyToResultHandler(ILogger<PostPenaltyToResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostPenaltyToResultRequest>> validators) 
         : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<PenaltyModel> Handle(PostPenaltyToResultRequest request, CancellationToken cancellationToken)
+    public override async Task<PenaltyModel> Handle(PostPenaltyToResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postPenalty = await CreatePenalty(request.ResultId, request.ScoredResultRowId, cancellationToken);

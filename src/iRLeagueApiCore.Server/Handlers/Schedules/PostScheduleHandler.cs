@@ -5,14 +5,13 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
 public record PostScheduleRequest(long seasonId, LeagueUser User, PostScheduleModel Model) : IRequest<ScheduleModel>;
 
-public sealed class PostScheduleHandler : ScheduleHandlerBase<PostScheduleHandler, PostScheduleRequest>,
-    IRequestHandler<PostScheduleRequest, ScheduleModel>
+public sealed class PostScheduleHandler : ScheduleHandlerBase<PostScheduleHandler,  PostScheduleRequest, ScheduleModel>
 {
     public PostScheduleHandler(ILogger<PostScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostScheduleRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<ScheduleModel> Handle(PostScheduleRequest request, CancellationToken cancellationToken)
+    public override async Task<ScheduleModel> Handle(PostScheduleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postSchedule = await CreateScheduleEntityAsync(request.seasonId, request.User, cancellationToken);

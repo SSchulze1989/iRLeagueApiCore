@@ -1,9 +1,8 @@
 ﻿using Aydsko.iRacingData;
 using Aydsko.iRacingData.Exceptions;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Leagues;
 using iRLeagueApiCore.Common.Responses;
-using iRLeagueApiCore.Server.Handlers.Leagues;
+using iRLeagueApiCore.Server.Handlers.IracingApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +47,7 @@ public class IracingApiController : LeagueApiController<IracingApiController>
     {
         try
         {
-            var result = await dataClient.GetLeagueAsync(iracingLeagueId, cancellationToken: cancellationToken);
+            await dataClient.GetLeagueAsync(iracingLeagueId, cancellationToken: cancellationToken);
         } 
         catch (HttpRequestException)
         {
@@ -71,5 +70,13 @@ public class IracingApiController : LeagueApiController<IracingApiController>
             Status = "Success",
             Message = "League connection established successfully",
         });
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Route("League/{iracingLeagueId:int}/Seasons")]
+    public async Task<ActionResult<IracingLeagueSeasonModel>> GetSeasons([FromRoute] int iracingLeagueId, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

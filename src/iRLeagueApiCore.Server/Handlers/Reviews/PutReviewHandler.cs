@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PutReviewRequest(long ReviewId, LeagueUser User, PutReviewModel Model) : IRequest<ReviewModel>;
 
-public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutReviewRequest>, IRequestHandler<PutReviewRequest, ReviewModel>
+public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler,  PutReviewRequest, ReviewModel>
 {
     /// <summary>
     /// Always include comments because this can only be called by an authorized user
@@ -17,7 +17,7 @@ public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutR
     {
     }
 
-    public async Task<ReviewModel> Handle(PutReviewRequest request, CancellationToken cancellationToken)
+    public override async Task<ReviewModel> Handle(PutReviewRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putReview = await GetReviewEntity(request.ReviewId, cancellationToken)

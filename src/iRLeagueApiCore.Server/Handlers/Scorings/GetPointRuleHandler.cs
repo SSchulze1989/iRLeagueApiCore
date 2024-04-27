@@ -4,15 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record GetPointRuleRequest(long PointRuleId) : IRequest<PointRuleModel>;
 
-public sealed class GetPointRuleHandler : PointRuleHandlerBase<GetPointRuleHandler, GetPointRuleRequest>,
-    IRequestHandler<GetPointRuleRequest, PointRuleModel>
+public sealed class GetPointRuleHandler : PointRuleHandlerBase<GetPointRuleHandler,  GetPointRuleRequest, PointRuleModel>
 {
     public GetPointRuleHandler(ILogger<GetPointRuleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetPointRuleRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<PointRuleModel> Handle(GetPointRuleRequest request, CancellationToken cancellationToken)
+    public override async Task<PointRuleModel> Handle(GetPointRuleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getPointRule = await MapToPointRuleModel(request.PointRuleId, cancellationToken)

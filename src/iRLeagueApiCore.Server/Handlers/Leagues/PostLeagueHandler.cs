@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record PostLeagueRequest(LeagueUser User, PostLeagueModel Model) : IRequest<LeagueModel>;
 
-public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, PostLeagueRequest>, IRequestHandler<PostLeagueRequest, LeagueModel>
+public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler,  PostLeagueRequest, LeagueModel>
 {
     private readonly UserManager<ApplicationUser> userManager;
     private readonly RoleManager<IdentityRole> roleManager;
@@ -21,7 +21,7 @@ public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, Pos
         this.roleManager = roleManager;
     }
 
-    public async Task<LeagueModel> Handle(PostLeagueRequest request, CancellationToken cancellationToken = default)
+    public override async Task<LeagueModel> Handle(PostLeagueRequest request, CancellationToken cancellationToken = default)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         _logger.LogInformation("Create league {LeagueName}", request.Model.Name);

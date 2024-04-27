@@ -4,15 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Standings;
 
 public record GetStandingsFromEventRequest(long EventId) : IRequest<IEnumerable<StandingsModel>>;
 
-public sealed class GetStandingsFromEventHandler : StandingsHandlerBase<GetStandingsFromEventHandler, GetStandingsFromEventRequest>,
-    IRequestHandler<GetStandingsFromEventRequest, IEnumerable<StandingsModel>>
+public sealed class GetStandingsFromEventHandler : StandingsHandlerBase<GetStandingsFromEventHandler,  GetStandingsFromEventRequest, IEnumerable<StandingsModel>>
 {
     public GetStandingsFromEventHandler(ILogger<GetStandingsFromEventHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetStandingsFromEventRequest>> validators) : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<StandingsModel>> Handle(GetStandingsFromEventRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<StandingsModel>> Handle(GetStandingsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getStandings = await MapToStandingModelFromEventAsync(request.EventId, cancellationToken);

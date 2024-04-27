@@ -10,8 +10,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record FetchResultsFromIRacingAPIRequest(long EventId, int IRSubsessionId) : IRequest<bool>;
 
-public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRacingAPIHandler, FetchResultsFromIRacingAPIRequest>, 
-    IRequestHandler<FetchResultsFromIRacingAPIRequest, bool>
+public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRacingAPIHandler,  FetchResultsFromIRacingAPIRequest, bool>
 {
     private readonly ICredentials credentials;
     private readonly IDataClient iRDataClient;
@@ -28,7 +27,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         this.calculationQueue = calculationQueue;
     }
 
-    public async Task<bool> Handle(FetchResultsFromIRacingAPIRequest request, CancellationToken cancellationToken)
+    public override async Task<bool> Handle(FetchResultsFromIRacingAPIRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var @event = await GetResultEventEntityAsync(request.EventId, cancellationToken)

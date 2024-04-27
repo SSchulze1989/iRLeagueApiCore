@@ -5,14 +5,14 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record PutEventRequest(long EventId, LeagueUser User, PutEventModel Event) : IRequest<EventModel>;
 
-public sealed class PutEventHandler : EventHandlerBase<PutEventHandler, PutEventRequest>, IRequestHandler<PutEventRequest, EventModel>
+public sealed class PutEventHandler : EventHandlerBase<PutEventHandler,  PutEventRequest, EventModel>
 {
     public PutEventHandler(ILogger<PutEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutEventRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<EventModel> Handle(PutEventRequest request, CancellationToken cancellationToken)
+    public override async Task<EventModel> Handle(PutEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putEvent = await GetEventEntityAsync(request.EventId, cancellationToken)

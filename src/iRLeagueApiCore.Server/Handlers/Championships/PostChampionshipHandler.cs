@@ -5,15 +5,14 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record PostChampionshipRequest(LeagueUser User, PostChampionshipModel Model) : IRequest<ChampionshipModel>;
 
-public sealed class PostChampionshipHandler : ChampionshipHandlerBase<PostChampionshipHandler, PostChampionshipRequest>, 
-    IRequestHandler<PostChampionshipRequest, ChampionshipModel>
+public sealed class PostChampionshipHandler : ChampionshipHandlerBase<PostChampionshipHandler,  PostChampionshipRequest, ChampionshipModel>
 {
     public PostChampionshipHandler(ILogger<PostChampionshipHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampionshipRequest>> validators) : 
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<ChampionshipModel> Handle(PostChampionshipRequest request, CancellationToken cancellationToken)
+    public override async Task<ChampionshipModel> Handle(PostChampionshipRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postChampionship = await CreateChampionshipEntityAsync(request.User, cancellationToken);

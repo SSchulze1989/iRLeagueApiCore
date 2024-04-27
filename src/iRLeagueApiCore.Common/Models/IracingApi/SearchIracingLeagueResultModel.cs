@@ -1,4 +1,4 @@
-﻿namespace iRLeagueApiCore.Common.Models.Leagues;
+﻿namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
 public sealed class SearchIracingLeagueResultModel
@@ -8,7 +8,7 @@ public sealed class SearchIracingLeagueResultModel
     [DataMember]
     public int OwnerId { get; set; }
     [DataMember]
-    public string OwnerDisplayName {  get; set; } = string.Empty;
+    public string OwnerDisplayName { get; set; } = string.Empty;
     [DataMember]
     public string Name { get; set; } = string.Empty;
 }

@@ -4,14 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record GetLeaguesRequest(IEnumerable<string> UserLeagues, bool IncludeHidden = false) : IRequest<IEnumerable<LeagueModel>>;
 
-public sealed class GetLeaguesHandler : LeagueHandlerBase<GetLeaguesHandler, GetLeaguesRequest>, IRequestHandler<GetLeaguesRequest, IEnumerable<LeagueModel>>
+public sealed class GetLeaguesHandler : LeagueHandlerBase<GetLeaguesHandler,  GetLeaguesRequest, IEnumerable<LeagueModel>>
 {
     public GetLeaguesHandler(ILogger<GetLeaguesHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetLeaguesRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<LeagueModel>> Handle(GetLeaguesRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<LeagueModel>> Handle(GetLeaguesRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getLeague = await MapToGetLeagueModelsAsync(request.UserLeagues, request.IncludeHidden, cancellationToken);

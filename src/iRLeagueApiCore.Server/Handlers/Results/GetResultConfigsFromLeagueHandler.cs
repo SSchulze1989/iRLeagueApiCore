@@ -5,8 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigsFromLeagueRequest() : IRequest<IEnumerable<ResultConfigModel>>;
 
-public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler, GetResultConfigsFromLeagueRequest>,
-    IRequestHandler<GetResultConfigsFromLeagueRequest, IEnumerable<ResultConfigModel>>
+public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler,  GetResultConfigsFromLeagueRequest, IEnumerable<ResultConfigModel>>
 {
     public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<GetResultConfigsFromLeagueRequest>> validators) 
@@ -14,7 +13,7 @@ public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<
     {
     }
 
-    public async Task<IEnumerable<ResultConfigModel>> Handle(GetResultConfigsFromLeagueRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<ResultConfigModel>> Handle(GetResultConfigsFromLeagueRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getResults = await MapToGetResultConfigsFromLeagueAsync(cancellationToken);
