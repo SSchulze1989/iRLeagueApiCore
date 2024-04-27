@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace iRLeagueApiCore.Server.Handlers;
 
-public abstract class HandlerBase<THandler, TRequest>
+public abstract class HandlerBase<THandler, TRequest, TResponse> : IRequestHandler<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     protected ILogger<THandler> _logger;
     protected LeagueDbContext dbContext;
@@ -16,6 +16,8 @@ public abstract class HandlerBase<THandler, TRequest>
         this.dbContext = dbContext;
         this.validators = validators;
     }
+
+    public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
     protected virtual async Task<LeagueEntity?> GetCurrentLeagueEntityAsync(CancellationToken cancellationToken = default)
     {

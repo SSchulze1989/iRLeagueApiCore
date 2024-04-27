@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Identity;
 namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetLeagueUserRequest(string LeagueName, string UserId) : IRequest<LeagueUserModel>;
-public sealed class GetLeagueUserHandler : UsersHandlerBase<GetLeagueUserHandler, GetLeagueUserRequest>, IRequestHandler<GetLeagueUserRequest, LeagueUserModel>
+public sealed class GetLeagueUserHandler : UsersHandlerBase<GetLeagueUserHandler,  GetLeagueUserRequest, LeagueUserModel>
 {
     public GetLeagueUserHandler(ILogger<GetLeagueUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<GetLeagueUserRequest>> validators) : base(logger, userManager, validators)
     {
     }
 
-    public async Task<LeagueUserModel> Handle(GetLeagueUserRequest request, CancellationToken cancellationToken)
+    public override async Task<LeagueUserModel> Handle(GetLeagueUserRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var user = await GetUserAsync(request.UserId)

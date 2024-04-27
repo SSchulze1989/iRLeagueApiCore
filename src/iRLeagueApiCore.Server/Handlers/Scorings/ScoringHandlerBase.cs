@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public class ScoringHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+public abstract class ScoringHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     protected const char pointsDelimiter = ';';
 

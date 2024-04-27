@@ -5,14 +5,14 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record PutLeagueRequest(long LeagueId, LeagueUser User, PutLeagueModel Model) : IRequest<LeagueModel>;
 
-public sealed class PutLeagueHandler : LeagueHandlerBase<PutLeagueHandler, PutLeagueRequest>, IRequestHandler<PutLeagueRequest, LeagueModel>
+public sealed class PutLeagueHandler : LeagueHandlerBase<PutLeagueHandler,  PutLeagueRequest, LeagueModel>
 {
     public PutLeagueHandler(ILogger<PutLeagueHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutLeagueRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<LeagueModel> Handle(PutLeagueRequest request, CancellationToken cancellationToken)
+    public override async Task<LeagueModel> Handle(PutLeagueRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putLeague = await GetLeagueEntityAsync(request.LeagueId, cancellationToken) ?? throw new ResourceNotFoundException();

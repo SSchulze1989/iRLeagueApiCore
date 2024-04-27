@@ -6,8 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record AddLeagueRoleRequest(string LeagueName, string UserId, string RoleName) : IRequest<LeagueUserModel>;
 
-public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler, AddLeagueRoleRequest>,
-    IRequestHandler<AddLeagueRoleRequest, LeagueUserModel>
+public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler,  AddLeagueRoleRequest, LeagueUserModel>
 {
     private readonly RoleManager<IdentityRole> roleManager;
 
@@ -17,7 +16,7 @@ public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler
         this.roleManager = roleManager;
     }
 
-    public async Task<LeagueUserModel> Handle(AddLeagueRoleRequest request, CancellationToken cancellationToken)
+    public override async Task<LeagueUserModel> Handle(AddLeagueRoleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var user = await GetUserAsync(request.UserId)

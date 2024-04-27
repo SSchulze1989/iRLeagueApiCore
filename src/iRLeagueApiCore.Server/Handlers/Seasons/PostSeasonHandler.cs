@@ -6,14 +6,14 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record PostSeasonRequest(LeagueUser User, PostSeasonModel Model) : IRequest<SeasonModel>;
 
-public sealed class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest>, IRequestHandler<PostSeasonRequest, SeasonModel>
+public sealed class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler,  PostSeasonRequest, SeasonModel>
 {
     public PostSeasonHandler(ILogger<PostSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSeasonRequest>> validators) 
         : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<SeasonModel> Handle(PostSeasonRequest request, CancellationToken cancellationToken)
+    public override async Task<SeasonModel> Handle(PostSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
 

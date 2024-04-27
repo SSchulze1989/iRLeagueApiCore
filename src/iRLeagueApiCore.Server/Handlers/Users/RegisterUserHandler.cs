@@ -17,8 +17,7 @@ public enum UserRegistrationStatus
     CreateUserFailed,
 }
 
-public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, RegisterUserRequest>, 
-    IRequestHandler<RegisterUserRequest, (UserModel? user, IdentityResult result)>
+public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, RegisterUserRequest, (UserModel? user, IdentityResult result)>
 {
     private readonly IEmailClient emailClient;
 
@@ -28,7 +27,7 @@ public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, Registe
         this.emailClient = emailClient;
     }
 
-    public async Task<(UserModel? user, IdentityResult result)> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
+    public override async Task<(UserModel? user, IdentityResult result)> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var model = request.Model;

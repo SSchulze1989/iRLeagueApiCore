@@ -3,15 +3,14 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultsFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<SeasonEventResultModel>>;
 
-public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest>,
-    IRequestHandler<GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
+public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler,  GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
 {
     public GetResultsFromSeasonHandler(ILogger<GetResultsFromSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromSeasonRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<SeasonEventResultModel>> Handle(GetResultsFromSeasonRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<SeasonEventResultModel>> Handle(GetResultsFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getResults = await MapToGetResultModelsFromSeasonAsync(request.SeasonId, cancellationToken);

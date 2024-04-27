@@ -4,14 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record DeleteSeasonRequest(long SeasonId) : IRequest;
 
-public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler, DeleteSeasonRequest>, IRequestHandler<DeleteSeasonRequest>
+public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,  DeleteSeasonRequest, Unit>
 {
     public DeleteSeasonHandler(ILogger<DeleteSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteSeasonRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<Unit> Handle(DeleteSeasonRequest request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(DeleteSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         await DeleteSeasonEntity(request.SeasonId, cancellationToken);

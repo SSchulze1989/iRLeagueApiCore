@@ -5,8 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigsFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<ResultConfigModel>>;
 
-public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResultConfigsFromSeasonHandler, GetResultConfigsFromSeasonRequest>,
-    IRequestHandler<GetResultConfigsFromSeasonRequest, IEnumerable<ResultConfigModel>>
+public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResultConfigsFromSeasonHandler,  GetResultConfigsFromSeasonRequest, IEnumerable<ResultConfigModel>>
 {
     public GetResultConfigsFromSeasonHandler(ILogger<GetResultConfigsFromSeasonHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<GetResultConfigsFromSeasonRequest>> validators) 
@@ -14,7 +13,7 @@ public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResu
     {
     }
 
-    public async Task<IEnumerable<ResultConfigModel>> Handle(GetResultConfigsFromSeasonRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<ResultConfigModel>> Handle(GetResultConfigsFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var configs = await GetResultConfigsFromSeasonAsync(request.SeasonId, cancellationToken);
