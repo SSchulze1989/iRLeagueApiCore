@@ -20,6 +20,7 @@ public partial class StandingConfigurationEntity : IVersionEntity
     public virtual LeagueEntity League { get; set; }
     public virtual IEnumerable<ChampSeasonEntity> ChampSeasons { get; set; }
     public virtual IEnumerable<StandingEntity> Standings { get; set; }
+    public virtual IEnumerable<DropweekOverrideEntity> DropweekOverrides { get; set; }
 
     #region version
     public DateTime? CreatedOn { get; set; }

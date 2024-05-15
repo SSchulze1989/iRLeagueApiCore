@@ -153,5 +153,7 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<StandingRows_ScoredResultRows>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
+        builder.Entity<DropweekOverrideEntity>()
+            .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
     }
 }
