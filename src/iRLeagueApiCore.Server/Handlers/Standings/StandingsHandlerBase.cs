@@ -107,4 +107,26 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
                 }).ToList(),
             }).ToList(),
     };
+
+    protected Expression<Func<DropweekOverrideEntity, DropweekOverrideModel>> MapToDropweekOverrideExpression => dropweek => new() 
+    {
+        StandingConfigId = dropweek.StandingConfigId,
+        ScoredResultRowId = dropweek.ScoredResultRowId,
+        Member = dropweek.ScoredResultRow.Member == null ? null : new() 
+        {
+            MemberId = dropweek.ScoredResultRow.Member.Id,
+            FirstName = dropweek.ScoredResultRow.Member.Firstname,
+            LastName = dropweek.ScoredResultRow.Member.Lastname,
+        },
+        Team = dropweek.ScoredResultRow.Team == null ? null : new() {
+            TeamId = dropweek.ScoredResultRow.Team.TeamId,
+            Name = dropweek.ScoredResultRow.Team.Name,
+            TeamColor = dropweek.ScoredResultRow.Team.TeamColor,
+        },
+        Date = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date.GetValueOrDefault(),
+        TrackId = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Track.TrackId,
+        TrackName = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Track.TrackGroup.TrackName,
+        ConfigName = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Track.ConfigName,
+        ShouldDrop = dropweek.ShouldDrop,
+    };
 }

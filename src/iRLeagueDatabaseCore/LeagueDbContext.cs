@@ -23,6 +23,7 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
     public virtual DbSet<ChampionshipEntity> Championships { get; set; }
     public virtual DbSet<ChampSeasonEntity> ChampSeasons { get; set; }
     public virtual DbSet<DriverStatisticRowEntity> DriverStatisticRows { get; set; }
+    public virtual DbSet<DropweekOverrideEntity> DropweekOverrides { get; set; }
     public virtual DbSet<EventEntity> Events { get; set; }
     public virtual DbSet<IncidentReviewEntity> IncidentReviews { get; set; }
     public virtual DbSet<LeagueEntity> Leagues { get; set; }
