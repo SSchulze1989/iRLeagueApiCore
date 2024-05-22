@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
 
 namespace iRLeagueApiCore.Server.Controllers;
 
@@ -170,10 +170,10 @@ public sealed class AuthenticateController : Controller
             linkTemplate = $$"""{{baseUri}}/users/{userId}/confirm/{token}""";
         }
         var request = new RegisterUserRequest(model, linkTemplate);
-        var status = await mediator.Send(request);
-        if (status.result.Succeeded)
+        var (user, result) = await mediator.Send(request);
+        if (result.Succeeded)
         {
-            return CreatedAtAction(nameof(UsersController.GetUser), "Users", new { id = status.user.UserId }, status.user);
+            return CreatedAtAction(nameof(UsersController.GetUser), "Users", new { id = user.UserId }, user);
         }
         return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
     }
@@ -216,13 +216,13 @@ public sealed class AuthenticateController : Controller
         foreach(var login in logins)
         {
             var (id, exp) = DecodeLoginKey(login.ProviderKey);
-            if (exp <= DateTime.Now)
+            if (exp <= DateTime.UtcNow)
             {
                 await userManager.RemoveLoginAsync(user, "iRLeagueApiCore", login.ProviderKey);
             }
         }
 
-        var expiration = DateTime.Now.AddMonths(3);
+        var expiration = DateTime.UtcNow.AddMonths(3);
         var loginKey = GenerateLoginkey(expiration);
         var loginInfo = new UserLoginInfo("iRLeagueApiCore", loginKey, "iRLeagueApiCore");
         var result = await userManager.AddLoginAsync(user, loginInfo);
@@ -264,7 +264,7 @@ public sealed class AuthenticateController : Controller
 
         var parts = keyString.Split('&');
         var id = parts.ElementAtOrDefault(0) ?? throw new InvalidOperationException();
-        if (DateTime.TryParse(parts.ElementAtOrDefault(1), out DateTime expiration) == false)
+        if (DateTime.TryParse(parts.ElementAtOrDefault(1), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime expiration) == false)
         {
             throw new InvalidOperationException();
         }
