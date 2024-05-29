@@ -300,6 +300,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.League, league)
             .Without(x => x.Standings)
             .Without(x => x.ChampSeasons)
+            .Without(x => x.DropweekOverrides)
             .Create();
     }
 
@@ -342,6 +343,7 @@ public sealed class DataAccessMockHelper
             .Without(x => x.TeamResultRows)
             .Without(x => x.TeamParentRows)
             .Without(x => x.StandingRows)
+            .Without(x => x.DropweekOverrides)
             .Create()).ToList();
     }
 

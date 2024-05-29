@@ -34,14 +34,14 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         return (previousResults, currentResult);
     }
 
-    protected Dictionary<T, GroupedEventResult<T>> GetGroupedEventResult<T>(EventSessionResults sessionResults,
+    protected static Dictionary<T, GroupedEventResult<T>> GetGroupedEventResult<T>(EventSessionResults sessionResults,
         Func<ResultRowCalculationResult, T?> groupBy) where T : struct
     {
         return GetGroupedEventResults(new[] { sessionResults }, groupBy)
             .ToDictionary(k => k.Key, v => v.Value.First());
     }
 
-    protected Dictionary<T, IEnumerable<GroupedEventResult<T>>> GetGroupedEventResults<T>(IEnumerable<EventSessionResults> sessionResults,
+    protected static Dictionary<T, IEnumerable<GroupedEventResult<T>>> GetGroupedEventResults<T>(IEnumerable<EventSessionResults> sessionResults,
         Func<ResultRowCalculationResult, T?> groupBy) where T : struct
     {
         var resultRows = sessionResults
@@ -69,7 +69,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
     protected static IComparable GetEventOrderValue<T>(GroupedEventResult<T> eventResult) where T : notnull
         => eventResult.SessionResults.Sum(result => result.ResultRow.RacePoints + result.ResultRow.BonusPoints);
 
-    protected StandingRowCalculationResult AccumulateTotalPoints(StandingRowCalculationResult row)
+    protected static StandingRowCalculationResult AccumulateTotalPoints(StandingRowCalculationResult row)
     {
         row.TotalPoints = row.RacePoints - row.PenaltyPoints;
         return row;
@@ -162,6 +162,20 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         diff.WinsChange = current.Wins - previous.Wins;
 
         return diff;
+    }
+
+    protected static int GetDropweekOverrideOrderValue(GroupedEventResult<long> eventResult)
+    {
+        var dropweekOverrides = eventResult.SessionResults
+            .Select(x => x.ResultRow.DropweekOverride)
+            .NotNull()
+            .ToList();
+        if (dropweekOverrides.Count == 0)
+        {
+            return 0;
+        }
+        var shouldDrop = dropweekOverrides.Any(x => x.ShouldDrop);
+        return shouldDrop ? 1 : -1; // 1 place at end; -1 place at beginning
     }
 
     protected record GroupedSessionResultRow<T>(T TeamId, SessionCalculationResult SessionResult, ResultRowCalculationResult ResultRow);

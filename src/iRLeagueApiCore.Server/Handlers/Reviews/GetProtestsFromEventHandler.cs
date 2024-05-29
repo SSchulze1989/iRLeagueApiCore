@@ -7,15 +7,14 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetProtestsFromEventRequest(LeagueUser User, long EventId) : IRequest<IEnumerable<ProtestModel>>;
 
-public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEventHandler, GetProtestsFromEventRequest>, IRequestHandler<GetProtestsFromEventRequest, 
-    IEnumerable<ProtestModel>>
+public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEventHandler, GetProtestsFromEventRequest, IEnumerable<ProtestModel>>
 {
     public GetProtestsFromEventHandler(ILogger<GetProtestsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetProtestsFromEventRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<IEnumerable<ProtestModel>> Handle(GetProtestsFromEventRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<ProtestModel>> Handle(GetProtestsFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var league = await GetCurrentLeagueEntityAsync(cancellationToken)

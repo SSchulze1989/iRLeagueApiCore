@@ -11,6 +11,7 @@ public interface ILeagueDbContext
     public DbSet<ChampionshipEntity> Championships { get; set; }
     public DbSet<ChampSeasonEntity> ChampSeasons { get; set; }
     public DbSet<DriverStatisticRowEntity> DriverStatisticRows { get; set; }
+    public DbSet<DropweekOverrideEntity> DropweekOverrides { get; set; }
     public DbSet<EventEntity> Events { get; set; }
     public DbSet<IncidentReviewEntity> IncidentReviews { get; set; }
     public DbSet<LeagueEntity> Leagues { get; set; }

@@ -2,14 +2,14 @@
 
 public record DeleteLeagueRequest(long LeagueId) : IRequest;
 
-public sealed class DeleteLeagueHandler : LeagueHandlerBase<DeleteLeagueHandler, DeleteLeagueRequest>, IRequestHandler<DeleteLeagueRequest>
+public sealed class DeleteLeagueHandler : LeagueHandlerBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
 {
     public DeleteLeagueHandler(ILogger<DeleteLeagueHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteLeagueRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<Unit> Handle(DeleteLeagueRequest request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(DeleteLeagueRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         _logger.LogInformation("Deleted league id {LeagueId}", request.LeagueId);

@@ -5,8 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 
 public record PostPaymentRequest(long LeagueId, PostPaymentModel Model) : IRequest<PaymentModel>;
 
-public sealed class PostPaymentHandler : AdminHandlerBase<PostPaymentHandler, PostPaymentRequest>,
-    IRequestHandler<PostPaymentRequest, PaymentModel>
+public sealed class PostPaymentHandler : AdminHandlerBase<PostPaymentHandler,  PostPaymentRequest, PaymentModel>
 {
     public PostPaymentHandler(ILogger<PostPaymentHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<PostPaymentRequest>> validators) 
@@ -14,7 +13,7 @@ public sealed class PostPaymentHandler : AdminHandlerBase<PostPaymentHandler, Po
     {
     }
 
-    public async Task<PaymentModel> Handle(PostPaymentRequest request, CancellationToken cancellationToken)
+    public override async Task<PaymentModel> Handle(PostPaymentRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var league = await dbContext.Leagues.FirstAsync(x => x.Id == request.LeagueId, cancellationToken);

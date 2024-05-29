@@ -194,6 +194,40 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         test.CurrentEventResult.SessionResults.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task GetData_ShouldProvideDropweekOverrideData()
+    {
+        var prevCount = 0;
+        var season = await GetFirstSeasonAsync();
+        var championship = await dbContext.Championships.FirstAsync();
+        var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
+        var standingConfig = accessMockHelper.CreateStandingConfiguration(season.League);
+        dbContext.StandingConfigurations.Add(standingConfig);
+        var champSeason = accessMockHelper.CreateChampSeason(championship, season);
+        champSeason.StandingConfiguration = standingConfig;
+        var resultConfig = champSeason.ResultConfigurations.First();
+        AddMultipleScoredEventResults(events, resultConfig, prevCount + 1);
+        var row = events.ElementAt(prevCount).ScoredEventResults.First().ScoredSessionResults.First().ScoredResultRows.First();
+        var dropweekOverride = fixture.Build<DropweekOverrideEntity>()
+            .With(x => x.ScoredResultRow, row)
+            .With(x => x.StandingConfig, standingConfig)
+            .Create();
+        dbContext.DropweekOverrides.Add(dropweekOverride);
+        await dbContext.SaveChangesAsync();
+        var @event = events.ElementAt(prevCount);
+        var config = CreateStandingConfiguration(season, @event, champSeason);
+        var sut = CreateSut();
+
+        var test = await sut.GetData(config);
+
+        var testRow = test!.CurrentEventResult
+            .SessionResults.First(x => x.SessionResultId == row.SessionResultId)
+            .ResultRows.First(x => x.ScoredResultRowId == row.ScoredResultRowId);
+        testRow.DropweekOverride.Should().NotBeNull();
+        testRow.DropweekOverride!.ShouldDrop.Should().Be(dropweekOverride.ShouldDrop);
+        testRow.DropweekOverride.Reason.Should().Be(dropweekOverride.Reason);
+    }
+
     private async Task<SeasonEntity> GetFirstSeasonAsync()
     {
         return await dbContext.Seasons
@@ -222,6 +256,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
             .With(x => x.SeasonId, season.SeasonId)
             .With(x => x.EventId, @event.EventId)
             .With(x => x.ResultConfigs, champSeason?.ResultConfigurations.Select(x => x.ResultConfigId) ?? Array.Empty<long>())
+            .With(x => x.StandingConfigId, champSeason?.StandingConfiguration?.StandingConfigId)
             .With(x => x.WeeksCounted, 2)
             .Create();
     }

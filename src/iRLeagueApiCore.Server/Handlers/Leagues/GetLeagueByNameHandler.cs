@@ -5,15 +5,14 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public sealed record GetLeagueByNameRequest(string LeagueName, bool IncludeSubscriptionDetails) : IRequest<LeagueModel>;
 
-public sealed class GetLeagueByNameHandler : LeagueHandlerBase<GetLeagueByNameHandler, GetLeagueByNameRequest>,
-    IRequestHandler<GetLeagueByNameRequest, LeagueModel>
+public sealed class GetLeagueByNameHandler : LeagueHandlerBase<GetLeagueByNameHandler,  GetLeagueByNameRequest, LeagueModel>
 {
     public GetLeagueByNameHandler(ILogger<GetLeagueByNameHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetLeagueByNameRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<LeagueModel> Handle(GetLeagueByNameRequest request, CancellationToken cancellationToken)
+    public override async Task<LeagueModel> Handle(GetLeagueByNameRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getLeague = await MapToLeagueModelFromName(request.LeagueName, request.IncludeSubscriptionDetails, cancellationToken)

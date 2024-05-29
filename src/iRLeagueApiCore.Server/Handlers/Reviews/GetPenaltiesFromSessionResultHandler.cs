@@ -3,8 +3,7 @@
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetPenaltiesFromSessionResultRequest(long SessionResultId) : IRequest<IEnumerable<PenaltyModel>>;
-public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<GetPenaltiesFromSessionResultHandler, GetPenaltiesFromSessionResultRequest>,
-    IRequestHandler<GetPenaltiesFromSessionResultRequest, IEnumerable<PenaltyModel>>
+public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<GetPenaltiesFromSessionResultHandler,  GetPenaltiesFromSessionResultRequest, IEnumerable<PenaltyModel>>
 {
     public GetPenaltiesFromSessionResultHandler(ILogger<GetPenaltiesFromSessionResultHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<GetPenaltiesFromSessionResultRequest>> validators) 
@@ -12,7 +11,7 @@ public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<Ge
     {
     }
 
-    public async Task<IEnumerable<PenaltyModel>> Handle(GetPenaltiesFromSessionResultRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<PenaltyModel>> Handle(GetPenaltiesFromSessionResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getReviews = await GetReviewPenaltiesFromSessionResult(request.SessionResultId, cancellationToken);

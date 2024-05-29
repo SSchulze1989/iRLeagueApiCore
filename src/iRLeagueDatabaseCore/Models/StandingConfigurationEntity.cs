@@ -6,6 +6,7 @@ public partial class StandingConfigurationEntity : IVersionEntity
     {
         ChampSeasons = new HashSet<ChampSeasonEntity>();
         Standings = new HashSet<StandingEntity>();
+        DropweekOverrides = new HashSet<DropweekOverrideEntity>();
     }
 
     public long LeagueId { get; set; }
@@ -20,6 +21,7 @@ public partial class StandingConfigurationEntity : IVersionEntity
     public virtual LeagueEntity League { get; set; }
     public virtual IEnumerable<ChampSeasonEntity> ChampSeasons { get; set; }
     public virtual IEnumerable<StandingEntity> Standings { get; set; }
+    public virtual ICollection<DropweekOverrideEntity> DropweekOverrides { get; set; }
 
     #region version
     public DateTime? CreatedOn { get; set; }
