@@ -10,6 +10,7 @@ public partial class ScoredResultRowEntity : ResultRowBase
         TeamParentRows = new HashSet<ScoredResultRowEntity>();
         TeamResultRows = new HashSet<ScoredResultRowEntity>();
         StandingRows = new HashSet<StandingRows_ScoredResultRows>();
+        DropweekOverrides = new HashSet<DropweekOverrideEntity>();
     }
 
     public ScoredResultRowEntity(ResultRowEntity resultRow)
@@ -85,6 +86,7 @@ public partial class ScoredResultRowEntity : ResultRowBase
     public virtual ICollection<ReviewPenaltyEntity> ReviewPenalties { get; set; }
     public virtual ICollection<ScoredResultRowEntity> TeamResultRows { get; set; }
     public virtual IEnumerable<StandingRows_ScoredResultRows> StandingRows { get; set; }
+    public virtual IEnumerable<DropweekOverrideEntity> DropweekOverrides { get; set; }
 }
 
 public class ScoredResultRowEntityConfiguration : IEntityTypeConfiguration<ScoredResultRowEntity>

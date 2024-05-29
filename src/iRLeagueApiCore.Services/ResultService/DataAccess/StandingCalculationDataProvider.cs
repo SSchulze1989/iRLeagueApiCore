@@ -19,10 +19,10 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
         var currentEvent = await GetCurrentEventEntityAsync(config.EventId, cancellationToken)
             ?? throw new InvalidOperationException($"No event with id {config.EventId} found");
         // 2. Load all results from events prior to configured event
-        var resultConfigIds = config.ResultConfigs.Count() == 0 ? new[] { default(long?) } : config.ResultConfigs.Cast<long?>();
-        var previousResults = await GetPreviousResultsAsync(season.SeasonId, resultConfigIds, currentEvent.Date, cancellationToken);
+        var resultConfigIds = !config.ResultConfigs.Any() ? [default] : config.ResultConfigs.Cast<long?>();
+        var previousResults = await GetPreviousResultsAsync(season.SeasonId, config.StandingConfigId, resultConfigIds, currentEvent.Date, cancellationToken);
         // 3. Load results from latest event
-        var currentResults = await GetCurrentEventResultAsync(currentEvent.EventId, resultConfigIds, cancellationToken);
+        var currentResults = await GetCurrentEventResultAsync(currentEvent.EventId, config.StandingConfigId, resultConfigIds, cancellationToken);
         if (currentResults is null && previousResults.None())
         {
             return null;
@@ -53,11 +53,11 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
             .FirstOrDefaultAsync(x => x.EventId == eventId, cancellationToken);
     }
 
-    private async Task<IEnumerable<EventCalculationResult>> GetPreviousResultsAsync(long seasonId, IEnumerable<long?> resultConfigIds, DateTime? date, CancellationToken cancellationToken)
+    private async Task<IEnumerable<EventCalculationResult>> GetPreviousResultsAsync(long seasonId, long? standingConfigId, IEnumerable<long?> resultConfigIds, DateTime? date, CancellationToken cancellationToken)
     {
         if (date is null)
         {
-            return Array.Empty<EventCalculationResult>();
+            return [];
         }
 
         return await dbContext.ScoredEventResults
@@ -65,20 +65,20 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
             .Where(x => resultConfigIds.Contains(x.ResultConfigId))
             .OrderBy(x => x.Event.Date)
             .Where(x => x.Event.Date < date.Value)
-            .Select(MapToEventResultCalculationResultExpression)
+            .Select(MapToEventResultCalculationResultExpression(standingConfigId))
             .ToListAsync(cancellationToken);
     }
 
-    private async Task<EventCalculationResult?> GetCurrentEventResultAsync(long eventId, IEnumerable<long?> resultConfigIds, CancellationToken cancellationToken)
+    private async Task<EventCalculationResult?> GetCurrentEventResultAsync(long eventId, long? standingConfigId, IEnumerable<long?> resultConfigIds, CancellationToken cancellationToken)
     {
         return await dbContext.ScoredEventResults
             .Where(x => x.Event.EventId == eventId)
             .Where(x => resultConfigIds.Contains(x.ResultConfigId))
-            .Select(MapToEventResultCalculationResultExpression)
+            .Select(MapToEventResultCalculationResultExpression(standingConfigId))
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    private static Expression<Func<ScoredEventResultEntity, EventCalculationResult>> MapToEventResultCalculationResultExpression => eventResult => new EventCalculationResult()
+    private static Expression<Func<ScoredEventResultEntity, EventCalculationResult>> MapToEventResultCalculationResultExpression(long? standingConfigId) => eventResult => new EventCalculationResult()
     {
         LeagueId = eventResult.LeagueId,
         EventId = eventResult.EventId,
@@ -147,7 +147,17 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
                 PenaltyPoints = row.PenaltyPoints,
                 ScoredMemberResultRowIds = row.TeamResultRows.Select(x => x.ScoredResultRowId).ToList(),
                 PointsEligible = row.PointsEligible,
-            })
-        })
+                DropweekOverride = row.DropweekOverrides
+                    .Where(x => x.StandingConfigId == standingConfigId)
+                    .Select(x => new DropweekOverrideData()
+                    {
+                        StandingConfigId = x.StandingConfigId,
+                        ScoredResultRowId = x.ScoredResultRowId,
+                        ShouldDrop = x.ShouldDrop,
+                        Reason = x.Reason,
+                    })
+                    .FirstOrDefault(),
+            }).ToList(),
+        }).ToList(),
     };
 }

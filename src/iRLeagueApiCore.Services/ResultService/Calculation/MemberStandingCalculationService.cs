@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -61,7 +62,8 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         {
             // sort by best race points each event 
             var previousEventResults = (previousMemberResults.GetValueOrDefault(memberId) ?? Array.Empty<GroupedEventResult<long>>())
-                .OrderByDescending(GetEventOrderValue);
+                .OrderByDescending(GetEventOrderValue)
+                .OrderBy(GetDropweekOverrideOrderValue);
             var currentResult = currentMemberResult.GetValueOrDefault(memberId);
             var standingRow = new StandingRowCalculationResult();
             var lastResult = currentResult ?? previousEventResults.FirstOrDefault();
@@ -92,7 +94,8 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
             if (currentResult is not null)
             {
                 var currentSessionResults = previousEventResults.Concat(new[] { currentResult })
-                    .OrderByDescending(GetEventOrderValue);
+                    .OrderByDescending(GetEventOrderValue)
+                    .OrderBy(GetDropweekOverrideOrderValue);
                 var currentMemberSessionResults = currentSessionResults.SelectMany(x => x.SessionResults);
                 var currentCountedResults = currentSessionResults.Take(config.WeeksCounted);
                 var currentCountedSessionResults = currentCountedResults.SelectMany(x => x.SessionResults);

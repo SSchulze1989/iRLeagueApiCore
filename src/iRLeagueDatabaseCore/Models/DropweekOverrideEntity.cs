@@ -25,7 +25,7 @@ public sealed class DropweekOverrideEntityConfiguration : IEntityTypeConfigurati
             .HasForeignKey(d => new { d.LeagueId, d.StandingConfigId });
 
         entity.HasOne(d => d.ScoredResultRow)
-            .WithMany()
+            .WithMany(p => p.DropweekOverrides)
             .HasForeignKey(d => new { d.LeagueId, d.ScoredResultRowId });
     }
 }
