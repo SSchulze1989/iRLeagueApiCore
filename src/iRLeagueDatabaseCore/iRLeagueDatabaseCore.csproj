@@ -29,11 +29,6 @@
 	<LangVersion>11</LangVersion>
     <PackageId>iRLeagueDatabaseCore</PackageId>
     <Version>0.11.1</Version>
-    <Authors>Simon Schulze</Authors>
-    <Company>Simon Schulze</Company>
-    <PackageDescription>This package contains the Entityframework configuration for a Code first project</PackageDescription>
-    <RepositoryUrl>https://github.com/SSchulze1989/iRLeagueDatabaseCore</RepositoryUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
