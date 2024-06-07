@@ -252,7 +252,7 @@ public sealed class AuthenticateController : Controller
     {
         // encode generated id and browser information as base64 string
         var guid = Guid.NewGuid();
-        var keyString = string.Join('&', guid, expiration.ToString());
+        var keyString = string.Join('&', guid, expiration.ToString(CultureInfo.InvariantCulture));
         var bytes = Encoding.UTF8.GetBytes(keyString);
         return Convert.ToBase64String(bytes);
     }
