@@ -13,7 +13,8 @@ public sealed class LeagueDbContextFactory
 
     public LeagueDbContext CreateDbContext(ILeagueProvider leagueProvider)
     {
-        var dbConnectionString = _configuration.GetConnectionString("ModelDb");
+        var dbConnectionString = _configuration.GetConnectionString("ModelDb")
+            ?? throw new KeyNotFoundException("No connection tring registered for \"ModelDb\"");
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
         optionsBuilder.UseMySQL(dbConnectionString);
 

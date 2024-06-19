@@ -21,6 +21,7 @@ public abstract class LeagueHandlerBase<THandler, TRequest, TResponse> : Handler
         leagueEntity.DescriptionPlain = postLeague.DescriptionPlain;
         leagueEntity.ProtestFormAccess = postLeague.ProtestFormAccess;
         leagueEntity.EnableLiveReviews = postLeague.EnableLiveReviews;
+        leagueEntity.SyncIracingLeagueId = postLeague.SyncIracingLeagueId;
         CreateVersionEntity(user, leagueEntity);
         UpdateVersionEntity(user, leagueEntity);
         return leagueEntity;
@@ -61,6 +62,7 @@ public abstract class LeagueHandlerBase<THandler, TRequest, TResponse> : Handler
         LeaguePublic = x.LeaguePublic,
         SubscriptionStatus = includeSubscriptionDetails ? x.Subscription : default,
         SubscriptionExpires = includeSubscriptionDetails ? x.Expires : default,
+        SyncIracingLeagueId = x.SyncIracingLeagueId,
     };
 
     protected virtual LeagueEntity MapToLeagueEntity(long leagueId, LeagueUser user, PutLeagueModel putLeague, LeagueEntity leagueEntity)
@@ -75,6 +77,7 @@ public abstract class LeagueHandlerBase<THandler, TRequest, TResponse> : Handler
         leagueEntity.LeaguePublic = putLeague.LeaguePublic;
         leagueEntity.ProtestFormAccess = putLeague.ProtestFormAccess;
         leagueEntity.EnableLiveReviews = putLeague.EnableLiveReviews;
+        leagueEntity.SyncIracingLeagueId = putLeague.SyncIracingLeagueId;
         UpdateVersionEntity(user, leagueEntity);
         return leagueEntity;
     }

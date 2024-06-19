@@ -49,9 +49,9 @@ internal sealed class SetTenantLeagueIdAttribute : ActionFilterAttribute
     private async Task<long> GetLeagueIdByName(string leagueName)
     {
         // hit cache and try to get league information without asking database
-        if (memoryCache.TryGetValue(CacheKeys.GetLeagueNameKey(leagueName), out LeagueEntity cachedLeague))
+        if (memoryCache.TryGetValue(CacheKeys.GetLeagueNameKey(leagueName), out LeagueEntity? cachedLeague))
         {
-            return cachedLeague.Id;
+            return cachedLeague!.Id;
         }
         // get league from database and store in cache
         var league = await _dbContext.Leagues
