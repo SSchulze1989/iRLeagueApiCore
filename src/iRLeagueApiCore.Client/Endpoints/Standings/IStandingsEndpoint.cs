@@ -2,6 +2,6 @@
 
 namespace iRLeagueApiCore.Client.Endpoints.Standings;
 
-public interface IStandingsEndpoint : IGetAllEndpoint<StandingsModel>
+public interface IStandingsEndpoint : IGetAllEndpoint<StandingsModel>, IWithIdEndpoint<IStandingByIdEndpoint>
 {
 }

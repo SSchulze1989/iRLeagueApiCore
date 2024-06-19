@@ -3,7 +3,7 @@ using iRLeagueApiCore.Common.Models.Tracks;
 namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
-public sealed class DropweekOverrideModel 
+public sealed class DropweekOverrideModel : PutDropweekOverrideModel
 {
     [DataMember]
     public long StandingConfigId { get; set; }
@@ -23,6 +23,4 @@ public sealed class DropweekOverrideModel
     public string TrackName { get; set; } = string.Empty;
     [DataMember]
     public string ConfigName { get; set; } = string.Empty;
-    [DataMember]
-    public bool ShouldDrop { get; set; }
 }
