@@ -35,6 +35,16 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
         return standings;
     }
 
+    protected async Task<DropweekOverrideModel?> MapToDropweekOverrideModel(long standingConfigId, long scoredResultRowId, CancellationToken cancellationToken)
+    {
+        var dropweek = await dbContext.DropweekOverrides
+            .Where(x => x.StandingConfigId == standingConfigId)
+            .Where(x => x.ScoredResultRowId == scoredResultRowId)
+            .Select(MapToDropweekOverrideModelExpression)
+            .FirstOrDefaultAsync(cancellationToken);
+        return dropweek;
+    }
+
     protected Expression<Func<StandingEntity, StandingsModel>> MapToStandingModelExpression => standing => new StandingsModel()
     {
         LeagueId = standing.LeagueId,
@@ -89,6 +99,7 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
                 ResultRows = standingRow.ResultRows.Select(standingResultRow => new StandingResultRowModel()
                 {
                     EventId = standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.EventId,
+                    ResultRowId = standingResultRow.ScoredResultRow.ScoredResultRowId,
                     Date = standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date != null ?
                             standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date!.Value : DateTime.MinValue,
                     BonusPoints = standingResultRow.ScoredResultRow.BonusPoints,
@@ -108,7 +119,7 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
             }).ToList(),
     };
 
-    protected Expression<Func<DropweekOverrideEntity, DropweekOverrideModel>> MapToDropweekOverrideExpression => dropweek => new() 
+    protected Expression<Func<DropweekOverrideEntity, DropweekOverrideModel>> MapToDropweekOverrideModelExpression => dropweek => new() 
     {
         StandingConfigId = dropweek.StandingConfigId,
         ScoredResultRowId = dropweek.ScoredResultRowId,
