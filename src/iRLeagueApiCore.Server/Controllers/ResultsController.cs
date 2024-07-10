@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -156,5 +157,16 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
         var request = new TriggerResultCalculationCommand(eventId);
         await mediator.Send(request, cancellationToken);
         return Ok(true);
+    }
+
+    [HttpPut]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("/ModResultRow/{resultRowId:long}")]
+    public async Task<ActionResult<ModRawResultRowModel>> ModifyResultRow([FromRoute] string leagueName, [FromRoute] long resultRowId, [FromBody] ModRawResultRowModel model,
+        [FromQuery] bool triggerCalculation = false, CancellationToken cancellationToken = default)
+    {
+        var request = new ModifyResultRowRequest(resultRowId, model, triggerCalculation);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
     }
 }
