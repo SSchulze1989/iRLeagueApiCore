@@ -8,6 +8,7 @@ using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Endpoints.Standings;
 using iRLeagueApiCore.Client.Endpoints.Teams;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Endpoints.VoteCategories;
@@ -28,6 +29,7 @@ public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     IReviewsEndpoint Reviews();
     IReviewCommentsEndpoint ReviewComments();
     ISessionsEndpoint Sessions();
+    IStandingsEndpoint Standings();
     ILeagueUsersEndpoint Users();
     ITeamsEndpoint Teams();
     IMembersEndpoint Members();

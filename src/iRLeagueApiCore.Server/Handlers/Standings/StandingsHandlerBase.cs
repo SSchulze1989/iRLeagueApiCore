@@ -99,6 +99,7 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
                 ResultRows = standingRow.ResultRows.Select(standingResultRow => new StandingResultRowModel()
                 {
                     EventId = standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.EventId,
+                    ResultRowId = standingResultRow.ScoredResultRow.ScoredResultRowId,
                     Date = standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date != null ?
                             standingResultRow.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date!.Value : DateTime.MinValue,
                     BonusPoints = standingResultRow.ScoredResultRow.BonusPoints,
