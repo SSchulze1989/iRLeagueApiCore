@@ -8,6 +8,6 @@ internal sealed class DropweekOverrideEndpoint : UpdateEndpoint<DropweekOverride
 {
     public DropweekOverrideEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : base(httpClientWrapper, routeBuilder)
     {
-        RouteBuilder.AddEndpoint("Drop");
+        RouteBuilder.AddEndpoint("Dropweek");
     }
 }

@@ -7,6 +7,11 @@ public sealed class StandingResultRowModel
     [DataMember]
     public long EventId { get; set; }
     /// <summary>
+    /// Id of the scored result row
+    /// </summary>
+    [DataMember]
+    public long ResultRowId { get; set; }
+    /// <summary>
     /// Date of event
     /// </summary>
     [DataMember]

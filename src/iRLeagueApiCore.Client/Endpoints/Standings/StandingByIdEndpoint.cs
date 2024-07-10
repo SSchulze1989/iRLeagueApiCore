@@ -12,6 +12,6 @@ internal sealed class StandingByIdEndpoint : EndpointBase, IStandingByIdEndpoint
 
     public IWithIdEndpoint<IStandingResultRowByIdEndpoint> ResultRows()
     {
-        return new StandingResultRowByIdEndpoint(HttpClientWrapper, RouteBuilder, )
+        return new StandingResultRowsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

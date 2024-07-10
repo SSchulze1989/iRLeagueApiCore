@@ -11,4 +11,9 @@ internal sealed class StandingsEndpoint : GetAllEndpoint<StandingsModel>, IStand
     {
         RouteBuilder.AddEndpoint("Standings");
     }
+
+    public IStandingByIdEndpoint WithId(long id)
+    {
+        return new StandingByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
+    }
 }
