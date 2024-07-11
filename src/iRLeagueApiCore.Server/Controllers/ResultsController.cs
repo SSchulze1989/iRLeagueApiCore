@@ -1,6 +1,5 @@
 ﻿using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -75,7 +74,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId, 
+    public async Task<ActionResult<IEnumerable<EventResultModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId,
         CancellationToken cancellationToken = default)
     {
         var request = new GetResultsFromEventRequest(eventId);
@@ -159,10 +158,20 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
         return Ok(true);
     }
 
+    [HttpGet]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
+    public async Task<ActionResult<RawEventResultModel>> GetRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId,  CancellationToken cancellationToken = default)
+    {
+        var request = new GetRawResultsFromEventRequest(eventId);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    [Route("/ModResultRow/{resultRowId:long}")]
-    public async Task<ActionResult<ModRawResultRowModel>> ModifyResultRow([FromRoute] string leagueName, [FromRoute] long resultRowId, [FromBody] ModRawResultRowModel model,
+    [Route("ModResultRow/{resultRowId:long}")]
+    public async Task<ActionResult<RawResultRowModel>> ModifyResultRow([FromRoute] string leagueName, [FromRoute] long resultRowId, [FromBody] RawResultRowModel model,
         [FromQuery] bool triggerCalculation = false, CancellationToken cancellationToken = default)
     {
         var request = new ModifyResultRowRequest(resultRowId, model, triggerCalculation);

@@ -3,7 +3,6 @@ using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Results;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results;
 
@@ -16,13 +15,18 @@ internal class ResultsEndpoint : GetAllEndpoint<EventResultModel>,
         RouteBuilder.AddEndpoint("Results");
     }
 
-    public IPutEndpoint<ModRawResultRowModel, ModRawResultRowModel> ModifyResultRow(long resultRowId, bool triggerCalculation = false)
+    public IGetEndpoint<RawEventResultModel> Raw()
+    {
+        return new RawResultsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    public IPutEndpoint<RawResultRowModel, RawResultRowModel> ModifyResultRow(long resultRowId, bool triggerCalculation = false)
     {
         var routeBuilder = RouteBuilder.Copy();
         routeBuilder.AddEndpoint("ModResultRow");
         routeBuilder.AddParameter(resultRowId);
         routeBuilder.WithParameters(x => x.Add("triggerCaculation", triggerCalculation));
-        return new PutEndpoint<ModRawResultRowModel, ModRawResultRowModel>(HttpClientWrapper, routeBuilder);
+        return new PutEndpoint<RawResultRowModel, RawResultRowModel>(HttpClientWrapper, routeBuilder);
     }
 
     public IPostEndpoint<bool, ParseSimSessionResult> Upload()
