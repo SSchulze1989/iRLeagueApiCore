@@ -1,11 +1,11 @@
-﻿using iRLeagueApiCore.Common.Models.Results;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record ModifyResultRowRequest(long ResultRowId, ModRawResultRowModel Row, bool TriggerCalculation = false) : IRequest<ModRawResultRowModel>;
+public record ModifyResultRowRequest(long ResultRowId, RawResultRowModel Row, bool TriggerCalculation = false) : IRequest<RawResultRowModel>;
 
-public class ModifyResultRowHandler : ResultHandlerBase<ModifyResultRowHandler, ModifyResultRowRequest, ModRawResultRowModel>
+public class ModifyResultRowHandler : ResultHandlerBase<ModifyResultRowHandler, ModifyResultRowRequest, RawResultRowModel>
 {
     private readonly IResultCalculationQueue calculationQueue;
 
@@ -15,7 +15,7 @@ public class ModifyResultRowHandler : ResultHandlerBase<ModifyResultRowHandler, 
         this.calculationQueue = calculationQueue;
     }
 
-    public override async Task<ModRawResultRowModel> Handle(ModifyResultRowRequest request, CancellationToken cancellationToken)
+    public override async Task<RawResultRowModel> Handle(ModifyResultRowRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var row = await GetResultRowEntityAsync(request.ResultRowId, cancellationToken)
@@ -41,7 +41,7 @@ public class ModifyResultRowHandler : ResultHandlerBase<ModifyResultRowHandler, 
             FirstOrDefaultAsync(x => resultRowId == x.ResultRowId, cancellationToken);
     }
 
-    private async Task<ResultRowEntity> MapToResultRowEntity(ResultRowEntity entity, ModRawResultRowModel model)
+    private async Task<ResultRowEntity> MapToResultRowEntity(ResultRowEntity entity, RawResultRowModel model)
     {
         entity.StartPosition = model.StartPosition;
         entity.FinishPosition = model.FinishPosition;
@@ -91,7 +91,7 @@ public class ModifyResultRowHandler : ResultHandlerBase<ModifyResultRowHandler, 
         return entity;
     }
 
-    private static ModRawResultRowModel MapToModResultRowModel(ModRawResultRowModel model, ResultRowEntity entity)
+    private static RawResultRowModel MapToModResultRowModel(RawResultRowModel model, ResultRowEntity entity)
     {
         model.StartPosition = entity.StartPosition;
         model.FinishPosition = entity.FinishPosition;

@@ -1,8 +1,10 @@
-﻿namespace iRLeagueApiCore.Common.Models.Results;
+﻿namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
-public sealed class ModRawResultRowModel
+public sealed class RawResultRowModel
 {
+    [DataMember]
+    public long ResultRowId { get; set; }
     [DataMember]
     public double StartPosition { get; set; }
     [DataMember]
