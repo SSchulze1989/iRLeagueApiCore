@@ -237,13 +237,87 @@ public sealed class MemberStandingCalculationServiceTests
         test.ChampSeasonId.Should().Be(config.ChampSeasonId);
     }
 
-    private MemberStandingCalculationService CreateSut(StandingCalculationConfiguration config)
+    [Fact]
+    public async Task Calculate_ShouldConsiderDropweeks()
     {
-        if (config != null)
+        const int nEvents = 5;
+        const int nRaces = 1;
+        var points = ((double[]) [8, 1, 4, 0, 2])
+            .CreateSequence();
+        var memberId = fixture.Create<long>();
+        var testRowData = TestRowBuilder()
+            .With(x => x.MemberId, memberId)
+            .With(x => x.PointsEligible, true)
+            .With(x => x.RacePoints, points)
+            .With(x => x.BonusPoints, 0)
+            .CreateMany(nEvents * nRaces);
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
+            .Zip(testRowData);
+        foreach (var (result, rowData) in tmp)
         {
-            fixture.Register(() => config);
+            result.ResultRows = result.ResultRows.Concat(new[] { rowData });
         }
-        return fixture.Create<MemberStandingCalculationService>();
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
+            .With(x => x.WeeksCounted, 3)
+            .Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
+        testRow.RacePoints.Should().Be(14);
+        testRow.RacePointsChange.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldConsiderDropweekOverrides()
+    {
+        const int nEvents = 5;
+        const int nRaces = 1;
+        var points = ((double[])[8, 1, 4, 0, 2])
+            .CreateSequence();
+        var memberId = fixture.Create<long>();
+        var testRowData = TestRowBuilder()
+            .With(x => x.MemberId, memberId)
+            .With(x => x.PointsEligible, true)
+            .With(x => x.RacePoints, points)
+            .With(x => x.BonusPoints, 0)
+            .CreateMany(nEvents * nRaces);
+        var keepRace = testRowData.ElementAt(1);
+        var dropRace = testRowData.ElementAt(2);
+        dropRace.DropweekOverride = new()
+        {
+            ScoredResultRowId = dropRace.ScoredResultRowId!.Value,
+            ShouldDrop = true,
+        };
+        keepRace.DropweekOverride = new()
+        {
+            ScoredResultRowId = keepRace.ScoredResultRowId!.Value,
+            ShouldDrop = false,
+        };
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
+            .Zip(testRowData);
+        foreach (var (result, rowData) in tmp)
+        {
+            result.ResultRows = result.ResultRows.Concat(new[] { rowData });
+        }
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
+            .With(x => x.WeeksCounted, 3)
+            .Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
+        testRow.RacePoints.Should().Be(11);
+        testRow.RacePointsChange.Should().Be(2);
+    }
+
+    private static MemberStandingCalculationService CreateSut(StandingCalculationConfiguration config)
+    {
+        return new(config);
     }
 
     private StandingCalculationData GetCalculationData()

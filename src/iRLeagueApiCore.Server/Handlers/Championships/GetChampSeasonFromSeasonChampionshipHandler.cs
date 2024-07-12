@@ -5,8 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record GetChampSeasonFromSeasonChampionshipRequest(long SeasonId, long ChampionshipId) : IRequest<ChampSeasonModel>;
 
-public class GetChampSeasonFromSeasonChampionshipHandler : ChampSeasonHandlerBase<GetChampSeasonFromSeasonChampionshipHandler, GetChampSeasonFromSeasonChampionshipRequest>,
-    IRequestHandler<GetChampSeasonFromSeasonChampionshipRequest, ChampSeasonModel>
+public class GetChampSeasonFromSeasonChampionshipHandler : ChampSeasonHandlerBase<GetChampSeasonFromSeasonChampionshipHandler,  GetChampSeasonFromSeasonChampionshipRequest, ChampSeasonModel>
 {
     public GetChampSeasonFromSeasonChampionshipHandler(ILogger<GetChampSeasonFromSeasonChampionshipHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<GetChampSeasonFromSeasonChampionshipRequest>> validators) 
@@ -14,7 +13,7 @@ public class GetChampSeasonFromSeasonChampionshipHandler : ChampSeasonHandlerBas
     {
     }
 
-    public async Task<ChampSeasonModel> Handle(GetChampSeasonFromSeasonChampionshipRequest request, CancellationToken cancellationToken)
+    public override async Task<ChampSeasonModel> Handle(GetChampSeasonFromSeasonChampionshipRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getChampSeason = await GetChampSeasonFromSeasonChampionship(request.SeasonId, request.ChampionshipId, cancellationToken)

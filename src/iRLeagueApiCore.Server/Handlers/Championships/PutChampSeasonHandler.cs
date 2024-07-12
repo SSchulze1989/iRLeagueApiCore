@@ -6,15 +6,14 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record PutChampSeasonRequest(long ChampSeasonId, LeagueUser User, PutChampSeasonModel Model) : IRequest<ChampSeasonModel>;
 
-public sealed class PutChampSeasonHandler : ChampSeasonHandlerBase<PutChampSeasonHandler, PutChampSeasonRequest>,
-    IRequestHandler<PutChampSeasonRequest, ChampSeasonModel>
+public sealed class PutChampSeasonHandler : ChampSeasonHandlerBase<PutChampSeasonHandler,  PutChampSeasonRequest, ChampSeasonModel>
 {
     public PutChampSeasonHandler(ILogger<PutChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutChampSeasonRequest>> validators) 
         : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<ChampSeasonModel> Handle(PutChampSeasonRequest request, CancellationToken cancellationToken)
+    public override async Task<ChampSeasonModel> Handle(PutChampSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putChampSeason = await GetChampSeasonEntityAsync(request.ChampSeasonId, cancellationToken)

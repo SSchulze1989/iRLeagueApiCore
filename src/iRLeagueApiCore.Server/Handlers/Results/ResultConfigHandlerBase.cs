@@ -7,7 +7,7 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public class ResultConfigHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+public abstract class ResultConfigHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     public ResultConfigHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)

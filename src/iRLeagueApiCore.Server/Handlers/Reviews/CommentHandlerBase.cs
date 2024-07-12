@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public class CommentHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+public abstract class CommentHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     public CommentHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)

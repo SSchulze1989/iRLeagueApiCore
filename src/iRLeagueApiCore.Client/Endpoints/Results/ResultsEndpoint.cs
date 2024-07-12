@@ -15,6 +15,20 @@ internal class ResultsEndpoint : GetAllEndpoint<EventResultModel>,
         RouteBuilder.AddEndpoint("Results");
     }
 
+    public IGetEndpoint<RawEventResultModel> Raw()
+    {
+        return new RawResultsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    public IPutEndpoint<RawResultRowModel, RawResultRowModel> ModifyResultRow(long resultRowId, bool triggerCalculation = false)
+    {
+        var routeBuilder = RouteBuilder.Copy();
+        routeBuilder.AddEndpoint("ModResultRow");
+        routeBuilder.AddParameter(resultRowId);
+        routeBuilder.WithParameters(x => x.Add("triggerCaculation", triggerCalculation));
+        return new PutEndpoint<RawResultRowModel, RawResultRowModel>(HttpClientWrapper, routeBuilder);
+    }
+
     public IPostEndpoint<bool, ParseSimSessionResult> Upload()
     {
         return new UploadResultEndpoint(HttpClientWrapper, RouteBuilder);

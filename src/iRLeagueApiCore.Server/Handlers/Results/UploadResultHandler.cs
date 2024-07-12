@@ -10,8 +10,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record UploadResultRequest(long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
 
-public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest>,
-    IRequestHandler<UploadResultRequest, bool>
+public sealed class UploadResultHandler : HandlerBase<UploadResultHandler,  UploadResultRequest, bool>
 {
     private readonly IResultCalculationQueue calculationQueue;
     private IDictionary<long, int> SeasonStartIratings;
@@ -24,7 +23,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         SeasonStartIratings = new Dictionary<long, int>();
     }
 
-    public async Task<bool> Handle(UploadResultRequest request, CancellationToken cancellationToken)
+    public override async Task<bool> Handle(UploadResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
 

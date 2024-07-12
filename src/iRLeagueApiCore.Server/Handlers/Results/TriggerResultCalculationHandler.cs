@@ -4,8 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record TriggerResultCalculationCommand(long EventId) : IRequest;
 
-public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerResultCalculationHandler, TriggerResultCalculationCommand>,
-    IRequestHandler<TriggerResultCalculationCommand, Unit>
+public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerResultCalculationHandler,  TriggerResultCalculationCommand, Unit>
 {
     private readonly IResultCalculationQueue calculationQueue;
 
@@ -15,7 +14,7 @@ public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerR
         this.calculationQueue = calculationQueue;
     }
 
-    public async Task<Unit> Handle(TriggerResultCalculationCommand request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(TriggerResultCalculationCommand request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var @event = await dbContext.Events

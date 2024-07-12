@@ -23,6 +23,7 @@ public static class EnumeratorExtensions
         var enumerator = enumerable.GetEnumerator();
         return () =>
         {
+            lock (enumerator)
             if (enumerator.MoveNext())
             {
                 return enumerator.Current;

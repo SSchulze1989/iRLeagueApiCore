@@ -6,7 +6,7 @@ using System.Text;
 
 namespace iRLeagueApiCore.Server.Handlers.Users;
 
-public class UsersHandlerBase<THandler, TRequest>
+public abstract class UsersHandlerBase<THandler, TRequest, TResponse> : IRequestHandler<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     protected readonly ILogger<THandler> _logger;
     protected readonly UserManager<ApplicationUser> userManager;
@@ -18,6 +18,8 @@ public class UsersHandlerBase<THandler, TRequest>
         this.userManager = userManager;
         this.validators = validators;
     }
+
+    public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
     protected async Task<ApplicationUser?> GetUserAsync(string? userId)
     {

@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Standings;
 
-public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     public StandingsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
@@ -106,5 +106,27 @@ public class StandingsHandlerBase<THandler, TRequest> : HandlerBase<THandler, TR
                     IsScored = standingResultRow.IsScored,
                 }).ToList(),
             }).ToList(),
+    };
+
+    protected Expression<Func<DropweekOverrideEntity, DropweekOverrideModel>> MapToDropweekOverrideExpression => dropweek => new() 
+    {
+        StandingConfigId = dropweek.StandingConfigId,
+        ScoredResultRowId = dropweek.ScoredResultRowId,
+        Member = dropweek.ScoredResultRow.Member == null ? null : new() 
+        {
+            MemberId = dropweek.ScoredResultRow.Member.Id,
+            FirstName = dropweek.ScoredResultRow.Member.Firstname,
+            LastName = dropweek.ScoredResultRow.Member.Lastname,
+        },
+        Team = dropweek.ScoredResultRow.Team == null ? null : new() {
+            TeamId = dropweek.ScoredResultRow.Team.TeamId,
+            Name = dropweek.ScoredResultRow.Team.Name,
+            TeamColor = dropweek.ScoredResultRow.Team.TeamColor,
+        },
+        Date = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date.GetValueOrDefault(),
+        TrackId = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Track.TrackId,
+        TrackName = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Track.TrackGroup.TrackName,
+        ConfigName = dropweek.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Track.ConfigName,
+        ShouldDrop = dropweek.ShouldDrop,
     };
 }

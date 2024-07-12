@@ -5,14 +5,14 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record PutScoringRequest(long ScoringId, LeagueUser User, PutScoringModel Model) : IRequest<ScoringModel>;
 
-public sealed class PutScoringHandler : ScoringHandlerBase<PutScoringHandler, PutScoringRequest>, IRequestHandler<PutScoringRequest, ScoringModel>
+public sealed class PutScoringHandler : ScoringHandlerBase<PutScoringHandler,  PutScoringRequest, ScoringModel>
 {
     public PutScoringHandler(ILogger<PutScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutScoringRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<ScoringModel> Handle(PutScoringRequest request, CancellationToken cancellationToken = default)
+    public override async Task<ScoringModel> Handle(PutScoringRequest request, CancellationToken cancellationToken = default)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putScoring = await GetScoringEntityAsync(request.ScoringId) ?? throw new ResourceNotFoundException();

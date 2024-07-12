@@ -6,8 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record SearchUsersByNameRequest(string[] SearchKeys) : IRequest<IEnumerable<UserModel>>;
 
-public sealed class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNameHandler, SearchUsersByNameRequest>,
-    IRequestHandler<SearchUsersByNameRequest, IEnumerable<UserModel>>
+public sealed class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNameHandler,  SearchUsersByNameRequest, IEnumerable<UserModel>>
 {
     private readonly UserDbContext userDbContext;
 
@@ -17,7 +16,7 @@ public sealed class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNam
         this.userDbContext = userDbContext;
     }
 
-    public async Task<IEnumerable<UserModel>> Handle(SearchUsersByNameRequest request, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<UserModel>> Handle(SearchUsersByNameRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var users = await SearchUsers(request.SearchKeys);

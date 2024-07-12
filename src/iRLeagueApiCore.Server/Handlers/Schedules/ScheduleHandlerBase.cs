@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
-public class ScheduleHandlerBase<THandler, TRequest> : HandlerBase<THandler, TRequest>
+public abstract class ScheduleHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     public ScheduleHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)

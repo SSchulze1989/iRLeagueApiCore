@@ -5,14 +5,14 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record PostEventToScheduleRequest(long ScheduleId, LeagueUser User, PostEventModel Event) : IRequest<EventModel>;
 
-public sealed class PostEventToScheduleHandler : EventHandlerBase<PostEventToScheduleHandler, PostEventToScheduleRequest>, IRequestHandler<PostEventToScheduleRequest, EventModel>
+public sealed class PostEventToScheduleHandler : EventHandlerBase<PostEventToScheduleHandler,  PostEventToScheduleRequest, EventModel>
 {
     public PostEventToScheduleHandler(ILogger<PostEventToScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostEventToScheduleRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<EventModel> Handle(PostEventToScheduleRequest request, CancellationToken cancellationToken)
+    public override async Task<EventModel> Handle(PostEventToScheduleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postEvent = await CreateEventOnScheduleAsync(request.User, request.ScheduleId, cancellationToken);

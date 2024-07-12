@@ -5,15 +5,14 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostProtestToSessionRequest(long SessionId, LeagueUser User, PostProtestModel Model) : IRequest<ProtestModel>;
 
-public class PostProtestToSessionHandler : ProtestsHandlerBase<PostProtestToSessionHandler, PostProtestToSessionRequest>, 
-    IRequestHandler<PostProtestToSessionRequest, ProtestModel>
+public class PostProtestToSessionHandler : ProtestsHandlerBase<PostProtestToSessionHandler,  PostProtestToSessionRequest, ProtestModel>
 {
     public PostProtestToSessionHandler(ILogger<PostProtestToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostProtestToSessionRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    public async Task<ProtestModel> Handle(PostProtestToSessionRequest request, CancellationToken cancellationToken)
+    public override async Task<ProtestModel> Handle(PostProtestToSessionRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postProtest = await CreateProtestEntity(request.User, request.SessionId, cancellationToken);

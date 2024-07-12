@@ -6,14 +6,14 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetAdminUserRequest(string UserId) : IRequest<AdminUserModel>;
 
-public sealed class GetAdminUserHandler : UsersHandlerBase<GetAdminUserHandler, GetAdminUserRequest>, IRequestHandler<GetAdminUserRequest, AdminUserModel>
+public sealed class GetAdminUserHandler : UsersHandlerBase<GetAdminUserHandler,  GetAdminUserRequest, AdminUserModel>
 {
     public GetAdminUserHandler(ILogger<GetAdminUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<GetAdminUserRequest>> validators) : base(logger, userManager, validators)
     {
     }
 
-    public async Task<AdminUserModel> Handle(GetAdminUserRequest request, CancellationToken cancellationToken)
+    public override async Task<AdminUserModel> Handle(GetAdminUserRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var user = await GetUserAsync(request.UserId)

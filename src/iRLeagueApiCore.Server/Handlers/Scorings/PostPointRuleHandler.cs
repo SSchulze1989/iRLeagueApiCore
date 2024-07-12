@@ -6,8 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record PostPointRuleRequest(LeagueUser User, PostPointRuleModel Model) : IRequest<PointRuleModel>;
 
-public sealed class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHandler, PostPointRuleRequest>,
-    IRequestHandler<PostPointRuleRequest, PointRuleModel>
+public sealed class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHandler,  PostPointRuleRequest, PointRuleModel>
 {
     public PostPointRuleHandler(ILogger<PostPointRuleHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<PostPointRuleRequest>> validators) 
@@ -15,7 +14,7 @@ public sealed class PostPointRuleHandler : PointRuleHandlerBase<PostPointRuleHan
     {
     }
 
-    public async Task<PointRuleModel> Handle(PostPointRuleRequest request, CancellationToken cancellationToken)
+    public override async Task<PointRuleModel> Handle(PostPointRuleRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postPointRule = await CreatePointRuleEntityAsync(request.User, cancellationToken);

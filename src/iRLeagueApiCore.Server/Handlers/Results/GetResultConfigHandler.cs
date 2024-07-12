@@ -5,8 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigRequest(long ResultConfigId) : IRequest<ResultConfigModel>;
 
-public sealed class GetResultConfigHandler : ResultConfigHandlerBase<GetResultConfigHandler, GetResultConfigRequest>,
-    IRequestHandler<GetResultConfigRequest, ResultConfigModel>
+public sealed class GetResultConfigHandler : ResultConfigHandlerBase<GetResultConfigHandler,  GetResultConfigRequest, ResultConfigModel>
 {
     public GetResultConfigHandler(ILogger<GetResultConfigHandler> logger, LeagueDbContext dbContext, 
         IEnumerable<IValidator<GetResultConfigRequest>> validators) 
@@ -14,7 +13,7 @@ public sealed class GetResultConfigHandler : ResultConfigHandlerBase<GetResultCo
     {
     }
 
-    public async Task<ResultConfigModel> Handle(GetResultConfigRequest request, CancellationToken cancellationToken)
+    public override async Task<ResultConfigModel> Handle(GetResultConfigRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var getResultConfig = await MapToResultConfigModel(request.ResultConfigId, cancellationToken)

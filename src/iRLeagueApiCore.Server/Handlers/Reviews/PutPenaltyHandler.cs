@@ -4,15 +4,14 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PutPenaltyRequest(long PenaltyId, PutPenaltyModel Model) : IRequest<PenaltyModel>;
 
-public class PutPenaltyHandler : ReviewsHandlerBase<PutPenaltyHandler, PutPenaltyRequest>, 
-    IRequestHandler<PutPenaltyRequest, PenaltyModel>
+public class PutPenaltyHandler : ReviewsHandlerBase<PutPenaltyHandler,  PutPenaltyRequest, PenaltyModel>
 {
     public PutPenaltyHandler(ILogger<PutPenaltyHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutPenaltyRequest>> validators) 
         : base(logger, dbContext, validators)
     {
     }
 
-    public async Task<PenaltyModel> Handle(PutPenaltyRequest request, CancellationToken cancellationToken)
+    public override async Task<PenaltyModel> Handle(PutPenaltyRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var putPenalty = await GetAddPenaltyEntity(request.PenaltyId, cancellationToken)

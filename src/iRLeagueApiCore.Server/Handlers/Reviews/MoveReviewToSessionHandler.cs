@@ -4,8 +4,7 @@ using iRLeagueApiCore.Server.Models;
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record MoveReviewToSessionRequest(long SessionId, long ReviewId, LeagueUser User) : IRequest<ReviewModel>;
-public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler, MoveReviewToSessionRequest>,
-    IRequestHandler<MoveReviewToSessionRequest, ReviewModel>
+public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewToSessionHandler,  MoveReviewToSessionRequest, ReviewModel>
 {
     /// <summary>
     /// Always include comments because this can only be called by an authorized user
@@ -17,7 +16,7 @@ public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewTo
     {
     }
 
-    public async Task<ReviewModel> Handle(MoveReviewToSessionRequest request, CancellationToken cancellationToken)
+    public override async Task<ReviewModel> Handle(MoveReviewToSessionRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var moveReview = await GetReviewEntity(request.ReviewId, cancellationToken)

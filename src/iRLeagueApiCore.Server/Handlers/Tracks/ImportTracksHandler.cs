@@ -7,8 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Tracks;
 
 public record ImportTracksCommand(IracingAuthModel Model) : IRequest;
 
-public sealed class ImportTracksHandler : HandlerBase<ImportTracksHandler, ImportTracksCommand>,
-    IRequestHandler<ImportTracksCommand, Unit>
+public sealed class ImportTracksHandler : HandlerBase<ImportTracksHandler,  ImportTracksCommand, Unit>
 {
     private readonly TrackImportService trackImportService;
 
@@ -18,7 +17,7 @@ public sealed class ImportTracksHandler : HandlerBase<ImportTracksHandler, Impor
         this.trackImportService = trackImportService;
     }
 
-    public async Task<Unit> Handle(ImportTracksCommand request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(ImportTracksCommand request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         await AuthenticateService(request.Model, trackImportService, cancellationToken);
