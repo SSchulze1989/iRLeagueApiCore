@@ -12,6 +12,6 @@ internal class PutEndpoint<TResult, TModel> : EndpointBase, IPutEndpoint<TResult
 
     async Task<ClientActionResult<TResult>> IPutEndpoint<TResult, TModel>.Put(TModel model, CancellationToken cancellationToken)
     {
-        return await HttpClientWrapper.PostAsClientActionResult<TResult>(QueryUrl, model, cancellationToken);
+        return await HttpClientWrapper.PutAsClientActionResult<TResult>(QueryUrl, model, cancellationToken);
     }
 }

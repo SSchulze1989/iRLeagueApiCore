@@ -31,6 +31,8 @@ public class GetRawResultsFromEventHandler : ResultHandlerBase<GetRawResultsFrom
             SessionId = sessionResult.SessionId,
             ResultRows = sessionResult.ResultRows.Select(row => new RawResultRowModel()
             {
+                ResultRowId = row.ResultRowId,
+                MemberId = row.MemberId,
                 StartPosition = row.StartPosition,
                 FinishPosition = row.FinishPosition,
                 CarNumber = row.CarNumber,

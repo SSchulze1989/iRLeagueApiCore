@@ -93,6 +93,8 @@ public class ModifyResultRowHandler : ResultHandlerBase<ModifyResultRowHandler, 
 
     private static RawResultRowModel MapToModResultRowModel(RawResultRowModel model, ResultRowEntity entity)
     {
+        model.ResultRowId = entity.ResultRowId;
+        model.MemberId = entity.MemberId;
         model.StartPosition = entity.StartPosition;
         model.FinishPosition = entity.FinishPosition;
         model.CarNumber = entity.CarNumber;
