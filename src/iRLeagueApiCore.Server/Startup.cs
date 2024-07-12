@@ -59,10 +59,6 @@ public sealed class Startup
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
-        services.AddControllers().AddJsonOptions(option =>
-        {
-            option.JsonSerializerOptions.Converters.Add(new JsonTimeSpanConverter());
-        });
         services.AddSwaggerGen(c =>
         {
             var readHostUrls = Configuration["ASPNETCORE_HOSTURLS"];
