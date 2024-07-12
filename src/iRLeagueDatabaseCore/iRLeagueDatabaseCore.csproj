@@ -28,7 +28,7 @@
 	<TargetFramework>net6.0</TargetFramework>
 	<LangVersion>11</LangVersion>
     <PackageId>iRLeagueDatabaseCore</PackageId>
-    <Version>0.11.5-dev.6</Version>
+    <Version>0.11.5-dev.7</Version>
 	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 

@@ -6,6 +6,8 @@ public sealed class RawResultRowModel
     [DataMember]
     public long ResultRowId { get; set; }
     [DataMember]
+    public long MemberId { get; set; }
+    [DataMember]
     public double StartPosition { get; set; }
     [DataMember]
     public double FinishPosition { get; set; }
