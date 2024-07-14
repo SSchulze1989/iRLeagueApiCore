@@ -292,7 +292,10 @@ public sealed class TeamSessionCalculationServiceTests
     private IPostprocessComposer<ResultRowCalculationData> TestRowBuilder()
     {
         return fixture.Build<ResultRowCalculationData>()
-            .Without(x => x.AddPenalties);
+            .Without(x => x.AddPenalties)
+            .With(x => x.AvgLapTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)))
+            .With(x => x.FastestLapTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)))
+            .With(x => x.QualifyingTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)));
     }
 
     private IPostprocessComposer<ResultRowCalculationData> TeamTestRowBuilder(IEnumerable<long?> teamIds)

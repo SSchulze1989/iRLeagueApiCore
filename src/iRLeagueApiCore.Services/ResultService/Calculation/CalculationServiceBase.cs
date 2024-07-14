@@ -94,7 +94,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     protected static bool LapIsValid(TimeSpan lap)
     {
-        return lap > TimeSpan.Zero;
+        return lap > TimeSpan.Zero.Add(TimeSpan.FromMilliseconds(1));
     }
 
     protected static bool HardChargerEligible(ResultRowCalculationResult row)

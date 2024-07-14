@@ -717,7 +717,10 @@ public sealed class MemberSessionCalculationServiceTests
             .Without(x => x.RacePoints)
             .Without(x => x.BonusPoints)
             .Without(x => x.PenaltyPoints)
-            .Without(x => x.AddPenalties);
+            .Without(x => x.AddPenalties)
+            .With(x => x.AvgLapTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)))
+            .With(x => x.FastestLapTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)))
+            .With(x => x.QualifyingTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)));
     }
 
     private IEnumerable<ResultRowCalculationData> GetTestRows()

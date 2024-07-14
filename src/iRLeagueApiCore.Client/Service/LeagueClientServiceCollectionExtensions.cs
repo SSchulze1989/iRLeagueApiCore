@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using iRLeagueApiCore.Common.Converters;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class IRLeagueApiClientServiceExtensions
@@ -15,6 +16,7 @@ public static class IRLeagueApiClientServiceExtensions
 
         var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         jsonOptions.Converters.Add(new JsonStringEnumConverter());
+        jsonOptions.Converters.Add(new JsonTimeSpanConverter());
         jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
         services.TryAddScoped<HttpClientWrapperFactory>(sp => new(
