@@ -59,13 +59,13 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         var filterValues = rows.Any() ? Comparator switch
         {
             // Min and Max comaparators do not have fixed compare values - fetch value from row column
-            ComparatorType.Min => [rows.Max(x => (IComparable?)ColumnProperty.GetValue(x))],
-            ComparatorType.Max => [rows.Min(x => (IComparable?)ColumnProperty.GetValue(x))],
+            ComparatorType.Min => [rows.Min(x => (IComparable?)ColumnProperty.GetValue(x))],
+            ComparatorType.Max => [rows.Max(x => (IComparable?)ColumnProperty.GetValue(x))],
             // Use user provided values otherwise
             _ => FilterValues,
         } : FilterValues;
 
-        var match = rows.Where(x => MatchFilterValues(x, ColumnProperty, FilterValues, CompareFunc));
+        var match = rows.Where(x => MatchFilterValues(x, ColumnProperty, filterValues, CompareFunc));
         if (Comparator == ComparatorType.ForEach && AllowForEach)
         {
             // special handling for ForEach --> duplicate rows by multiple of values
