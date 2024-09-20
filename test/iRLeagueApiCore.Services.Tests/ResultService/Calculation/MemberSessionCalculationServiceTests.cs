@@ -296,7 +296,7 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Positions, positionPenalty)
             .Create();
         var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
-        penaltyRow.AddPenalties = new[] { addPenalty };
+        penaltyRow.AddPenalties = [addPenalty];
         var sut = CreateSut();
 
         var test = await sut.Calculate(data);
@@ -366,7 +366,7 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Points, spread + 1)
             .Create();
         var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
-        penaltyRow.AddPenalties = new[] { addPenalty };
+        penaltyRow.AddPenalties = [addPenalty];
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
             sortFinal: x => x.OrderByDescending(x => x.TotalPoints).ToList());
@@ -427,8 +427,7 @@ public sealed class MemberSessionCalculationServiceTests
             .CreateMany(3);
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            bonusPoints:
-            [
+            bonusPoints: [
                 new() { Type = BonusPointType.QualyPosition, Value = 1, Points = 2 },
                 new() { Type = BonusPointType.QualyPosition, Value = 2, Points = 1 },
             ]);
@@ -544,12 +543,12 @@ public sealed class MemberSessionCalculationServiceTests
         RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
             nameof(ResultRowCalculationResult.Incidents),
             ComparatorType.ForEach,
-            new[] { "4.0" },
+            ["4.0"],
             MatchedValueAction.Keep,
             allowForEach: true);
         var autoPenalty = new AutoPenaltyConfigurationData()
         {
-            Conditions = new FilterGroupRowFilter<ResultRowCalculationResult>(new[] { (FilterCombination.And, filter) }),
+            Conditions = new FilterGroupRowFilter<ResultRowCalculationResult>([(FilterCombination.And, filter)]),
             Description = "Test Autopenalty",
             Points = 10,
             Type = PenaltyType.Points,
@@ -583,7 +582,7 @@ public sealed class MemberSessionCalculationServiceTests
         RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
             nameof(ResultRowCalculationResult.FinishPosition),
             ComparatorType.IsSmallerOrEqual,
-            new[] { "3" },
+            ["3"],
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
             resultFilters: new([(FilterCombination.And, filter)]));
@@ -607,7 +606,7 @@ public sealed class MemberSessionCalculationServiceTests
         RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
             nameof(ResultRowCalculationResult.FinishPosition),
             ComparatorType.IsSmallerOrEqual,
-            new[] { "3" },
+            ["3"],
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
             champSeasonFilters: new([(FilterCombination.And, filter)]));
@@ -658,7 +657,7 @@ public sealed class MemberSessionCalculationServiceTests
         RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
             nameof(ResultRowCalculationResult.FinishPosition),
             ComparatorType.IsSmallerOrEqual,
-            new[] { "3" },
+            ["3"],
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
             pointFilters: new([(FilterCombination.And, filter)]),
