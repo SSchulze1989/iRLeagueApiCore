@@ -232,7 +232,7 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Time, TimeSpan.FromSeconds(spread + 1))
             .Create();
         var penaltyRow = data.ResultRows.ElementAt(0);
-        penaltyRow.AddPenalties = new[] { addPenalty };
+        penaltyRow.AddPenalties = [addPenalty];
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         fixture.Register(() => config);
         var sut = CreateSut();
@@ -264,7 +264,7 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Time, TimeSpan.FromSeconds(spread + 1))
             .Create();
         var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
-        penaltyRow.AddPenalties = new[] { addPenalty };
+        penaltyRow.AddPenalties = [addPenalty];
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
             sortForPoints: x => x.OrderBy(x => x.Interval).ToList());
@@ -332,9 +332,9 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Positions, positionPenalty2)
             .Create();
         var penaltyRow1 = data.ResultRows.ElementAt(penaltyIndex1);
-        penaltyRow1.AddPenalties = new[] { addPenalty1 };
+        penaltyRow1.AddPenalties = [addPenalty1];
         var penaltyRow2 = data.ResultRows.ElementAt(penaltyIndex2);
-        penaltyRow2.AddPenalties = new[] { addPenalty2 };
+        penaltyRow2.AddPenalties = [addPenalty2];
         var sut = CreateSut();
 
         var test = await sut.Calculate(data);
@@ -401,7 +401,7 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Points, -(spread + 1))
             .Create();
         var penaltyRow = data.ResultRows.ElementAt(penaltyIndex);
-        penaltyRow.AddPenalties = new[] { addPenalty };
+        penaltyRow.AddPenalties = [addPenalty];
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
             sortFinal: x => x.OrderByDescending(x => x.TotalPoints).ToList());
@@ -427,11 +427,11 @@ public sealed class MemberSessionCalculationServiceTests
             .CreateMany(3);
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            bonusPoints: new BonusPointConfiguration[]
-            {
+            bonusPoints:
+            [
                 new() { Type = BonusPointType.QualyPosition, Value = 1, Points = 2 },
                 new() { Type = BonusPointType.QualyPosition, Value = 2, Points = 1 },
-            });
+            ]);
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -456,21 +456,21 @@ public sealed class MemberSessionCalculationServiceTests
         data.ResultRows.First().LeadLaps = 16;
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         RowFilter<ResultRowCalculationResult> condition1 = new ColumnValueRowFilter(
-            nameof(ResultRowCalculationResult.StartPosition), ComparatorType.IsEqual, new[] { "1" },
+            nameof(ResultRowCalculationResult.StartPosition), ComparatorType.IsEqual, ["1"],
                 MatchedValueAction.Keep, allowForEach: true);
         RowFilter<ResultRowCalculationResult> condition2 = new ColumnValueRowFilter(
-            nameof(ResultRowCalculationResult.StartPosition), ComparatorType.IsEqual, new[] { "2" },
+            nameof(ResultRowCalculationResult.StartPosition), ComparatorType.IsEqual, ["2"],
                 MatchedValueAction.Keep, allowForEach: true);
         RowFilter<ResultRowCalculationResult> condition3 = new ColumnValueRowFilter(
-            nameof(ResultRowCalculationResult.LeadLaps), ComparatorType.ForEach, new[] { "5" },
+            nameof(ResultRowCalculationResult.LeadLaps), ComparatorType.ForEach, ["5"],
                 MatchedValueAction.Keep, allowForEach: true);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            bonusPoints: new BonusPointConfiguration[]
-            {
-                new() { Type = BonusPointType.Custom, Points = 2, Conditions = new(new[] { (FilterCombination.And, condition1) }) },
-                new() { Type = BonusPointType.Custom, Points = 1, Conditions = new(new[] { (FilterCombination.And, condition2) }) },
-                new() { Type = BonusPointType.Custom, Points = 2, Conditions = new(new[] { (FilterCombination.And, condition3) }) }, 
-            });
+            bonusPoints:
+            [
+                new() { Type = BonusPointType.Custom, Points = 2, Conditions = new([(FilterCombination.And, condition1)]) },
+                new() { Type = BonusPointType.Custom, Points = 1, Conditions = new([(FilterCombination.And, condition2)]) },
+                new() { Type = BonusPointType.Custom, Points = 2, Conditions = new([(FilterCombination.And, condition3)]) },
+            ]);
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -486,9 +486,56 @@ public sealed class MemberSessionCalculationServiceTests
     }
 
     [Fact]
+    public async Task Calculate_ShouldApplyBonusPoints_WhenBelowMaxCount()
+    {
+        var incidents = ((double[])[1, 1, 1, 3, 4]).CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.Incidents, incidents)
+            .CreateMany(5);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            bonusPoints:
+            [
+                new() { Type = BonusPointType.CleanestDriver, Points = 1, MaxCount = 3 },
+            ]);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveSameCount(data.ResultRows);
+        test.ResultRows.Take(3).Should().Match(x => x.All(row => row.BonusPoints == 1));
+        test.ResultRows.Skip(3).Should().Match(x => x.None(row => row.BonusPoints > 0));
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldNotApplyBonusPoints_WhenAboveMaxCount()
+    {
+        var incidents = ((double[])[1, 1, 1, 3, 4]).CreateSequence();
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.Incidents, incidents)
+            .CreateMany(5);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            bonusPoints:
+            [
+                new() { Type = BonusPointType.CleanestDriver, Points = 1, MaxCount = 2 },
+            ]);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveSameCount(data.ResultRows);
+        test.ResultRows.Should().Match(x => x.None(row => row.BonusPoints > 0));
+    }
+
+    [Fact]
     public async Task Calculate_ShouldAddAutoPenalties()
     {
-        var incidents = new[] { 2.0, 4.0, 8.0 }; 
+        var incidents = new[] { 2.0, 4.0, 8.0 };
         var data = GetCalculationData();
         data.ResultRows = TestRowBuilder()
             .With(x => x.Incidents, incidents.CreateSequence())
@@ -508,7 +555,7 @@ public sealed class MemberSessionCalculationServiceTests
             Type = PenaltyType.Points,
         };
         config.PointRule = CalculationMockHelper.MockPointRule(
-            autoPenalties: new[] { autoPenalty });
+            autoPenalties: [autoPenalty]);
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -520,8 +567,8 @@ public sealed class MemberSessionCalculationServiceTests
         testRow1.PenaltyPoints.Should().Be(autoPenalty.Points);
         var testRow2 = test.ResultRows.ElementAt(2);
         testRow2.AddPenalties.Should().HaveCount(1);
-        testRow2.AddPenalties.First().Points.Should().Be(autoPenalty.Points*2);
-        testRow2.PenaltyPoints.Should().Be(autoPenalty.Points*2);
+        testRow2.AddPenalties.First().Points.Should().Be(autoPenalty.Points * 2);
+        testRow2.PenaltyPoints.Should().Be(autoPenalty.Points * 2);
     }
 
     [Fact]
@@ -539,7 +586,7 @@ public sealed class MemberSessionCalculationServiceTests
             new[] { "3" },
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            resultFilters: new(new[] { (FilterCombination.And, filter) }));
+            resultFilters: new([(FilterCombination.And, filter)]));
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -563,7 +610,7 @@ public sealed class MemberSessionCalculationServiceTests
             new[] { "3" },
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            champSeasonFilters: new(new[] { (FilterCombination.And, filter) }));
+            champSeasonFilters: new([(FilterCombination.And, filter)]));
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -584,10 +631,10 @@ public sealed class MemberSessionCalculationServiceTests
         RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
             nameof(ResultRowCalculationResult.FinishPosition),
             ComparatorType.IsSmallerOrEqual,
-            new[] { "3" },
+            ["3"],
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            pointFilters: new(new[] { (FilterCombination.And, filter) }),
+            pointFilters: new([(FilterCombination.And, filter)]),
             getRacePoints: (x, p) => 1);
         fixture.Register(() => config);
         var sut = CreateSut();
@@ -614,7 +661,7 @@ public sealed class MemberSessionCalculationServiceTests
             new[] { "3" },
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            pointFilters: new(new[] { (FilterCombination.And, filter) }),
+            pointFilters: new([(FilterCombination.And, filter)]),
             getRacePoints: (x, p) => 1);
         fixture.Register(() => config);
         var sut = CreateSut();
@@ -638,10 +685,10 @@ public sealed class MemberSessionCalculationServiceTests
         RowFilter<ResultRowCalculationResult> filter = new ColumnValueRowFilter(
             nameof(ResultRowCalculationResult.FinishPosition),
             ComparatorType.IsSmallerOrEqual,
-            new[] { "3" },
+            ["3"],
             MatchedValueAction.Keep);
         config.PointRule = CalculationMockHelper.MockPointRule(
-            pointFilters: new(new[] { (FilterCombination.And, filter) }),
+            pointFilters: new([(FilterCombination.And, filter)]),
             getRacePoints: (x, p) => 1);
         fixture.Register(() => config);
         var sut = CreateSut();
@@ -664,7 +711,7 @@ public sealed class MemberSessionCalculationServiceTests
             .With(x => x.Type, PenaltyType.Disqualification)
             .Create();
         var penaltyRow = data.ResultRows.ElementAt(0);
-        penaltyRow.AddPenalties = new[] { addPenalty };
+        penaltyRow.AddPenalties = [addPenalty];
         var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
         fixture.Register(() => config);
         var sut = CreateSut();
