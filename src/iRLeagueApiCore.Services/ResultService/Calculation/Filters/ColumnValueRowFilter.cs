@@ -5,7 +5,7 @@ using MySqlX.XDevAPI.Relational;
 using System.Globalization;
 using System.Reflection;
 
-namespace iRLeagueApiCore.Services.ResultService.Calculation;
+namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 
 internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
 {
@@ -79,7 +79,7 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         };
     }
 
-    private static bool MatchFilterValues(ResultRowCalculationResult row, PropertyInfo property, IEnumerable<IComparable?> filterValues, 
+    private static bool MatchFilterValues(ResultRowCalculationResult row, PropertyInfo property, IEnumerable<IComparable?> filterValues,
         Func<IComparable?, IEnumerable<IComparable?>, bool> compare)
     {
         var value = (IComparable?)property.GetValue(row);

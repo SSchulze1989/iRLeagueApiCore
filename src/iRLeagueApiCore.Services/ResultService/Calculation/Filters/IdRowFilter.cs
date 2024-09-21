@@ -3,7 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Models;
 using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 
-namespace iRLeagueApiCore.Services.ResultService.Calculation;
+namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 internal sealed class IdRowFilter<TId> : RowFilter<ResultRowCalculationResult>
 {
     public IReadOnlyCollection<TId?> MatchIds;
@@ -40,7 +40,7 @@ internal sealed class IdRowFilter<TId> : RowFilter<ResultRowCalculationResult>
         {
             return (TId?)Convert.ChangeType(idString, typeof(TId?), CultureInfo.InvariantCulture);
         }
-        catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is ArgumentException) 
+        catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is ArgumentException)
         {
             throw new ArgumentException($"Argument \"{idString}\" is not a valid id");
         }

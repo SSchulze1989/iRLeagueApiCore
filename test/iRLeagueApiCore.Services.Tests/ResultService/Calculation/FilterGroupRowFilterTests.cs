@@ -1,6 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Mocking.Extensions;
-using iRLeagueApiCore.Services.ResultService.Calculation;
+using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 using System.Diagnostics;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
