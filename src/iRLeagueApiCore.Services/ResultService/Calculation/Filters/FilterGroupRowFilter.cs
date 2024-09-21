@@ -1,4 +1,4 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
 {
     private readonly IList<(FilterCombination combination, RowFilter<T> rowFilter)> filters;
@@ -18,7 +18,7 @@ internal sealed class FilterGroupRowFilter<T> : RowFilter<T>
     public override IEnumerable<TRow> FilterRows<TRow>(IEnumerable<TRow> rows)
     {
         var originalRows = rows.ToList();
-        foreach(var (combination, filter) in filters)
+        foreach (var (combination, filter) in filters)
         {
             rows = combination switch
             {
