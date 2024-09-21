@@ -9,21 +9,17 @@ namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 
 internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResult>
 {
-    public bool AllowForEach { get; private set; }
-
     /// <summary>
     /// Create an instance of a <see cref="ColumnValueRowFilter"/>
     /// </summary>
     /// <param name="propertyName">Name of the property matching the desired column</param>
-    /// <param name="comparator">Type of comparison to execute</param>
+    /// <param name="comparatorType">Type of comparison to execute</param>
     /// <param name="values">Values corresponding to comparator</param>
     /// <param name="action">Action to perform: Keep / Remove</param>
     /// <param name="allowForEach">Enable multiplication of rows using "ForEach" comparator</param>
     /// <exception cref="ArgumentException"></exception>
-    public ColumnValueRowFilter(string propertyName, ComparatorType comparator, IEnumerable<string> values, MatchedValueAction action, bool allowForEach = false)
+    public ColumnValueRowFilter(string propertyName, ComparatorType comparatorType, IEnumerable<string> values, MatchedValueAction action, bool allowForEach = false)
     {
-        Action = action;
-        AllowForEach = allowForEach;
         try
         {
             ColumnProperty = GetColumnPropertyInfo(propertyName);
@@ -33,8 +29,6 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
             throw new ArgumentException($"Parameter value {propertyName} did not target a valid column property on type {typeof(ResultRowCalculationResult)}",
                 nameof(propertyName), ex);
         }
-        Comparator = comparator;
-        CompareFunc = GetCompareFunction(comparator);
         try
         {
             FilterValues = GetFilterValuesOfType(ColumnProperty.PropertyType, values).ToList();
@@ -46,44 +40,16 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         {
             throw new ArgumentException($"Parameter was not of type {ColumnProperty.PropertyType} of column property {ColumnProperty.Name}", nameof(values), ex);
         }
+        Comparator = new(comparatorType, action, allowForEach);
     }
 
     public PropertyInfo ColumnProperty { get; }
-    public ComparatorType Comparator { get; }
-    private Func<IComparable?, IEnumerable<IComparable?>, bool> CompareFunc { get; }
+    public ComparatorFilter Comparator { get; }
     public IEnumerable<IComparable?> FilterValues { get; }
-    public MatchedValueAction Action { get; }
 
     public override IEnumerable<T> FilterRows<T>(IEnumerable<T> rows)
     {
-        var filterValues = rows.Any() ? Comparator switch
-        {
-            // Min and Max comaparators do not have fixed compare values - fetch value from row column
-            ComparatorType.Min => [rows.Min(x => (IComparable?)ColumnProperty.GetValue(x))],
-            ComparatorType.Max => [rows.Max(x => (IComparable?)ColumnProperty.GetValue(x))],
-            // Use user provided values otherwise
-            _ => FilterValues,
-        } : FilterValues;
-
-        var match = rows.Where(x => MatchFilterValues(x, ColumnProperty, filterValues, CompareFunc));
-        if (Comparator == ComparatorType.ForEach && AllowForEach)
-        {
-            // special handling for ForEach --> duplicate rows by multiple of values
-            match = MultiplyRows(match, ColumnProperty, FilterValues);
-        }
-        return Action switch
-        {
-            MatchedValueAction.Keep => match,
-            MatchedValueAction.Remove => rows.Except(match),
-            _ => rows,
-        };
-    }
-
-    private static bool MatchFilterValues(ResultRowCalculationResult row, PropertyInfo property, IEnumerable<IComparable?> filterValues,
-        Func<IComparable?, IEnumerable<IComparable?>, bool> compare)
-    {
-        var value = (IComparable?)property.GetValue(row);
-        return compare(value, filterValues);
+        return Comparator.GetFilteredRows(rows, (row) => (IComparable?)ColumnProperty.GetValue(row), FilterValues);
     }
 
     private static PropertyInfo GetColumnPropertyInfo(string propertyName)
@@ -106,49 +72,4 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         }
         return values.Select(x => Convert.ChangeType(x, type, CultureInfo.InvariantCulture)).Cast<IComparable>();
     }
-
-    private static IEnumerable<T> MultiplyRows<T>(IEnumerable<T> rows, PropertyInfo property,
-        IEnumerable<IComparable?> filterValues)
-    {
-        if (filterValues.Any() == false)
-        {
-            return rows;
-        }
-        var compareValue = Convert.ToDouble(filterValues.First());
-        List<T> multipliedRows = new();
-        foreach (var row in rows)
-        {
-            var value = Convert.ToDouble(property.GetValue(row));
-            var count = (int)(value / compareValue);
-            for (int i = 0; i < count; i++)
-            {
-                multipliedRows.Add(row);
-            }
-        }
-        return multipliedRows;
-    }
-
-    private static Func<IComparable?, IEnumerable<IComparable?>, bool> GetCompareFunction(ComparatorType comparatorType)
-        => comparatorType switch
-        {
-            ComparatorType.IsBigger => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1; }
-            ,
-            ComparatorType.IsBiggerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == 0; }
-            ,
-            ComparatorType.IsEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 0; }
-            ,
-            ComparatorType.IsSmallerOrEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1 || c == 0; }
-            ,
-            ComparatorType.IsSmaller => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == -1; }
-            ,
-            ComparatorType.NotEqual => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == -1; }
-            ,
-            ComparatorType.InList => (x, y) => { var c = y.Any(z => x?.CompareTo(z) == 0); return c; }
-            ,
-            ComparatorType.ForEach => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 1 || c == 0; }
-            ,
-            ComparatorType.Max or ComparatorType.Min => (x, y) => { var c = x?.CompareTo(y.FirstOrDefault()); return c == 0; }
-            ,
-            _ => (x, y) => true,
-        };
 }
