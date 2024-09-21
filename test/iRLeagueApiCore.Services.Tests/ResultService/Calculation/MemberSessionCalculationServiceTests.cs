@@ -486,53 +486,6 @@ public sealed class MemberSessionCalculationServiceTests
     }
 
     [Fact]
-    public async Task Calculate_ShouldApplyBonusPoints_WhenBelowMaxCount()
-    {
-        var incidents = ((double[])[1, 1, 1, 3, 4]).CreateSequence();
-        var data = GetCalculationData();
-        data.ResultRows = TestRowBuilder()
-            .With(x => x.Incidents, incidents)
-            .CreateMany(5);
-        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
-        config.PointRule = CalculationMockHelper.MockPointRule(
-            bonusPoints:
-            [
-                new() { Type = BonusPointType.CleanestDriver, Points = 1, MaxCount = 3 },
-            ]);
-        fixture.Register(() => config);
-        var sut = CreateSut();
-
-        var test = await sut.Calculate(data);
-
-        test.ResultRows.Should().HaveSameCount(data.ResultRows);
-        test.ResultRows.Take(3).Should().Match(x => x.All(row => row.BonusPoints == 1));
-        test.ResultRows.Skip(3).Should().Match(x => x.None(row => row.BonusPoints > 0));
-    }
-
-    [Fact]
-    public async Task Calculate_ShouldNotApplyBonusPoints_WhenAboveMaxCount()
-    {
-        var incidents = ((double[])[1, 1, 1, 3, 4]).CreateSequence();
-        var data = GetCalculationData();
-        data.ResultRows = TestRowBuilder()
-            .With(x => x.Incidents, incidents)
-            .CreateMany(5);
-        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
-        config.PointRule = CalculationMockHelper.MockPointRule(
-            bonusPoints:
-            [
-                new() { Type = BonusPointType.CleanestDriver, Points = 1, MaxCount = 2 },
-            ]);
-        fixture.Register(() => config);
-        var sut = CreateSut();
-
-        var test = await sut.Calculate(data);
-
-        test.ResultRows.Should().HaveSameCount(data.ResultRows);
-        test.ResultRows.Should().Match(x => x.None(row => row.BonusPoints > 0));
-    }
-
-    [Fact]
     public async Task Calculate_ShouldAddAutoPenalties()
     {
         var incidents = new[] { 2.0, 4.0, 8.0 };
