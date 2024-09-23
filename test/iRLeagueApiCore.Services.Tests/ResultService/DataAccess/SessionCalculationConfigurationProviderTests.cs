@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Calculation;
+using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
@@ -358,9 +359,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
-            testFilter.Comparator.Should().Be(condition.Comparator);
+            testFilter.Comparator.ComparatorType.Should().Be(condition.Comparator);
             testFilter.FilterValues.Should().BeEquivalentTo(condition.FilterValues);
-            testFilter.Action.Should().Be(condition.Action);
+            testFilter.Comparator.Action.Should().Be(condition.Action);
         }
     }
 
@@ -396,9 +397,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
-            testFilter.Comparator.Should().Be(condition.Comparator);
+            testFilter.Comparator.ComparatorType.Should().Be(condition.Comparator);
             testFilter.FilterValues.Should().BeEquivalentTo(condition.FilterValues);
-            testFilter.Action.Should().Be(condition.Action);
+            testFilter.Comparator.Action.Should().Be(condition.Action);
         }
     }
 
@@ -432,9 +433,9 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             var testFilter = filterGroup!.GetFilters().First().rowFilter as ColumnValueRowFilter;
             testFilter.Should().NotBeNull();
             testFilter!.ColumnProperty.Name.Should().Be(condition.ColumnPropertyName);
-            testFilter.Comparator.Should().Be(condition.Comparator);
+            testFilter.Comparator.ComparatorType.Should().Be(condition.Comparator);
             testFilter.FilterValues.Should().BeEquivalentTo(condition.FilterValues);
-            testFilter.Action.Should().Be(condition.Action);
+            testFilter.Comparator.Action.Should().Be(condition.Action);
         }
     }
 
@@ -525,8 +526,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
                 .OfType<ColumnValueRowFilter>()
                 .SingleOrDefault(x => x.ColumnProperty.Name == nameof(ResultRowCalculationResult.Status));
             testFilter.Should().NotBeNull();
-            testFilter!.Comparator.Should().Be(ComparatorType.IsEqual);
-            testFilter.Action.Should().Be(MatchedValueAction.Remove);
+            testFilter!.Comparator.ComparatorType.Should().Be(ComparatorType.IsEqual);
+            testFilter.Comparator.Action.Should().Be(MatchedValueAction.Remove);
             testFilter.FilterValues.Should().BeEquivalentTo(new[] { (int)RaceStatus.Disqualified });
         }
     }
@@ -567,8 +568,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
                 .OfType<ColumnValueRowFilter>()
                 .SingleOrDefault(x => x.ColumnProperty.Name == nameof(ResultRowCalculationResult.Status));
             testFilter.Should().NotBeNull();
-            testFilter!.Comparator.Should().Be(ComparatorType.NotEqual);
-            testFilter.Action.Should().Be(MatchedValueAction.Keep);
+            testFilter!.Comparator.ComparatorType.Should().Be(ComparatorType.NotEqual);
+            testFilter.Comparator.Action.Should().Be(MatchedValueAction.Keep);
             testFilter.FilterValues.Should().BeEquivalentTo(new[] { (int)RaceStatus.Disconnected });
         }
     }

@@ -1,0 +1,4 @@
+﻿[*.{cs,vb}]
+
+# IDE0305: Initialisierung der Sammlung vereinfachen
+dotnet_diagnostic.IDE0305.severity = none

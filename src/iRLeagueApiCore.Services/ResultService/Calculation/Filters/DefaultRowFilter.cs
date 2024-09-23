@@ -1,4 +1,4 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Calculation;
+﻿namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 
 internal sealed class DefaultRowFilter<TRow> : RowFilter<TRow>
 {

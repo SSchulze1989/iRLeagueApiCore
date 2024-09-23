@@ -30,9 +30,10 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         // Calculation
         pointRule.ApplyPoints(data, pointRows.ToList());
         // remove points from filtered rows and set points eligible 
-        pointRows.ForEach(x => x.PointsEligible  = true);
+        pointRows.ForEach(x => x.PointsEligible = true);
         rows.Except(pointRows)
-            .ForEach(x => {
+            .ForEach(x =>
+            {
                 x.RacePoints = 0;
                 x.PointsEligible = false;
             });
@@ -74,7 +75,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
         catch (Exception ex) when (ex is InvalidOperationException)
         {
-            return Array.Empty<(TId? id, TValue value)>();
+            return [];
         }
     }
 
@@ -144,7 +145,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return combined.ToList();
     }
 
-    private static AddPenaltyCalculationData CreateAddPenaltyFromAutoPenalty(ResultRowCalculationResult row, AutoPenaltyConfigurationData autoPenalty, 
+    private static AddPenaltyCalculationData CreateAddPenaltyFromAutoPenalty(ResultRowCalculationResult row, AutoPenaltyConfigurationData autoPenalty,
         int penaltyMultiplikator)
     {
         var penalty = new AddPenaltyCalculationData()
@@ -158,17 +159,17 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return penalty;
     }
 
-    private static IEnumerable<ResultRowCalculationResult> CalculateAutoPenalties(IEnumerable<ResultRowCalculationResult> rows, 
+    private static IEnumerable<ResultRowCalculationResult> CalculateAutoPenalties(IEnumerable<ResultRowCalculationResult> rows,
         IEnumerable<AutoPenaltyConfigurationData> autoPenalties)
     {
-        foreach(var autoPenalty in autoPenalties)
+        foreach (var autoPenalty in autoPenalties)
         {
             var penaltyRows = autoPenalty.Conditions
                 .FilterRows(rows);
             var grouped = penaltyRows.GroupBy(x => x);
-            foreach(var row in grouped.Where(x => x.Any()))
+            foreach (var row in grouped.Where(x => x.Any()))
             {
-                row.Key.AddPenalties = row.Key.AddPenalties.Concat(new[] { CreateAddPenaltyFromAutoPenalty(row.Key, autoPenalty, row.Count()) });
+                row.Key.AddPenalties = [.. row.Key.AddPenalties, CreateAddPenaltyFromAutoPenalty(row.Key, autoPenalty, row.Count())];
             }
         }
         return rows;
@@ -287,13 +288,12 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
 
         var minIncs = rows.Any(x => x.PenaltyPoints == 0) ? rows.Where(x => x.PenaltyPoints == 0).Min(x => x.Incidents) : -1;
-        var fastestLapRow = GetBestLapValue(rows, x => x, x => x.FastestLapTime);
 
         foreach (var bonus in BonusPoints)
         {
             var bonusType = bonus.Type;
-            var bonusKeyValue = (int)bonus.Value;
-            var bonusPoints = (int)bonus.Points;
+            var bonusKeyValue = bonus.Value;
+            var bonusPoints = bonus.Points;
             rows = bonusType switch
             {
                 BonusPointType.Position => ApplyPositionBonusPoints(rows, bonusKeyValue, bonusPoints),
@@ -306,7 +306,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 BonusPointType.LeadMostLaps => ApplyLeadMostLapsBonusPoints(rows, bonusPoints),
                 BonusPointType.NoIncidents => ApplyNoIncidentsBonusPoints(rows, bonusPoints),
                 BonusPointType.FastestAverageLap => ApplyFastestAverageLapBonusPoints(rows, bonusPoints),
-                BonusPointType.Custom => ApplyCustomBonusPoints(rows, bonus.Conditions, bonusPoints),
+                BonusPointType.Custom => ApplyCustomBonusPoints(rows, bonus, bonusPoints),
                 _ => rows,
             };
         }
@@ -314,10 +314,11 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return rows;
     }
 
-    private static IEnumerable<ResultRowCalculationResult> ApplyCustomBonusPoints(IEnumerable<ResultRowCalculationResult> rows, FilterGroupRowFilter<ResultRowCalculationResult> conditions,
+    private static IEnumerable<ResultRowCalculationResult> ApplyCustomBonusPoints(IEnumerable<ResultRowCalculationResult> rows, BonusPointConfiguration bonus,
         int bonusPoints)
     {
-        var bonusRows = conditions.FilterRows(rows);
+        var bonusRows = bonus.Conditions.FilterRows(rows);
+
         foreach (var row in bonusRows)
         {
             row.BonusPoints += bonusPoints;
@@ -337,12 +338,11 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
     private static IEnumerable<ResultRowCalculationResult> ApplyNoIncidentsBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
     {
-        foreach(var row in rows)
+        var bonusRows = rows.Where(x => x.Incidents == 0);
+
+        foreach (var row in bonusRows)
         {
-            if (row.Incidents == 0)
-            {
-                row.BonusPoints += points;
-            }
+            row.BonusPoints += points;
         }
         return rows;
     }
@@ -350,24 +350,22 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     private static IEnumerable<ResultRowCalculationResult> ApplyLeadMostLapsBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
     {
         var mostLapsLead = rows.Max(x => x.LeadLaps);
-        foreach(var row in rows)
+        var bonusRows = rows.Where(x => x.LeadLaps == mostLapsLead);
+
+        foreach (var row in bonusRows)
         {
-            if (row.LeadLaps == mostLapsLead)
-            {
-                row.BonusPoints += points;
-            }
+            row.BonusPoints += points;
         }
         return rows;
     }
 
     private static IEnumerable<ResultRowCalculationResult> ApplyLeadOneLapBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
     {
-        foreach(var row in rows)
+        var bonusRows = rows.Where(x => x.LeadLaps > 0);
+
+        foreach (var row in bonusRows)
         {
-            if (row.LeadLaps > 0)
-            {
-                row.BonusPoints += points;
-            }
+            row.BonusPoints += points;
         }
         return rows;
     }
@@ -375,12 +373,11 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     private static IEnumerable<ResultRowCalculationResult> ApplyMostPositionsLostBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
     {
         var mostPositionsLost = rows.Max(x => x.PositionChange);
-        foreach (var row in rows)
+        var bonusRows = rows.Where(x => x.PositionChange == mostPositionsLost);
+
+        foreach (var row in bonusRows)
         {
-            if (row.PositionChange == mostPositionsLost)
-            {
-                row.BonusPoints += points;
-            }
+            row.BonusPoints += points;
         }
         return rows;
     }
@@ -388,12 +385,11 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     private static IEnumerable<ResultRowCalculationResult> ApplyMostPositionsGainedBonusPoints(IEnumerable<ResultRowCalculationResult> rows, int points)
     {
         var mostPositionsGained = rows.Min(x => x.PositionChange);
-        foreach(var row in rows)
+        var bonusRows = rows.Where(x => x.PositionChange == mostPositionsGained);
+
+        foreach (var row in bonusRows)
         {
-            if (row.PositionChange == mostPositionsGained)
-            {
-                row.BonusPoints += points;
-            }
+            row.BonusPoints += points;
         }
         return rows;
     }
@@ -416,6 +412,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         var minIncRows = GetBestValues(rows.Where(condition), x => x.Incidents, x => x, x => x.Min())
             .Select(x => x.id)
             .NotNull();
+
         foreach (var row in minIncRows)
         {
             row.BonusPoints += points;
