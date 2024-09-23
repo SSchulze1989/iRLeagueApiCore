@@ -25,6 +25,7 @@ public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFr
     {
         var seasonResults = await dbContext.ScoredEventResults
             .Where(x => x.Event.Schedule.SeasonId == seasonId)
+            .OrderBy(x => x.ResultConfigId)
             .OrderBy(x => x.Event.Date)
             .Select(MapToEventResultModelExpression)
             .ToListAsync(cancellationToken);
