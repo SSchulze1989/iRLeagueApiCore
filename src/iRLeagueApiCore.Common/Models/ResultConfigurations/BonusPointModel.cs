@@ -4,6 +4,8 @@ namespace iRLeagueApiCore.Common.Models;
 public class BonusPointModel
 {
     [DataMember]
+    public string Name { get; set; } = string.Empty;
+    [DataMember]
     public BonusPointType Type { get; set; }
     [DataMember]
     public double Value { get; set; }
