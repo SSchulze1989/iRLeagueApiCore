@@ -1,9 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Services.ResultService.Calculation;
+using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Globalization;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 public sealed class IdRowFilterTests

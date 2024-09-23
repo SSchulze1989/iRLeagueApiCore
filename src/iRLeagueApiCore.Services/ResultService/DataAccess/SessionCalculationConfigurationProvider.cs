@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Calculation;
+using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
@@ -247,6 +248,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
                 condition.FilterValues, condition.Action, allowForEach: allowForEach),
             FilterType.Member => new IdRowFilter<long>(condition.FilterValues, x => x.MemberId.GetValueOrDefault(), condition.Action),
             FilterType.Team => new IdRowFilter<long>(condition.FilterValues, x => x.TeamId.GetValueOrDefault(), condition.Action),
+            FilterType.Count => new CountRowFilter(condition.Comparator, condition.FilterValues, condition.Action),
             _ => null,
         };
     }

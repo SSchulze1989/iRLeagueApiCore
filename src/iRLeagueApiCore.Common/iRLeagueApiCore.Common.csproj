@@ -18,7 +18,7 @@
 		<OutputType>Library</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<PackageId>iRLeagueApiCore.Common</PackageId>
-		<Version>0.12.1</Version>
+		<Version>0.12.2</Version>
 		<Authors>Simon Schulze</Authors>
 		<Company>Simon Schulze</Company>
 		<ImplicitUsings>enable</ImplicitUsings>

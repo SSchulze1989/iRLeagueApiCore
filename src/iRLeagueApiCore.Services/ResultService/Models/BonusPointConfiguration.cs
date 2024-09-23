@@ -1,4 +1,4 @@
-﻿using iRLeagueApiCore.Services.ResultService.Calculation;
+﻿using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 
 namespace iRLeagueApiCore.Services.ResultService.Models;
 internal sealed class BonusPointConfiguration

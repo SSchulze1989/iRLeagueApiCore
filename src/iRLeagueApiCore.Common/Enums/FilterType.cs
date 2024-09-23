@@ -5,4 +5,5 @@ public enum FilterType
     ColumnProperty,
     Member,
     Team,
+    Count,
 }

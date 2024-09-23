@@ -9,5 +9,7 @@ public enum ComparatorType
     IsBigger,
     NotEqual,
     InList,
-    ForEach,    // special comparator that multiplies the configured bonus/penalty for each multiple of the provided value
+    ForEach, // special comparator that multiplies the configured bonus/penalty for each multiple of the provided value
+    Min,
+    Max, 
 }
