@@ -14,6 +14,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
     {
         return await dbContext.ScoredEventResults
             .Where(x => x.EventId == eventId)
+            .OrderBy(x => x.ResultConfigId)
             .Select(MapToEventResultModelExpression)
             .ToListAsync(cancellationToken);
     }

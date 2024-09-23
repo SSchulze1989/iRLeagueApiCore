@@ -23,6 +23,7 @@ public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<
     private async Task<IEnumerable<ResultConfigModel>> MapToGetResultConfigsFromLeagueAsync(CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
+            .OrderBy(x => x.ResultConfigId)
             .Select(MapToResultConfigModelExpression)
             .ToListAsync(cancellationToken);
     }

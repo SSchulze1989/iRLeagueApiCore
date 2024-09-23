@@ -26,6 +26,7 @@ public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResu
             .Where(x => x.SeasonId == seasonId)
             .Where(x => x.IsActive)
             .SelectMany(x => x.ResultConfigurations)
+            .OrderBy(x => x.ResultConfigId)
             .Select(MapToResultConfigModelExpression)
             .ToListAsync(cancellationToken);
     }
