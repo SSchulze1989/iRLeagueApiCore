@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Results;
+using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -163,9 +164,31 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
     public async Task<ActionResult<RawEventResultModel>> GetRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId,  CancellationToken cancellationToken = default)
     {
-        var request = new GetRawResultsFromEventRequest(eventId);
+        var request = new GetRawEventResultRequest(eventId);
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpGet]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
+    public async Task<ActionResult<RawEventResultModel>> PutRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId, [FromBody] RawEventResultModel model, 
+        CancellationToken cancellationToken = default)
+    {
+        var leagueUser = new LeagueUser(leagueName, User);
+        var request = new PutEventResultRequest(leagueUser, eventId, model);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
+    public async Task<ActionResult<RawEventResultModel>> DeleteRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId, CancellationToken cancellationToken = default)
+    {
+        var request = new DeleteRawEventResultRequest(eventId);
+        await mediator.Send(request, cancellationToken);
+        return NoContent();
     }
 
     [HttpPut]
