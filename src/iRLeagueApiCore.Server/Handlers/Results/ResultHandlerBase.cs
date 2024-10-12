@@ -267,6 +267,6 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
                 TeamId = row.TeamId,
                 PointsEligible = row.PointsEligible,
             }).ToList(),
-        })
+        }).ToList(),
     };
 }

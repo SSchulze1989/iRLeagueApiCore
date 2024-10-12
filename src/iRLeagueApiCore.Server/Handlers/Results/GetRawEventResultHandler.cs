@@ -15,8 +15,9 @@ public class GetRawEventResultHandler : ResultHandlerBase<GetRawEventResultHandl
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var result = await dbContext.EventResults
+            .Where(x => x.EventId == request.EventId)
             .Select(MapToRawEventResultModelExpression)
-            .FirstOrDefaultAsync(x => x.EventId == request.EventId, cancellationToken)
+            .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
         return result;
     }

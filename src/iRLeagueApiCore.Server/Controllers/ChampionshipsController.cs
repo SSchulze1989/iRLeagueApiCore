@@ -15,7 +15,7 @@ namespace iRLeagueApiCore.Server.Controllers;
 [Route("{leagueName}/[controller]")]
 public class ChampionshipsController : LeagueApiController<ChampionshipsController>
 {
-    public ChampionshipsController(ILogger<ChampionshipsController> logger, IMediator mediator) : 
+    public ChampionshipsController(ILogger<ChampionshipsController> logger, IMediator mediator) :
         base(logger, mediator)
     {
     }
@@ -30,7 +30,7 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<ChampionshipModel>> Get([FromRoute] string leagueName, [FromRoute] long id, 
+    public async Task<ActionResult<ChampionshipModel>> Get([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken = default)
     {
         var request = new GetChampionshipRequest(id);
@@ -47,7 +47,7 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     [HttpGet]
     [AllowAnonymous]
     [Route("")]
-    public async Task<ActionResult<IEnumerable<ChampionshipModel>>> GetFromLeague([FromRoute] string leagueName, 
+    public async Task<ActionResult<IEnumerable<ChampionshipModel>>> GetFromLeague([FromRoute] string leagueName,
         CancellationToken cancellationToken = default)
     {
         var request = new GetChampionshipsFromLeagueRequest();
@@ -84,7 +84,7 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("{id:long}")]
-    public async Task<ActionResult<ChampionshipModel>> Put([FromRoute] string leagueName, [FromRoute] long id, 
+    public async Task<ActionResult<ChampionshipModel>> Put([FromRoute] string leagueName, [FromRoute] long id,
         [FromBody] PutChampionshipModel putChampionship, CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
@@ -103,7 +103,7 @@ public class ChampionshipsController : LeagueApiController<ChampionshipsControll
     [HttpDelete]
     [RequireLeagueRole(LeagueRoles.Admin)]
     [Route("{id:long}")]
-    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id, 
+    public async Task<ActionResult> Delete([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken = default)
     {
         var request = new DeleteChampionshipRequest(id);

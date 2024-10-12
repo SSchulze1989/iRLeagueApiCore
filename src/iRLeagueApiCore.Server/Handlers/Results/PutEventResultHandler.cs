@@ -1,10 +1,9 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record PutEventResultRequest(long EventId, RawEventResultModel Model, LeagueUser User) : IRequest<RawEventResultModel>;
+public record PutEventResultRequest(LeagueUser User, long EventId, RawEventResultModel Model) : IRequest<RawEventResultModel>;
 public class PutEventResultHandler : ResultHandlerBase<PutEventResultHandler, PutEventResultRequest, RawEventResultModel>
 {
     public PutEventResultHandler(ILogger<PutEventResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutEventResultRequest>> validators)
@@ -72,7 +71,7 @@ public class PutEventResultHandler : ResultHandlerBase<PutEventResultHandler, Pu
     {
         UpdateVersionEntity(user, entity);
         var resultRows = new List<ResultRowEntity>();
-        foreach(var resultRowModel in model.ResultRows)
+        foreach (var resultRowModel in model.ResultRows)
         {
             var resultRow = entity.ResultRows.FirstOrDefault(x => x.ResultRowId == resultRowModel.ResultRowId && resultRowModel.ResultRowId > 0);
             if (resultRow is null)
