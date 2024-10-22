@@ -169,7 +169,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
     public async Task<ActionResult<RawEventResultModel>> PutRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId, [FromBody] RawEventResultModel model, 
@@ -181,7 +181,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpDelete]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
     public async Task<ActionResult<RawEventResultModel>> DeleteRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId, CancellationToken cancellationToken = default)
