@@ -10,7 +10,7 @@ internal sealed class TeamStandingCalculationService : StandingCalculationServic
 
     public override Task<StandingCalculationResult> Calculate(StandingCalculationData data)
     {
-        var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data, config.UseCombinedResult);
+        var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data);
 
         Func<ResultRowCalculationResult, long?> keySelector = x => x.TeamId;
         var previousTeamEventResults = GetGroupedEventResults(previousSessionResults, keySelector);

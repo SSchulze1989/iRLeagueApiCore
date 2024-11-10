@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+
+namespace iRLeagueApiCore.Services.ResultService.Models;
 
 internal sealed class SessionCalculationResult
 {
@@ -11,6 +13,7 @@ internal sealed class SessionCalculationResult
         LeagueId = data.LeagueId;
         SessionId = data.SessionId;
         Sof = data.Sof;
+        SessionType = data.SessionType;
     }
 
     public long LeagueId { get; set; }
@@ -19,6 +22,7 @@ internal sealed class SessionCalculationResult
     public long? SessionResultId { get; set; }
     public long? ScoringId { get; set; }
     public string Name { get; set; } = string.Empty;
+    public SessionType SessionType { get; set; }
     public int Sof { get; set; }
     public TimeSpan FastestLap { get; set; }
     public TimeSpan FastestQualyLap { get; set; }

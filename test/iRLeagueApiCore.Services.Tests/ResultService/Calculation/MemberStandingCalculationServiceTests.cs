@@ -315,6 +315,86 @@ public sealed class MemberStandingCalculationServiceTests
         testRow.RacePointsChange.Should().Be(2);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldCombinePracticeAndQualyPoints_ForSingleHeader()
+    {
+        var nEvents = 1;
+        var nRaces = 1;
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var memberIds = data.CurrentEventResult.SessionResults.First().ResultRows.Select(x => x.MemberId).NotNull().Distinct().ToList();
+        // add qualy and practice sessions
+        var practiceSession = SessionResultDataBuilder(memberIds, SessionType.Practice).Create();
+        var qualySession = SessionResultDataBuilder(memberIds, SessionType.Qualifying).Create();
+        data.CurrentEventResult.SessionResults = [practiceSession, qualySession, .. data.CurrentEventResult.SessionResults];
+        // add points to qualy and race session test row
+        var practiceTestRow = practiceSession.ResultRows.First();
+        practiceTestRow.RacePoints = 1;
+        practiceTestRow.BonusPoints = 2;
+        practiceTestRow.PenaltyPoints = 4;
+        var qualyTestRow = qualySession.ResultRows.First(x => x.MemberId == practiceTestRow.MemberId);
+        qualyTestRow.RacePoints = 8;
+        qualyTestRow.BonusPoints = 16;
+        qualyTestRow.PenaltyPoints = 32;
+        var raceTestRow = data.CurrentEventResult.SessionResults.Last().ResultRows.First(x => x.MemberId == practiceTestRow.MemberId);
+        raceTestRow.RacePoints = 0;
+        raceTestRow.BonusPoints = 0;
+        raceTestRow.PenaltyPoints = 0;
+        raceTestRow.TotalPoints = 0;
+
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId).Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.StandingRows.First(x => x.MemberId == practiceTestRow.MemberId);
+        testRow.RacePoints.Should().Be(27);
+        testRow.PenaltyPoints.Should().Be(36);
+        testRow.TotalPoints.Should().Be(-9);
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldCombinePracticeAndQualyPoints_ForMultiHeader()
+    {
+        var nEvents = 1;
+        var nRaces = 3;
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var memberIds = data.CurrentEventResult.SessionResults.First().ResultRows.Select(x => x.MemberId).NotNull().Distinct().ToList();
+        // add qualy and practice sessions
+        var practiceSession = SessionResultDataBuilder(memberIds, SessionType.Practice).Create();
+        var qualySession = SessionResultDataBuilder(memberIds, SessionType.Qualifying).Create();
+        data.CurrentEventResult.SessionResults = [practiceSession, qualySession, .. data.CurrentEventResult.SessionResults];
+        // add points to qualy and race session test row
+        var practiceTestRow = practiceSession.ResultRows.First();
+        practiceTestRow.RacePoints = 1;
+        practiceTestRow.BonusPoints = 2;
+        practiceTestRow.PenaltyPoints = 4;
+        var qualyTestRow = qualySession.ResultRows.First(x => x.MemberId == practiceTestRow.MemberId);
+        qualyTestRow.RacePoints = 8;
+        qualyTestRow.BonusPoints = 16;
+        qualyTestRow.PenaltyPoints = 32;
+        data.CurrentEventResult.SessionResults
+            .Where(x => x.SessionType == SessionType.Race)
+            .ForEach(x =>
+            {
+                var row = x.ResultRows.First(x => x.MemberId == practiceTestRow.MemberId);
+                row.RacePoints = 0;
+                row.BonusPoints = 0;
+                row.PenaltyPoints = 0;
+                row.TotalPoints = 0;
+            });
+        
+
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId).Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.StandingRows.First(x => x.MemberId == practiceTestRow.MemberId);
+        testRow.RacePoints.Should().Be(27);
+        testRow.PenaltyPoints.Should().Be(36);
+        testRow.TotalPoints.Should().Be(-9);
+    }
+
     private static MemberStandingCalculationService CreateSut(StandingCalculationConfiguration config)
     {
         return new(config);
@@ -329,8 +409,8 @@ public sealed class MemberStandingCalculationServiceTests
     {
         var memberIds = fixture.CreateMany<long>(10);
         return fixture.Build<StandingCalculationData>()
-            .With(x => x.PreviousEventResults, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult).CreateMany(nEvents - 1).ToList())
-            .With(x => x.CurrentEventResult, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult).Create());
+            .With(x => x.PreviousEventResults, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult: hasCombinedResult).CreateMany(nEvents - 1).ToList())
+            .With(x => x.CurrentEventResult, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult: hasCombinedResult).Create());
     }
 
     private IPostprocessComposer<EventCalculationResult> EventResultDataBuilder(IEnumerable<long> memberIds, int nRaces = 2, bool hasCombinedResult = false)
@@ -339,13 +419,15 @@ public sealed class MemberStandingCalculationServiceTests
             .With(x => x.SessionResults, () => SessionResultDataBuilder(memberIds).CreateMany(nRaces));
     }
 
-    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds)
+    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds, SessionType sessionType = SessionType.Race)
     {
         var getMemberIds = memberIds.ToList();
         return fixture
             .Build<SessionCalculationResult>()
+            .With(x => x.SessionType, sessionType)
             .With(x => x.ResultRows, fixture.Build<ResultRowCalculationResult>()
                 .With(x => x.MemberId, () => getMemberIds.PopRandom())
+                .With(x => x.SessionType, sessionType)
                 .CreateMany(memberIds.Count() - 1)
             );
     }
@@ -363,6 +445,7 @@ public sealed class MemberStandingCalculationServiceTests
     {
         return fixture.Build<ResultRowCalculationResult>()
             .Without(x => x.AddPenalties)
+            .With(x => x.SessionType, SessionType.Race)
             .Do(x => { x.TotalPoints = x.RacePoints + x.BonusPoints - x.PenaltyPoints; });
     }
 

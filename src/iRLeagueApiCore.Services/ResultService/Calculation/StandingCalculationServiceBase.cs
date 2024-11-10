@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
+using System.Collections;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -13,8 +14,57 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         this.config = config;
     }
 
+    protected EventCalculationResult CalculateFinalEventScore<T>(EventCalculationResult data, Func<ResultRowCalculationResult, T?> groupBy)
+        where T : struct
+    {
+        IEqualityComparer groupByComparer = EqualityComparer<T>.Default;
+        var practiceSession = data.SessionResults.FirstOrDefault(x => x.ResultRows.FirstOrDefault()?.SessionType == SessionType.Practice);
+        var qualySession = data.SessionResults.FirstOrDefault(x => x.ResultRows.FirstOrDefault()?.SessionType == SessionType.Qualifying);
+        var raceSessions = data.SessionResults.Where(x => x.ResultRows.FirstOrDefault()?.SessionType == SessionType.Race).ToList();
+        if (raceSessions.None())
+        {
+            return data;
+        }
+
+        // add qualy and practice points to first race session if session does not have a combined session result
+        if (raceSessions.Any(x => x.SessionNr == 999)) {
+            return data;
+        }
+        var firstRaceSession = raceSessions.First();
+        if (practiceSession != null && practiceSession.ResultRows.Any(x => x.RacePoints != 0 || x.BonusPoints != 0 || x.PenaltyPoints != 0))
+        {
+            foreach (var row in practiceSession.ResultRows)
+            {
+                var raceRow = firstRaceSession.ResultRows.FirstOrDefault(x => groupByComparer.Equals(groupBy(x), groupBy(row)));
+                if (raceRow is null)
+                {
+                    continue;
+                }
+                raceRow.RacePoints += row.RacePoints;
+                raceRow.BonusPoints += row.BonusPoints;
+                raceRow.PenaltyPoints += row.PenaltyPoints;
+            }
+        }
+        if (qualySession != null && qualySession.ResultRows.Any(x => x.RacePoints != 0 || x.BonusPoints != 0 || x.PenaltyPoints != 0))
+        {
+            foreach (var row in qualySession.ResultRows)
+            {
+                var raceRow = firstRaceSession.ResultRows.FirstOrDefault(x => groupByComparer.Equals(groupBy(x), groupBy(row)));
+                if (raceRow is null)
+                {
+                    continue;
+                }
+                raceRow.RacePoints += row.RacePoints;
+                raceRow.BonusPoints += row.BonusPoints;
+                raceRow.PenaltyPoints += row.PenaltyPoints;
+            }
+        }
+
+        return data;
+    }
+
     protected (IEnumerable<EventSessionResults> PreviousResults, EventSessionResults CurrentResult) GetPreviousAndCurrentSessionResults(
-        StandingCalculationData data, bool useCombinedResult)
+        StandingCalculationData data)
     {
         IEnumerable<EventSessionResults> previousResults;
         EventSessionResults currentResult;
@@ -27,9 +77,9 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         else
         {
             previousResults = data.PreviousEventResults
-                .Select(eventResult => new EventSessionResults(eventResult, eventResult.SessionResults.Where(x => x.Name != "Practice" && x.Name != "Qualifying")));
+                .Select(eventResult => new EventSessionResults(eventResult, eventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying))));
             currentResult = new EventSessionResults(data.CurrentEventResult,
-                data.CurrentEventResult.SessionResults.Where(x => x.Name != "Practice" && x.Name != "Qualifying"));
+                data.CurrentEventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying)));
         }
         return (previousResults, currentResult);
     }
@@ -37,7 +87,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
     protected static Dictionary<T, GroupedEventResult<T>> GetGroupedEventResult<T>(EventSessionResults sessionResults,
         Func<ResultRowCalculationResult, T?> groupBy) where T : struct
     {
-        return GetGroupedEventResults(new[] { sessionResults }, groupBy)
+        return GetGroupedEventResults([sessionResults], groupBy)
             .ToDictionary(k => k.Key, v => v.Value.First());
     }
 
@@ -135,7 +185,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
 
     protected static IEnumerable<T> SortStandingRows<T>(IEnumerable<T> rows, Func<T, StandingRowCalculationResult> standingRowSelector, IEnumerable<SortOptions> sortOptions)
     {
-        foreach(var sortOption in sortOptions.Reverse())
+        foreach (var sortOption in sortOptions.Reverse())
         {
             rows = rows.OrderBy(x => sortOption.GetStandingSortingValue<StandingRowCalculationResult>()(standingRowSelector(x)));
         }
