@@ -242,7 +242,7 @@ public sealed class MemberStandingCalculationServiceTests
     {
         const int nEvents = 5;
         const int nRaces = 1;
-        var points = ((double[]) [8, 1, 4, 0, 2])
+        var points = ((double[])[8, 1, 4, 0, 2])
             .CreateSequence();
         var memberId = fixture.Create<long>();
         var testRowData = TestRowBuilder()
@@ -382,7 +382,6 @@ public sealed class MemberStandingCalculationServiceTests
                 row.PenaltyPoints = 0;
                 row.TotalPoints = 0;
             });
-        
 
         var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId).Create();
         var sut = CreateSut(config);
@@ -421,18 +420,21 @@ public sealed class MemberStandingCalculationServiceTests
 
     private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds, SessionType sessionType = SessionType.Race)
     {
-        var getMemberIds = memberIds.ToList();
         return fixture
             .Build<SessionCalculationResult>()
             .With(x => x.SessionType, sessionType)
-            .With(x => x.ResultRows, fixture.Build<ResultRowCalculationResult>()
-                .With(x => x.MemberId, () => getMemberIds.PopRandom())
-                .With(x => x.SessionType, sessionType)
-                .CreateMany(memberIds.Count() - 1)
+            .With(x => x.ResultRows, () =>
+                {
+                    var getMemberIds = memberIds.ToList();
+                    return fixture.Build<ResultRowCalculationResult>()
+                    .With(x => x.MemberId, () => getMemberIds.PopRandom())
+                    .With(x => x.SessionType, sessionType)
+                    .CreateMany(memberIds.Count() - 1);
+                }
             );
     }
 
-    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId, 
+    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId,
         ChampSeasonEntity? champSeason = null)
     {
         return fixture.Build<StandingCalculationConfiguration>()
