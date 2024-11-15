@@ -110,7 +110,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     /// <param name="rows">rows to combine</param>
     /// <param name="groupBy">selector for the key by which to group the rows</param>
     /// <returns></returns>
-    protected static IEnumerable<ResultRowCalculationResult> CombineResults<T>(IEnumerable<ResultRowCalculationResult> rows, Func<ResultRowCalculationResult, T> groupBy)
+    internal static IEnumerable<ResultRowCalculationResult> CombineResults<T>(IEnumerable<ResultRowCalculationResult> rows, Func<ResultRowCalculationResult, T> groupBy)
     {
         var groupedRows = rows.GroupBy(groupBy);
         var combined = new List<ResultRowCalculationResult>();
@@ -119,6 +119,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         {
             var raceSessions = group.Where(x => x.SessionType == SessionType.Race).ToList();
             var row = new ResultRowCalculationResult(raceSessions.First());
+
             foreach (var sessionRow in raceSessions.Skip(1))
             {
                 row.BonusPoints += sessionRow.BonusPoints;
@@ -161,6 +162,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         var penalty = new AddPenaltyCalculationData()
         {
             MemberId = row.MemberId,
+            TeamId = row.MemberId is null ? row.TeamId : null,
             Points = autoPenalty.Type == PenaltyType.Points ? autoPenalty.Points * penaltyMultiplikator : 0,
             Positions = autoPenalty.Type == PenaltyType.Position ? autoPenalty.Positions * penaltyMultiplikator : 0,
             Time = autoPenalty.Type == PenaltyType.Time ? autoPenalty.Time * penaltyMultiplikator : TimeSpan.Zero,

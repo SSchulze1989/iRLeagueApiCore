@@ -26,10 +26,51 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
             return data;
         }
 
-        // add qualy and practice points to first race session if session does not have a combined session result
-        if (raceSessions.Any(x => x.SessionNr == 999)) {
+        // if event already has a combined result skip this step
+        if (raceSessions.Any(x => x.SessionNr == 999))
+        {
             return data;
         }
+
+        // calculate combined result if required
+        if (config.UseCombinedResult)
+        {
+            var allSessionResultRows = data.SessionResults
+                .OrderByDescending(x => x.SessionNr)
+                .SelectMany(x => x.ResultRows);
+            var combinedRows = CalculationServiceBase.CombineResults(allSessionResultRows, groupBy);
+
+            var combinedResult = new SessionCalculationResult()
+            {
+                LeagueId = config.LeagueId,
+                SessionId = null,
+                Name = "Temp_Combined",
+                SessionResultId = null,
+                ResultRows = combinedRows,
+                SessionNr = 999,
+            };
+
+            (combinedResult.FastestLapDriverMemberId, combinedResult.FastestLap) = data.SessionResults
+                .Where(x => x.FastestLapDriverMemberId != null)
+                .OrderBy(x => x.FastestLap)
+                .Select(x => (x.FastestLapDriverMemberId, x.FastestLap))
+                .FirstOrDefault();
+            (combinedResult.FastestAvgLapDriverMemberId, combinedResult.FastestAvgLap) = data.SessionResults
+                .Where(x => x.FastestAvgLapDriverMemberId != null)
+                .OrderBy(x => x.FastestAvgLap)
+                .Select(x => (x.FastestAvgLapDriverMemberId, x.FastestAvgLap))
+                .FirstOrDefault();
+            (combinedResult.FastestQualyLapDriverMemberId, combinedResult.FastestQualyLap) = data.SessionResults
+                .Where(x => x.FastestQualyLapDriverMemberId != null)
+                .OrderBy(x => x.FastestQualyLap)
+                .Select(x => (x.FastestQualyLapDriverMemberId, x.FastestQualyLap))
+                .FirstOrDefault();
+
+            data.SessionResults = [.. data.SessionResults, combinedResult];
+            return data;
+        }
+
+        // if each individual session should be scored add qualy and race points to first race
         var firstRaceSession = raceSessions.First();
         if (practiceSession != null && practiceSession.ResultRows.Any(x => x.RacePoints != 0 || x.BonusPoints != 0 || x.PenaltyPoints != 0))
         {
@@ -77,9 +118,10 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         else
         {
             previousResults = data.PreviousEventResults
-                .Select(eventResult => new EventSessionResults(eventResult, eventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying))));
+                .Select(eventResult => new EventSessionResults(eventResult, eventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying) 
+                    && x.SessionNr != 999)));
             currentResult = new EventSessionResults(data.CurrentEventResult,
-                data.CurrentEventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying)));
+                data.CurrentEventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying) && x.SessionNr != 999));
         }
         return (previousResults, currentResult);
     }
