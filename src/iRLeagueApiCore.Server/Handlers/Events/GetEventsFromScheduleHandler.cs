@@ -23,6 +23,7 @@ public sealed class GetEventsFromScheduleHandler : EventHandlerBase<GetEventsFro
     {
         return await dbContext.Events
             .Where(x => x.ScheduleId == scheduleId)
+            .OrderBy(x => x.Date)
             .Select(MapToEventModelExpression(includeDetails))
             .ToListAsync(cancellationToken);
     }

@@ -110,31 +110,42 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     /// <param name="rows">rows to combine</param>
     /// <param name="groupBy">selector for the key by which to group the rows</param>
     /// <returns></returns>
-    protected static IEnumerable<ResultRowCalculationResult> CombineResults<T>(IEnumerable<ResultRowCalculationResult> rows, Func<ResultRowCalculationResult, T> groupBy)
+    internal static IEnumerable<ResultRowCalculationResult> CombineResults<T>(IEnumerable<ResultRowCalculationResult> rows, Func<ResultRowCalculationResult, T> groupBy)
     {
         var groupedRows = rows.GroupBy(groupBy);
         var combined = new List<ResultRowCalculationResult>();
 
         foreach (var group in groupedRows.Where(x => x.Any()))
         {
-            var row = new ResultRowCalculationResult(group.First());
-            foreach (var groupRow in group.Skip(1))
+            var raceSessions = group.Where(x => x.SessionType == SessionType.Race).ToList();
+            var row = new ResultRowCalculationResult(raceSessions.First());
+
+            foreach (var sessionRow in raceSessions.Skip(1))
             {
-                row.BonusPoints += groupRow.BonusPoints;
-                row.CompletedLaps += groupRow.CompletedLaps;
-                row.Incidents += groupRow.Incidents;
-                row.LeadLaps += groupRow.LeadLaps;
-                row.PenaltyPoints += groupRow.PenaltyPoints;
-                row.RacePoints += groupRow.RacePoints;
-                row.PointsEligible |= groupRow.PointsEligible;
-                row.Status = Math.Min(row.Status, groupRow.Status);
+                row.BonusPoints += sessionRow.BonusPoints;
+                row.CompletedLaps += sessionRow.CompletedLaps;
+                row.Incidents += sessionRow.Incidents;
+                row.LeadLaps += sessionRow.LeadLaps;
+                row.PenaltyPoints += sessionRow.PenaltyPoints;
+                row.RacePoints += sessionRow.RacePoints;
+                row.PointsEligible |= sessionRow.PointsEligible;
+                row.Status = Math.Min(row.Status, sessionRow.Status);
             }
-            row.StartPosition = group.Last().StartPosition;
-            row.AvgLapTime = GetAverageLapValue(group, x => x.AvgLapTime, x => x.CompletedLaps);
-            (_, row.FastestLapTime) = GetBestLapValue(group, x => x.MemberId, x => x.FastestLapTime);
-            (_, row.QualifyingTime) = GetBestLapValue(group, x => x.MemberId, x => x.QualifyingTime);
+            // handle practice and qualy sessions separately
+            var otherSessions = group.Except(raceSessions);
+            foreach (var sessionRow in otherSessions)
+            {
+                row.BonusPoints += sessionRow.BonusPoints;
+                row.RacePoints += sessionRow.RacePoints;
+                row.PenaltyPoints += sessionRow.PenaltyPoints;
+            }
+
+            row.StartPosition = raceSessions.Last().StartPosition;
+            row.AvgLapTime = GetAverageLapValue(raceSessions, x => x.AvgLapTime, x => x.CompletedLaps);
+            (_, row.FastestLapTime) = GetBestLapValue(raceSessions, x => x.MemberId, x => x.FastestLapTime);
+            (_, row.QualifyingTime) = GetBestLapValue(raceSessions, x => x.MemberId, x => x.QualifyingTime);
             row.FastLapNr = 0;
-            var last = group.Last();
+            var last = raceSessions.Last();
             row.NewCpi = last.NewCpi;
             row.NewIrating = last.NewIrating;
             row.NewLicenseLevel = last.NewLicenseLevel;
@@ -151,6 +162,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         var penalty = new AddPenaltyCalculationData()
         {
             MemberId = row.MemberId,
+            TeamId = row.MemberId is null ? row.TeamId : null,
             Points = autoPenalty.Type == PenaltyType.Points ? autoPenalty.Points * penaltyMultiplikator : 0,
             Positions = autoPenalty.Type == PenaltyType.Position ? autoPenalty.Positions * penaltyMultiplikator : 0,
             Time = autoPenalty.Type == PenaltyType.Time ? autoPenalty.Time * penaltyMultiplikator : TimeSpan.Zero,

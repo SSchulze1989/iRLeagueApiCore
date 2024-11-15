@@ -714,6 +714,7 @@ public sealed class MemberSessionCalculationServiceTests
     private IPostprocessComposer<ResultRowCalculationData> TestRowBuilder()
     {
         return fixture.Build<ResultRowCalculationData>()
+            .With(x => x.SessionType, SessionType.Race)
             .Without(x => x.RacePoints)
             .Without(x => x.BonusPoints)
             .Without(x => x.PenaltyPoints)
