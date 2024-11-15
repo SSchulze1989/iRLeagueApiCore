@@ -3,6 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 
@@ -115,6 +116,11 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
 
     private static StandingCalculationConfiguration EmptyStandingConfiguration()
     {
-        return new StandingCalculationConfiguration();
+        return new StandingCalculationConfiguration()
+        {
+            SortOptions = [SortOptions.PenPtsAsc, SortOptions.PenPtsAsc, SortOptions.WinsDesc, SortOptions.IncsAsc],
+            WeeksCounted = 999,
+            UseCombinedResult = true,
+        };
     }
 }
