@@ -55,7 +55,6 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
             {
                 var combinedSessionNrs = config.SessionResultConfigurations
                 .Where(x => x.IsCombinedResult == false)
-                .Where(x => x.SessionType == SessionType.Race)
                 .Select(x => x.SessionNr);
                 combinedRows = sessionResults
                     .Where(x => combinedSessionNrs.Contains(x.SessionNr))

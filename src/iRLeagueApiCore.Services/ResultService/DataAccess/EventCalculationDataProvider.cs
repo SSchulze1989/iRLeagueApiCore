@@ -1,11 +1,8 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using MySqlX.XDevAPI.Relational;
-using System.Diagnostics.Eventing.Reader;
-using System.Threading;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 
@@ -28,6 +25,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         // Fill Qualy lap
         data = FillQualyLap(config, data);
         data = FillFastestLapTimes(data);
+        data = FillSessionType(config, data);
         return data;
     }
 
@@ -107,6 +105,20 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         return data;
     }
 
+    private static EventCalculationData FillSessionType(EventCalculationConfiguration config, EventCalculationData data)
+    {
+        foreach(var sessionResult in data.SessionResults)
+        {
+            var sessionType = config.SessionResultConfigurations.FirstOrDefault(x => x.SessionNr == sessionResult.SessionNr)?.SessionType ?? SessionType.Undefined;
+            sessionResult.SessionType = sessionType;
+            foreach(var row in sessionResult.ResultRows)
+            {
+                row.SessionType = sessionType;
+            }
+        }
+        return data;
+    }
+
     private async Task<EventCalculationData> AssociatePenalties(EventCalculationConfiguration config, EventCalculationData data, CancellationToken cancellationToken)
     {
         // get existing scoredresultrows
@@ -150,6 +162,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 LeagueId = sessionResult.LeagueId,
                 SessionId = sessionResult.SessionId,
                 SessionNr = sessionResult.Session.SessionNr,
+                SessionType = sessionResult.Session.SessionType,
                 AcceptedReviewVotes = sessionResult.Session.IncidentReviews
                     .SelectMany(review => review.AcceptedReviewVotes)
                     .Select(vote => new AcceptedReviewVoteCalculationData()
