@@ -23,7 +23,8 @@ public sealed class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromS
     {
         return await dbContext.Events
             .Where(x => x.Schedule.SeasonId == seasonId)
+            .OrderBy(x => x.Date)
             .Select(MapToEventModelExpression(includeDetails))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

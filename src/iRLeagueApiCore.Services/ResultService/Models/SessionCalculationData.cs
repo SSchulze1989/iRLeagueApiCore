@@ -1,10 +1,13 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+
+namespace iRLeagueApiCore.Services.ResultService.Models;
 
 internal sealed class SessionCalculationData
 {
     public long LeagueId { get; set; }
     public long? SessionId { get; set; }
     public int? SessionNr { get; set; }
+    public SessionType SessionType { get; set; }
     public int Sof { get; set; }
     public TimeSpan FastestLap { get; set; }
     public TimeSpan FastestQualyLap { get; set; }

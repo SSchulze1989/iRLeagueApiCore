@@ -123,7 +123,7 @@ public abstract class EventHandlerBase<THandler, TRequest, TResponse> : HandlerB
             LastModifiedOn = TreatAsUTCDateTime(session.LastModifiedOn),
             LastModifiedByUserId = session.LastModifiedByUserId,
             LastModifiedByUserName = session.LastModifiedByUserName
-        }).ToList(),
+        }).OrderBy(x => x.SessionNr).ToList(),
         TrackId = @event.TrackId,
         ResultConfigs = @event.ResultConfigs.Select(config => new ResultConfigInfoModel()
         {
@@ -133,7 +133,7 @@ public abstract class EventHandlerBase<THandler, TRequest, TResponse> : HandlerB
             ChampionshipName = config.ChampSeason.Championship.Name,
             Name = config.Name,
             DisplayName = config.DisplayName,
-        }).ToList(),
+        }).OrderBy(x => x.ResultConfigId).ToList(),
         SimSessionDetails = (includeDetails == false || @event.SimSessionDetails.Any() == false) ? null :
             @event.SimSessionDetails.Take(1).Select(details => new SimSessionDetailsModel()
             {

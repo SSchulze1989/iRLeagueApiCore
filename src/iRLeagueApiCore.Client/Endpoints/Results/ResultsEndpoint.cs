@@ -15,7 +15,7 @@ internal class ResultsEndpoint : GetAllEndpoint<EventResultModel>,
         RouteBuilder.AddEndpoint("Results");
     }
 
-    public IGetEndpoint<RawEventResultModel> Raw()
+    public IUpdateEndpoint<RawEventResultModel, RawEventResultModel> Raw()
     {
         return new RawResultsEndpoint(HttpClientWrapper, RouteBuilder);
     }

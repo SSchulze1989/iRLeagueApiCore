@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using iRLeagueApiCore.Common.Enums;
+using System.Diagnostics;
 
 namespace iRLeagueApiCore.Services.ResultService.Models;
 
@@ -7,6 +8,7 @@ namespace iRLeagueApiCore.Services.ResultService.Models;
     "PenaltyPoints = {PenaltyPoints}, TotalPoints = {TotalPoints}")]
 internal class ResultRowCalculationData : IPointRow, IPenaltyRow
 {
+    public SessionType SessionType { get; set; }
     public long? ScoredResultRowId { get; set; }
     public long? MemberId { get; set; }
     public string Firstname { get; set; } = string.Empty;

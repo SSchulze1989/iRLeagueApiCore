@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -53,6 +54,13 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
             .FirstOrDefaultAsync(x => x.EventId == eventId, cancellationToken);
     }
 
+    private static SessionType GetSessionType(string sessionName) => sessionName switch
+    {
+        "Practice" => SessionType.Practice,
+        "Qualifying" => SessionType.Qualifying,
+        _ => SessionType.Race,
+    };
+
     private async Task<IEnumerable<EventCalculationResult>> GetPreviousResultsAsync(long seasonId, long? standingConfigId, IEnumerable<long?> resultConfigIds, DateTime? date, CancellationToken cancellationToken)
     {
         if (date is null)
@@ -89,6 +97,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
         {
             LeagueId = sessionResult.LeagueId,
             SessionNr = sessionResult.SessionNr,
+            SessionType = GetSessionType(sessionResult.Name),
             FastestAvgLap = sessionResult.FastestAvgLap,
             FastestAvgLapDriverMemberId = sessionResult.FastestAvgLapDriverMemberId,
             FastestLap = sessionResult.FastestLap,
@@ -102,6 +111,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
             SessionResultId = sessionResult.SessionResultId,
             ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowCalculationResult()
             {
+                SessionType = GetSessionType(sessionResult.Name),
                 ScoredResultRowId = row.ScoredResultRowId,
                 MemberId = row.MemberId,
                 Firstname = row.Member == null ? string.Empty : row.Member.Firstname,

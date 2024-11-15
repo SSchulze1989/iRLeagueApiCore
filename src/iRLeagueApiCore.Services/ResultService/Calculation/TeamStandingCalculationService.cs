@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 
@@ -10,9 +11,12 @@ internal sealed class TeamStandingCalculationService : StandingCalculationServic
 
     public override Task<StandingCalculationResult> Calculate(StandingCalculationData data)
     {
-        var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data, config.UseCombinedResult);
+        static long? keySelector(ResultRowCalculationResult x) => x.TeamId;
+        data.PreviousEventResults.ForEach(x => CalculateFinalEventScore(x, keySelector));
+        CalculateFinalEventScore(data.CurrentEventResult, keySelector);
+        
+        var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data);
 
-        Func<ResultRowCalculationResult, long?> keySelector = x => x.TeamId;
         var previousTeamEventResults = GetGroupedEventResults(previousSessionResults, keySelector);
         var currentTeamEventResult = GetGroupedEventResult(currentSessionResults, keySelector);
 
