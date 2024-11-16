@@ -111,7 +111,7 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             LeagueId = season.LeagueId,
             SeasonId = season.SeasonId,
             EventId = eventId,
-            SortOptions = [SortOptions.PenPtsAsc, SortOptions.PenPtsAsc, SortOptions.WinsDesc, SortOptions.IncsAsc],
+            SortOptions = [SortOptions.TotalPtsDesc, SortOptions.PenPtsAsc, SortOptions.WinsDesc, SortOptions.IncsAsc],
             WeeksCounted = 999,
             UseCombinedResult = true,
         };
