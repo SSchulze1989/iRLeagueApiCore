@@ -19,8 +19,8 @@ internal sealed class CredentialList : ICredentials
         foreach(var credentialConfig in configuration.GetChildren()) 
         {
             var credential = new NetworkCredential(credentialConfig["Username"], credentialConfig["Password"]);
-            var uri = new Uri(credentialConfig["Uri"]);
-            var authenticationType = credentialConfig["AuthenticationType"];
+            var uri = new Uri(credentialConfig["Uri"] ?? string.Empty);
+            var authenticationType = credentialConfig["AuthenticationType"] ?? string.Empty;
             Add(uri, authenticationType, credential);
         }
     }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using iRLeagueDatabaseCore.Models;
 
@@ -10,9 +11,10 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueDatabaseCore.Migrations
 {
     [DbContext(typeof(LeagueDbContext))]
-    partial class LeagueDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240414172906_AddSyncIracingId")]
+    partial class AddSyncIracingId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -520,30 +522,6 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.HasIndex("LeagueId", "LastSessionId");
 
                     b.ToTable("DriverStatisticRows");
-                });
-
-            modelBuilder.Entity("iRLeagueDatabaseCore.Models.DropweekOverrideEntity", b =>
-                {
-                    b.Property<long>("LeagueId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("StandingConfigId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ScoredResultRowId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("ShouldDrop")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("LeagueId", "StandingConfigId", "ScoredResultRowId");
-
-                    b.HasIndex("LeagueId", "ScoredResultRowId");
-
-                    b.ToTable("DropweekOverrides", (string)null);
                 });
 
             modelBuilder.Entity("iRLeagueDatabaseCore.Models.EventEntity", b =>
@@ -3043,25 +3021,6 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.Navigation("StatisticSet");
                 });
 
-            modelBuilder.Entity("iRLeagueDatabaseCore.Models.DropweekOverrideEntity", b =>
-                {
-                    b.HasOne("iRLeagueDatabaseCore.Models.ScoredResultRowEntity", "ScoredResultRow")
-                        .WithMany()
-                        .HasForeignKey("LeagueId", "ScoredResultRowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("iRLeagueDatabaseCore.Models.StandingConfigurationEntity", "StandingConfig")
-                        .WithMany("DropweekOverrides")
-                        .HasForeignKey("LeagueId", "StandingConfigId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ScoredResultRow");
-
-                    b.Navigation("StandingConfig");
-                });
-
             modelBuilder.Entity("iRLeagueDatabaseCore.Models.EventEntity", b =>
                 {
                     b.HasOne("iRLeagueDatabaseCore.Models.TrackConfigEntity", "Track")
@@ -3946,8 +3905,6 @@ namespace iRLeagueDatabaseCore.Migrations
             modelBuilder.Entity("iRLeagueDatabaseCore.Models.StandingConfigurationEntity", b =>
                 {
                     b.Navigation("ChampSeasons");
-
-                    b.Navigation("DropweekOverrides");
 
                     b.Navigation("Standings");
                 });

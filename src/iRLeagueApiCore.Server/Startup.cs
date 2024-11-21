@@ -9,7 +9,6 @@ using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -156,7 +155,7 @@ public sealed class Startup
                 ValidateAudience = true,
                 ValidAudience = Configuration["JWT:ValidAudience"],
                 ValidIssuer = Configuration["JWT:ValidIssuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"] ?? string.Empty))
             };
         });
 
@@ -191,6 +190,12 @@ public sealed class Startup
 
         services.AddIRacingDataApi(options =>
         {
+            var credential = new CredentialList(Configuration.GetSection("Credentials"))
+                .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
+                ?? new();
+            options.Username = credential.UserName;
+            options.Password = credential.Password;
+            options.PasswordIsEncoded = true;
             options.UserAgentProductName = "iRLeagueApiCore";
             options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
         });
