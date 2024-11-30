@@ -35,7 +35,7 @@ public sealed class PutReviewHandlerTests : ReviewsHandlersTestsBase<PutReviewHa
 
     protected override PutReviewHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutReviewRequest> validator)
     {
-        return new PutReviewHandler(logger, dbContext, new[] { validator });
+        return new PutReviewHandler(logger, dbContext, new[] { validator }, mockResultCalculationQueue);
     }
 
     private PutReviewRequest DefaultRequest(long reviewId)

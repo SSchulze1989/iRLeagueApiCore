@@ -14,17 +14,20 @@ public interface IBackgroundTaskQueue
 
 public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
 {
+    private readonly ILogger<BackgroundTaskQueue> logger;
+
     private readonly Channel<Func<CancellationToken, ValueTask>> queue;
 
     private readonly Dictionary<object, System.Timers.Timer> debouncedTasks;
 
-    public BackgroundTaskQueue(int capacity)
+    public BackgroundTaskQueue(ILogger<BackgroundTaskQueue> logger, int capacity)
     {
         // Capacity should be set based on the expected application load and
         // number of concurrent threads accessing the queue.            
         // BoundedChannelFullMode.Wait will cause calls to WriteAsync() to return a task,
         // which completes only when space became available. This leads to backpressure,
         // in case too many publishers/calls start accumulating.
+        this.logger = logger;
         var options = new BoundedChannelOptions(capacity)
         {
             FullMode = BoundedChannelFullMode.Wait
@@ -60,6 +63,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
             debouncedTimer.Stop();
             debouncedTimer.Interval = debounceMs;
             debouncedTimer.Start();
+            logger.LogDebug("Reset debounce timer for background task '{BackgroundTaskId}' - wait for debounce {DebounceMs} ms.", key, debounceMs);
             return;
         }
 
@@ -76,6 +80,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
         };
         debouncedTasks.Add(key, timer);
         timer.Start();
+        logger.LogDebug("Queued background task '{BackgroundTaskId}' - wait for debounce {DebounceMs} ms.", key, debounceMs);
     }
 
     public async ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(

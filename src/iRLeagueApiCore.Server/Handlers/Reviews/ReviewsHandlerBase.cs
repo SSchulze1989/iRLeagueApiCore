@@ -1,15 +1,22 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public abstract class ReviewsHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    public ReviewsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
-        base(logger, dbContext, validators)
+    protected const int reviewCalcDebounceMs = 60 * 1000;
+    protected const int penaltyCalcDebounceMs = 5 * 1000;
+
+    protected readonly IResultCalculationQueue resultCalculationQueue;
+
+    public ReviewsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators,
+        IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators)
     {
+        this.resultCalculationQueue = resultCalculationQueue;
     }
 
     protected virtual async Task<IncidentReviewEntity?> GetReviewEntity(long reviewId, CancellationToken cancellationToken)

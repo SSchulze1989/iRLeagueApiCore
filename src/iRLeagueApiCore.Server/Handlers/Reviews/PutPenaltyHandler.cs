@@ -1,13 +1,14 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PutPenaltyRequest(long PenaltyId, PutPenaltyModel Model) : IRequest<PenaltyModel>;
 
-public class PutPenaltyHandler : ReviewsHandlerBase<PutPenaltyHandler,  PutPenaltyRequest, PenaltyModel>
+public class PutPenaltyHandler : ReviewsHandlerBase<PutPenaltyHandler, PutPenaltyRequest, PenaltyModel>
 {
-    public PutPenaltyHandler(ILogger<PutPenaltyHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutPenaltyRequest>> validators) 
-        : base(logger, dbContext, validators)
+    public PutPenaltyHandler(ILogger<PutPenaltyHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutPenaltyRequest>> validators,
+        IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 
@@ -17,9 +18,13 @@ public class PutPenaltyHandler : ReviewsHandlerBase<PutPenaltyHandler,  PutPenal
         var putPenalty = await GetAddPenaltyEntity(request.PenaltyId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         putPenalty = await MapToAddPenaltyEntity(request.Model, putPenalty, cancellationToken);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        var changed = await dbContext.SaveChangesAsync(cancellationToken);
         var getPenalty = await MapToAddPenaltyModel(putPenalty.AddPenaltyId, cancellationToken)
             ?? throw new InvalidOperationException("Updated resource not found");
+        if (changed > 0)
+        {
+            resultCalculationQueue.QueueEventResultDebounced(getPenalty.EventId, penaltyCalcDebounceMs);
+        }
         return getPenalty;
     }
 }

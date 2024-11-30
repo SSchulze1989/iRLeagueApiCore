@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
@@ -12,8 +13,8 @@ public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler,  Put
     /// </summary>
     private const bool includeComments = true;
 
-    public PutReviewHandler(ILogger<PutReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewRequest>> validators) :
-        base(logger, dbContext, validators)
+    public PutReviewHandler(ILogger<PutReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewRequest>> validators, 
+        IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 
@@ -23,9 +24,13 @@ public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler,  Put
         var putReview = await GetReviewEntity(request.ReviewId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         putReview = await MapToReviewEntity(request.User, request.Model, putReview, cancellationToken);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        var changed = await dbContext.SaveChangesAsync(cancellationToken);
         var getReview = await MapToReviewModel(putReview.ReviewId, includeComments, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
+        if (changed > 0)
+        {
+            resultCalculationQueue.QueueEventResultDebounced(getReview.EventId, reviewCalcDebounceMs);
+        }
         return getReview;
     }
 }

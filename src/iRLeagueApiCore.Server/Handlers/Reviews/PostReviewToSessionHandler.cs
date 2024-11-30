@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
@@ -11,8 +12,8 @@ public sealed class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewTo
     /// </summary>
     private const bool includeComments = true;
 
-    public PostReviewToSessionHandler(ILogger<PostReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewToSessionRequest>> validators) :
-        base(logger, dbContext, validators)
+    public PostReviewToSessionHandler(ILogger<PostReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewToSessionRequest>> validators, 
+        IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 
@@ -24,6 +25,10 @@ public sealed class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewTo
         await dbContext.SaveChangesAsync(cancellationToken);
         var getReview = await MapToReviewModel(postReview.ReviewId, includeComments, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
+        if (getReview.VoteResults.Any())
+        {
+            resultCalculationQueue.QueueEventResultDebounced(getReview.EventId, reviewCalcDebounceMs);
+        }
         return getReview;
     }
 

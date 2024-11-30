@@ -11,7 +11,7 @@ public sealed class GetPenaltiesFromSessionResultHandlerTests : ReviewsHandlersT
 {
     protected override GetPenaltiesFromSessionResultHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetPenaltiesFromSessionResultRequest> validator)
     {
-        return new(logger, dbContext, new[] { validator });
+        return new(logger, dbContext, new[] { validator }, mockResultCalculationQueue);
     }
 
     protected override GetPenaltiesFromSessionResultRequest DefaultRequest()

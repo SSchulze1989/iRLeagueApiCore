@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Reviews;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 
@@ -15,7 +13,7 @@ public sealed class DeleteReviewHandlerTests : ReviewsHandlersTestsBase<DeleteRe
 
     protected override DeleteReviewHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteReviewRequest> validator)
     {
-        return new DeleteReviewHandler(logger, dbContext, new[] { validator });
+        return new DeleteReviewHandler(logger, dbContext, new[] { validator }, mockResultCalculationQueue);
     }
 
     private DeleteReviewRequest DefaultRequest(long reviewId)
