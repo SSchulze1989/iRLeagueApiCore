@@ -95,7 +95,7 @@ internal sealed class ExecuteEventResultCalculation
         if (nextEventId != null)
         {
             logger.LogInformation("Queueing result configuration for next event {EventId}", nextEventId);
-            await resultCalculationQueue.QueueEventResultAsync(nextEventId.Value);
+            resultCalculationQueue.QueueEventResultDebounced(nextEventId.Value, 100);
         }
     }
 }

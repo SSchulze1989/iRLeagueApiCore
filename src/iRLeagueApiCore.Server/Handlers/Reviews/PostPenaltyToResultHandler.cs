@@ -23,7 +23,7 @@ public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResult
         var getPenalty = await MapToAddPenaltyModel(postPenalty.AddPenaltyId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
 
-        resultCalculationQueue.QueueEventResultDebounced(getPenalty.EventId, reviewCalcDebounceMs);
+        resultCalculationQueue.QueueEventResultDebounced(getPenalty.EventId, penaltyCalcDebounceMs);
         return getPenalty;
     }
 

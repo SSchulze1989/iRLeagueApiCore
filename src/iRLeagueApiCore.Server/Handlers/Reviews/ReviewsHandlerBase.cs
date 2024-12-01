@@ -8,8 +8,8 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public abstract class ReviewsHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    protected const int reviewCalcDebounceMs = 60 * 1000;
-    protected const int penaltyCalcDebounceMs = 5 * 1000;
+    protected const int reviewCalcDebounceMs = 20 * 1000;
+    protected const int penaltyCalcDebounceMs = 3 * 1000;
 
     protected readonly IResultCalculationQueue resultCalculationQueue;
 
