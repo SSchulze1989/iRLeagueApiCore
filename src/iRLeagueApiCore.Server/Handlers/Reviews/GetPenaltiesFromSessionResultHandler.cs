@@ -1,13 +1,13 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetPenaltiesFromSessionResultRequest(long SessionResultId) : IRequest<IEnumerable<PenaltyModel>>;
-public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<GetPenaltiesFromSessionResultHandler,  GetPenaltiesFromSessionResultRequest, IEnumerable<PenaltyModel>>
+public sealed class GetPenaltiesFromSessionResultHandler : ReviewsHandlerBase<GetPenaltiesFromSessionResultHandler, GetPenaltiesFromSessionResultRequest, IEnumerable<PenaltyModel>>
 {
-    public GetPenaltiesFromSessionResultHandler(ILogger<GetPenaltiesFromSessionResultHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetPenaltiesFromSessionResultRequest>> validators) 
-        : base(logger, dbContext, validators)
+    public GetPenaltiesFromSessionResultHandler(ILogger<GetPenaltiesFromSessionResultHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetPenaltiesFromSessionResultRequest>> validators, IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 

@@ -15,7 +15,7 @@ public sealed class PutScoringHandler : ScoringHandlerBase<PutScoringHandler,  P
     public override async Task<ScoringModel> Handle(PutScoringRequest request, CancellationToken cancellationToken = default)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putScoring = await GetScoringEntityAsync(request.ScoringId) ?? throw new ResourceNotFoundException();
+        var putScoring = await GetScoringEntityAsync(request.ScoringId, cancellationToken) ?? throw new ResourceNotFoundException();
         await MapToScoringEntityAsync(request.User, request.Model, putScoring, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         var getScoring = await MapToGetScoringModelAsync(putScoring.ScoringId, cancellationToken)

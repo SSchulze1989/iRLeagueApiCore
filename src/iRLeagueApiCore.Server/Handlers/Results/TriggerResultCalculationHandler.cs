@@ -25,7 +25,7 @@ public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerR
             return Unit.Value;
         }
 
-        await calculationQueue.QueueEventResultAsync(@event.EventId);
+        calculationQueue.QueueEventResultDebounced(@event.EventId, 0);
         return Unit.Value;
     }
 }

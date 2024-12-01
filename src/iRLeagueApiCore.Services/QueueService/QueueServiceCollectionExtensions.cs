@@ -6,7 +6,7 @@ public static class QueueServiceCollectionExtensions
     {
         services.AddSingleton<IBackgroundTaskQueue>(ctx =>
         {
-            return new BackgroundTaskQueue(queueCapacity);
+            return new BackgroundTaskQueue(ctx.GetRequiredService<ILogger<BackgroundTaskQueue>>(), queueCapacity);
         });
         services.AddHostedService<QueuedHostedService>();
         return services;

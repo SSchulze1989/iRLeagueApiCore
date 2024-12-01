@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
@@ -7,8 +8,7 @@ public record GetPenaltiesFromEventResultRequest(long ResultId) : IRequest<IEnum
 public class GetPenaltiesFromEventResultHandler : ReviewsHandlerBase<GetPenaltiesFromEventResultHandler,  GetPenaltiesFromEventResultRequest, IEnumerable<PenaltyModel>>
 {
     public GetPenaltiesFromEventResultHandler(ILogger<GetPenaltiesFromEventResultHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetPenaltiesFromEventResultRequest>> validators) 
-        : base(logger, dbContext, validators)
+        IEnumerable<IValidator<GetPenaltiesFromEventResultRequest>> validators, IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 

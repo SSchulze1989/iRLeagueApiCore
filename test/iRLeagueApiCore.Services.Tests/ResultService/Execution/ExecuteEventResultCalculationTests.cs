@@ -18,6 +18,7 @@ public sealed class ExecuteEventResultCalculationTests
     private readonly Mock<IEventCalculationResultStore> mockResultStore;
     private readonly Mock<ICalculationServiceProvider<EventCalculationConfiguration,
         EventCalculationData, EventCalculationResult>> mockCalculationServiceProvider;
+    private readonly Mock<IResultCalculationQueue> mockResultQueue;
     private readonly Mock<IStandingCalculationQueue> mockStandingQueue;
 
     public ExecuteEventResultCalculationTests(ITestOutputHelper testOutputHelper)
@@ -50,12 +51,14 @@ public sealed class ExecuteEventResultCalculationTests
         mockDataProvider = MockDataProvider(fixture);
         mockResultStore = MockResultStore();
         mockCalculationServiceProvider = MockCalculationServiceProvider(fixture);
+        mockResultQueue = MockResultQueue(fixture);
         mockStandingQueue = MockStandingQueue(fixture);
         fixture.Register(() => logger);
         fixture.Register(() => mockConfigurationProvider.Object);
         fixture.Register(() => mockDataProvider.Object);
         fixture.Register(() => mockResultStore.Object);
         fixture.Register(() => mockCalculationServiceProvider.Object);
+        fixture.Register(() => mockResultQueue.Object);
         fixture.Register(() => mockStandingQueue.Object);
     }
 
@@ -127,7 +130,8 @@ public sealed class ExecuteEventResultCalculationTests
             fixture.Create<IEventCalculationConfigurationProvider>(),
             fixture.Create<IEventCalculationResultStore>(),
             fixture.Create<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
-            fixture.Create<IStandingCalculationQueue>());
+            resultCalculationQueue: fixture.Create<IResultCalculationQueue>(),
+            standingCalculationQueue: fixture.Create<IStandingCalculationQueue>());
     }
 
     private static Mock<IEventCalculationConfigurationProvider> MockConfigurationProvider(Fixture fixture)
@@ -179,6 +183,14 @@ public sealed class ExecuteEventResultCalculationTests
             .Verifiable();
 
         return mockStore;
+    }
+
+    private static Mock<IResultCalculationQueue> MockResultQueue(Fixture fixture)
+    {
+        var mockQueue = new Mock<IResultCalculationQueue>();
+        mockQueue.Setup(x => x.QueueEventResultAsync(It.IsAny<long>()))
+            .Returns(Task.FromResult(0));
+        return mockQueue;
     }
 
     private static Mock<IStandingCalculationQueue> MockStandingQueue(Fixture fixture)

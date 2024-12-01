@@ -11,7 +11,7 @@ public sealed class PostPenaltyToResultHandlerTests : ReviewsHandlersTestsBase<P
 {
     protected override PostPenaltyToResultHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostPenaltyToResultRequest> validator)
     {
-        return new(logger, dbContext, new[] { validator });
+        return new(logger, dbContext, new[] { validator }, mockResultCalculationQueue);
     }
 
     protected override PostPenaltyToResultRequest DefaultRequest()

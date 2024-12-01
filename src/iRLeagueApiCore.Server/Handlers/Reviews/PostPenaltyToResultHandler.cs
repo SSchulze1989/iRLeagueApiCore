@@ -1,12 +1,13 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostPenaltyToResultRequest(long ResultId, long ScoredResultRowId, PostPenaltyModel Model) : IRequest<PenaltyModel>;
 public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResultHandler,  PostPenaltyToResultRequest, PenaltyModel>
 {
-    public PostPenaltyToResultHandler(ILogger<PostPenaltyToResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostPenaltyToResultRequest>> validators) 
-        : base(logger, dbContext, validators)
+    public PostPenaltyToResultHandler(ILogger<PostPenaltyToResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostPenaltyToResultRequest>> validators,
+        IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 
@@ -21,6 +22,8 @@ public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResult
             .FirstAsync(cancellationToken);
         var getPenalty = await MapToAddPenaltyModel(postPenalty.AddPenaltyId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
+
+        resultCalculationQueue.QueueEventResultDebounced(getPenalty.EventId, penaltyCalcDebounceMs);
         return getPenalty;
     }
 

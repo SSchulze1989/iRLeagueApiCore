@@ -1,4 +1,5 @@
-﻿using iRLeagueDatabaseCore.Models;
+﻿using iRLeagueApiCore.Services.ResultService.Excecution;
+using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,8 @@ public abstract class ReviewsHandlersTestsBase<THandler, TRequest, TResult> :
     where THandler : IRequestHandler<TRequest, TResult>
     where TRequest : class, IRequest<TResult>
 {
+    protected IResultCalculationQueue mockResultCalculationQueue;
+
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
@@ -26,6 +29,10 @@ public abstract class ReviewsHandlersTestsBase<THandler, TRequest, TResult> :
             dbContext.AcceptedReviewVotes.AddRange(review.AcceptedReviewVotes);
         }
         await dbContext.SaveChangesAsync();
+        var resultCalculationQueueMock = new Mock<IResultCalculationQueue>();
+        resultCalculationQueueMock.Setup(x => x.QueueEventResultAsync(It.IsAny<long>()));
+        resultCalculationQueueMock.Setup(x => x.QueueEventResultDebounced(It.IsAny<long>(), It.IsAny<int>()));
+        mockResultCalculationQueue = resultCalculationQueueMock.Object;
     }
 
     protected async Task CreateScoredEventResults(EventEntity @event)
