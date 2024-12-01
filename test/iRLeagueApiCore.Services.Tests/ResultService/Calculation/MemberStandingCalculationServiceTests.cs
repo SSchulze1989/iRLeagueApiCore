@@ -395,6 +395,41 @@ public sealed class MemberStandingCalculationServiceTests
         testRow.TotalPoints.Should().Be(-9);
     }
 
+    [Fact]
+    public async Task Calculate_ShouldSetPositionChangeZero_WhenFirstEvent()
+    {
+        var nEvents = 1;
+        var nRaces = 3;
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId).Create();
+        config.SortOptions = [SortOptions.TotalPtsDesc];
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+        test.StandingRows.Should().AllSatisfy(x => x.PositionChange.Should().Be(0));
+    }
+
+    [Fact]
+    public async Task Calculate_ShouldSetPositionChange_WhenDriverMissingInLastEvent()
+    {
+        var nEvents = 3;
+        var nRaces = 1;
+        var memberIds = fixture.CreateMany<long>(3);
+        var testMemberId = memberIds.ElementAt(1);
+        var data = CalculationDataBuilder(nEvents, nRaces, false)
+            .With(x => x.PreviousEventResults, () => EventResultDataBuilder(memberIds, nRaces: nRaces, randomMemberOrder: false).CreateMany(nEvents - 1).ToList())
+            .With(x => x.CurrentEventResult, () => EventResultDataBuilder(memberIds.Except([testMemberId]), nRaces: nRaces, randomMemberOrder: false).Create())
+            .Create();
+
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId).Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+        var testRow = test.StandingRows.First(x => x.MemberId == testMemberId);
+        testRow.PositionChange.Should().Be(-1);
+    }
+
     private static MemberStandingCalculationService CreateSut(StandingCalculationConfiguration config)
     {
         return new(config);
@@ -405,21 +440,26 @@ public sealed class MemberStandingCalculationServiceTests
         return CalculationDataBuilder().Create();
     }
 
-    private IPostprocessComposer<StandingCalculationData> CalculationDataBuilder(int nEvents = 3, int nRacesPerEvent = 3, bool hasCombinedResult = false)
+    private IPostprocessComposer<StandingCalculationData> CalculationDataBuilder(int nEvents = 3, int nRacesPerEvent = 3, bool hasCombinedResult = false, 
+        bool randomMemberOrder = true)
     {
         var memberIds = fixture.CreateMany<long>(10);
         return fixture.Build<StandingCalculationData>()
-            .With(x => x.PreviousEventResults, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult: hasCombinedResult).CreateMany(nEvents - 1).ToList())
-            .With(x => x.CurrentEventResult, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult: hasCombinedResult).Create());
+            .With(x => x.PreviousEventResults, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult: hasCombinedResult,
+                randomMemberOrder: randomMemberOrder).CreateMany(nEvents - 1).ToList())
+            .With(x => x.CurrentEventResult, () => EventResultDataBuilder(memberIds, nRacesPerEvent, hasCombinedResult: hasCombinedResult,
+                randomMemberOrder: randomMemberOrder).Create());
     }
 
-    private IPostprocessComposer<EventCalculationResult> EventResultDataBuilder(IEnumerable<long> memberIds, int nRaces = 2, bool hasCombinedResult = false)
+    private IPostprocessComposer<EventCalculationResult> EventResultDataBuilder(IEnumerable<long> memberIds, int nRaces = 2, bool hasCombinedResult = false, 
+        bool randomMemberOrder = true)
     {
         return fixture.Build<EventCalculationResult>()
-            .With(x => x.SessionResults, () => SessionResultDataBuilder(memberIds).CreateMany(nRaces));
+            .With(x => x.SessionResults, () => SessionResultDataBuilder(memberIds, randomMemberOrder: randomMemberOrder).CreateMany(nRaces));
     }
 
-    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds, SessionType sessionType = SessionType.Race)
+    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds, SessionType sessionType = SessionType.Race, 
+        bool randomMemberOrder = true)
     {
         return fixture
             .Build<SessionCalculationResult>()
@@ -429,7 +469,7 @@ public sealed class MemberStandingCalculationServiceTests
                 {
                     var getMemberIds = memberIds.ToList();
                     return fixture.Build<ResultRowCalculationResult>()
-                        .With(x => x.MemberId, () => getMemberIds.PopRandom())
+                        .With(x => x.MemberId, () => randomMemberOrder ? getMemberIds.PopRandom() : getMemberIds.PopFirst())
                         .With(x => x.SessionType, sessionType)
                         .CreateMany(memberIds.Count());
                 }

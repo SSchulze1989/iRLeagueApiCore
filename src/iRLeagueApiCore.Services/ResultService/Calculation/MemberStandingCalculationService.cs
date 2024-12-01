@@ -37,6 +37,11 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         var finalStandingRows = new List<StandingRowCalculationResult>();
         foreach (var (memberStandingRow, position) in memberStandingRows.Select((x, i) => (x, i + 1)))
         {
+            memberStandingRow.current.PositionChange = -(position - memberStandingRow.previous.Position);
+            if (data.PreviousEventResults.None())
+            {
+                memberStandingRow.current.PositionChange = 0;
+            }
             memberStandingRow.current.Position = position;
             var final = DiffStandingRows(memberStandingRow.previous, memberStandingRow.current);
             finalStandingRows.Add(final);

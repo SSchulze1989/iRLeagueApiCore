@@ -9,7 +9,7 @@ public abstract class ReviewsHandlersTestsBase<THandler, TRequest, TResult> :
     where THandler : IRequestHandler<TRequest, TResult>
     where TRequest : class, IRequest<TResult>
 {
-    protected IResultCalculationQueue mockResultCalculationQueue;
+    protected IResultCalculationQueue mockResultCalculationQueue = default!;
 
     public override async Task InitializeAsync()
     {
