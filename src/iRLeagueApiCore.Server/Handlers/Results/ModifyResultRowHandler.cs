@@ -29,7 +29,7 @@ public class ModifyResultRowHandler : ResultHandlerBase<ModifyResultRowHandler, 
                 .Where(x => x.ResultRowId == row.ResultRowId)
                 .Select(x => x.SubResult.EventId)
                 .FirstOrDefaultAsync(cancellationToken);
-            await calculationQueue.QueueEventResultAsync(eventId);
+            calculationQueue.QueueEventResultDebounced(eventId, 1000);
         }
 
         return MapToModResultRowModel(request.Row, row);

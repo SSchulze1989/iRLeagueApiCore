@@ -1,13 +1,14 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Extensions;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetReviewsFromEventRequest(long EventId, bool IncludeComments) : IRequest<IEnumerable<ReviewModel>>;
-public sealed class GetReviewsFromEventHandler : ReviewsHandlerBase<GetReviewsFromEventHandler,  GetReviewsFromEventRequest, IEnumerable<ReviewModel>>
+public sealed class GetReviewsFromEventHandler : ReviewsHandlerBase<GetReviewsFromEventHandler, GetReviewsFromEventRequest, IEnumerable<ReviewModel>>
 {
-    public GetReviewsFromEventHandler(ILogger<GetReviewsFromEventHandler> logger, LeagueDbContext dbContext,
-        IEnumerable<IValidator<GetReviewsFromEventRequest>> validators) : base(logger, dbContext, validators)
+    public GetReviewsFromEventHandler(ILogger<GetReviewsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetReviewsFromEventRequest>> validators,
+        IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 

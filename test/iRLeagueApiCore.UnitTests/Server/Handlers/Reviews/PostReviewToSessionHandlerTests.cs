@@ -27,7 +27,7 @@ public sealed class PostReviewToSessionHandlerTests : ReviewsHandlersTestsBase<P
 
     protected override PostReviewToSessionHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostReviewToSessionRequest> validator)
     {
-        return new PostReviewToSessionHandler(logger, dbContext, new[] { validator });
+        return new PostReviewToSessionHandler(logger, dbContext, new[] { validator }, mockResultCalculationQueue);
     }
 
     private PostReviewToSessionRequest DefaultRequest(long sessionId)

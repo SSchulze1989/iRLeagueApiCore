@@ -28,12 +28,13 @@ public static class ResultServiceCollectionExtensions
         services.TryAddScoped<ISessionCalculationConfigurationProvider>(x => new SessionCalculationConfigurationProvider(
             x.GetRequiredService<LeagueDbContext>()));
         services.TryAddScoped(x => new ExecuteEventResultCalculation(
-            x.GetRequiredService<ILogger<ExecuteEventResultCalculation>>(),
-            x.GetRequiredService<IEventCalculationDataProvider>(),
-            x.GetRequiredService<IEventCalculationConfigurationProvider>(),
-            x.GetRequiredService<IEventCalculationResultStore>(),
-            x.GetRequiredService<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
-            x.GetRequiredService<IStandingCalculationQueue>()));
+            logger: x.GetRequiredService<ILogger<ExecuteEventResultCalculation>>(),
+            dataProvider: x.GetRequiredService<IEventCalculationDataProvider>(),
+            configProvider: x.GetRequiredService<IEventCalculationConfigurationProvider>(),
+            dataStore: x.GetRequiredService<IEventCalculationResultStore>(),
+            calculationServiceProvider: x.GetRequiredService<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
+            resultCalculationQueue: x.GetRequiredService<IResultCalculationQueue>(),
+            standingCalculationQueue: x.GetRequiredService<IStandingCalculationQueue>()));
         services.TryAddScoped<IResultCalculationQueue>(x => new ResultCalculationQueue(x, x.GetRequiredService<IBackgroundTaskQueue>()));
         // Standing calculation
         services.TryAddScoped<ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult>>(

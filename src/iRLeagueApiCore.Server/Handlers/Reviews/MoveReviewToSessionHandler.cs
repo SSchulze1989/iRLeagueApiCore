@@ -1,5 +1,7 @@
-﻿using iRLeagueApiCore.Common.Models.Reviews;
+﻿using FluentValidation.Results;
+using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
@@ -11,8 +13,8 @@ public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewTo
     /// </summary>
     private const bool includeComments = true;
 
-    public MoveReviewToSessionHandler(ILogger<MoveReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<MoveReviewToSessionRequest>> validators) :
-        base(logger, dbContext, validators)
+    public MoveReviewToSessionHandler(ILogger<MoveReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<MoveReviewToSessionRequest>> validators, 
+        IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }
 
@@ -24,9 +26,13 @@ public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewTo
         var toSession = await GetSessionEntityAsync(request.SessionId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         moveReview = await MoveToSessionAsync(request.User, moveReview, toSession, cancellationToken);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
         var getReview = await MapToReviewModel(moveReview.ReviewId, includeComments, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
+        if (moveReview.AcceptedReviewVotes.Any())
+        {
+            resultCalculationQueue.QueueEventResultDebounced(toSession.EventId, reviewCalcDebounceMs);
+        }
         return getReview;
     }
 

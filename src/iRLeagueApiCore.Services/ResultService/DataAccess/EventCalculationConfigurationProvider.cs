@@ -148,4 +148,18 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
 
         return sortList;
     }
+
+    public async Task<long?> GetNextEventId(long eventId, CancellationToken cancellationToken = default)
+    {
+        var currentEvent = await dbContext.Events
+            .FirstOrDefaultAsync(x => x.EventId == eventId, cancellationToken);
+        if (currentEvent is null) {
+            return null;
+        }
+        var nextEvent = await dbContext.Events
+            .OrderBy(x => x.Date)
+            .Where(x => x.EventResult != null)
+            .FirstOrDefaultAsync(x => x.Date > currentEvent.Date, cancellationToken);
+        return nextEvent?.EventId;
+    }
 }

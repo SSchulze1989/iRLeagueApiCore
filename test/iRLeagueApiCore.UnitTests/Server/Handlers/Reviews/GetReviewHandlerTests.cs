@@ -12,7 +12,7 @@ public sealed class GetReviewHandlerTests : ReviewsHandlersTestsBase<GetReviewHa
 {
     protected override GetReviewHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetReviewRequest> validator)
     {
-        return new GetReviewHandler(logger, dbContext, new[] { validator });
+        return new GetReviewHandler(logger, dbContext, new[] { validator }, mockResultCalculationQueue);
     }
 
     private GetReviewRequest DefaultRequest(long reviewId, bool includeComments = true)
