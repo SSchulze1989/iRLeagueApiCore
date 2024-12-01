@@ -248,7 +248,6 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         diff.LeadLapsChange = current.LeadLaps - previous.LeadLaps;
         diff.PenaltyPointsChange = current.PenaltyPoints - previous.PenaltyPoints;
         diff.PolePositionsChange = current.PolePositions - previous.PolePositions;
-        diff.PositionChange = -(current.Position - previous.Position);
         diff.RacePointsChange = current.RacePoints - previous.RacePoints;
         diff.TotalPointsChange = current.TotalPoints - previous.TotalPoints;
         diff.WinsChange = current.Wins - previous.Wins;
