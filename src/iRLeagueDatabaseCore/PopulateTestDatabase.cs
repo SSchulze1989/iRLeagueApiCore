@@ -433,6 +433,12 @@ public static class PopulateTestDatabase
 
 public static class PopulateDatabaseExtensions
 {
+    public static T PopFirst<T>(this ICollection<T> collection)
+    {
+        var pop = collection.First();
+        collection.Remove(pop);
+        return pop;
+    }
     /// <summary>
     /// Returns a random entry from the list and removes it from the list at the same time
     /// </summary>
