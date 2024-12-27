@@ -8,5 +8,5 @@ public class PostVoteCategoryModel
     [DataMember]
     public int Index { get; set; }
     [DataMember]
-    public int DefaultPenalty { get; set; }
+    public PenaltyModel DefaultPenalty { get; set; } = new();
 }

@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
+using iRLeagueDatabaseCore.Models;
 using System.ComponentModel;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
@@ -15,9 +16,10 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     {
         rows = pointRule.GetChampSeasonFilters().FilterRows(rows);
         rows = pointRule.GetResultFilters().FilterRows(rows);
-        rows = CalculateCompletedPct(rows);
-        rows = CalculateIntervals(rows);
-        rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
+        CalculateCompletedPct(rows);
+        CalculateIntervals(rows);
+        CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
+        AddReviewPenalties(rows, data.AcceptedReviewVotes);
         ApplyAddPenaltyDsq(rows);
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
@@ -40,7 +42,6 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
 
         IEnumerable<ResultRowCalculationResult> finalRows = rows;
         ApplyAddPenaltyPoints(finalRows);
-        ApplyReviewPenalties(finalRows, data.AcceptedReviewVotes);
         ApplyBonusPoints(pointRows, pointRule.GetBonusPoints());
         ApplyTotalPoints(finalRows);
         finalRows = pointRule.SortFinal(finalRows);
@@ -156,6 +157,19 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return combined.ToList();
     }
 
+    private static AddPenaltyCalculationData CreateAddPenaltyFromReviewPenalty(ResultRowCalculationResult row, ReviewPenaltyCalculationResult reviewPenalty)
+    {
+        return new()
+        {
+            MemberId = row.MemberId,
+            TeamId = row.MemberId is null ? row.TeamId : null,
+            Type = reviewPenalty.Value.Type,
+            Points = reviewPenalty.Value.Type == PenaltyType.Points ? reviewPenalty.Value.Points : 0,
+            Positions = reviewPenalty.Value.Type == PenaltyType.Position ? reviewPenalty.Value.Positions : 0,
+            Time = reviewPenalty.Value.Type == PenaltyType.Time ? reviewPenalty.Value.Time : TimeSpan.Zero,
+        };
+    }
+
     private static AddPenaltyCalculationData CreateAddPenaltyFromAutoPenalty(ResultRowCalculationResult row, AutoPenaltyConfigurationData autoPenalty,
         int penaltyMultiplikator)
     {
@@ -181,7 +195,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             var grouped = penaltyRows.GroupBy(x => x);
             foreach (var row in grouped.Where(x => x.Any()))
             {
-                row.Key.AddPenalties = [.. row.Key.AddPenalties, CreateAddPenaltyFromAutoPenalty(row.Key, autoPenalty, row.Count())];
+                row.Key.AddPenalties.Add(CreateAddPenaltyFromAutoPenalty(row.Key, autoPenalty, row.Count()));
             }
         }
         return rows;
@@ -191,17 +205,14 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     {
         foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Disqualification)))
         {
-            foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Disqualification))
-            {
-                row.Status = (int)RaceStatus.Disqualified;
-            }
+            row.Status = (int)RaceStatus.Disqualified;
         }
         return rows;
     }
 
     private static IEnumerable<ResultRowCalculationResult> ApplyAddPenaltyTimes(IEnumerable<ResultRowCalculationResult> rows)
     {
-        foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Time)))
+        foreach (var row in rows)
         {
             foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Time))
             {
@@ -246,7 +257,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return modRows;
     }
 
-    private static IEnumerable<ResultRowCalculationResult> ApplyReviewPenalties(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<AcceptedReviewVoteCalculationData> reviewVotes)
+    private static IEnumerable<ResultRowCalculationResult> AddReviewPenalties(IEnumerable<ResultRowCalculationResult> rows, IEnumerable<AcceptedReviewVoteCalculationData> reviewVotes)
     {
         Func<ResultRowCalculationResult, AcceptedReviewVoteCalculationData, bool> compareIds;
         if (rows.Any(x => x.MemberId != null))
@@ -267,17 +278,10 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 {
                     ReviewId = vote.ReviewId,
                     ReviewVoteId = vote.ReviewVoteId,
-                    PenaltyPoints = vote.DefaultPenalty,
+                    Value = vote.DefaultPenalty,
                 };
                 row.ReviewPenalties.Add(penalty);
-                if (penalty.PenaltyPoints < 0)
-                {
-                    row.BonusPoints -= penalty.PenaltyPoints;
-                }
-                else
-                {
-                    row.PenaltyPoints += penalty.PenaltyPoints;
-                }
+                row.AddPenalties.Add(CreateAddPenaltyFromReviewPenalty(row, penalty));
             }
         }
         return rows;

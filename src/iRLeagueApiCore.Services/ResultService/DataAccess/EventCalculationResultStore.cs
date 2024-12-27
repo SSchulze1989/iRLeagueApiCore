@@ -197,8 +197,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
                 };
                 penaltyEntities.Add(penaltyEntity);
             }
-            penaltyEntity.Value.Type = PenaltyType.Points;
-            penaltyEntity.Value.Points = penalty.PenaltyPoints;
+            penaltyEntity.Value = penalty.Value;
         }
         return penaltyEntities;
     }

@@ -322,7 +322,11 @@ public sealed class DbTestFixture : DataAccessTestsBase
             {
                 Index = i,
                 Text = $"Cat {i + 1}",
-                DefaultPenalty = i + 1,
+                DefaultPenalty = new()
+                {
+                    Type = PenaltyType.Points,
+                    Points = i + 1,
+                },
             };
             league1.VoteCategories.Add(cat);
         }

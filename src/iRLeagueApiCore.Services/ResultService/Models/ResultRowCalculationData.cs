@@ -54,6 +54,7 @@ internal class ResultRowCalculationData : IPointRow, IPenaltyRow
     public int FinalPosition { get; set; }
     public double FinalPositionChange { get; set; }
     public bool PointsEligible { get; set; }
-    public IEnumerable<AddPenaltyCalculationData> AddPenalties { get; set; } = Array.Empty<AddPenaltyCalculationData>();
-    public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = new List<ReviewPenaltyCalculationResult>();
+    public ICollection<AddPenaltyCalculationData> AddPenalties { get; set; } = [];
+    public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = [];
+    IEnumerable<AddPenaltyCalculationData> IPenaltyRow.AddPenalties => AddPenalties;
 }
