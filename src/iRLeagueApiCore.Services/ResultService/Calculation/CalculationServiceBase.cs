@@ -163,6 +163,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         {
             MemberId = row.MemberId,
             TeamId = row.MemberId is null ? row.TeamId : null,
+            Type = reviewPenalty.Value.Type,
             Points = reviewPenalty.Value.Type == PenaltyType.Points ? reviewPenalty.Value.Points : 0,
             Positions = reviewPenalty.Value.Type == PenaltyType.Position ? reviewPenalty.Value.Positions : 0,
             Time = reviewPenalty.Value.Type == PenaltyType.Time ? reviewPenalty.Value.Time : TimeSpan.Zero,
