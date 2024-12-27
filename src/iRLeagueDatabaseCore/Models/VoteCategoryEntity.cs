@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using System.Text.Json;
+
 namespace iRLeagueDatabaseCore.Models;
 
 public partial class VoteCategoryEntity
@@ -14,7 +16,7 @@ public partial class VoteCategoryEntity
     public long CatId { get; set; }
     public string Text { get; set; }
     public int Index { get; set; }
-    public int DefaultPenalty { get; set; }
+    public PenaltyValue DefaultPenalty { get; set; }
     /// <summary>
     /// Imported Id from old database
     /// Will be deleted after imports have finished
@@ -36,6 +38,12 @@ public class VoteCategoryEntityConfiguration : IEntityTypeConfiguration<VoteCate
 
         entity.Property(e => e.CatId)
             .ValueGeneratedOnAdd();
+
+        entity.Property(e => e.DefaultPenalty)
+            .HasColumnType("json")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, default(JsonSerializerOptions)),
+                v => JsonSerializer.Deserialize<PenaltyValue>(v, default(JsonSerializerOptions)));
 
         entity.HasOne(e => e.League)
             .WithMany(p => p.VoteCategories)

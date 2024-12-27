@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Models;
+﻿using iRLeagueApiCore.Common.Models;
+
+namespace iRLeagueApiCore.Services.ResultService.Models;
 
 public sealed class AcceptedReviewVoteCalculationData
 {
@@ -7,5 +9,5 @@ public sealed class AcceptedReviewVoteCalculationData
     public long? MemberAtFaultId { get; set; }
     public long? TeamAtFaultId { get; set; }
     public long? VoteCategoryId { get; set; }
-    public int DefaultPenalty { get; set; }
+    public PenaltyModel DefaultPenalty { get; set; } = new();
 }

@@ -315,7 +315,10 @@ public static class PopulateTestDatabase
             var voteCategory = new VoteCategoryEntity()
             {
                 Text = $"Category {i + 1}",
-                DefaultPenalty = i + 1,
+                DefaultPenalty = new() {
+                    Type = PenaltyType.Points,
+                    Points = i + 1,
+                }
             };
             league1.VoteCategories.Add(voteCategory);
         }
