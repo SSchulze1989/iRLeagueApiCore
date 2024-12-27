@@ -16,10 +16,10 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     {
         rows = pointRule.GetChampSeasonFilters().FilterRows(rows);
         rows = pointRule.GetResultFilters().FilterRows(rows);
-        rows = CalculateCompletedPct(rows);
-        rows = CalculateIntervals(rows);
-        rows = CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
-        rows = AddReviewPenalties(rows, data.AcceptedReviewVotes);
+        CalculateCompletedPct(rows);
+        CalculateIntervals(rows);
+        CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
+        AddReviewPenalties(rows, data.AcceptedReviewVotes);
         ApplyAddPenaltyDsq(rows);
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
