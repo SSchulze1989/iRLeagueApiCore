@@ -16,7 +16,6 @@ public static class IRLeagueApiClientServiceExtensions
 
         var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         jsonOptions.Converters.Add(new JsonStringEnumConverter());
-        jsonOptions.Converters.Add(new JsonTimeSpanConverter());
         jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
         services.TryAddScoped<HttpClientWrapperFactory>(sp => new(
