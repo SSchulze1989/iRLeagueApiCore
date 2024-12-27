@@ -33,7 +33,7 @@ public sealed class TeamSessionCalculationServiceTests
     public async Task Calculate_ShouldGroupTeams_WithMaxNrOfRows(int groupRowCount)
     {
         var teamCount = 3;
-        var teamIds = fixture.CreateMany<long?>(teamCount).Concat(new[] { default(long?) });
+        var teamIds = fixture.CreateMany<long?>(teamCount).Concat([default]);
         var rowsPerTeam = 3;
         var data = GetCalculationData();
         data.ResultRows = GetTestRows(teamIds, rowsPerTeam);
@@ -178,7 +178,7 @@ public sealed class TeamSessionCalculationServiceTests
             sortForPoints: x => x.OrderBy(x => x.TeamId).ToList());
 
         var testTeamId = teamIds.OrderBy(x => x).First();
-        var testTeamRows = data.ResultRows.Where(x => x.TeamId ==  testTeamId).ToList();
+        var testTeamRows = data.ResultRows.Where(x => x.TeamId == testTeamId).ToList();
         testTeamRows.ForEach(x => x.PenaltyPoints = 0);
         var penalty = new AddPenaltyCalculationData()
         {
@@ -188,7 +188,7 @@ public sealed class TeamSessionCalculationServiceTests
             Time = TimeSpan.FromSeconds(3),
             Positions = 1,
         };
-        testTeamRows.ForEach(x => x.AddPenalties = new[] { penalty });
+        testTeamRows.ForEach(x => x.AddPenalties = [penalty]);
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -196,7 +196,7 @@ public sealed class TeamSessionCalculationServiceTests
 
         var testRow = test.ResultRows.Single(x => x.TeamId == testTeamId);
 
-        switch (penaltyType) 
+        switch (penaltyType)
         {
             case PenaltyType.Points:
                 testRow.PenaltyPoints.Should().Be(penalty.Points);
@@ -238,10 +238,14 @@ public sealed class TeamSessionCalculationServiceTests
         var voteData = new AcceptedReviewVoteCalculationData()
         {
             TeamAtFaultId = testTeamId,
-            DefaultPenalty = 3,
+            DefaultPenalty = new()
+            {
+                Type = PenaltyType.Points,
+                Points = 3,
+            },
         };
-        data.AcceptedReviewVotes = new[] { voteData };
-        
+        data.AcceptedReviewVotes = [voteData];
+
         fixture.Register(() => config);
         var sut = CreateSut();
 
@@ -249,7 +253,7 @@ public sealed class TeamSessionCalculationServiceTests
 
         var testRow = test.ResultRows.Single(x => x.TeamId == testTeamId);
 
-        testRow.PenaltyPoints.Should().Be(voteData.DefaultPenalty);
+        testRow.PenaltyPoints.Should().Be(voteData.DefaultPenalty.Points);
         testRow.TotalPoints.Should().Be(testRow.RacePoints + testRow.BonusPoints - testRow.PenaltyPoints);
     }
 

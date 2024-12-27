@@ -167,7 +167,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                     .SelectMany(review => review.AcceptedReviewVotes)
                     .Select(vote => new AcceptedReviewVoteCalculationData()
                     {
-                        DefaultPenalty = vote.VoteCategory == null ? 0 : vote.VoteCategory.DefaultPenalty,
+                        DefaultPenalty = vote.VoteCategory == null ? new() : vote.VoteCategory.DefaultPenalty,
                         MemberAtFaultId = vote.MemberAtFaultId,
                         TeamAtFaultId = vote.TeamAtFaultId,
                         ReviewId = vote.ReviewId,
