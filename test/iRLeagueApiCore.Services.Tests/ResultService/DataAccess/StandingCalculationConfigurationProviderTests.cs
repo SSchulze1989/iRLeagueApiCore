@@ -9,7 +9,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
 {
     [Theory]
     [InlineData(default(long))]
-    [InlineData(-42)]
+    [InlineData(-42L)]
     public async Task GetConfiguration_ShouldProvideEmptyConfiguration_WhenEventDoesNotExist(long? eventId)
     {
         var season = await GetFirstSeasonAsync();
@@ -75,7 +75,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         dbContext.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.Add(config);
         champSeason.StandingConfiguration = standingConfig;
-        champSeason.ResultConfigurations = new[] { config };
+        champSeason.ResultConfigurations = [config];
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
@@ -127,7 +127,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         dbContext.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.Add(config);
         champSeason.StandingConfiguration = standingConfig;
-        champSeason.ResultConfigurations = new[] { config };
+        champSeason.ResultConfigurations = [config];
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 

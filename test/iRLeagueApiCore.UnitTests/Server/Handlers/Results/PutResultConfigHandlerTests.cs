@@ -53,10 +53,10 @@ public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutRes
     }
 
     [Theory]
-    [InlineData(0, defaultId)]
-    [InlineData(defaultId, 0)]
-    [InlineData(-42, defaultId)]
-    [InlineData(defaultId, -42)]
+    [InlineData(0L, defaultId)]
+    [InlineData(defaultId, 0L)]
+    [InlineData(-42L, defaultId)]
+    [InlineData(defaultId, -42L)]
     public async Task ShouldHandleNotFoundAsync(long? leagueId, long? resultConfigId)
     {
         leagueId ??= TestLeagueId;
