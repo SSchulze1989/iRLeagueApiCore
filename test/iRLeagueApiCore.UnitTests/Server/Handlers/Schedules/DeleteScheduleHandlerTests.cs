@@ -40,9 +40,9 @@ public sealed class DeleteScheduleDbTestFixture : HandlersTestsBase<DeleteSchedu
     }
 
     [Fact]
-    public override async Task<Unit> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

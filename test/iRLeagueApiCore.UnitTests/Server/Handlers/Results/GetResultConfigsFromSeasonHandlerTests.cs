@@ -28,9 +28,9 @@ public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTests
     }
 
     [Fact]
-    public override Task<IEnumerable<ResultConfigModel>> ShouldHandleDefault()
+    public override Task ShouldHandleDefault()
     {
-        return base.ShouldHandleDefault();
+        base.ShouldHandleDefault();
     }
 
     [Fact]

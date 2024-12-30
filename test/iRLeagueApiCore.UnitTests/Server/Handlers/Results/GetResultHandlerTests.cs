@@ -45,9 +45,9 @@ public sealed class GetResultHandlerTests : ResultHandlersTestsBase<GetResultHan
     }
 
     [Fact]
-    public async override Task<EventResultModel> ShouldHandleDefault()
+    public async override Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

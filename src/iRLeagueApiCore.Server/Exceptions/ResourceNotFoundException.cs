@@ -16,8 +16,4 @@ public sealed class ResourceNotFoundException : Exception
     public ResourceNotFoundException(string message, Exception innerException) : base(message, innerException)
     {
     }
-
-    private ResourceNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
 }

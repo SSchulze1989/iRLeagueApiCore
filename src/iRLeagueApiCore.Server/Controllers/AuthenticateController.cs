@@ -8,6 +8,7 @@ using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,6 +27,7 @@ public sealed class AuthenticateController : Controller
     private readonly RoleManager<IdentityRole> roleManager;
     private readonly IMediator mediator;
     private readonly IConfiguration _configuration;
+    private readonly IConfigurationSection jwtConfig;
 
     public AuthenticateController(
         ILogger<AuthenticateController> logger,
@@ -39,6 +41,7 @@ public sealed class AuthenticateController : Controller
         this.roleManager = roleManager;
         this.mediator = mediator;
         _configuration = configuration;
+        jwtConfig = _configuration.GetRequiredSection("JWT");
     }
 
     [HttpPost]
@@ -112,13 +115,14 @@ public sealed class AuthenticateController : Controller
 
         // decrypt token
         var tokenHandler = new JwtSecurityTokenHandler();
+        var secret = jwtConfig["Secret"] ?? throw new InvalidConfigurationException("Missing JWT secret");
         var validationParameters = new TokenValidationParameters()
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidAudience = _configuration["JWT:ValidAudience"],
-            ValidIssuer = _configuration["JWT:ValidIssuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]))
+            ValidAudience = jwtConfig["ValidAudience"],
+            ValidIssuer = jwtConfig["ValidIssuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
         };
         
         try
@@ -235,7 +239,8 @@ public sealed class AuthenticateController : Controller
             new Claim("idKey", loginKey),
         };
 
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        var secret = jwtConfig["Secret"] ?? throw new InvalidConfigurationException("Missing JWT secret");
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
         var token = new JwtSecurityToken(
             issuer: _configuration["JWT:ValidIssuer"],
@@ -275,11 +280,12 @@ public sealed class AuthenticateController : Controller
     {
         var userRoles = await userManager.GetRolesAsync(user);
 
+        var userName = user.UserName ?? throw new InvalidOperationException("ApplicationUser.UserName may not be null");
         var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
+            {
+                new Claim(ClaimTypes.Name, userName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
 
         foreach (var userRole in userRoles)
         {
@@ -288,7 +294,8 @@ public sealed class AuthenticateController : Controller
 
         authClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
 
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        var secret = jwtConfig["Secret"] ?? throw new InvalidConfigurationException("Missing JWT secret");
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
         var token = new JwtSecurityToken(
             issuer: _configuration["JWT:ValidIssuer"],

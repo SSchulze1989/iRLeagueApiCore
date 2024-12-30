@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Microsoft.IdentityModel.Protocols.Configuration;
+using System.Collections;
 using System.Net;
 
 namespace iRLeagueApiCore.Server.Models;
@@ -19,8 +20,9 @@ internal sealed class CredentialList : ICredentials
         foreach(var credentialConfig in configuration.GetChildren()) 
         {
             var credential = new NetworkCredential(credentialConfig["Username"], credentialConfig["Password"]);
-            var uri = new Uri(credentialConfig["Uri"]);
-            var authenticationType = credentialConfig["AuthenticationType"];
+            var uri = new Uri(credentialConfig["Uri"] ?? string.Empty);
+            var authenticationType = credentialConfig["AuthenticationType"] ?? 
+                throw new InvalidConfigurationException($"Invalid credentials for {uri}, username: {credential.UserName} - AuthenticationType required)");
             Add(uri, authenticationType, credential);
         }
     }

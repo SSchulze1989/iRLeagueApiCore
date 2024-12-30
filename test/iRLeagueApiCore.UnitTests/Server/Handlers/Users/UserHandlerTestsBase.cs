@@ -51,7 +51,7 @@ public abstract class UserHandlerTestsBase<THandler, TRequest> : IClassFixture<I
     protected IdentityRole CreateTestRole(string leagueName)
     {
         var roleName = LeagueRoles.GetLeagueRoleName(leagueName, LeagueRoles.Admin);
-        var role = new IdentityRole(roleName);
+        var role = new IdentityRole(roleName!);
         role.NormalizedName = MockHelpers.MockLookupNormalizer().NormalizeName(roleName);
         identityFixture.Roles.Add(role.Id, role);
         return role;

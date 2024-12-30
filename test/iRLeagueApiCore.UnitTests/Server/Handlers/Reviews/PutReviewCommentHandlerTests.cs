@@ -61,9 +61,9 @@ public sealed class PutReviewCommentHandlerTests : ReviewsHandlersTestsBase<PutR
     }
 
     [Fact]
-    public override async Task<ReviewCommentModel> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Theory]

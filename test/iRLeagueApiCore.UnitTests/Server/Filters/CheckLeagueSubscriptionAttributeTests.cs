@@ -29,7 +29,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                     )
                 ),
         };
@@ -74,7 +74,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                     )
                 ),
         };
@@ -130,7 +130,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                     )
                 ),
         };
@@ -176,7 +176,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                     )
                 ),
         };
@@ -220,7 +220,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                     )
                 ),
         };
@@ -254,7 +254,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                     )
                 ),
         };
@@ -284,7 +284,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                     )
                 ),
         };
@@ -318,7 +318,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(
                 new RouteValueDictionary(
-                    new Dictionary<string, object>() { { "leagueName", league.Name } }
+                    new Dictionary<string, object?>() { { "leagueName", league.Name } }
                 )
             ),
         };

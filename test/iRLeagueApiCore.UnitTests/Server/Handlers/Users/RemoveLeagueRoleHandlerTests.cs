@@ -55,13 +55,13 @@ public sealed class RemoveLeagueRoleHandlerTests : UserHandlerTestsBase<RemoveLe
 
         var result = await sut.Handle(request, default);
 
-        result.LeagueRoles.Should().NotContain(LeagueRoles.GetRoleName(testRole.Name));
+        result.LeagueRoles.Should().NotContain(LeagueRoles.GetRoleName(testRole.Name!));
     }
 
     
     private RemoveLeagueRoleRequest CreateRequest(string leagueName, ApplicationUser user, IdentityRole role)
     {
-        return new(leagueName, user.Id, LeagueRoles.GetRoleName(role.Name)!);
+        return new(leagueName, user.Id, LeagueRoles.GetRoleName(role.Name!)!);
     }
 
     private RemoveLeagueRoleHandler CreateSut()

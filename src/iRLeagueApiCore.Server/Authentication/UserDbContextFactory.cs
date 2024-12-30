@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Server.Authentication;
+﻿using Microsoft.IdentityModel.Protocols.Configuration;
+
+namespace iRLeagueApiCore.Server.Authentication;
 
 public sealed class UserDbContextFactory : IDbContextFactory<UserDbContext>
 {
@@ -11,7 +13,8 @@ public sealed class UserDbContextFactory : IDbContextFactory<UserDbContext>
 
     public UserDbContext CreateDbContext()
     {
-        var dbConnectionString = _configuration.GetConnectionString("UserDb");
+        var dbConnectionString = _configuration.GetConnectionString("UserDb") ??
+            throw new InvalidConfigurationException("No connection string for 'UserDB' found in configuration");
         var optionsBuilder = new DbContextOptionsBuilder<UserDbContext>();
         optionsBuilder.UseMySQL(dbConnectionString);
 

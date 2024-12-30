@@ -36,9 +36,9 @@ public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<Del
     }
 
     [Fact]
-    public override async Task<MediatR.Unit> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Theory]

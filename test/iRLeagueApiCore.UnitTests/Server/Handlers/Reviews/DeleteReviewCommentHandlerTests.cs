@@ -47,9 +47,9 @@ public sealed class DeleteReviewCommentHandlerTests : ReviewsHandlersTestsBase<D
     }
 
     [Fact]
-    public override async Task<Unit> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Theory]

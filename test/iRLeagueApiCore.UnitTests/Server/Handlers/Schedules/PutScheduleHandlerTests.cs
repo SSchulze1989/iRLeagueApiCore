@@ -43,9 +43,9 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
     }
 
     [Fact]
-    public override async Task<ScheduleModel> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

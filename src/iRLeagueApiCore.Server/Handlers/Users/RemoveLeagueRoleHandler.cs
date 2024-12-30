@@ -25,7 +25,8 @@ public sealed class RemoveLeagueRoleHandler : UsersHandlerBase<RemoveLeagueRoleH
 
     private async Task RemoveLeagueRoleFromUser(ApplicationUser user, string leagueName, string roleName)
     {
-        var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
+        var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, roleName) ??
+            throw new ArgumentException("Value is not a valid role name", nameof(roleName));
         await userManager.RemoveFromRoleAsync(user, leagueRoleName);
     }
 }

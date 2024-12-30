@@ -21,7 +21,7 @@ public static class MockHelpers
     public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
     {
         var store = new Mock<IUserStore<TUser>>();
-        var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
+        var mgr = new Mock<UserManager<TUser>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
         mgr.Object.UserValidators.Add(new UserValidator<TUser>());
         mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
         return mgr;
@@ -33,7 +33,7 @@ public static class MockHelpers
         var roles = new List<IRoleValidator<TRole>>();
         roles.Add(new RoleValidator<TRole>());
         return new Mock<RoleManager<TRole>>(store, roles, MockLookupNormalizer(),
-            new IdentityErrorDescriber(), null);
+            new IdentityErrorDescriber(), null!);
     }
 
     public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser>? store = null) where TUser : class
@@ -52,7 +52,7 @@ public static class MockHelpers
             };
         var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
             userValidators, pwdValidators, MockLookupNormalizer(),
-            new IdentityErrorDescriber(), null,
+            new IdentityErrorDescriber(), null!,
             new Mock<ILogger<UserManager<TUser>>>().Object);
         validator.Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>()))
             .Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
@@ -61,7 +61,7 @@ public static class MockHelpers
 
     public static IUserStore<T> TestUserStore<T>(List<T>? users = null) where T : IdentityUser
     {
-        var userStoreList = users ?? new();
+        var userStoreList = users ?? [];
         var normalizer = MockLookupNormalizer();
         userStoreList.ForEach(x => x.NormalizedUserName = normalizer.NormalizeName(x.UserName));
         var store = new Mock<IUserStore<T>>();
@@ -74,7 +74,7 @@ public static class MockHelpers
                 var normalizedName = normalizer.NormalizeName(user.UserName);
                 if (userStoreList.Any(x => x.UserName == user.UserName || x.NormalizedUserName == normalizedName))
                 {
-                    return IdentityResult.Failed(new[] { new IdentityErrorDescriber().DuplicateUserName(user.UserName) });
+                    return IdentityResult.Failed([new IdentityErrorDescriber().DuplicateUserName(user.UserName!)]);
                 }
                 userStoreList.Add(user);
                 return IdentityResult.Success;
@@ -127,7 +127,7 @@ public static class MockHelpers
         return new RoleManager<TRole>(store, roles,
             MockLookupNormalizer(),
             new IdentityErrorDescriber(),
-            null);
+            null!);
     }
 
     public static IRoleStore<TRole> TestRoleStore<TRole>(IDictionary<string, TRole>? roles = null) where TRole : IdentityRole<string>
@@ -146,7 +146,7 @@ public static class MockHelpers
                 var errorDescriber = new IdentityErrorDescriber();
                 if (roleStoreDict.Any(x => x.Value.Name == role.Name))
                 {
-                    return IdentityResult.Failed(errorDescriber.DuplicateRoleName(role.Name));
+                    return IdentityResult.Failed(errorDescriber.DuplicateRoleName(role.Name!));
                 }
                 role.NormalizedName = normalizer.NormalizeName(role.Name);
                 roleStoreDict.Add(role.Id, role);
@@ -313,22 +313,22 @@ public static class MockHelpers
             userStore.Dispose();
         }
 
-        public Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        public Task<TUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             return userStore.FindByIdAsync(userId, cancellationToken);
         }
 
-        public Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public Task<TUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             return userStore.FindByNameAsync(normalizedUserName, cancellationToken);
         }
 
-        public Task<string> GetNormalizedRoleNameAsync(TRole role, CancellationToken cancellationToken)
+        public Task<string?> GetNormalizedRoleNameAsync(TRole role, CancellationToken cancellationToken)
         {
             return roleStore.GetNormalizedRoleNameAsync(role, cancellationToken);
         }
 
-        public Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken)
+        public Task<string?> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken)
         {
             return userStore.GetNormalizedUserNameAsync(user, cancellationToken);
         }
@@ -338,7 +338,7 @@ public static class MockHelpers
             return roleStore.GetRoleIdAsync(role, cancellationToken);
         }
 
-        public Task<string> GetRoleNameAsync(TRole role, CancellationToken cancellationToken)
+        public Task<string?> GetRoleNameAsync(TRole role, CancellationToken cancellationToken)
         {
             return roleStore.GetRoleNameAsync(role, cancellationToken);
         }
@@ -348,9 +348,9 @@ public static class MockHelpers
             var userRoles = userRolesStore.GetOrDefault(user);
             if (userRoles is null)
             {
-                return new List<string>();
+                return [];
             }
-            return await Task.FromResult(userRoles.Select(x => x.Name).ToList());
+            return await Task.FromResult(userRoles.Select(x => x.Name).NotNull().ToList());
         }
 
         public Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken)
@@ -358,7 +358,7 @@ public static class MockHelpers
             return userStore.GetUserIdAsync(user, cancellationToken);
         }
 
-        public Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken)
+        public Task<string?> GetUserNameAsync(TUser user, CancellationToken cancellationToken)
         {
             return userStore.GetUserNameAsync(user, cancellationToken);
         }
@@ -402,22 +402,22 @@ public static class MockHelpers
             userRoles.Remove(role);
         }
 
-        public Task SetNormalizedRoleNameAsync(TRole role, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedRoleNameAsync(TRole role, string? normalizedName, CancellationToken cancellationToken)
         {
             return roleStore.SetNormalizedRoleNameAsync(role, normalizedName, cancellationToken);
         }
 
-        public Task SetNormalizedUserNameAsync(TUser user, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedUserNameAsync(TUser user, string? normalizedName, CancellationToken cancellationToken)
         {
             return userStore.SetNormalizedUserNameAsync(user, normalizedName, cancellationToken);
         }
 
-        public Task SetRoleNameAsync(TRole role, string roleName, CancellationToken cancellationToken)
+        public Task SetRoleNameAsync(TRole role, string? roleName, CancellationToken cancellationToken)
         {
             return roleStore.SetRoleNameAsync(role, roleName, cancellationToken);
         }
 
-        public Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken)
+        public Task SetUserNameAsync(TUser user, string? userName, CancellationToken cancellationToken)
         {
             return userStore.SetUserNameAsync(user, userName, cancellationToken);
         }
@@ -432,12 +432,12 @@ public static class MockHelpers
             return roleStore.UpdateAsync(role, cancellationToken);
         }
 
-        Task<TRole> IRoleStore<TRole>.FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        Task<TRole?> IRoleStore<TRole>.FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             return roleStore.FindByIdAsync(roleId, cancellationToken);
         }
 
-        Task<TRole> IRoleStore<TRole>.FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        Task<TRole?> IRoleStore<TRole>.FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             return roleStore.FindByNameAsync(normalizedRoleName, cancellationToken);
         }

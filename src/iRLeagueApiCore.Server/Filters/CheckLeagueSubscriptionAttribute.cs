@@ -79,7 +79,7 @@ internal sealed class CheckLeagueSubscriptionAttribute : ActionFilterAttribute
     private async Task<LeagueEntity?> GetLeagueByName(string leagueName)
     {
         // hit cache and try to get league information without asking database
-        if (memoryCache.TryGetValue(CacheKeys.GetLeagueNameKey(leagueName), out LeagueEntity cachedLeague))
+        if (memoryCache.TryGetValue(CacheKeys.GetLeagueNameKey(leagueName), out LeagueEntity? cachedLeague))
         {
             return cachedLeague;
         }

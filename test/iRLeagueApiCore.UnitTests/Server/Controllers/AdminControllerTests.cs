@@ -37,7 +37,7 @@ public sealed class AdminControllerTests
     }
 
     [Fact]
-    public async void ListUsersRequestValid()
+    public async Task ListUsersRequestValid()
     {
         var userList = new List<AdminUserModel>()
             {
@@ -53,7 +53,7 @@ public sealed class AdminControllerTests
     }
 
     [Fact]
-    public async void ListUsersValidationFailed()
+    public async Task ListUsersValidationFailed()
     {
         var mediator = MockHelpers.TestMediator<ListUsersRequest, IEnumerable<AdminUserModel>>(throws: ValdiationFailed());
         var controller = AddContexts.AddAdminControllerContext(new AdminController(_mockLogger, mediator));
@@ -63,7 +63,7 @@ public sealed class AdminControllerTests
     }
 
     [Fact]
-    public async void GiveRoleRequestValid()
+    public async Task GiveRoleRequestValid()
     {
         const string roleName = "TestRole";
         var mediator = MockHelpers.TestMediator<GiveRoleRequest, Unit>();
@@ -76,7 +76,7 @@ public sealed class AdminControllerTests
     }
 
     [Fact]
-    public async void GiveRoleValidationFailed()
+    public async Task GiveRoleValidationFailed()
     {
         const string roleName = "TestRole";
         var mediator = MockHelpers.TestMediator<GiveRoleRequest, Unit>(throws: ValdiationFailed());

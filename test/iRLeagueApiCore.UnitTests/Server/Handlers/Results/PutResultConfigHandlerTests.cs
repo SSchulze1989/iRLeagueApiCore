@@ -47,9 +47,9 @@ public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutRes
     }
 
     [Fact]
-    public override async Task<ResultConfigModel> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Theory]

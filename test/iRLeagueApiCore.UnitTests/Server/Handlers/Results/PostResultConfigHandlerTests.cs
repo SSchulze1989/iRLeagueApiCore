@@ -40,9 +40,9 @@ public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostR
     }
 
     [Fact]
-    public override async Task<ResultConfigModel> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

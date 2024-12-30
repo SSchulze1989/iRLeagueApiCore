@@ -50,12 +50,12 @@ public sealed class AddLeagueRoleHandlerTests : UserHandlerTestsBase<AddLeagueRo
 
         var result = await sut.Handle(request, default);
 
-        result.LeagueRoles.Should().Contain(LeagueRoles.GetRoleName(testRole.Name));
+        result.LeagueRoles.Should().Contain(LeagueRoles.GetRoleName(testRole.Name!));
     }
 
     private AddLeagueRoleRequest CreateRequest(string leagueName, ApplicationUser user, IdentityRole role)
     {
-        return new AddLeagueRoleRequest(leagueName, user.Id, LeagueRoles.GetRoleName(role.Name)!);
+        return new AddLeagueRoleRequest(leagueName, user.Id, LeagueRoles.GetRoleName(role.Name!)!);
     }
 
     private AddLeagueRoleHandler CreateSut()

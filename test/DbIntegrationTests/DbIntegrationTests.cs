@@ -88,7 +88,7 @@ public class DbIntegrationTests : DatabaseTestBase
                 var league = dbContext.Leagues.OrderBy(x => x.Id).Last();
                 CurrentLeagueId = league.Id;
                 Assert.Equal(leagueName, league.Name);
-                Assert.Equal(1, league.Seasons.Count);
+                Assert.Single(league.Seasons);
                 Assert.Equal(league, league.Seasons.First().League);
             }
         }
@@ -115,7 +115,7 @@ public class DbIntegrationTests : DatabaseTestBase
             var league = dbContext.Leagues.First();
             CurrentLeagueId = league.Id;
             Assert.NotNull(league);
-            Assert.Equal(0, league.Seasons.Count);
+            Assert.Empty(league.Seasons);
         }
     }
 

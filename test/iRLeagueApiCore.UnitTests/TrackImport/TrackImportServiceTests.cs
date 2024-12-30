@@ -34,8 +34,8 @@ public sealed class TrackImportServiceTests
     [Fact(Skip = Skip)]
     public async Task Authenticate_ShouldReturnTrue_WhenUsingValidCredentials()
     {
-        string username = configuration["Iracing:UserName"];
-        string password = configuration["Iracing:Password"];
+        string username = configuration["Iracing:UserName"]!;
+        string password = configuration["Iracing:Password"]!;
         var cookieContainer = new CookieContainer();
         var httpClientHander = new HttpClientHandler()
         {
@@ -71,8 +71,8 @@ public sealed class TrackImportServiceTests
     [Fact(Skip = Skip)]
     public async Task GetTracksData_ShouldReturnData_WhenUsingValidCredentials()
     {
-        string username = configuration["Iracing:UserName"];
-        string password = configuration["Iracing:Password"];
+        string username = configuration["Iracing:UserName"]!;
+        string password = configuration["Iracing:Password"]!;
         var cookieContainer = new CookieContainer();
         var httpClientHander = new HttpClientHandler()
         {

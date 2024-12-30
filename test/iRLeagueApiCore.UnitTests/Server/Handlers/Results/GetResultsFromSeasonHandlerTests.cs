@@ -37,9 +37,9 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
     }
 
     [Fact]
-    public async override Task<IEnumerable<SeasonEventResultModel>> ShouldHandleDefault()
+    public async override Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

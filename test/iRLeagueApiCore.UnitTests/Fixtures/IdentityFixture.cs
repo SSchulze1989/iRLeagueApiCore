@@ -45,6 +45,7 @@ public sealed class IdentityFixture
         var testUserManager = GetDefaultMockUserManager().Object;
         var testRoleManager = GetDefaultMockRoleManager().Object;
         var testValidator = GetDefaultValidator<Unit>().Object;
+        Assert.NotNull(validUser.UserName);
         Assert.NotNull(await testUserManager.FindByNameAsync(validUser.UserName));
         Assert.True(await testRoleManager.RoleExistsAsync(testLeagueRoleName));
         Assert.True(testValidator.Validate(Unit.Value).IsValid);
@@ -99,11 +100,6 @@ public sealed class IdentityFixture
         UserRoleStore = TestUserRoleStore(UserStore, RoleStore, UserRoles);
         UserManager = TestUserManager(UserRoleStore);
         RoleManager = TestRoleManager(RoleStore);
-    }
-
-    public async Task DisposeAsync()
-    {
-        await Task.CompletedTask;
     }
 }
 

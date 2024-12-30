@@ -23,9 +23,9 @@ public sealed class GetSeasonsDbTestFixture : HandlersTestsBase<GetSeasonsHandle
     }
 
     [Fact]
-    public async override Task<IEnumerable<SeasonModel>> ShouldHandleDefault()
+    public async override Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]
