@@ -8,12 +8,12 @@ public sealed class IdRowFilterTests
 {
     private static readonly Fixture fixture = new();
 
-    private static IEnumerable<object[]> TestValidConstructorData() => new[]
+    public static IEnumerable<object[]> TestValidConstructorData() => new[]
         {
             new object[] { fixture.CreateMany<long>().Select(x => x.ToString()) },
         };
 
-    private static IEnumerable<object[]> TestInvalidConstructorData() => new[]
+    public static IEnumerable<object[]> TestInvalidConstructorData() => new[]
         {
             new object[] { new[] { "123a4" } },
             new object[] { new[] { fixture.Create<Guid>().ToString() } },
