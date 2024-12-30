@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
-public record DeleteLeagueRequest(long LeagueId) : IRequest;
+public record DeleteLeagueRequest(long LeagueId) : IRequest<Unit>;
 
 public sealed class DeleteLeagueHandler : LeagueHandlerBase<DeleteLeagueHandler, DeleteLeagueRequest, Unit>
 {

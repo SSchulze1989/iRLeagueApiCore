@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeletePenaltyRequest(long PenaltyId) : IRequest;
+public record DeletePenaltyRequest(long PenaltyId) : IRequest<Unit>;
 
 public class DeletePenaltyHandler : ReviewsHandlerBase<DeletePenaltyHandler,  DeletePenaltyRequest, Unit>
 {

@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Teams;
 
-public record DeleteTeamRequest(long TeamId) : IRequest;
+public record DeleteTeamRequest(long TeamId) : IRequest<Unit>;
 
 public class DeleteTeamHandler : TeamsHandlerBase<DeleteTeamHandler,  DeleteTeamRequest, Unit>
 {

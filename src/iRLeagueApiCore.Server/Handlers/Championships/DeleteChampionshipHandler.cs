@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public record DeleteChampionshipRequest(long ChampionshipId) : IRequest;
+public record DeleteChampionshipRequest(long ChampionshipId) : IRequest<Unit>;
 
 public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampionshipHandler,  DeleteChampionshipRequest, Unit>
 {

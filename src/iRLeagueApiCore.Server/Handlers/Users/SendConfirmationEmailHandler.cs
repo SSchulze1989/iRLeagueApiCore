@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace iRLeagueApiCore.Server.Handlers.Users;
 
-public record SendConfirmationEmailRequest(string Email, string LinkTemplate) : IRequest;
+public record SendConfirmationEmailRequest(string Email, string LinkTemplate) : IRequest<Unit>;
 
 public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEmailHandler,  SendConfirmationEmailRequest, Unit>
 {

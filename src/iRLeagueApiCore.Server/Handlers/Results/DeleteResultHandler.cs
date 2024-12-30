@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record DeleteResultRequest(long EventId) : IRequest;
+public record DeleteResultRequest(long EventId) : IRequest<Unit>;
 
 public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler,  DeleteResultRequest, Unit>
 {

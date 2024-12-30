@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeleteReviewCommentRequest(long CommentId) : IRequest;
+public record DeleteReviewCommentRequest(long CommentId) : IRequest<Unit>;
 
 public sealed class DeleteReviewCommentHandler : CommentHandlerBase<DeleteReviewCommentHandler,  DeleteReviewCommentRequest, Unit>
 {

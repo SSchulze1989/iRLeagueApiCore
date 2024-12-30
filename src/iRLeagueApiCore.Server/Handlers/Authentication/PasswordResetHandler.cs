@@ -7,7 +7,7 @@ using System.Text;
 
 namespace iRLeagueApiCore.Server.Handlers.Authentication;
 
-public record PasswordResetRequest(PasswordResetModel Model) : IRequest;
+public record PasswordResetRequest(PasswordResetModel Model) : IRequest<Unit>;
 public sealed class PasswordResetHandler : IRequestHandler<PasswordResetRequest, Unit>
 {
     private readonly ILogger<PasswordResetHandler> logger;
