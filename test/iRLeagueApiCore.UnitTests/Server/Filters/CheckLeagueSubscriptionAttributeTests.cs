@@ -336,7 +336,7 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
             actionContext: actionContext,
             executedDelegate: () => { hasInvokedNext = true; return Task.FromResult(executedContext); });
 
-        memoryCacheMock.Verify(x => x.TryGetValue(CacheKeys.GetLeagueNameKey(league.Name), out It.Ref<object>.IsAny));
+        memoryCacheMock.Verify(x => x.TryGetValue(CacheKeys.GetLeagueNameKey(league.Name), out It.Ref<object?>.IsAny));
         hasInvokedNext.Should().BeTrue();
     }
 
@@ -381,8 +381,8 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
         memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
             .Returns((object key) => cache.CreateEntry(key))
             .Verifiable();
-        memoryCacheMock.Setup(x => x.TryGetValue(It.IsAny<object>(), out It.Ref<object>.IsAny))
-            .Returns((object key, out object value) => cache.TryGetValue(key, out value))
+        memoryCacheMock.Setup(x => x.TryGetValue(It.IsAny<object>(), out It.Ref<object?>.IsAny))
+            .Returns((object key, out object? value) => cache.TryGetValue(key, out value))
             .Verifiable();
         memoryCacheMock.Setup(x => x.Remove(It.IsAny<object>()))
             .Callback((object key) => cache.Remove(key))

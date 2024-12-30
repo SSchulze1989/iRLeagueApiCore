@@ -33,9 +33,9 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
 	<TargetFramework>net8.0</TargetFramework>
-	<LangVersion>11</LangVersion>
+	<LangVersion>12</LangVersion>
     <PackageId>iRLeagueDatabaseCore</PackageId>
-    <Version>0.13.0</Version>
+    <Version>0.14.0-dev.1</Version>
 	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
