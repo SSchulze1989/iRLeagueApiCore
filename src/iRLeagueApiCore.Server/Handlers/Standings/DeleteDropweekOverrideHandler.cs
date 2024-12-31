@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Standings;
 
-public record DeleteDropweekOverrideRequest(long StandingConfigId, long ScoredResultRowId) : IRequest;
+public record DeleteDropweekOverrideRequest(long StandingConfigId, long ScoredResultRowId) : IRequest<Unit>;
 
 public class DeleteDropweekOverrideHandler : StandingsHandlerBase<DeleteDropweekOverrideHandler, DeleteDropweekOverrideRequest, Unit>
 {
