@@ -269,6 +269,8 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                 Status = row.Status,
                 TotalPoints = row.RacePoints,
                 PointsEligible = row.PointsEligible,
+                PenaltyTime = row.PenaltyTime,
+                PenaltyPositions = row.PenaltyPositions,
             })
         })
     };
