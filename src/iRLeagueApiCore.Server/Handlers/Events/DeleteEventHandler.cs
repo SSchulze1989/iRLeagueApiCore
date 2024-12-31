@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Events;
 
-public record DeleteEventRequest(long EventId) : IRequest;
+public record DeleteEventRequest(long EventId) : IRequest<Unit>;
 
 public sealed class DeleteEventHandler : EventHandlerBase<DeleteEventHandler, DeleteEventRequest, Unit>
 {

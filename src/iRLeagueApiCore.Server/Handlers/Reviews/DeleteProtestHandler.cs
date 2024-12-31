@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeleteProtestRequest(long ProtestId) : IRequest;
+public record DeleteProtestRequest(long ProtestId) : IRequest<Unit>;
 
 public class DeleteProtestHandler : ProtestsHandlerBase<DeleteProtestHandler,  DeleteProtestRequest, Unit>
 {

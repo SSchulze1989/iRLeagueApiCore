@@ -31,7 +31,7 @@ public sealed class GiveRoleRequestTests : IClassFixture<IdentityFixture>
         var userManager = mockUserManager.Object;
 
         var request = new GiveRoleRequest(fixture.testLeague,
-            new UserRoleModel() { UserName = fixture.validUser.UserName, RoleName = fixture.testRole });
+            new UserRoleModel() { UserName = fixture.validUser.UserName!, RoleName = fixture.testRole });
         request.User = fixture.validUser;
         var handler = new GiveRoleHandler(logger, validator.ToEnumerable(), userManager, roleManager);
         var result = await handler.Handle(request);
@@ -73,7 +73,7 @@ public sealed class GiveRoleRequestTests : IClassFixture<IdentityFixture>
         var userManager = mockUserManager.Object;
 
         var request = new GiveRoleRequest(fixture.testLeague,
-            new UserRoleModel() { UserName = fixture.validUser.UserName, RoleName = fixture.testRole });
+            new UserRoleModel() { UserName = fixture.validUser.UserName!, RoleName = fixture.testRole });
         request.User = fixture.validUser;
         var handler = new GiveRoleHandler(logger, validator.ToEnumerable(), userManager, roleManager);
         var result = await handler.Handle(request);
@@ -101,7 +101,7 @@ public sealed class GiveRoleRequestTests : IClassFixture<IdentityFixture>
         var userManager = mockUserManager.Object;
 
         var request = new GiveRoleRequest(fixture.testLeague,
-            new UserRoleModel() { UserName = fixture.validUser.UserName, RoleName = fixture.testRole });
+            new UserRoleModel() { UserName = fixture.validUser.UserName!, RoleName = fixture.testRole });
         request.User = fixture.validUser;
         var handler = new GiveRoleHandler(logger, validator.ToEnumerable(), userManager, roleManager);
         await Assert.ThrowsAsync<InvalidOperationException>(async () => await handler.Handle(request));
@@ -123,7 +123,7 @@ public sealed class GiveRoleRequestTests : IClassFixture<IdentityFixture>
         var userManager = mockUserManager.Object;
 
         var request = new GiveRoleRequest(fixture.testLeague,
-            new UserRoleModel() { UserName = fixture.validUser.UserName, RoleName = fixture.testRole });
+            new UserRoleModel() { UserName = fixture.validUser.UserName!, RoleName = fixture.testRole });
         request.User = fixture.validUser;
         var handler = new GiveRoleHandler(logger, validator.ToEnumerable(), userManager, roleManager);
         await Assert.ThrowsAsync<InvalidOperationException>(async () => await handler.Handle(request));

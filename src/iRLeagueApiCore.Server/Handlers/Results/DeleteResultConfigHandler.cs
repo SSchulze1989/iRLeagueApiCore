@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record DeleteResultConfigRequest(long ResultConfigId) : IRequest;
+public record DeleteResultConfigRequest(long ResultConfigId) : IRequest<Unit>;
 
 public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest, Unit>
 {

@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record AddLeagueRoleRequest(string LeagueName, string UserId, string RoleName) : IRequest<LeagueUserModel>;
 
-public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler,  AddLeagueRoleRequest, LeagueUserModel>
+public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler, AddLeagueRoleRequest, LeagueUserModel>
 {
     private readonly RoleManager<IdentityRole> roleManager;
 
@@ -28,7 +28,8 @@ public sealed class AddLeagueRoleHandler : UsersHandlerBase<AddLeagueRoleHandler
 
     private async Task AddLeagueRoleToUser(ApplicationUser user, string leagueName, string roleName)
     {
-        var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, roleName);
+        var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, roleName) ??
+            throw new ArgumentException("Value is not a valid role name", nameof(roleName));
         if (await roleManager.RoleExistsAsync(leagueRoleName) == false)
         {
             await roleManager.CreateAsync(new() { Name = leagueRoleName });

@@ -17,7 +17,7 @@ public sealed class UsersEndpointTests
     private RouteBuilder LeagueRouteBuilder => (RouteBuilder)(new RouteBuilder().AddEndpoint(testLeague));
 
     [Fact]
-    public async void ShouldCallRequestGetAllUsers()
+    public async Task ShouldCallRequestGetAllUsers()
     {
         string shouldRequestUrl = $"{EndpointsTests.BaseUrl}{testLeague}/{usersController}";
         await EndpointsTests.TestRequest<ILeagueUsersEndpoint>(shouldRequestUrl,
@@ -27,7 +27,7 @@ public sealed class UsersEndpointTests
     }
 
     [Fact]
-    public async void ShouldCallRequestGetLeagueUser()
+    public async Task ShouldCallRequestGetLeagueUser()
     {
         string shouldRequestUrl = $"{EndpointsTests.BaseUrl}{testLeague}/{usersController}/{testUserId}";
         await EndpointsTests.TestRequest<IUsersEndpoint>(shouldRequestUrl,
@@ -37,7 +37,7 @@ public sealed class UsersEndpointTests
     }
 
     [Fact]
-    public async void ShouldCallRequestGetUser()
+    public async Task ShouldCallRequestGetUser()
     {
         string shouldRequestUrl = $"{EndpointsTests.BaseUrl}{usersController}/{testUserId}";
         await EndpointsTests.TestRequest<IUsersEndpoint>(shouldRequestUrl,
@@ -47,7 +47,7 @@ public sealed class UsersEndpointTests
     }
 
     [Fact]
-    public async void ShouldCallRequestPutUser()
+    public async Task ShouldCallRequestPutUser()
     {
         string shouldRequestUrl = $"{EndpointsTests.BaseUrl}{usersController}/{testUserId}";
         await EndpointsTests.TestRequest<IUsersEndpoint>(shouldRequestUrl,
@@ -57,7 +57,7 @@ public sealed class UsersEndpointTests
     }
 
     [Fact]
-    public async void ShouldCallRequestSearch()
+    public async Task ShouldCallRequestSearch()
     {
         string shouldRequestUrl = $"{EndpointsTests.BaseUrl}{usersController}/{searchEndpoint}";
         await EndpointsTests.TestRequest<IUsersEndpoint>(shouldRequestUrl,
@@ -67,7 +67,7 @@ public sealed class UsersEndpointTests
     }
 
     [Fact]
-    public async void ShouldCallRequestAddRole()
+    public async Task ShouldCallRequestAddRole()
     {
         string shouldRequestUrl = $"{EndpointsTests.BaseUrl}{testLeague}/{usersController}/{testUserId}/{addRoleEndpoint}";
         await EndpointsTests.TestRequest<ILeagueUsersEndpoint>(shouldRequestUrl,
@@ -77,7 +77,7 @@ public sealed class UsersEndpointTests
     }
 
     [Fact]
-    public async void ShouldCallRequestRemoveRole()
+    public async Task ShouldCallRequestRemoveRole()
     {
         string shouldRequestUrl = $"{EndpointsTests.BaseUrl}{testLeague}/{usersController}/{testUserId}/{removeRoleEndpoint}";
         await EndpointsTests.TestRequest<ILeagueUsersEndpoint>(shouldRequestUrl,

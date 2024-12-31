@@ -147,7 +147,7 @@ public sealed class LeaguesControllerTests : DataAccessTestsBase
             new LeaguesController(MockLogger, mediator), 
             new[] { LeagueRoles.GetLeagueRoleName(testLeagueName, leagueRole)! });
         var routeValuesMock = new Mock<IRouteValuesFeature>();
-        routeValuesMock.SetupGet(x => x.RouteValues).Returns(new RouteValueDictionary(new Dictionary<string, object>() { { "leagueName", testLeagueName } }));
+        routeValuesMock.SetupGet(x => x.RouteValues).Returns(new RouteValueDictionary(new Dictionary<string, object?>() { { "leagueName", testLeagueName } }));
         controller.HttpContext.Features.Set(routeValuesMock.Object);
         var result = (await controller.Get(testLeagueId)).Result.Should().BeOfType<OkObjectResult>().Subject;
         var resultModel = result!.Value.Should().BeOfType<LeagueModel>().Subject;
@@ -175,7 +175,7 @@ public sealed class LeaguesControllerTests : DataAccessTestsBase
             new LeaguesController(MockLogger, mediator),
             new[] { LeagueRoles.GetLeagueRoleName(testLeagueName, leagueRole)! });
         var routeValuesMock = new Mock<IRouteValuesFeature>();
-        routeValuesMock.SetupGet(x => x.RouteValues).Returns(new RouteValueDictionary(new Dictionary<string, object>() { { "leagueName", testLeagueName } }));
+        routeValuesMock.SetupGet(x => x.RouteValues).Returns(new RouteValueDictionary(new Dictionary<string, object?>() { { "leagueName", testLeagueName } }));
         controller.HttpContext.Features.Set(routeValuesMock.Object);
         var result = (await controller.GetByName(testLeagueName)).Result.Should().BeOfType<OkObjectResult>().Subject;
         result.Value.Should().NotBeNull();

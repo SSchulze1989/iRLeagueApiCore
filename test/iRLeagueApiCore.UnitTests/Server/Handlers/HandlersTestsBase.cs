@@ -103,7 +103,7 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAcces
     /// <para/>Assertions can be modified by overriding <see cref="DefaultAssertions"/>
     /// </summary>
     /// <returns><typeparamref name="TResult"/> Result of the handle method</returns>
-    public virtual async Task<TResult> ShouldHandleDefault()
+    public virtual async Task ShouldHandleDefault()
     {
         using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
 
@@ -113,8 +113,6 @@ public abstract class HandlersTestsBase<THandler, TRequest, TResult> : DataAcces
         DefaultPreTestAssertions(request, dbContext);
         var result = await handler.Handle(request, default);
         DefaultAssertions(request, result, dbContext);
-
-        return result;
     }
 
     /// <summary>

@@ -520,11 +520,13 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         foreach (var sessionConfig in test)
         {
             var filterGroup = sessionConfig.PointRule.GetPointFilters();
+#pragma warning disable CA2021 // Enumerable.Cast<T>- oder Enumerable.OfType-<T> nicht mit inkompatiblen Typen aufrufen
             var testFilter = filterGroup!.GetFilters()
                 .Where(x => x.combination == FilterCombination.And)
                 .Select(x => x.rowFilter)
                 .OfType<ColumnValueRowFilter>()
                 .SingleOrDefault(x => x.ColumnProperty.Name == nameof(ResultRowCalculationResult.Status));
+#pragma warning restore CA2021 // Enumerable.Cast<T>- oder Enumerable.OfType-<T> nicht mit inkompatiblen Typen aufrufen
             testFilter.Should().NotBeNull();
             testFilter!.Comparator.ComparatorType.Should().Be(ComparatorType.IsEqual);
             testFilter.Comparator.Action.Should().Be(MatchedValueAction.Remove);
@@ -562,11 +564,13 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         foreach (var sessionConfig in test)
         {
             var filterGroup = sessionConfig.PointRule.GetPointFilters();
+#pragma warning disable CA2021 // Enumerable.Cast<T>- oder Enumerable.OfType-<T> nicht mit inkompatiblen Typen aufrufen
             var testFilter = filterGroup!.GetFilters()
                 .Where(x => x.combination == FilterCombination.And)
                 .Select(x => x.rowFilter)
                 .OfType<ColumnValueRowFilter>()
                 .SingleOrDefault(x => x.ColumnProperty.Name == nameof(ResultRowCalculationResult.Status));
+#pragma warning restore CA2021 // Enumerable.Cast<T>- oder Enumerable.OfType-<T> nicht mit inkompatiblen Typen aufrufen
             testFilter.Should().NotBeNull();
             testFilter!.Comparator.ComparatorType.Should().Be(ComparatorType.NotEqual);
             testFilter.Comparator.Action.Should().Be(MatchedValueAction.Keep);

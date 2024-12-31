@@ -1,4 +1,5 @@
 ﻿using iRLeagueDatabaseCore;
+using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace iRLeagueApiCore.Server.Models;
 
@@ -13,7 +14,8 @@ public sealed class LeagueDbContextFactory
 
     public LeagueDbContext CreateDbContext(ILeagueProvider leagueProvider)
     {
-        var dbConnectionString = _configuration.GetConnectionString("ModelDb");
+        var dbConnectionString = _configuration.GetConnectionString("ModelDb") ??
+            throw new InvalidConfigurationException("No connection string for 'ModelDb' found in configuration");
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
         optionsBuilder.UseMySQL(dbConnectionString);
 

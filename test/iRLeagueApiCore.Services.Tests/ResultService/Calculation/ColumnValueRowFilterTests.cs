@@ -11,7 +11,7 @@ public sealed class ColumnValueRowFilterTests
 {
     private static readonly Fixture fixture = new();
 
-    private static IEnumerable<object[]> TestValidConstructorData() =>
+    public static IEnumerable<object[]> TestValidConstructorData() =>
         [
             [nameof(ResultRowCalculationResult.FinalPosition), new[] { fixture.Create<int>().ToString() }],
             [nameof(ResultRowCalculationResult.FinishPosition), new[] { fixture.Create<double>().ToString(CultureInfo.InvariantCulture) }],
@@ -19,7 +19,7 @@ public sealed class ColumnValueRowFilterTests
             [nameof(ResultRowCalculationResult.QualifyingTime), new[] { fixture.Create<TimeSpan>().ToString() }],
         ];
 
-    private static IEnumerable<object[]> TestInValidConstructorData() =>
+    public static IEnumerable<object[]> TestInValidConstructorData() =>
         [
             [nameof(ResultRowCalculationResult.FinalPosition), new[] { fixture.Create<string>().ToString() }],
             [nameof(ResultRowCalculationResult.FinishPosition), new[] { fixture.Create<string>().ToString(CultureInfo.InvariantCulture) }],
@@ -27,7 +27,7 @@ public sealed class ColumnValueRowFilterTests
             [fixture.Create<string>(), new[] { fixture.Create<int>().ToString() }],
         ];
 
-    private static IEnumerable<object[]> TestFilterRowsData()
+    public static IEnumerable<object[]> TestFilterRowsData()
     {
         var matchRow = fixture.Create<ResultRowCalculationResult>();
         return

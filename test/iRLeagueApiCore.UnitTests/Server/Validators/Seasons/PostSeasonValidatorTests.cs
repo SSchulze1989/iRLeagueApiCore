@@ -33,10 +33,10 @@ public sealed class PostSeasonValidatorTests : DataAccessTestsBase
     [InlineData("ValidName", true)]
     [InlineData("", false)]
     [InlineData(null, false)]
-    public async Task ValidateSeasonName(string name, bool expectValid)
+    public async Task ValidateSeasonName(string? name, bool expectValid)
     {
         var request = DefaultRequest();
-        request.Model.SeasonName = name;
+        request.Model.SeasonName = name!;
         var validator = CreateValidator(dbContext);
         var result = await validator.TestValidateAsync(request);
         Assert.Equal(expectValid, result.IsValid);

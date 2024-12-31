@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models.Users;
 using iRLeagueApiCore.Server.Authentication;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using Microsoft.AspNetCore.Identity;
 
 namespace iRLeagueApiCore.Server.Handlers.Users;
@@ -24,7 +25,8 @@ public sealed class GetUserListHandler : UsersHandlerBase<GetUserListHandler,  G
     private async Task<IEnumerable<ApplicationUser>> GetUserEntitiesWithLeagueRole(string leagueName, CancellationToken cancellationToken)
     {
         var leagueRoles = LeagueRoles.RolesAvailable
-            .Select(x => LeagueRoles.GetLeagueRoleName(leagueName, x));
+            .Select(x => LeagueRoles.GetLeagueRoleName(leagueName, x))
+            .NotNull();
         var usersWithRole = new List<ApplicationUser>();
         foreach (var leagueRole in leagueRoles)
         {

@@ -37,9 +37,9 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
     }
 
     [Fact]
-    public async override Task<IEnumerable<SeasonEventResultModel>> ShouldHandleDefault()
+    public async override Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]
@@ -49,10 +49,10 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
     }
 
     [Theory]
-    [InlineData(0, defaultId)]
-    [InlineData(defaultId, 0)]
-    [InlineData(-42, defaultId)]
-    [InlineData(defaultId, -42)]
+    [InlineData(0L, defaultId)]
+    [InlineData(defaultId, 0L)]
+    [InlineData(-42L, defaultId)]
+    [InlineData(defaultId, -42L)]
     public async Task HandleNotFoundAsync(long? leagueId, long? seasonId)
     {
         leagueId ??= TestLeagueId;
