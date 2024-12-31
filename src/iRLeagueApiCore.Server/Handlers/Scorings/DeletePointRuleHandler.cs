@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
-public record DeletePointRuleRequest(long PointRuleId) : IRequest;
+public record DeletePointRuleRequest(long PointRuleId) : IRequest<Unit>;
 
 public sealed class DeletePointRuleHandler : PointRuleHandlerBase<DeletePointRuleHandler,  DeletePointRuleRequest, Unit>
 {

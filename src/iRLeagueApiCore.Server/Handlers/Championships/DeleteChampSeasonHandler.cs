@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
-public record DeleteChampSeasonRequest(long ChampSeasonId) : IRequest;
+public record DeleteChampSeasonRequest(long ChampSeasonId) : IRequest<Unit>;
 
 public sealed class DeleteChampSeasonHandler : ChampSeasonHandlerBase<DeleteChampSeasonHandler,  DeleteChampSeasonRequest, Unit>
 {

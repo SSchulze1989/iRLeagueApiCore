@@ -24,9 +24,9 @@ public sealed class GetLeaguesDbTestFixture : HandlersTestsBase<GetLeaguesHandle
     }
 
     [Fact]
-    public override async Task<IEnumerable<LeagueModel>> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

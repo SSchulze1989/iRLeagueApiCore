@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
-public record DeleteScheduleRequest(long ScheduleId) : IRequest;
+public record DeleteScheduleRequest(long ScheduleId) : IRequest<Unit>;
 
 public sealed class DeleteScheduleHandler : ScheduleHandlerBase<DeleteScheduleHandler,  DeleteScheduleRequest, Unit>
 {

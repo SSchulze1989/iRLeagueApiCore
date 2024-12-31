@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record DeleteRawEventResultRequest(long EventId, bool DeleteAllScoredResults = false) : IRequest;
+public record DeleteRawEventResultRequest(long EventId, bool DeleteAllScoredResults = false) : IRequest<Unit>;
 
 public class DeleteRawEventResultHandler : ResultHandlerBase<DeleteRawEventResultHandler, DeleteRawEventResultRequest, Unit>
 {

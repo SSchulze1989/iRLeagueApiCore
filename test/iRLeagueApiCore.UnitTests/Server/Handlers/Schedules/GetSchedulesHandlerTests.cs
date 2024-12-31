@@ -31,9 +31,9 @@ public sealed class GetSchedulesDbTestFixture : HandlersTestsBase<GetSchedulesHa
     }
 
     [Fact]
-    public override async Task<IEnumerable<ScheduleModel>> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

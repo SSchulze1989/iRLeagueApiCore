@@ -34,7 +34,7 @@ public sealed class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumer
         var users = new List<(ApplicationUser user, string role)>();
         foreach (var role in LeagueRoles.RolesAvailable)
         {
-            var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, role);
+            var leagueRoleName = LeagueRoles.GetLeagueRoleName(leagueName, role)!;
             var inRole = await _userManager.GetUsersInRoleAsync(leagueRoleName);
             if (inRole != null)
             {
@@ -49,10 +49,10 @@ public sealed class ListUsersHandler : IRequestHandler<ListUsersRequest, IEnumer
         var parts = user.FullName?.Split(';') ?? Array.Empty<string>();
         return new AdminUserModel()
         {
-            UserName = user.UserName,
+            UserName = user.UserName ?? string.Empty,
             Firstname = parts.ElementAtOrDefault(0) ?? string.Empty,
             Lastname = parts.ElementAtOrDefault(1) ?? string.Empty,
-            Email = user.Email,
+            Email = user.Email ?? string.Empty,
             Roles = roles,
         };
     }

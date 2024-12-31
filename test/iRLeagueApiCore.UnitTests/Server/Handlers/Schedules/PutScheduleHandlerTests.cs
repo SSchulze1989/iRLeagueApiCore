@@ -43,9 +43,9 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
     }
 
     [Fact]
-    public override async Task<ScheduleModel> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]
@@ -55,10 +55,10 @@ public sealed class PutScheduleDbTestFixture : HandlersTestsBase<PutScheduleHand
     }
 
     [Theory]
-    [InlineData(0, defaultId)]
-    [InlineData(defaultId, 0)]
-    [InlineData(-43, defaultId)]
-    [InlineData(defaultId, -43)]
+    [InlineData(0L, defaultId)]
+    [InlineData(defaultId, 0L)]
+    [InlineData(-42L, defaultId)]
+    [InlineData(defaultId, -42L)]
     public async Task HandleNotFoundAsync(long? leagueId, long? scheduleId)
     {
         leagueId ??= TestLeagueId;

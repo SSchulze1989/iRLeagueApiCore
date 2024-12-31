@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record TriggerResultCalculationCommand(long EventId) : IRequest;
+public record TriggerResultCalculationCommand(long EventId) : IRequest<Unit>;
 
 public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerResultCalculationHandler,  TriggerResultCalculationCommand, Unit>
 {

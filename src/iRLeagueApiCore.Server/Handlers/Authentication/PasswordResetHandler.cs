@@ -7,7 +7,7 @@ using System.Text;
 
 namespace iRLeagueApiCore.Server.Handlers.Authentication;
 
-public record PasswordResetRequest(PasswordResetModel Model) : IRequest;
+public record PasswordResetRequest(PasswordResetModel Model) : IRequest<Unit>;
 public sealed class PasswordResetHandler : IRequestHandler<PasswordResetRequest, Unit>
 {
     private readonly ILogger<PasswordResetHandler> logger;
@@ -30,7 +30,7 @@ public sealed class PasswordResetHandler : IRequestHandler<PasswordResetRequest,
         var user = await userManager.FindByNameAsync(request.Model.UserName)
             ?? throw new ResourceNotFoundException();
         var token = await GetResetToken(user);
-        if (user.Email.Equals(request.Model.Email, StringComparison.OrdinalIgnoreCase) == false)
+        if (user.Email is null || user.Email.Equals(request.Model.Email, StringComparison.OrdinalIgnoreCase) == false)
         {
             logger.LogWarning("Cancel password reset token request: provided Email does not match username");
             return Unit.Value;

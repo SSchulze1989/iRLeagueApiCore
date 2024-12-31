@@ -37,7 +37,7 @@ public sealed class EndpointsTests
         route.Should().Be($"{BaseUrl}?{name}={value}");
     }
 
-    public static async Task TestRequestUrl<TEndpoint>(string expectedUrl, Func<HttpClientWrapper, TEndpoint> endpoint, Func<TEndpoint, Task> action)
+    internal static async Task TestRequestUrl<TEndpoint>(string expectedUrl, Func<HttpClientWrapper, TEndpoint> endpoint, Func<TEndpoint, Task> action)
     {
         var content = new StringContent(JsonConvert.SerializeObject(null));
         string requestUrl = "";
@@ -61,7 +61,7 @@ public sealed class EndpointsTests
         requestUrl.Should().Be(expectedUrl);
     }
 
-    public static async Task TestRequest<TEndpoint>(string expectedUrl, Func<HttpClientWrapper, TEndpoint> endpoint, Func<TEndpoint, Task> action, HttpMethod method)
+    internal static async Task TestRequest<TEndpoint>(string expectedUrl, Func<HttpClientWrapper, TEndpoint> endpoint, Func<TEndpoint, Task> action, HttpMethod method)
     {
         var content = new StringContent(JsonConvert.SerializeObject(null));
         string requestUrl = "";

@@ -60,6 +60,10 @@ public class RegisterUserHandler : UsersHandlerBase<RegisterUserHandler, Registe
     {
         var subject = "Confirm your Emailaddress for iRLeagueManager.net";
         var body = GenerateMailBody(user, token, linkTemplate);
+        if (user.Email is null)
+        {
+            throw new InvalidOperationException("Could not send confirmation email: User email was null");
+        }
         await emailClient.SendNoReplyMailAsync(user.Email, subject, body);
     }
 }

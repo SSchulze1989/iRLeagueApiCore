@@ -47,7 +47,7 @@ public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler,  Po
     public async Task<bool> AssignOwnerRole(LeagueUser user, string leagueName)
     {
         // create owner role if not exists
-        var ownerRole = LeagueRoles.GetLeagueRoleName(leagueName, LeagueRoles.Owner);
+        var ownerRole = LeagueRoles.GetLeagueRoleName(leagueName, LeagueRoles.Owner)!;
         if (await roleManager.RoleExistsAsync(ownerRole) == false)
         {
             var createdRole = await roleManager.CreateAsync(new(ownerRole));

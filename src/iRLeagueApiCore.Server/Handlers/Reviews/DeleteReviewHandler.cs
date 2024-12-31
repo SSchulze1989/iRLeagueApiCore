@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeleteReviewRequest(long ReviewId) : IRequest;
+public record DeleteReviewRequest(long ReviewId) : IRequest<Unit>;
 
 public sealed class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler, DeleteReviewRequest, Unit>
 {

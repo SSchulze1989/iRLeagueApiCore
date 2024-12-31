@@ -116,7 +116,7 @@ public class TestCreateDatabase : IDisposable
             var league = dbContext.Leagues.OrderBy(x => x.Id).Last();
             SetCurrentLeague(league);
             Assert.Equal("TestLeague2", league.Name);
-            Assert.Equal(1, league.Seasons.Count);
+            Assert.Single(league.Seasons);
             Assert.Equal(league, league.Seasons.First().League);
         }
 
@@ -150,7 +150,7 @@ public class TestCreateDatabase : IDisposable
             dbContext.ChangeTracker.LazyLoadingEnabled = false;
             var league = dbContext.Leagues.First();
             Assert.NotNull(league);
-            Assert.Equal(0, league.Seasons.Count);
+            Assert.Empty(league.Seasons);
         }
     }
 

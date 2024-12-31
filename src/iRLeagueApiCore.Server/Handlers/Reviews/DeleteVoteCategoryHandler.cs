@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
-public record DeleteVoteCategoryRequest(long CatId) : IRequest;
+public record DeleteVoteCategoryRequest(long CatId) : IRequest<Unit>;
 
 public class DeleteVoteCategoryHandler : VoteCategoriesHandlerBase<DeleteVoteCategoryHandler,  DeleteVoteCategoryRequest, Unit>
 {

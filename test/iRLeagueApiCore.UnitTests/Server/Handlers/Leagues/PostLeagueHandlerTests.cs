@@ -23,21 +23,21 @@ public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandle
 
     public PostLeagueDbTestFixture() : base()
     {
-        Users = new() { new ApplicationUser() { UserName = testUserName, Id = testUserId } };
+        Users = [new ApplicationUser() { UserName = testUserName, Id = testUserId }];
         Roles = new IdentityRole[]
         {
             new("Admin"),
-            new(LeagueRoles.GetLeagueRoleName(testLeagueName, LeagueRoles.Admin)),
-            new(LeagueRoles.GetLeagueRoleName(testLeagueName, LeagueRoles.Owner))
+            new(LeagueRoles.GetLeagueRoleName(testLeagueName, LeagueRoles.Admin)!),
+            new(LeagueRoles.GetLeagueRoleName(testLeagueName, LeagueRoles.Owner)!)
         }.ToDictionary(k => k.Id, v => v);
-        UserRoles = new();
+        UserRoles = [];
         TestUserManager = GetTestUserManager();
         TestRoleManager = GetTestRoleManager();
     }
 
     protected override PostLeagueHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostLeagueRequest> validator)
     {
-        return new PostLeagueHandler(logger, dbContext, new IValidator<PostLeagueRequest>[] { validator }, TestUserManager, TestRoleManager );
+        return new PostLeagueHandler(logger, dbContext, [validator], TestUserManager, TestRoleManager);
     }
 
     protected override PostLeagueRequest DefaultRequest()
@@ -66,10 +66,9 @@ public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandle
     }
 
     [Fact]
-    public override async Task<LeagueModel> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        var result = await base.ShouldHandleDefault();
-        return result;
+        await base.ShouldHandleDefault();
     }
 
     [Fact]
@@ -82,7 +81,7 @@ public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandle
     public async Task ShouldCreateOwnerRole()
     {
         await base.ShouldHandleDefault();
-        var ownerRole = TestRoleManager.FindByNameAsync(LeagueRoles.GetLeagueRoleName(postLeagueName, LeagueRoles.Owner));
+        var ownerRole = TestRoleManager.FindByNameAsync(LeagueRoles.GetLeagueRoleName(postLeagueName, LeagueRoles.Owner)!);
         ownerRole.Should().NotBeNull();
     }
 
@@ -91,7 +90,7 @@ public sealed class PostLeagueDbTestFixture : HandlersTestsBase<PostLeagueHandle
     {
         await base.ShouldHandleDefault();
         var user = await TestUserManager.FindByIdAsync(testUserId);
-        var isInRole = await TestUserManager.IsInRoleAsync(user, LeagueRoles.GetLeagueRoleName(postLeagueName, LeagueRoles.Owner));
+        var isInRole = await TestUserManager.IsInRoleAsync(user!, LeagueRoles.GetLeagueRoleName(postLeagueName, LeagueRoles.Owner)!);
         isInRole.Should().BeTrue();
     }
 

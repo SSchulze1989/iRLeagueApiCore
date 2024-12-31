@@ -41,7 +41,7 @@ public sealed class GiveRoleRequestValidator : AbstractValidator<GiveRoleRequest
     {
         var user = await _userManager
             .FindByNameAsync(usernName);
-        request.User = user;
+        request.User = user!;
         return user != null;
     }
 
@@ -53,7 +53,8 @@ public sealed class GiveRoleRequestValidator : AbstractValidator<GiveRoleRequest
 
     private async Task<bool> UserNotInRole(GiveRoleRequest request, string userName, CancellationToken cancellationToken)
     {
-        var leagueRoleName = LeagueRoles.GetLeagueRoleName(request.LeagueName, request.RoleName);
+        var leagueRoleName = LeagueRoles.GetLeagueRoleName(request.LeagueName, request.RoleName) ??
+            throw new ArgumentException("Requested roleName is not a valid role name", nameof(request));
         bool notInRole = await _userManager.IsInRoleAsync(request.User, leagueRoleName) == false;
         return notInRole;
     }

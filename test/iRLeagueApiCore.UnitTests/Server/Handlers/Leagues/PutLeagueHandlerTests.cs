@@ -50,9 +50,9 @@ public sealed class PutLeagueDbTestFixture : HandlersTestsBase<PutLeagueHandler,
     }
 
     [Fact]
-    public override async Task<LeagueModel> ShouldHandleDefault()
+    public override async Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Theory]

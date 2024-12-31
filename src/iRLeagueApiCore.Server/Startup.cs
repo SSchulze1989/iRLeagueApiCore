@@ -8,6 +8,7 @@ using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -153,7 +154,7 @@ public sealed class Startup
                 ValidateAudience = true,
                 ValidAudience = Configuration["JWT:ValidAudience"],
                 ValidIssuer = Configuration["JWT:ValidIssuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"] ?? throw new InvalidConfigurationException()))
             };
         });
 
@@ -177,7 +178,7 @@ public sealed class Startup
 
         services.AddTrackImporter();
 
-        services.AddMediatR(Assembly.GetExecutingAssembly());
+        services.AddMediatR(o => o.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddEmailService();
@@ -239,9 +240,9 @@ public sealed class Startup
                 diagnosticContext.Set("RequestAgent", httpContext.Request.Headers["User-Agent"].ToString());
                 diagnosticContext.Set("RequestReferer", httpContext.Request.GetTypedHeaders().Referer?.ToString() ?? string.Empty);
                 diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-                diagnosticContext.Set("RemoteIpAddress", httpContext.Connection.RemoteIpAddress);
+                diagnosticContext.Set("RemoteIpAddress", httpContext.Connection.RemoteIpAddress ?? IPAddress.None);
                 diagnosticContext.Set("UserName", httpContext.User.Identity?.Name ?? string.Empty);
-                diagnosticContext.Set("UserId", httpContext.User.GetUserId());
+                diagnosticContext.Set("UserId", httpContext.User.GetUserId() ?? string.Empty);
             };
         });
 

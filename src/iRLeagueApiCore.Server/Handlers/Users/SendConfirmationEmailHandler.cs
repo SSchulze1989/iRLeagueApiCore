@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace iRLeagueApiCore.Server.Handlers.Users;
 
-public record SendConfirmationEmailRequest(string Email, string LinkTemplate) : IRequest;
+public record SendConfirmationEmailRequest(string Email, string LinkTemplate) : IRequest<Unit>;
 
 public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEmailHandler,  SendConfirmationEmailRequest, Unit>
 {
@@ -30,6 +30,10 @@ public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEma
     {
         var subject = "Confirm your Emailaddress for iRLeagueManager.net";
         var body = GenerateMailBody(user, token, linkTemplate);
+        if (user.Email is null)
+        {
+            throw new InvalidOperationException("Could not send confirmation email: User email was null");
+        }
         await emailClient.SendNoReplyMailAsync(user.Email, subject, body);
     }
 }

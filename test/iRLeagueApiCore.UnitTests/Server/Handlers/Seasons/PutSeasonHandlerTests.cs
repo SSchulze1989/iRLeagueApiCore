@@ -52,9 +52,9 @@ public sealed class PutSeasonDbTestFixture : HandlersTestsBase<PutSeasonHandler,
     }
 
     [Fact]
-    public async override Task<SeasonModel> ShouldHandleDefault()
+    public async override Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

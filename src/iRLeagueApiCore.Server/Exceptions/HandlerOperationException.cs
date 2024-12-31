@@ -15,8 +15,4 @@ public sealed class HandlerOperationException : InvalidOperationException
     public HandlerOperationException(string message, Exception innerException) : base(message, innerException)
     {
     }
-
-    private HandlerOperationException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
 }

@@ -42,9 +42,9 @@ public sealed class DeleteSeasonDbTestFixture : HandlersTestsBase<DeleteSeasonHa
     }
 
     [Fact]
-    public async override Task<Unit> ShouldHandleDefault()
+    public async override Task ShouldHandleDefault()
     {
-        return await base.ShouldHandleDefault();
+        await base.ShouldHandleDefault();
     }
 
     [Fact]

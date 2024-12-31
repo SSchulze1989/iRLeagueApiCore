@@ -23,6 +23,10 @@ public abstract class UsersHandlerBase<THandler, TRequest, TResponse> : IRequest
 
     protected async Task<ApplicationUser?> GetUserAsync(string? userId)
     {
+        if (userId == null)
+        {
+            return null;
+        }
         return await userManager.FindByIdAsync(userId);
     }
 
@@ -44,7 +48,7 @@ public abstract class UsersHandlerBase<THandler, TRequest, TResponse> : IRequest
     {
         (var firstname, var lastname) = GetUserFirstnameLastname(user.FullName);
         model.UserId = user.Id;
-        model.UserName = user.UserName;
+        model.UserName = user.UserName ?? string.Empty;
         model.Firstname = user.HideFullName ? string.Empty : firstname;
         model.Lastname = user.HideFullName ? string.Empty : lastname;
         return model;
@@ -56,7 +60,7 @@ public abstract class UsersHandlerBase<THandler, TRequest, TResponse> : IRequest
         (var firstname, var lastname) = GetUserFirstnameLastname(user.FullName);
         model.Firstname = firstname;
         model.Lastname = lastname;
-        model.Email = user.Email;
+        model.Email = user.Email ?? string.Empty;
         model.HideFirstnameLastname = user.HideFullName;
         return model;
     }
