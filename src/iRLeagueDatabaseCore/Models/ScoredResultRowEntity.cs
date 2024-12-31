@@ -77,6 +77,8 @@ public partial class ScoredResultRowEntity : ResultRowBase
     public double FinalPositionChange { get; set; }
     public double TotalPoints { get; set; }
     public bool PointsEligible { get; set; }
+    public TimeSpan PenaltyTime { get; set; }
+    public int PenaltyPositions { get; set; }
 
     public virtual MemberEntity Member { get; set; }
     public virtual TeamEntity Team { get; set; }
@@ -115,6 +117,8 @@ public class ScoredResultRowEntityConfiguration : IEntityTypeConfiguration<Score
         entity.Property(e => e.QualifyingTime).HasConversion<TimeSpanToTicksConverter>();
 
         entity.Property(e => e.Interval).HasConversion<TimeSpanToTicksConverter>();
+
+        entity.Property(e => e.PenaltyTime).HasConversion<TimeSpanToTicksConverter>();
 
         entity.HasOne(d => d.Team)
             .WithMany()

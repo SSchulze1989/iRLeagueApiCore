@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Services.ResultService.Models;
 
 [DebuggerDisplay("RowId = {ScoredResultRowId}, MemberId = {MemberId}, " +
     "TeamId = {TeamId}, RacePoints = {RacePoints}, BonusPoints = {BonusPoints}, " +
-    "PenaltyPoints = {PenaltyPoints}, TotalPoints = {TotalPoints}")]
+    "Penalty = [{PenaltyPoints}, {PenaltyTime}, {PenaltyPositions}], TotalPoints = {TotalPoints}")]
 internal class ResultRowCalculationData : IPointRow, IPenaltyRow
 {
     public SessionType SessionType { get; set; }
@@ -54,6 +54,8 @@ internal class ResultRowCalculationData : IPointRow, IPenaltyRow
     public int FinalPosition { get; set; }
     public double FinalPositionChange { get; set; }
     public bool PointsEligible { get; set; }
+    public TimeSpan PenaltyTime { get; set; }
+    public int PenaltyPositions { get; set; }
     public ICollection<AddPenaltyCalculationData> AddPenalties { get; set; } = [];
     public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = [];
     IEnumerable<AddPenaltyCalculationData> IPenaltyRow.AddPenalties => AddPenalties;

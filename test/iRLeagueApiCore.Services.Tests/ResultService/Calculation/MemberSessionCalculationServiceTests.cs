@@ -242,6 +242,7 @@ public sealed class MemberSessionCalculationServiceTests
 
         var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
         testResultRow.Interval.Should().Be(penaltyRow.Interval + addPenalty.Time);
+        testResultRow.PenaltyTime.Should().Be(addPenalty.Time);
     }
 
     [Fact]
@@ -306,6 +307,7 @@ public sealed class MemberSessionCalculationServiceTests
         var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
         test.ResultRows.ToList().IndexOf(testResultRow).Should().Be(expIndex);
         testResultRow.FinalPosition.Should().Be(expIndex + 1);
+        testResultRow.PenaltyPositions.Should().Be(positionPenalty);
     }
 
     [Theory]
@@ -719,6 +721,8 @@ public sealed class MemberSessionCalculationServiceTests
             .Without(x => x.BonusPoints)
             .Without(x => x.PenaltyPoints)
             .Without(x => x.AddPenalties)
+            .Without(x => x.PenaltyTime)
+            .Without(x => x.PenaltyPositions)
             .With(x => x.AvgLapTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)))
             .With(x => x.FastestLapTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)))
             .With(x => x.QualifyingTime, fixture.Create<TimeSpan>().Add(TimeSpan.FromMilliseconds(1)));
