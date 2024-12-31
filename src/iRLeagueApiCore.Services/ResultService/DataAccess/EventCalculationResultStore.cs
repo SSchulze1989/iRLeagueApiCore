@@ -40,7 +40,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
             .OfType<long>(), cancellationToken);
         entity.Name = result.Name;
         entity.ChampSeason = await dbContext.ChampSeasons
-            .FirstOrDefaultAsync(x => x.ChampSeasonId == result.ChampSeasonId);
+            .FirstOrDefaultAsync(x => x.ChampSeasonId == result.ChampSeasonId, cancellationToken);
         entity.ScoredSessionResults = await MapToScoredSessionResults(result.SessionResults, entity.ScoredSessionResults,
             requiredEntities, cancellationToken);
 
@@ -251,23 +251,25 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
 
     private async Task<RequiredEntities> GetRequiredEntities(EventCalculationResult result, CancellationToken cancellationToken)
     {
-        RequiredEntities requiredEntities = new();
-        requiredEntities.Members = await GetMemberEntities(result.SessionResults
-            .SelectMany(x => x.ResultRows)
-            .Select(x => x.MemberId)
-            .NotNull(), cancellationToken);
-        requiredEntities.Teams = await GetTeamEntities(result.SessionResults
-            .SelectMany(x => x.ResultRows)
-            .Select(x => x.TeamId)
-            .NotNull(), cancellationToken);
-        requiredEntities.ScoredResultRows = await GetScoredResultRowEntities(result.SessionResults
-            .SelectMany(x => x.ResultRows)
-            .SelectMany(x => x.ScoredMemberResultRowIds), cancellationToken);
-        requiredEntities.Reviews = await GetReviewEntities(result.SessionResults
-            .SelectMany(x => x.ResultRows)
-            .SelectMany(x => x.ReviewPenalties)
-            .Select(x => (x.ReviewId))
-            .NotNull(), cancellationToken);
+        RequiredEntities requiredEntities = new()
+        {
+            Members = await GetMemberEntities(result.SessionResults
+                .SelectMany(x => x.ResultRows)
+                .Select(x => x.MemberId)
+                .NotNull(), cancellationToken),
+            Teams = await GetTeamEntities(result.SessionResults
+                .SelectMany(x => x.ResultRows)
+                .Select(x => x.TeamId)
+                .NotNull(), cancellationToken),
+            ScoredResultRows = await GetScoredResultRowEntities(result.SessionResults
+                .SelectMany(x => x.ResultRows)
+                .SelectMany(x => x.ScoredMemberResultRowIds), cancellationToken),
+            Reviews = await GetReviewEntities(result.SessionResults
+                .SelectMany(x => x.ResultRows)
+                .SelectMany(x => x.ReviewPenalties)
+                .Select(x => (x.ReviewId))
+                .NotNull(), cancellationToken)
+        };
         return requiredEntities;
     }
 
@@ -298,5 +300,19 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         return await dbContext.ScoredResultRows
             .Where(x => ids.Contains(x.ScoredResultRowId))
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<long>> PruneResults(long eventId, IEnumerable<long?> resultConfigIds, CancellationToken cancellationToken = default)
+    {
+        var pruneResults = await dbContext.ScoredEventResults
+            .Where(x => x.EventId == eventId)
+            .Where(x => resultConfigIds.Contains(x.ResultConfigId) == false)
+            .ToListAsync(cancellationToken);
+        foreach (var result in pruneResults)
+        {
+            dbContext.Remove(result);
+        }
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return pruneResults.Select(x => x.ResultConfigId).NotNull();
     }
 }

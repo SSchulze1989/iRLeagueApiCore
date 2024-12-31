@@ -80,6 +80,8 @@ internal sealed class ExecuteEventResultCalculation
             }
             logger.LogInformation("Results calculated for event: {EventId}\n" +
                 " - EventResults: {EventResultCount}", eventId, eventResultCount);
+            var prunedResultIds = await dataStore.PruneResults(eventId, resultConfigIds, cancellationToken);
+            logger.LogInformation("Pruned results for config ids: [{ResultConfigIds}]", prunedResultIds);
             logger.LogInformation("--- Result calculation finished successfully ---");
         }
         catch (Exception ex) when (ex is AggregateException || ex is InvalidOperationException || ex is NotImplementedException)
