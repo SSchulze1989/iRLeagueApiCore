@@ -227,5 +227,5 @@ public class ResultRowModel
     [DataMember]
     public int PenaltyPositions { get; set; }
     [DataMember]
-    public IEnumerable<ResultRowModel> TeamResultRows { get; set; } = Array.Empty<ResultRowModel>();
+    public IEnumerable<ResultRowModel> TeamResultRows { get; set; } = [];
 }

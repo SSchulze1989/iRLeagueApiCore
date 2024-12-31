@@ -217,6 +217,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             foreach (var penalty in row.AddPenalties.Where(x => x.Type == PenaltyType.Time))
             {
                 row.Interval += penalty.Time;
+                row.PenaltyTime += penalty.Time;
             }
         }
         return rows;
@@ -241,7 +242,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         return rows;
     }
 
-    private static IReadOnlyList<ResultRowCalculationResult> ApplyAddPenaltyPositions(IEnumerable<ResultRowCalculationResult> rows)
+    private static List<ResultRowCalculationResult> ApplyAddPenaltyPositions(IEnumerable<ResultRowCalculationResult> rows)
     {
         var modRows = rows.ToList();
         foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Position)).Reverse()) // Start from the back to keep order between mutliple drivers with penalties
@@ -251,6 +252,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             {
                 continue;
             }
+            row.PenaltyPositions = movePositions;
             var rowIndex = modRows.IndexOf(row);
             modRows.Move(rowIndex, movePositions);
         }

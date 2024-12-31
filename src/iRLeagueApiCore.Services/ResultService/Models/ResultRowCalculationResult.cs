@@ -55,6 +55,8 @@ internal sealed class ResultRowCalculationResult : ResultRowCalculationData
         FinalPosition = data.FinalPosition;
         FinalPositionChange = data.FinalPositionChange;
         PointsEligible = data.PointsEligible;
+        PenaltyTime = data.PenaltyTime;
+        PenaltyPositions = data.PenaltyPositions;
     }
 
     public bool IsScored { get; set; }
