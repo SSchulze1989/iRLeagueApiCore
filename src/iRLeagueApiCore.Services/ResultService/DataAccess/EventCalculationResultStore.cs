@@ -167,6 +167,8 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         rowEntity.TotalPoints = row.TotalPoints;
         rowEntity.TeamResultRows = requiredEntities.ScoredResultRows
             .Where(x => row.ScoredMemberResultRowIds.Contains(x.ScoredResultRowId)).ToList();
+        rowEntity.PenaltyTime = row.PenaltyTime;
+        rowEntity.PenaltyPositions = row.PenaltyPositions;
         return rowEntity;
     }
 
