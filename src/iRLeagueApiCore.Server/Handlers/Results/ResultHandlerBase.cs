@@ -187,6 +187,8 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
                 Status = (RaceStatus)row.Status,
                 TeamId = row.TeamId,
                 TeamColor = (row.Team != null) ? row.Team.TeamColor : string.Empty,
+                PenaltyTime = row.PenaltyTime,
+                PenaltyPositions = row.PenaltyPositions,
             }),
             FastestLapTime = sessionResult.FastestLap,
             FastestLapDriver = sessionResult.FastestLapDriver == null ? null : new()

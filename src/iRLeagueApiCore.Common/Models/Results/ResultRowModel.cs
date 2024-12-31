@@ -215,6 +215,17 @@ public class ResultRowModel
     /// </summary>
     [DataMember]
     public double FinalPositionChange { get; set; }
+    /// <summary>
+    /// Time added to the interval added as penalty (or bonus)
+    /// </summary>
+    [DataMember]
+    public TimeSpan PenaltyTime { get; set; }
+    /// <summary>
+    /// Positions added to the finish order from the results before points and bonuses are applied
+    /// Might be superseded by rearrangin the final order after points application
+    /// </summary>
+    [DataMember]
+    public int PenaltyPositions { get; set; }
     [DataMember]
     public IEnumerable<ResultRowModel> TeamResultRows { get; set; } = Array.Empty<ResultRowModel>();
 }
