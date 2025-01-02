@@ -130,7 +130,6 @@ public sealed class ExecuteEventResultCalculationTests
             fixture.Create<IEventCalculationConfigurationProvider>(),
             fixture.Create<IEventCalculationResultStore>(),
             fixture.Create<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
-            resultCalculationQueue: fixture.Create<IResultCalculationQueue>(),
             standingCalculationQueue: fixture.Create<IStandingCalculationQueue>());
     }
 
