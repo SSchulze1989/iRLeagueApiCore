@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Standings;
 
-public record PutDropweekOverrideRequest(long StandingConfigId, long ScoredResultRowId, PutDropweekOverrideModel Model) : IRequest<DropweekOverrideModel>;
+public record PutDropweekOverrideRequest(long StandingId, long ScoredResultRowId, PutDropweekOverrideModel Model) : IRequest<DropweekOverrideModel>;
 
 public class PutDropweekOverrideHandler : StandingsHandlerBase<PutDropweekOverrideHandler, PutDropweekOverrideRequest, DropweekOverrideModel>
 {
@@ -14,7 +14,7 @@ public class PutDropweekOverrideHandler : StandingsHandlerBase<PutDropweekOverri
     public override async Task<DropweekOverrideModel> Handle(PutDropweekOverrideRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var putDropweek = await GetOrCreateDropweekOverrideEntityAsync(request.StandingConfigId, request.ScoredResultRowId, cancellationToken);
+        var putDropweek = await GetOrCreateDropweekOverrideEntityAsync(request.StandingId, request.ScoredResultRowId, cancellationToken);
         putDropweek = MapToDropweekOverrideEntity(putDropweek, request.Model);
         await dbContext.SaveChangesAsync(cancellationToken);
         var getDropweek = await MapToDropweekOverrideModel(putDropweek.StandingConfigId, putDropweek.ScoredResultRowId, cancellationToken)
@@ -22,10 +22,13 @@ public class PutDropweekOverrideHandler : StandingsHandlerBase<PutDropweekOverri
         return getDropweek;
     }
 
-    private async Task<DropweekOverrideEntity> GetOrCreateDropweekOverrideEntityAsync(long standingConfigId, long scoredResultRowId, CancellationToken cancellationToken)
+    private async Task<DropweekOverrideEntity> GetOrCreateDropweekOverrideEntityAsync(long standingId, long scoredResultRowId, CancellationToken cancellationToken)
     {
+        var standingConfig = await dbContext.StandingConfigurations
+            .FirstOrDefaultAsync(x => x.Standings.Any(y => y.StandingId == standingId), cancellationToken)
+            ?? throw new ResourceNotFoundException();
         var dropweek = await dbContext.DropweekOverrides
-            .Where(x => x.StandingConfigId == standingConfigId)
+            .Where(x => x.StandingConfigId == standingConfig.StandingConfigId)
             .Where(x => x.ScoredResultRowId == scoredResultRowId)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -34,9 +37,6 @@ public class PutDropweekOverrideHandler : StandingsHandlerBase<PutDropweekOverri
             return dropweek;
         }
 
-        var standingConfig = await dbContext.StandingConfigurations
-            .FirstOrDefaultAsync(x => x.StandingConfigId == standingConfigId, cancellationToken)
-            ?? throw new ResourceNotFoundException();
         var scoredResultRow = await dbContext.ScoredResultRows
             .FirstOrDefaultAsync(x => x.ScoredResultRowId == scoredResultRowId, cancellationToken)
             ?? throw new ResourceNotFoundException();
@@ -45,6 +45,7 @@ public class PutDropweekOverrideHandler : StandingsHandlerBase<PutDropweekOverri
             StandingConfig = standingConfig,
             ScoredResultRow = scoredResultRow,
         };
+        dbContext.DropweekOverrides.Add(dropweek);
         return dropweek;
     }
 

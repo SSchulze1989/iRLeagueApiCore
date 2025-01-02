@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Standings;
 
-public record DeleteDropweekOverrideRequest(long StandingConfigId, long ScoredResultRowId) : IRequest<Unit>;
+public record DeleteDropweekOverrideRequest(long StandingId, long ScoredResultRowId) : IRequest<Unit>;
 
 public class DeleteDropweekOverrideHandler : StandingsHandlerBase<DeleteDropweekOverrideHandler, DeleteDropweekOverrideRequest, Unit>
 {
@@ -14,7 +14,10 @@ public class DeleteDropweekOverrideHandler : StandingsHandlerBase<DeleteDropweek
     public override async Task<Unit> Handle(DeleteDropweekOverrideRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var dropweek = await GetDropweekOverrideEntityAsync(request.StandingConfigId, request.ScoredResultRowId, cancellationToken)
+        var standingConfig = await dbContext.StandingConfigurations
+            .FirstOrDefaultAsync(x => x.Standings.Any(y => y.StandingId == request.StandingId), cancellationToken)
+            ?? throw new ResourceNotFoundException();
+        var dropweek = await GetDropweekOverrideEntityAsync(standingConfig.StandingConfigId, request.ScoredResultRowId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         dbContext.DropweekOverrides.Remove(dropweek);
         await dbContext.SaveChangesAsync(cancellationToken);

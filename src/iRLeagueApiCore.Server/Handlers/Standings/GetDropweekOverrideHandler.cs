@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Standings;
 
-public record GetDropweekOverrideRequest(long StandingConfigId, long ScoredResultRowId) : IRequest<DropweekOverrideModel>;
+public record GetDropweekOverrideRequest(long StandingId, long ScoredResultRowId) : IRequest<DropweekOverrideModel>;
 
 public class GetDropweekOverrideHandler : StandingsHandlerBase<GetDropweekOverrideHandler, GetDropweekOverrideRequest, DropweekOverrideModel>
 {
@@ -14,7 +14,10 @@ public class GetDropweekOverrideHandler : StandingsHandlerBase<GetDropweekOverri
     public override async Task<DropweekOverrideModel> Handle(GetDropweekOverrideRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var dropweek = await MapToDropweekOverrideModel(request.StandingConfigId, request.ScoredResultRowId, cancellationToken)
+        var standingConfig = await dbContext.StandingConfigurations
+            .FirstOrDefaultAsync(x => x.Standings.Any(y => y.StandingId == request.StandingId), cancellationToken)
+            ?? throw new ResourceNotFoundException();
+        var dropweek = await MapToDropweekOverrideModel(standingConfig.StandingConfigId, request.ScoredResultRowId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         return dropweek;
     }
