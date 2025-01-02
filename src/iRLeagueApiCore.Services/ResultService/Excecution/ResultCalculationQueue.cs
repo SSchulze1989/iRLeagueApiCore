@@ -27,7 +27,7 @@ internal sealed class ResultCalculationQueue : IResultCalculationQueue
     public void QueueEventResultDebounced(long eventId, int debounceMs)
     {
         var scope = serviceProvider.CreateScope();
-        var key = $"{nameof(ResultCalculationQueue)}_{eventId}";
+        var key = $"{nameof(ExecuteEventResultCalculation)}_{eventId}";
         taskQueue.QueueBackgroundWorkItemDebounced(async cancellationToken =>
         {
             var resultCalculation = scope.ServiceProvider.GetRequiredService<ExecuteEventResultCalculation>();

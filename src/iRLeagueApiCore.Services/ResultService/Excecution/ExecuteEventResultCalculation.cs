@@ -15,7 +15,6 @@ internal sealed class ExecuteEventResultCalculation
     private readonly IEventCalculationConfigurationProvider configProvider;
     private readonly IEventCalculationResultStore dataStore;
     private readonly ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider;
-    private readonly IResultCalculationQueue resultCalculationQueue;
     private readonly IStandingCalculationQueue standingCalculationQueue;
 
     public ExecuteEventResultCalculation(ILogger<ExecuteEventResultCalculation> logger,
@@ -23,7 +22,6 @@ internal sealed class ExecuteEventResultCalculation
         IEventCalculationConfigurationProvider configProvider,
         IEventCalculationResultStore dataStore,
         ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider,
-        IResultCalculationQueue resultCalculationQueue,
         IStandingCalculationQueue standingCalculationQueue)
     {
         this.logger = logger;
@@ -32,7 +30,6 @@ internal sealed class ExecuteEventResultCalculation
         this.dataStore = dataStore;
         this.calculationServiceProvider = calculationServiceProvider;
         this.standingCalculationQueue = standingCalculationQueue;
-        this.resultCalculationQueue = resultCalculationQueue;
     }
 
     public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
@@ -83,21 +80,13 @@ internal sealed class ExecuteEventResultCalculation
             var prunedResultIds = await dataStore.PruneResults(eventId, resultConfigIds, cancellationToken);
             logger.LogInformation("Pruned results for config ids: [{ResultConfigIds}]", prunedResultIds);
             logger.LogInformation("--- Result calculation finished successfully ---");
+
+            logger.LogInformation("Queueing standing calculation for event {EventId}", eventId);
+            await standingCalculationQueue.QueueStandingCalculationAsync(eventId);
         }
         catch (Exception ex) when (ex is AggregateException || ex is InvalidOperationException || ex is NotImplementedException)
         {
             logger.LogError("Error thrown while calculating results: {Exception}", ex);
-        }
-
-
-        logger.LogInformation("Queueing standing calculation for event {EventId}", eventId);
-        await standingCalculationQueue.QueueStandingCalculationAsync(eventId);
-
-        var nextEventId = await configProvider.GetNextEventId(eventId, cancellationToken);
-        if (nextEventId != null)
-        {
-            logger.LogInformation("Queueing result configuration for next event {EventId}", nextEventId);
-            resultCalculationQueue.QueueEventResultDebounced(nextEventId.Value, 100);
         }
     }
 }
