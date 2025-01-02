@@ -40,6 +40,16 @@ public sealed class StandingsController : LeagueApiController<StandingsControlle
         return Ok(getStandings);
     }
 
+    [HttpPost]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("/{leagueName}/Events/{eventId:long}/[controller]/Calculate")]
+    public async Task<ActionResult> CalculateStandings([FromRoute] string leagueName, [FromRoute] long eventId,  CancellationToken cancellationToken = default)
+    {
+        var request = new TriggerStandingsCalculationForEventRequest(eventId);
+        await mediator.Send(request, cancellationToken);
+        return Ok();
+    }
+
     [HttpGet]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("{standingId:long}/ResultRows/{scoredResultRowId:long}/Dropweek")]
