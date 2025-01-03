@@ -21,8 +21,6 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
 
     protected async Task<ResultRowEntity> MapToResultRowEntity(ResultRowEntity entity, RawResultRowModel model, CancellationToken cancellationToken)
     {
-        entity.Member = await dbContext.Members
-            .FirstOrDefaultAsync(x => x.Id == entity.Member.Id, cancellationToken);
         entity.StartPosition = model.StartPosition;
         entity.FinishPosition = model.FinishPosition;
         entity.CarNumber = model.CarNumber;
@@ -64,6 +62,8 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
         entity.NumContactLaps = model.NumContactLaps;
         entity.ContactLaps = model.ContactLaps;
         entity.RacePoints = model.RacePoints;
+        entity.Member = await dbContext.Members
+            .FirstOrDefaultAsync(x => x.Id == model.MemberId, cancellationToken);
         var team = await dbContext.Teams
             .FirstOrDefaultAsync(x => x.TeamId == model.TeamId, cancellationToken);
         entity.Team = team;
