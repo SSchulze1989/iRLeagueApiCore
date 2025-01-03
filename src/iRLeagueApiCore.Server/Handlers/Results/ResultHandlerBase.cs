@@ -62,10 +62,12 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
         entity.NumContactLaps = model.NumContactLaps;
         entity.ContactLaps = model.ContactLaps;
         entity.RacePoints = model.RacePoints;
+        entity.MemberId = model.MemberId;
         entity.Member = await dbContext.Members
             .FirstOrDefaultAsync(x => x.Id == model.MemberId, cancellationToken);
         var team = await dbContext.Teams
             .FirstOrDefaultAsync(x => x.TeamId == model.TeamId, cancellationToken);
+        entity.TeamId = model.TeamId;
         entity.Team = team;
         entity.PointsEligible = model.PointsEligible;
         return entity;
