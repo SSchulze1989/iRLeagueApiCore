@@ -46,7 +46,7 @@ internal class EventByIdEndpoint : UpdateEndpoint<EventModel, PutEventModel>, IE
         return new ReviewsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
-    IGetAllEndpoint<StandingsModel> IEventByIdEndpoint.Standings()
+    IEventStandingsEndpoint IEventByIdEndpoint.Standings()
     {
         return new StandingsEndpoint(HttpClientWrapper, RouteBuilder);
     }

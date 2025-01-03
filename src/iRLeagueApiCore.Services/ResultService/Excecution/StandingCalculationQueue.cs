@@ -23,4 +23,16 @@ internal sealed class StandingCalculationQueue : IStandingCalculationQueue
             scope.Dispose();
         });
     }
+
+    public void QueueStandingCalculationDebounced(long eventId, int debounceMs)
+    {
+        var scope = serviceProvider.CreateScope();
+        var key = $"{nameof(ExecuteStandingCalculation)}_{eventId}";
+        taskQueue.QueueBackgroundWorkItemDebounced(async cancellationToken =>
+        {
+            var standingCalculation = scope.ServiceProvider.GetRequiredService<ExecuteStandingCalculation>();
+            await standingCalculation.Execute(eventId, cancellationToken);
+            scope.Dispose();
+        }, key, debounceMs);
+    }
 }

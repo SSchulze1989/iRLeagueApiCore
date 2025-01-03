@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models.Standings;
+﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Standings;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Standings;
 using Microsoft.AspNetCore.Authorization;
@@ -37,5 +38,48 @@ public sealed class StandingsController : LeagueApiController<StandingsControlle
         var request = new GetStandingsFromEventRequest(eventId);
         var getStandings = await mediator.Send(request, cancellationToken);
         return Ok(getStandings);
+    }
+
+    [HttpPost]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("/{leagueName}/Events/{eventId:long}/[controller]/Calculate")]
+    public async Task<ActionResult> CalculateStandings([FromRoute] string leagueName, [FromRoute] long eventId,  CancellationToken cancellationToken = default)
+    {
+        var request = new TriggerStandingsCalculationForEventRequest(eventId);
+        await mediator.Send(request, cancellationToken);
+        return Ok();
+    }
+
+    [HttpGet]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("{standingId:long}/ResultRows/{scoredResultRowId:long}/Dropweek")]
+    public async Task<ActionResult<DropweekOverrideModel>> GetDropweekOverride([FromRoute] string leagueName, [FromRoute] long standingId, [FromRoute] long scoredResultRowId,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new GetDropweekOverrideRequest(standingId, scoredResultRowId);
+        var getDropweekOverride = await mediator.Send(request, cancellationToken);
+        return Ok(getDropweekOverride);
+    }
+
+    [HttpPut]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("{standingId:long}/ResultRows/{scoredResultRowId:long}/Dropweek")]
+    public async Task<ActionResult<DropweekOverrideModel>> PutDropweekOverride([FromRoute] string leagueName, [FromRoute] long standingId, [FromRoute] long scoredResultRowId,
+        [FromBody] PutDropweekOverrideModel model, CancellationToken cancellationToken = default)
+    {
+        var request = new PutDropweekOverrideRequest(standingId, scoredResultRowId, model);
+        var getDropweekOverride = await mediator.Send(request, cancellationToken);
+        return Ok(getDropweekOverride);
+    }
+
+    [HttpDelete]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    [Route("{standingId:long}/ResultRows/{scoredResultRowId:long}/Dropweek")]
+    public async Task<ActionResult> DeleteDropweekOverride([FromRoute] string leagueName, [FromRoute] long standingId, [FromRoute] long scoredResultRowId,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new DeleteDropweekOverrideRequest(standingId, scoredResultRowId);
+        await mediator.Send(request, cancellationToken);
+        return Ok();
     }
 }
