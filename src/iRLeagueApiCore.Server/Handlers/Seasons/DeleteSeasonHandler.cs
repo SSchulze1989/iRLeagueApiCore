@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record DeleteSeasonRequest(long SeasonId) : IRequest<Unit>;
 
-public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,  DeleteSeasonRequest, Unit>
+public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler, DeleteSeasonRequest, Unit>
 {
     public DeleteSeasonHandler(ILogger<DeleteSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteSeasonRequest>> validators) :
         base(logger, dbContext, validators)
@@ -15,7 +15,7 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         await DeleteSeasonEntity(request.SeasonId, cancellationToken);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }
 
@@ -30,12 +30,20 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
                     .ThenInclude(x => x.ResultFilters)
             .Include(x => x.ChampSeasons)
                 .ThenInclude(x => x.DefaultResultConfig)
-            .SingleOrDefaultAsync(x => x.SeasonId == seasonId)
+            .SingleOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations).SelectMany(x => x.PointFilters));
-        dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations).SelectMany(x => x.ResultFilters));
-        dbContext.RemoveRange(deleteSeason.ChampSeasons.SelectMany(x => x.ResultConfigurations));
-        deleteSeason.ChampSeasons.ForEach(x => x.DefaultResultConfig = null);
+        foreach(var champSeason in deleteSeason.ChampSeasons)
+        {
+            var deleteFilterOptions = await dbContext.FilterOptions
+                .Where(x => x.ChampSeasonId == champSeason.ChampSeasonId)
+                .ToListAsync(cancellationToken);
+            dbContext.RemoveRange(deleteFilterOptions);
+            dbContext.RemoveRange(champSeason.ResultConfigurations);
+            champSeason.DefaultResultConfig = null;
+            champSeason.ResultConfigurations = [];
+            champSeason.StandingConfiguration = null;
+        }
+        await dbContext.SaveChangesAsync(cancellationToken);
         dbContext.Seasons.Remove(deleteSeason);
     }
 }
