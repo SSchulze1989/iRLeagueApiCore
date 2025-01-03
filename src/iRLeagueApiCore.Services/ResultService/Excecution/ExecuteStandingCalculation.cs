@@ -11,16 +11,19 @@ internal sealed class ExecuteStandingCalculation
     private readonly IStandingCalculationConfigurationProvider configProvider;
     private readonly IStandingCalculationResultStore dataStore;
     private readonly ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult> calculationServiceProvider;
+    private readonly IStandingCalculationQueue standingCalculationQueue;
 
     public ExecuteStandingCalculation(ILogger<ExecuteStandingCalculation> logger, IStandingCalculationDataProvider dataProvider,
         IStandingCalculationConfigurationProvider configProvider, IStandingCalculationResultStore dataStore,
-        ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult> calculationServiceProvider)
+        ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult> calculationServiceProvider,
+        IStandingCalculationQueue standingCalculationQueue)
     {
         this.logger = logger;
         this.dataProvider = dataProvider;
         this.configProvider = configProvider;
         this.dataStore = dataStore;
         this.calculationServiceProvider = calculationServiceProvider;
+        this.standingCalculationQueue = standingCalculationQueue;
     }
 
     public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
@@ -38,7 +41,7 @@ internal sealed class ExecuteStandingCalculation
         IEnumerable<long?> standingConfigIds = (await configProvider.GetStandingConfigIds(seasonId, cancellationToken)).Cast<long?>();
         if (standingConfigIds.Any() == false)
         {
-            standingConfigIds = new[] { default(long?) };
+            standingConfigIds = [default];
             logger.LogInformation("No standing config found -> Using default.");
         }
 
@@ -72,9 +75,16 @@ internal sealed class ExecuteStandingCalculation
             }
             logger.LogInformation("Standings calculated for season: {SeasonId}, event: {EventId}\n" +
                 " - Standings: {StandingCount}", seasonId, eventId, standingCount);
-            await dataStore.ClearStaleStandings(standingConfigIds, eventId);
+            await dataStore.ClearStaleStandings(standingConfigIds, eventId, cancellationToken);
             logger.LogInformation("Cleared stale Standings");
             logger.LogInformation("--- Standing calculation finished successfully ---");
+
+            var nextEventId = await configProvider.GetNextEventId(eventId, cancellationToken);
+            if (nextEventId != null)
+            {
+                logger.LogInformation("Queueing standing calculation for next event {EventId}", nextEventId);
+                standingCalculationQueue.QueueStandingCalculationDebounced(nextEventId.Value, 100);
+            }
         }
         catch (Exception ex) when (ex is AggregateException || ex is InvalidOperationException || ex is NotImplementedException)
         {

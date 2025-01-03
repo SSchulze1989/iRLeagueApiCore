@@ -8,6 +8,7 @@ using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Sessions;
+using iRLeagueApiCore.Client.Endpoints.Standings;
 using iRLeagueApiCore.Client.Endpoints.Teams;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Endpoints.VoteCategories;
@@ -116,5 +117,10 @@ internal sealed class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueBy
     IResultsEndpoint ILeagueByNameEndpoint.Results()
     {
         return new ResultsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    public IStandingsEndpoint Standings()
+    {
+        return new StandingsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

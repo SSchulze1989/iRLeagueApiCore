@@ -33,7 +33,6 @@ public static class ResultServiceCollectionExtensions
             configProvider: x.GetRequiredService<IEventCalculationConfigurationProvider>(),
             dataStore: x.GetRequiredService<IEventCalculationResultStore>(),
             calculationServiceProvider: x.GetRequiredService<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
-            resultCalculationQueue: x.GetRequiredService<IResultCalculationQueue>(),
             standingCalculationQueue: x.GetRequiredService<IStandingCalculationQueue>()));
         services.TryAddScoped<IResultCalculationQueue>(x => new ResultCalculationQueue(x, x.GetRequiredService<IBackgroundTaskQueue>()));
         // Standing calculation
@@ -46,11 +45,12 @@ public static class ResultServiceCollectionExtensions
         services.TryAddScoped<IStandingCalculationResultStore>(x => new StandingCalculationResultStore(
             x.GetRequiredService<LeagueDbContext>()));
         services.TryAddScoped(x => new ExecuteStandingCalculation(
-            x.GetRequiredService<ILogger<ExecuteStandingCalculation>>(),
-            x.GetRequiredService<IStandingCalculationDataProvider>(),
-            x.GetRequiredService<IStandingCalculationConfigurationProvider>(),
-            x.GetRequiredService<IStandingCalculationResultStore>(),
-            x.GetRequiredService<ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult>>()));
+            logger: x.GetRequiredService<ILogger<ExecuteStandingCalculation>>(),
+            dataProvider: x.GetRequiredService<IStandingCalculationDataProvider>(),
+            configProvider: x.GetRequiredService<IStandingCalculationConfigurationProvider>(),
+            dataStore: x.GetRequiredService<IStandingCalculationResultStore>(),
+            calculationServiceProvider: x.GetRequiredService<ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult>>(),
+            standingCalculationQueue: x.GetRequiredService<IStandingCalculationQueue>()));
         services.TryAddScoped<IStandingCalculationQueue>(x => new StandingCalculationQueue(x, x.GetRequiredService<IBackgroundTaskQueue>()));
 
         return services;
