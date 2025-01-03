@@ -1,8 +1,7 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.Services.ResultService.Extensions;
-using iRLeagueDatabaseCore;
-using System.Threading;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
@@ -55,20 +54,21 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             .Where(x => x.SeasonId == seasonId)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ResourceNotFoundException();
+        var prevChampSeason = championship.ChampSeasons
+            .Select(x => new { ChampSeason = x, Events = x.Season.Schedules.SelectMany(x => x.Events) })
+            .Where(x => x.Events.Any())
+            .OrderByDescending(x => x.Events.Select(x => x.Date).Where(x => x < DateTime.UtcNow).Max())
+            .Select(x => x.ChampSeason)
+            .FirstOrDefault();
         var champSeason = CreateVersionEntity(user, new ChampSeasonEntity()
         {
             Championship = championship,
             Season = season,
             IsActive = true,
+            ResultKind = prevChampSeason?.ResultKind ?? ResultKind.Member,
         });
-        var prevChampSeason = championship.ChampSeasons
-            .Select(x => new {ChampSeason = x, Events = x.Season.Schedules.SelectMany(x => x.Events)})
-            .Where(x => x.Events.Any())
-            .OrderByDescending(x => x.Events.Select(x => x.Date).Where(x => x < DateTime.UtcNow).Max())
-            .Select(x => x.ChampSeason)
-            .FirstOrDefault();
 
-        // find previous season settings and copy
+        // copy previous season settings
         champSeason.StandingConfiguration = await CreateOrCopyStandingConfigEntity(user, prevChampSeason?.StandingConfigId, cancellationToken);
         champSeason.ResultConfigurations = await CopyResultConfigurationEntities(user, champSeason, prevChampSeason?.ResultConfigurations.Select(x => x.ResultConfigId), cancellationToken);
         champSeason.Filters = CopyChampSeasonFilterEntities(user, prevChampSeason?.Filters);
