@@ -128,18 +128,18 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
 
         pointRule = pointsRuleEntity switch
         {
-            var rule when rule?.RuleType == PointRuleType.PointList && rule.PointsPerPlace.Any() => new PerPlacePointRule(PointsPerPlaceToDictionary(rule.PointsPerPlace.Select(x => (double)x))),
+            var rule when rule?.RuleType == PointRuleType.PointList && rule.PointsPerPlace.Count != 0 => new PerPlacePointRule(PointsPerPlaceToDictionary(rule.PointsPerPlace.Select(x => (double)x))),
             var rule when rule?.RuleType == PointRuleType.MaxPointsDropOff && rule.MaxPoints > 0 => new MaxPointRule(rule.MaxPoints, rule.PointDropOff),
             var rule when rule?.RuleType == PointRuleType.Formula && string.IsNullOrEmpty(rule.Formula) == false => new FormulaPointRule(rule.Formula, false),
             _ => new UseResultPointsPointRule()
         };
 
-        pointRule.PointSortOptions = pointsRuleEntity?.PointsSortOptions ?? Array.Empty<SortOptions>();
-        pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? Array.Empty<SortOptions>();
-        pointRule.BonusPoints = (pointsRuleEntity?.BonusPoints.Select(MapFromBonusPointModel) ?? Array.Empty<BonusPointConfiguration>()).ToList();
+        pointRule.PointSortOptions = pointsRuleEntity?.PointsSortOptions ?? [];
+        pointRule.FinalSortOptions = pointsRuleEntity?.FinalSortOptions ?? [];
+        pointRule.BonusPoints = (pointsRuleEntity?.BonusPoints.Select(MapFromBonusPointModel) ?? []).ToList();
         pointRule.ResultFilters = MapFromFilterEntities(configurationEntity.ResultFilters);
         pointRule.ChampSeasonFilters = configurationEntity.ChampSeason != null ? MapFromFilterEntities(configurationEntity.ChampSeason.Filters) : new();
-        pointRule.AutoPenalties = (pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? Array.Empty<AutoPenaltyConfigurationData>()).ToList();
+        pointRule.AutoPenalties = (pointsRuleEntity?.AutoPenalties.Select(MapFromAutoPenaltyConfig) ?? []).ToList();
         if (includePointFilters)
         {
             pointRule.PointFilters = MapFromFilterEntities(configurationEntity.PointFilters);
@@ -154,12 +154,12 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         if (hasStatusPointFilter == false)
         {
             var statusFilter = (FilterCombination.And, new ColumnValueRowFilter(
-                nameof(ResultRowCalculationResult.Status),
-                ComparatorType.IsEqual,
-                new[] { ((int)RaceStatus.Disqualified).ToString() },
-                MatchedValueAction.Remove) as RowFilter<ResultRowCalculationResult>);
+                propertyName: nameof(ResultRowCalculationResult.Status),
+                comparatorType: ComparatorType.IsEqual,
+                values: [((int)RaceStatus.Disqualified).ToString()],
+                action: MatchedValueAction.Remove) as RowFilter<ResultRowCalculationResult>);
             pointRule.PointFilters = new FilterGroupRowFilter<ResultRowCalculationResult>(
-                pointRule.PointFilters.GetFilters().Concat(new[] { statusFilter }));
+                pointRule.PointFilters.GetFilters().Concat([statusFilter]));
         }
 
         return pointRule;
@@ -192,10 +192,13 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     }
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> CreatePointsEligibleFilter() => new(
-        new (FilterCombination, RowFilter<ResultRowCalculationResult>)[] {
-            (FilterCombination.And, new ColumnValueRowFilter(nameof(ResultRowCalculationResult.PointsEligible), ComparatorType.IsEqual,
-                new[] { true.ToString() }, MatchedValueAction.Keep))
-        }
+        [
+            (FilterCombination.And, new ColumnValueRowFilter(
+            propertyName: nameof(ResultRowCalculationResult.PointsEligible),
+            comparatorType: ComparatorType.IsEqual,
+            values: [true.ToString()],
+            action: MatchedValueAction.Keep))
+        ]
     );
 
     private static FilterGroupRowFilter<ResultRowCalculationResult> MapFromFilterEntities(ICollection<FilterConditionModel> pointFilters,
