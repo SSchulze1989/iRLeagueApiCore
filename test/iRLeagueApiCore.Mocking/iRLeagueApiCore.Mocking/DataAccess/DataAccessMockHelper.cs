@@ -184,7 +184,8 @@ public sealed class DataAccessMockHelper
             .Without(x => x.EventId)
             .Without(x => x.IncidentReviews)
             .Without(x => x.SessionResult)
-            .CreateMany();
+            .CreateMany()
+            .OrderBy(x => x.SessionNr);
         return fixture.Build<EventEntity>()
             .With(x => x.LeagueId, schedule.LeagueId)
             .With(x => x.Schedule, schedule)
@@ -253,6 +254,7 @@ public sealed class DataAccessMockHelper
             .Without(x => x.IRSimSessionDetails)
             .Without(x => x.Result)
             .Create())
+            .OrderBy(x => x.Session.SessionNr)
             .ToList();
     }
 

@@ -3,6 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Resultset;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 
@@ -74,7 +75,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
             return data;
         }
 
-        foreach(var row in firstRaceSession.ResultRows)
+        foreach (var row in firstRaceSession.ResultRows)
         {
             row.QualifyingTime = driverQualyLaps.FirstOrDefault(x => x.MemberId == row.MemberId)?.QualifyingTime ?? TimeSpan.Zero;
         }
@@ -107,11 +108,11 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
 
     private static EventCalculationData FillSessionType(EventCalculationConfiguration config, EventCalculationData data)
     {
-        foreach(var sessionResult in data.SessionResults)
+        foreach (var sessionResult in data.SessionResults)
         {
             var sessionType = config.SessionResultConfigurations.FirstOrDefault(x => x.SessionNr == sessionResult.SessionNr)?.SessionType ?? SessionType.Undefined;
             sessionResult.SessionType = sessionType;
-            foreach(var row in sessionResult.ResultRows)
+            foreach (var row in sessionResult.ResultRows)
             {
                 row.SessionType = sessionType;
             }
@@ -157,6 +158,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         LeagueId = eventResult.LeagueId,
         EventId = eventResult.EventId,
         SessionResults = eventResult.SessionResults
+            .OrderBy(sessionResult => sessionResult.Session.SessionNr)
             .Select(sessionResult => new SessionCalculationData()
             {
                 LeagueId = sessionResult.LeagueId,
@@ -175,49 +177,51 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                         ReviewVoteId = vote.ReviewVoteId,
                     }),
                 Sof = sessionResult.IRSimSessionDetails == null ? 0 : sessionResult.IRSimSessionDetails.EventStrengthOfField,
-                ResultRows = sessionResult.ResultRows.Select(row => new ResultRowCalculationData()
-                {
-                    ScoredResultRowId = null,
-                    MemberId = row.MemberId,
-                    Firstname = row.Member == null ? string.Empty : row.Member.Firstname,
-                    Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
-                    TeamId = row.TeamId,
-                    TeamName = row.Team == null ? string.Empty : row.Team.Name,
-                    AvgLapTime = row.AvgLapTime,
-                    Car = row.Car,
-                    CarClass = row.CarClass,
-                    CarId = row.CarId,
-                    CarNumber = row.CarNumber,
-                    ClassId = row.ClassId,
-                    ClubId = row.ClubId,
-                    ClubName = row.ClubName,
-                    CompletedLaps = row.CompletedLaps,
-                    CompletedPct = row.CompletedPct,
-                    FastestLapTime = row.FastestLapTime,
-                    FastLapNr = row.FastLapNr,
-                    FinishPosition = row.FinishPosition,
-                    Division = row.Division,
-                    Incidents = row.Incidents,
-                    Interval = row.Interval,
-                    LeadLaps = row.LeadLaps,
-                    License = row.License,
-                    NewIrating = row.NewIRating,
-                    NewCpi = row.NewCpi,
-                    NewLicenseLevel = row.NewLicenseLevel,
-                    NewSafetyRating = row.NewSafetyRating,
-                    OldIrating = row.OldIRating,
-                    OldCpi = row.OldCpi,
-                    OldLicenseLevel = row.OldLicenseLevel,
-                    OldSafetyRating = row.OldSafetyRating,
-                    QualifyingTime = row.QualifyingTime,
-                    PositionChange = row.PositionChange,
-                    RacePoints = row.RacePoints,
-                    SeasonStartIrating = row.SeasonStartIRating,
-                    StartPosition = row.StartPosition,
-                    Status = row.Status,
-                    TotalPoints = row.RacePoints,
-                    PointsEligible = row.PointsEligible,
-                })
+                ResultRows = sessionResult.ResultRows
+                    .OrderBy(row => row.FinishPosition)
+                    .Select(row => new ResultRowCalculationData()
+                    {
+                        ScoredResultRowId = null,
+                        MemberId = row.MemberId,
+                        Firstname = row.Member == null ? string.Empty : row.Member.Firstname,
+                        Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
+                        TeamId = row.TeamId,
+                        TeamName = row.Team == null ? string.Empty : row.Team.Name,
+                        AvgLapTime = row.AvgLapTime,
+                        Car = row.Car,
+                        CarClass = row.CarClass,
+                        CarId = row.CarId,
+                        CarNumber = row.CarNumber,
+                        ClassId = row.ClassId,
+                        ClubId = row.ClubId,
+                        ClubName = row.ClubName,
+                        CompletedLaps = row.CompletedLaps,
+                        CompletedPct = row.CompletedPct,
+                        FastestLapTime = row.FastestLapTime,
+                        FastLapNr = row.FastLapNr,
+                        FinishPosition = row.FinishPosition,
+                        Division = row.Division,
+                        Incidents = row.Incidents,
+                        Interval = row.Interval,
+                        LeadLaps = row.LeadLaps,
+                        License = row.License,
+                        NewIrating = row.NewIRating,
+                        NewCpi = row.NewCpi,
+                        NewLicenseLevel = row.NewLicenseLevel,
+                        NewSafetyRating = row.NewSafetyRating,
+                        OldIrating = row.OldIRating,
+                        OldCpi = row.OldCpi,
+                        OldLicenseLevel = row.OldLicenseLevel,
+                        OldSafetyRating = row.OldSafetyRating,
+                        QualifyingTime = row.QualifyingTime,
+                        PositionChange = row.PositionChange,
+                        RacePoints = row.RacePoints,
+                        SeasonStartIrating = row.SeasonStartIRating,
+                        StartPosition = row.StartPosition,
+                        Status = row.Status,
+                        TotalPoints = row.RacePoints,
+                        PointsEligible = row.PointsEligible,
+                    })
             })
     };
 
@@ -225,53 +229,57 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
     {
         LeagueId = eventResult.LeagueId,
         EventId = eventResult.EventId,
-        SessionResults = eventResult.ScoredSessionResults.Select(sessionResult => new SessionCalculationData()
-        {
-            LeagueId = sessionResult.LeagueId,
-            SessionNr = sessionResult.SessionNr,
-            ResultRows = sessionResult.ScoredResultRows.Select(row => new ResultRowCalculationData()
+        SessionResults = eventResult.ScoredSessionResults
+            .OrderBy(sessionResult => sessionResult.SessionNr)
+            .Select(sessionResult => new SessionCalculationData()
             {
-                ScoredResultRowId = row.ScoredResultRowId,
-                MemberId = row.MemberId,
-                Firstname = row.Member == null ? string.Empty : row.Member.Firstname,
-                Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
-                TeamId = row.TeamId,
-                TeamName = row.Team == null ? string.Empty : row.Team.Name,
-                AvgLapTime = row.AvgLapTime,
-                Car = row.Car,
-                CarClass = row.CarClass,
-                CarId = row.CarId,
-                CarNumber = row.CarNumber,
-                ClassId = row.ClassId,
-                CompletedLaps = row.CompletedLaps,
-                CompletedPct = row.CompletedPct,
-                FastestLapTime = row.FastestLapTime,
-                FastLapNr = row.FastLapNr,
-                FinishPosition = row.FinishPosition,
-                Division = row.Division,
-                Incidents = row.Incidents,
-                Interval = row.Interval,
-                LeadLaps = row.LeadLaps,
-                License = row.License,
-                NewIrating = row.NewIRating,
-                NewLicenseLevel = row.NewLicenseLevel,
-                NewSafetyRating = row.NewSafetyRating,
-                OldIrating = row.OldIRating,
-                OldLicenseLevel = row.OldLicenseLevel,
-                OldSafetyRating = row.OldSafetyRating,
-                QualifyingTime = row.QualifyingTime,
-                PositionChange = row.PositionChange,
-                RacePoints = row.RacePoints,
-                BonusPoints = row.BonusPoints,
-                PenaltyPoints = row.PenaltyPoints,
-                SeasonStartIrating = row.SeasonStartIRating,
-                StartPosition = row.StartPosition,
-                Status = row.Status,
-                TotalPoints = row.RacePoints,
-                PointsEligible = row.PointsEligible,
-                PenaltyTime = row.PenaltyTime,
-                PenaltyPositions = row.PenaltyPositions,
+                LeagueId = sessionResult.LeagueId,
+                SessionNr = sessionResult.SessionNr,
+                ResultRows = sessionResult.ScoredResultRows
+                    .OrderBy(row => row.FinalPosition)
+                    .Select(row => new ResultRowCalculationData()
+                    {
+                        ScoredResultRowId = row.ScoredResultRowId,
+                        MemberId = row.MemberId,
+                        Firstname = row.Member == null ? string.Empty : row.Member.Firstname,
+                        Lastname = row.Member == null ? string.Empty : row.Member.Lastname,
+                        TeamId = row.TeamId,
+                        TeamName = row.Team == null ? string.Empty : row.Team.Name,
+                        AvgLapTime = row.AvgLapTime,
+                        Car = row.Car,
+                        CarClass = row.CarClass,
+                        CarId = row.CarId,
+                        CarNumber = row.CarNumber,
+                        ClassId = row.ClassId,
+                        CompletedLaps = row.CompletedLaps,
+                        CompletedPct = row.CompletedPct,
+                        FastestLapTime = row.FastestLapTime,
+                        FastLapNr = row.FastLapNr,
+                        FinishPosition = row.FinishPosition,
+                        Division = row.Division,
+                        Incidents = row.Incidents,
+                        Interval = row.Interval,
+                        LeadLaps = row.LeadLaps,
+                        License = row.License,
+                        NewIrating = row.NewIRating,
+                        NewLicenseLevel = row.NewLicenseLevel,
+                        NewSafetyRating = row.NewSafetyRating,
+                        OldIrating = row.OldIRating,
+                        OldLicenseLevel = row.OldLicenseLevel,
+                        OldSafetyRating = row.OldSafetyRating,
+                        QualifyingTime = row.QualifyingTime,
+                        PositionChange = row.PositionChange,
+                        RacePoints = row.RacePoints,
+                        BonusPoints = row.BonusPoints,
+                        PenaltyPoints = row.PenaltyPoints,
+                        SeasonStartIrating = row.SeasonStartIRating,
+                        StartPosition = row.StartPosition,
+                        Status = row.Status,
+                        TotalPoints = row.RacePoints,
+                        PointsEligible = row.PointsEligible,
+                        PenaltyTime = row.PenaltyTime,
+                        PenaltyPositions = row.PenaltyPositions,
+                    })
             })
-        })
     };
 }
