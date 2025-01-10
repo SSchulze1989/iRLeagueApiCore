@@ -26,6 +26,7 @@ public class ResultConfigurationEntity : IVersionEntity
     public virtual IEnumerable<EventEntity> Events { get; set; }
     public virtual ICollection<FilterOptionEntity> PointFilters { get; set; }
     public virtual ICollection<FilterOptionEntity> ResultFilters { get; set; }
+
     #region version
     public DateTime? CreatedOn { get; set; }
     public DateTime? LastModifiedOn { get; set; }
@@ -34,6 +35,7 @@ public class ResultConfigurationEntity : IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
     #endregion
 
 }

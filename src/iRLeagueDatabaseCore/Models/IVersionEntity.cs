@@ -9,4 +9,5 @@ public interface IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
 }

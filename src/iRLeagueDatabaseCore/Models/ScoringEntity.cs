@@ -18,13 +18,6 @@ public partial class ScoringEntity : IVersionEntity
     public string Name { get; set; }
     public int MaxResultsPerGroup { get; set; }
     public long? ExtScoringSourceId { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
-    public int Version { get; set; }
-    public string CreatedByUserId { get; set; }
-    public string CreatedByUserName { get; set; }
-    public string LastModifiedByUserId { get; set; }
-    public string LastModifiedByUserName { get; set; }
     public bool UseResultSetTeam { get; set; }
     public bool UpdateTeamOnRecalculation { get; set; }
     public bool ShowResults { get; set; } = true;
@@ -35,6 +28,17 @@ public partial class ScoringEntity : IVersionEntity
     public virtual ResultConfigurationEntity ResultConfiguration { get; set; }
     public virtual PointRuleEntity PointsRule { get; set; }
     public virtual ICollection<ScoringEntity> DependendScorings { get; set; }
+
+    #region version
+    public DateTime? CreatedOn { get; set; }
+    public DateTime? LastModifiedOn { get; set; }
+    public int Version { get; set; }
+    public string CreatedByUserId { get; set; }
+    public string CreatedByUserName { get; set; }
+    public string LastModifiedByUserId { get; set; }
+    public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
+    #endregion
 }
 
 public class ScoringEntityConfiguration : IEntityTypeConfiguration<ScoringEntity>

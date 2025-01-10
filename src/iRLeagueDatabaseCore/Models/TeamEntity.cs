@@ -16,13 +16,6 @@ public partial class TeamEntity : IVersionEntity
     public string Profile { get; set; }
     public string TeamColor { get; set; }
     public string TeamHomepage { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
-    public int Version { get; set; }
-    public string CreatedByUserId { get; set; }
-    public string CreatedByUserName { get; set; }
-    public string LastModifiedByUserId { get; set; }
-    public string LastModifiedByUserName { get; set; }
     /// <summary>
     /// Imported Id from old database
     /// Will be deleted after imports have finished
@@ -32,6 +25,17 @@ public partial class TeamEntity : IVersionEntity
     public virtual ICollection<LeagueMemberEntity> Members { get; set; }
     public virtual LeagueEntity League { get; set; }
     public virtual IEnumerable<IncidentReviewEntity> InvolvedReviews { get; set; }
+
+    #region version
+    public DateTime? CreatedOn { get; set; }
+    public DateTime? LastModifiedOn { get; set; }
+    public int Version { get; set; }
+    public string CreatedByUserId { get; set; }
+    public string CreatedByUserName { get; set; }
+    public string LastModifiedByUserId { get; set; }
+    public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
+    #endregion
 }
 
 public class TeamEntityConfiguration : IEntityTypeConfiguration<TeamEntity>

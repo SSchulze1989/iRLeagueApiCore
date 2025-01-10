@@ -14,6 +14,11 @@ public partial class SessionResultEntity : IVersionEntity
 
     public SimSessionType SimSessionType { get; set; }
 
+    public virtual EventResultEntity Result { get; set; }
+    public virtual SessionEntity Session { get; set; }
+    public virtual ICollection<ResultRowEntity> ResultRows { get; set; }
+    public virtual IRSimSessionDetailsEntity IRSimSessionDetails { get; set; }
+
     #region version
     public DateTime? CreatedOn { get; set; }
     public DateTime? LastModifiedOn { get; set; }
@@ -22,12 +27,8 @@ public partial class SessionResultEntity : IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
     #endregion
-
-    public virtual EventResultEntity Result { get; set; }
-    public virtual SessionEntity Session { get; set; }
-    public virtual ICollection<ResultRowEntity> ResultRows { get; set; }
-    public virtual IRSimSessionDetailsEntity IRSimSessionDetails { get; set; }
 }
 
 public class SessionResultEntityConfiguration : IEntityTypeConfiguration<SessionResultEntity>

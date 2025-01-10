@@ -17,13 +17,6 @@ public partial class StatisticSetEntity : IVersionEntity
     public long UpdateInterval { get; set; }
     public DateTime? UpdateTime { get; set; }
     public bool RequiresRecalculation { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
-    public int Version { get; set; }
-    public string CreatedByUserId { get; set; }
-    public string CreatedByUserName { get; set; }
-    public string LastModifiedByUserId { get; set; }
-    public string LastModifiedByUserName { get; set; }
     public long? CurrentChampId { get; set; }
     public long? SeasonId { get; set; }
     public long? StandingId { get; set; }
@@ -39,6 +32,17 @@ public partial class StatisticSetEntity : IVersionEntity
     public virtual ICollection<DriverStatisticRowEntity> DriverStatisticRows { get; set; }
     public virtual ICollection<StatisticSetEntity> LeagueStatisticSets { get; set; }
     public virtual ICollection<StatisticSetEntity> DependendStatisticSets { get; set; }
+
+    #region version
+    public DateTime? CreatedOn { get; set; }
+    public DateTime? LastModifiedOn { get; set; }
+    public int Version { get; set; }
+    public string CreatedByUserId { get; set; }
+    public string CreatedByUserName { get; set; }
+    public string LastModifiedByUserId { get; set; }
+    public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
+    #endregion
 }
 
 public class StatisticSetEntityConfiguration : IEntityTypeConfiguration<StatisticSetEntity>

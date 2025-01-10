@@ -16,6 +16,11 @@ public partial class FilterOptionEntity : IVersionEntity
     public long? ResultFilterResultConfigId { get; set; }
     public long? ChampSeasonId { get; set; }
 
+    public virtual ResultConfigurationEntity PointFilterResultConfig { get; set; }
+    public virtual ResultConfigurationEntity ResultFilterResultConfig { get; set; }
+    public virtual ChampSeasonEntity ChampSeason { get; set; }
+    public virtual ICollection<FilterConditionModel> Conditions { get; set; }
+
     #region version
     public DateTime? CreatedOn { get; set; }
     public DateTime? LastModifiedOn { get; set; }
@@ -24,11 +29,8 @@ public partial class FilterOptionEntity : IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
     #endregion
-    public virtual ResultConfigurationEntity PointFilterResultConfig { get; set; }
-    public virtual ResultConfigurationEntity ResultFilterResultConfig { get; set; }
-    public virtual ChampSeasonEntity ChampSeason { get; set; }
-    public virtual ICollection<FilterConditionModel> Conditions { get; set; }
 }
 
 public sealed class FilterOptionEntityConfiguration : IEntityTypeConfiguration<FilterOptionEntity>
