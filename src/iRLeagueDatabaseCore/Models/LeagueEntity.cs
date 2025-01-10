@@ -37,6 +37,7 @@ public class LeagueEntity : Revision, IVersionEntity
     public bool EnableLiveReviews { get; set; }
     public SubscriptionStatus Subscription { get; set; }
     public DateTime? Expires { get; set; }
+    public bool IsArchived { get; set; }
 
     public virtual ICollection<SeasonEntity> Seasons { get; set; }
     public virtual ICollection<ResultConfigurationEntity> ResultConfigs { get; set; }

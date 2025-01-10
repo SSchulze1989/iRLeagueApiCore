@@ -28,13 +28,6 @@ public partial class ScoredSessionResultEntity : IVersionEntity
     public TimeSpan FastestLap { get; set; }
     public TimeSpan FastestQualyLap { get; set; }
     public TimeSpan FastestAvgLap { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
-    public int Version { get; set; }
-    public string CreatedByUserId { get; set; }
-    public string CreatedByUserName { get; set; }
-    public string LastModifiedByUserId { get; set; }
-    public string LastModifiedByUserName { get; set; }
     public string Discriminator { get; set; }
     public long? FastestAvgLapDriverMemberId { get; set; }
     public long? FastestLapDriverMemberId { get; set; }
@@ -48,6 +41,17 @@ public partial class ScoredSessionResultEntity : IVersionEntity
     public virtual ICollection<MemberEntity> CleanestDrivers { get; set; }
     public virtual ICollection<MemberEntity> HardChargers { get; set; }
     public virtual ICollection<ScoredResultRowEntity> ScoredResultRows { get; set; }
+
+    #region version
+    public DateTime? CreatedOn { get; set; }
+    public DateTime? LastModifiedOn { get; set; }
+    public int Version { get; set; }
+    public string CreatedByUserId { get; set; }
+    public string CreatedByUserName { get; set; }
+    public string LastModifiedByUserId { get; set; }
+    public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
+    #endregion
 }
 
 public class ScoredSessionResultEntityConfiguration : IEntityTypeConfiguration<ScoredSessionResultEntity>

@@ -24,13 +24,6 @@ public partial class IncidentReviewEntity : IVersionEntity
     public string OnLap { get; set; }
     public string Corner { get; set; }
     public TimeSpan TimeStamp { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
-    public int Version { get; set; }
-    public string CreatedByUserId { get; set; }
-    public string CreatedByUserName { get; set; }
-    public string LastModifiedByUserId { get; set; }
-    public string LastModifiedByUserName { get; set; }
     public string ResultLongText { get; set; }
     public string IncidentNr { get; set; }
     /// <summary>
@@ -45,6 +38,17 @@ public partial class IncidentReviewEntity : IVersionEntity
     public virtual ICollection<MemberEntity> InvolvedMembers { get; set; }
     public virtual ICollection<TeamEntity> InvolvedTeams { get; set; }
     public virtual ICollection<ReviewPenaltyEntity> ReviewPenaltys { get; set; }
+
+    #region version
+    public DateTime? CreatedOn { get; set; }
+    public DateTime? LastModifiedOn { get; set; }
+    public int Version { get; set; }
+    public string CreatedByUserId { get; set; }
+    public string CreatedByUserName { get; set; }
+    public string LastModifiedByUserId { get; set; }
+    public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
+    #endregion
 }
 
 public class IncidentReviewEntityConfiguration : IEntityTypeConfiguration<IncidentReviewEntity>
