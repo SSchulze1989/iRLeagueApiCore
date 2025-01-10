@@ -16,6 +16,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
             .Where(x => x.EventId == eventId)
             .OrderBy(x => x.ResultConfigId)
             .Select(MapToEventResultModelExpression)
+            .OrderBy(x => x.Index)
             .ToListAsync(cancellationToken);
     }
 
@@ -136,6 +137,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
         TrackName = result.Event.Track.TrackGroup.TrackName,
         ConfigName = result.Event.Track.ConfigName,
         StrengthOfField = result.Event.SimSessionDetails.Any() ? result.Event.SimSessionDetails.First().EventStrengthOfField : 0,
+        Index = result.ChampSeason != null ? result.ChampSeason.Index : 0,
         SessionResults = result.ScoredSessionResults
             .OrderBy(sessionResult => sessionResult.SessionNr)
             .Select(sessionResult => new ResultModel()

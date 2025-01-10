@@ -164,14 +164,6 @@ public abstract class ResultConfigHandlerBase<THandler, TRequest, TResponse> : H
         return await Task.FromResult(entity);
     }
 
-    private static FilterCondition MapToFilterCondition(FilterConditionModel model) => new()
-    {
-        ColumnPropertyName = model.ColumnPropertyName,
-        Comparator = model.Comparator,
-        FilterType = model.FilterType,
-        FilterValues = model.FilterValues,
-    };
-
     protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PutResultConfigModel putResultConfig, ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
     {
         return await MapToResultConfigEntityAsync(user, (PostResultConfigModel)putResultConfig, resultConfigEntity, cancellationToken);

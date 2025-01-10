@@ -33,6 +33,7 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         target.DefaultResultConfig = target.ResultConfigurations.FirstOrDefault(x => x.ResultConfigId == model.DefaultResultConfig?.ResultConfigId);
         target.ResultKind = model.ResultKind;
         target.Filters = await MapToFilterOptionListAsync(user, model.Filters, target.Filters, cancellationToken);
+        target.Index = model.Index;
         return await Task.FromResult(target);
     }
 
@@ -89,6 +90,7 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         ChampionshipName = champSeason.Championship.Name,
         ChampionshipDisplayName = champSeason.Championship.DisplayName,
         ResultKind = champSeason.ResultKind,
+        Index = champSeason.Index,
         ResultConfigs = champSeason.ResultConfigurations.Select(config => new ResultConfigInfoModel()
         {
             LeagueId = champSeason.LeagueId,

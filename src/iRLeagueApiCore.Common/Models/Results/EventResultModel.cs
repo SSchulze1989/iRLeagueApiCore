@@ -16,6 +16,8 @@ public class EventResultModel
     [DataMember]
     public string DisplayName { get; set; } = string.Empty;
     [DataMember]
+    public int Index { get; set; }
+    [DataMember]
     public DateTime Date { get; set; }
     [DataMember]
     public long TrackId { get; set; }
