@@ -4,10 +4,8 @@ using iRLeagueApiCore.Common;
 using iRLeagueApiCore.Server.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.Test;
 using static Microsoft.AspNetCore.Identity.Test.MockHelpers;
-using System.Data;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 

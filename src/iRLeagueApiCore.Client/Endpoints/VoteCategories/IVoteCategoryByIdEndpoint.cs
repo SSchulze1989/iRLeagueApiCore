@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Client.Endpoints;
-using iRLeagueApiCore.Common.Models.Reviews;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 
 namespace iRLeagueApiCore.Client.Endpoints.VoteCategories;
 

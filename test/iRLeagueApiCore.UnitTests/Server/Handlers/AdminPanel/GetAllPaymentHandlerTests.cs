@@ -2,9 +2,7 @@
 using iRLeagueApiCore.Server.Handlers.AdminPanel;
 using iRLeagueApiCore.Server.Models.Payments;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.AdminPanel;
 public sealed class GetAllPaymentHandlerTests

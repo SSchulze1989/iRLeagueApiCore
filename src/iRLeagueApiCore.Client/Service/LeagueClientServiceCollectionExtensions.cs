@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using iRLeagueApiCore.Common.Converters;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class IRLeagueApiClientServiceExtensions

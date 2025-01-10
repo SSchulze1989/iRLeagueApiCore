@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Leagues;
 

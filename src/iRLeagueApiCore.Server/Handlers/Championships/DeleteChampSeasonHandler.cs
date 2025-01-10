@@ -1,6 +1,4 @@
-﻿using iRLeagueDatabaseCore;
-
-namespace iRLeagueApiCore.Server.Handlers.Championships;
+﻿namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record DeleteChampSeasonRequest(long ChampSeasonId) : IRequest<Unit>;
 

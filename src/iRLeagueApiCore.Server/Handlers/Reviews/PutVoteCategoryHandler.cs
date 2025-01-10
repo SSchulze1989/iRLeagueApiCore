@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 

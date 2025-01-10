@@ -1,7 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
-using Xunit.Sdk;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Championships;
 public abstract class ChampionshipHandlersTestsBase<THandler, TRequest, TResult> : HandlersTestsBase<THandler, TRequest, TResult>

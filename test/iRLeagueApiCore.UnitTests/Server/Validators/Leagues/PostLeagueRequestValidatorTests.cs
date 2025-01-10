@@ -6,7 +6,6 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.Server.Validation.Leagues;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Test;
 
 namespace iRLeagueApiCore.UnitTests.Server.Validators.Leagues;

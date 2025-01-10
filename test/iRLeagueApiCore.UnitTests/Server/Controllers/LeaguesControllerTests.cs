@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
 
 namespace iRLeagueApiCore.UnitTests.Server.Controllers;
 

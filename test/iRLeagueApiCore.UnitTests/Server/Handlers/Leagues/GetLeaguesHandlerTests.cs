@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Identity.Test;
 

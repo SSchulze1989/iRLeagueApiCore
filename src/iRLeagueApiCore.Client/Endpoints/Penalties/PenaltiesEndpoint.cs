@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Client.Results;
 using iRLeagueApiCore.Common.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace iRLeagueApiCore.Client.Endpoints.Penalties;
 internal sealed class PenaltiesEndpoint : EndpointBase, IPenaltiesEndpoint, IGetAllEndpoint<PenaltyModel>

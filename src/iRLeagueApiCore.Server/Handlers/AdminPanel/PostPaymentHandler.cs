@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Server.Models.Payments;
+﻿using iRLeagueApiCore.Server.Models.Payments;
 
 namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 

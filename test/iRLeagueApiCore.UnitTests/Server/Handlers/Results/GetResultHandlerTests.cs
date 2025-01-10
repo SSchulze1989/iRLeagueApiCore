@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 

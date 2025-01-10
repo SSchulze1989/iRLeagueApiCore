@@ -1,9 +1,7 @@
 ﻿using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
-using Microsoft.AspNetCore.Connections.Features;
 using System.Text.Json;
-using System.Threading;
 using System.Transactions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;

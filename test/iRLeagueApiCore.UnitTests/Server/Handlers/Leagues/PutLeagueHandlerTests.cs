@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Leagues;

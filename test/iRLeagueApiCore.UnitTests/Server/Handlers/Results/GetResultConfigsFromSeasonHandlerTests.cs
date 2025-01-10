@@ -3,7 +3,6 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTestsBase<GetResultConfigsFromSeasonHandler, GetResultConfigsFromSeasonRequest, IEnumerable<ResultConfigModel>>

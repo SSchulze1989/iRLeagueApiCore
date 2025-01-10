@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;

@@ -1,5 +1,4 @@
-﻿using FluentValidation.Results;
-using iRLeagueApiCore.Common.Models.Reviews;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 

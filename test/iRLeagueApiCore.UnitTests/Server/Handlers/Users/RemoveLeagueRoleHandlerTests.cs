@@ -4,9 +4,6 @@ using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Handlers.Users;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using Microsoft.AspNetCore.Identity;
-using Serilog;
-using System.Diagnostics.Contracts;
-using System.Runtime.InteropServices;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Users;
 public sealed class RemoveLeagueRoleHandlerTests : UserHandlerTestsBase<RemoveLeagueRoleHandler, RemoveLeagueRoleRequest>

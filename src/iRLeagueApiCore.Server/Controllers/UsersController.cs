@@ -6,7 +6,6 @@ using iRLeagueApiCore.Server.Handlers.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Security.Cryptography.Xml;
 using System.Text;
 
 namespace iRLeagueApiCore.Server.Controllers;

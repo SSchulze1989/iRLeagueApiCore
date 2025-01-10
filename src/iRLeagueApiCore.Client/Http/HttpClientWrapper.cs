@@ -1,7 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Results;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;

@@ -5,7 +5,6 @@ using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.UnitTests.Extensions;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace iRLeagueApiCore.UnitTests.Fixtures;
 

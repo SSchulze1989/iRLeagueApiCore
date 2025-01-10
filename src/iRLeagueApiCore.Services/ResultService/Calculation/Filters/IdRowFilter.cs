@@ -1,6 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Models;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;

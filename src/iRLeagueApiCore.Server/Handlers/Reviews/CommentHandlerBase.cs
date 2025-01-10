@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Reviews;
+﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Models;
 using System.Linq.Expressions;
 

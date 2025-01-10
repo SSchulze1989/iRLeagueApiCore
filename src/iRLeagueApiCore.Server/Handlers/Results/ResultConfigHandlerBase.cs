@@ -1,9 +1,6 @@
-﻿using Castle.Components.DictionaryAdapter.Xml;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore;
 using System.Linq.Expressions;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 

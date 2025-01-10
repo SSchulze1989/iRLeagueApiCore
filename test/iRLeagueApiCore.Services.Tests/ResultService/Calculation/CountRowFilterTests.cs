@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
-using Org.BouncyCastle.Asn1.Cmp;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 public sealed class CountRowFilterTests

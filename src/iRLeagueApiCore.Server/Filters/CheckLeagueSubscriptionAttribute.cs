@@ -1,9 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Common.Responses;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 

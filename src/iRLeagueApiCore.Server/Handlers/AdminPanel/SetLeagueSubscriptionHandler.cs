@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models.Payments;
 

@@ -1,15 +1,11 @@
-﻿using Aydsko.iRacingData.Stats;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
-using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
-using K4os.Hash.xxHash;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService;
 public sealed class IntegrationTests : DataAccessTestsBase

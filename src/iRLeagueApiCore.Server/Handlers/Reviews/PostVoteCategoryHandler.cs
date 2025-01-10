@@ -1,6 +1,4 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Models;
-using Microsoft.OpenApi.Any;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 

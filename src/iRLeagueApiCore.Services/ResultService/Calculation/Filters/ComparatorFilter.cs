@@ -1,6 +1,4 @@
 ﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Services.ResultService.Models;
-using System.Reflection;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 internal sealed class ComparatorFilter

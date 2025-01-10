@@ -3,7 +3,6 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 

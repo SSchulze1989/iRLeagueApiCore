@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Server.Controllers;
-using iRLeagueApiCore.Server.Handlers.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

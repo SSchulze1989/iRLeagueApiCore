@@ -6,7 +6,6 @@ using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.UnitTests.Extensions;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

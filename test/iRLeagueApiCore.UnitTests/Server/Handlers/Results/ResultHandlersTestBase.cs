@@ -1,7 +1,6 @@
 ﻿using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 public abstract class ResultHandlersTestsBase<THandler, TRequest, TResult> : 

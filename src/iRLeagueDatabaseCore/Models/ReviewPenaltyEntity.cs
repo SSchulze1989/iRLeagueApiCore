@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Converters;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace iRLeagueDatabaseCore.Models;
 

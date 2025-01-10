@@ -1,7 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Models;
-using MySqlX.XDevAPI.Relational;
-using System.Runtime.CompilerServices;
 
 namespace iRLeagueApiCore.Services.ResultService.Extensions;
 

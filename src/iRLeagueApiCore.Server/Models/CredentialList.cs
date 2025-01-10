@@ -1,5 +1,4 @@
 ﻿using Microsoft.IdentityModel.Protocols.Configuration;
-using System.Collections;
 using System.Net;
 
 namespace iRLeagueApiCore.Server.Models;

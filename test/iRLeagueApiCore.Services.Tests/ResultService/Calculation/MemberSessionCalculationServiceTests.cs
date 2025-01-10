@@ -4,7 +4,6 @@ using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Extensions;
-using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;

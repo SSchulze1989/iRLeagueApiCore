@@ -1,8 +1,6 @@
 ﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.Extensions;
-using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueDatabaseCore;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;

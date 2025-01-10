@@ -1,5 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using System.Text.Json.Serialization;
 
 namespace iRLeagueDatabaseCore.Models;

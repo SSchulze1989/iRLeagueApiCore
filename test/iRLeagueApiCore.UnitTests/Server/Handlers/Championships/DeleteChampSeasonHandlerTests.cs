@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Server.Handlers.Championships;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Championships;
 public sealed class DeleteChampSeasonHandlerTests :

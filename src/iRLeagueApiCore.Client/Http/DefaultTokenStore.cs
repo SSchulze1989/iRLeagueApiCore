@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.Metadata;
+﻿using System.IdentityModel.Tokens.Jwt;
 
 namespace iRLeagueApiCore.Client.Http;
 internal sealed class DefaultTokenStore : ITokenStore

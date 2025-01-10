@@ -1,9 +1,7 @@
-﻿using AutoFixture;
-using AutoFixture.Dsl;
+﻿using AutoFixture.Dsl;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
-using System.Xml.Serialization;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 public sealed class FormulaPointRuleTests

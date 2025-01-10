@@ -1,6 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Models.Payments;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.AdminPanel;

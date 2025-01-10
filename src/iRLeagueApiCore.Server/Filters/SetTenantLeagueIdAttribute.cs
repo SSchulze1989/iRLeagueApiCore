@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;

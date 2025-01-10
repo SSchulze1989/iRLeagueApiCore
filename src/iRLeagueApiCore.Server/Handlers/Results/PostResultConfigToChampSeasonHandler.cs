@@ -1,6 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 

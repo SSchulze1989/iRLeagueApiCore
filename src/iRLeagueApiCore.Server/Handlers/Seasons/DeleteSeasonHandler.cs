@@ -1,6 +1,4 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
-
-namespace iRLeagueApiCore.Server.Handlers.Seasons;
+﻿namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record DeleteSeasonRequest(long SeasonId) : IRequest<Unit>;
 

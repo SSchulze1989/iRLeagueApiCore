@@ -1,7 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace iRLeagueApiCore.Client;
 

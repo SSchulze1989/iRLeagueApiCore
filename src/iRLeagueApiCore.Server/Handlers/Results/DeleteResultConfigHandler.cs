@@ -1,6 +1,4 @@
-﻿using iRLeagueDatabaseCore;
-
-namespace iRLeagueApiCore.Server.Handlers.Results;
+﻿namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record DeleteResultConfigRequest(long ResultConfigId) : IRequest<Unit>;
 

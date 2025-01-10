@@ -1,7 +1,5 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Controllers;
-using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Scorings;
 using iRLeagueApiCore.UnitTests.Fixtures;
 using MediatR;

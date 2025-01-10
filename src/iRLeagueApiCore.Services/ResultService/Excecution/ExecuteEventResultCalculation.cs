@@ -1,10 +1,6 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueDatabaseCore;
-using iRLeagueDatabaseCore.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace iRLeagueApiCore.Services.ResultService.Excecution;
 

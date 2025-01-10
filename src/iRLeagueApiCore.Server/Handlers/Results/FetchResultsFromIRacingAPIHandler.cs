@@ -1,6 +1,5 @@
 ﻿using Aydsko.iRacingData;
 using Aydsko.iRacingData.Results;
-using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using System.Net;

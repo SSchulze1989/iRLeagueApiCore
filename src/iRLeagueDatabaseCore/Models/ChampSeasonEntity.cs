@@ -1,6 +1,4 @@
-﻿using iRLeagueApiCore.Common.Models.Reviews;
-
-namespace iRLeagueDatabaseCore.Models;
+﻿namespace iRLeagueDatabaseCore.Models;
 public partial class ChampSeasonEntity : IVersionEntity
 {
     public ChampSeasonEntity()
