@@ -17,6 +17,7 @@ public partial class ChampSeasonEntity : IVersionEntity
     public long? StandingConfigId { get; set; }
     public ResultKind ResultKind { get; set; }
     public bool IsActive { get; set; }
+    public int Index { get; set; }
 
     public virtual ChampionshipEntity Championship { get; set; }
     public virtual SeasonEntity Season { get; set; }
