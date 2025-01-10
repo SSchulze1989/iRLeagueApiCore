@@ -1,6 +1,6 @@
 ﻿namespace iRLeagueDatabaseCore.Models;
 
-public abstract class Revision
+public abstract class Revision : IVersionEntity
 {
     public DateTime? CreatedOn { get; set; } = null;
     public DateTime? LastModifiedOn { get; set; } = null;
@@ -11,4 +11,5 @@ public abstract class Revision
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
 }

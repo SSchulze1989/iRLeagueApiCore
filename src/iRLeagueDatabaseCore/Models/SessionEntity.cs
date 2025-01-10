@@ -24,6 +24,10 @@ public partial class SessionEntity : IVersionEntity
     /// </summary>
     public long? ImportId { get; set; }
 
+    public virtual EventEntity Event { get; set; }
+    public virtual SessionResultEntity SessionResult { get; set; }
+    public virtual ICollection<IncidentReviewEntity> IncidentReviews { get; set; }
+
     #region version
     public DateTime? CreatedOn { get; set; }
     public DateTime? LastModifiedOn { get; set; }
@@ -32,11 +36,8 @@ public partial class SessionEntity : IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
     #endregion
-
-    public virtual EventEntity Event { get; set; }
-    public virtual SessionResultEntity SessionResult { get; set; }
-    public virtual ICollection<IncidentReviewEntity> IncidentReviews { get; set; }
 }
 
 public class SubSessionEntityConfiguration : IEntityTypeConfiguration<SessionEntity>

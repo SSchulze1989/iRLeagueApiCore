@@ -13,13 +13,6 @@ public partial class ScheduleEntity : IVersionEntity
     public long ScheduleId { get; set; }
     public long LeagueId { get; set; }
     public string Name { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
-    public int Version { get; set; }
-    public string CreatedByUserId { get; set; }
-    public string CreatedByUserName { get; set; }
-    public string LastModifiedByUserId { get; set; }
-    public string LastModifiedByUserName { get; set; }
     public long SeasonId { get; set; }
     /// <summary>
     /// Imported Id from old database
@@ -30,6 +23,17 @@ public partial class ScheduleEntity : IVersionEntity
     public virtual SeasonEntity Season { get; set; }
     public virtual ICollection<ScoringEntity> Scorings { get; set; }
     public virtual ICollection<EventEntity> Events { get; set; }
+
+    #region version
+    public DateTime? CreatedOn { get; set; }
+    public DateTime? LastModifiedOn { get; set; }
+    public int Version { get; set; }
+    public string CreatedByUserId { get; set; }
+    public string CreatedByUserName { get; set; }
+    public string LastModifiedByUserId { get; set; }
+    public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
+    #endregion
 }
 
 public class ScheduleEntityConfiguration : IEntityTypeConfiguration<ScheduleEntity>

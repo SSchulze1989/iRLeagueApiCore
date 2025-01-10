@@ -24,6 +24,13 @@ public partial class ReviewCommentEntity : IVersionEntity
     public string AuthorUserId { get; set; }
     public string AuthorName { get; set; }
     public string Text { get; set; }
+
+    public virtual ReviewCommentEntity ReplyToComment { get; set; }
+    public virtual IncidentReviewEntity Review { get; set; }
+    public virtual ICollection<ReviewCommentVoteEntity> ReviewCommentVotes { get; set; }
+    public virtual ICollection<ReviewCommentEntity> Replies { get; set; }
+
+    #region version
     public DateTime? CreatedOn { get; set; }
     public DateTime? LastModifiedOn { get; set; }
     public int Version { get; set; }
@@ -31,11 +38,8 @@ public partial class ReviewCommentEntity : IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
-
-    public virtual ReviewCommentEntity ReplyToComment { get; set; }
-    public virtual IncidentReviewEntity Review { get; set; }
-    public virtual ICollection<ReviewCommentVoteEntity> ReviewCommentVotes { get; set; }
-    public virtual ICollection<ReviewCommentEntity> Replies { get; set; }
+    public bool IsArchived { get; set; }
+    #endregion
 }
 
 public class CommentBaseEntityConfiguation : IEntityTypeConfiguration<ReviewCommentEntity>

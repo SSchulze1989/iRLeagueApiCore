@@ -35,7 +35,7 @@ public class EventEntity : IVersionEntity
     public virtual ICollection<ResultConfigurationEntity> ResultConfigs { get; set; }
     public virtual ICollection<IRSimSessionDetailsEntity> SimSessionDetails { get; set; }
 
-    #region Version
+    #region version
     public DateTime? CreatedOn { get; set; }
     public DateTime? LastModifiedOn { get; set; }
     public int Version { get; set; }
@@ -43,6 +43,7 @@ public class EventEntity : IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
     #endregion
 }
 

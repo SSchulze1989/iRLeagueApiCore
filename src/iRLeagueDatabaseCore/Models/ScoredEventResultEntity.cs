@@ -33,8 +33,8 @@ public class ScoredEventResultEntity : IVersionEntity
     public string CreatedByUserName { get; set; }
     public string LastModifiedByUserId { get; set; }
     public string LastModifiedByUserName { get; set; }
+    public bool IsArchived { get; set; }
     #endregion
-
 }
 
 public class ScoredEventResultEntityConfiguration : IEntityTypeConfiguration<ScoredEventResultEntity>
