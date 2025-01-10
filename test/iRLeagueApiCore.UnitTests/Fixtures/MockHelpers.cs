@@ -106,9 +106,9 @@ public static class MockHelpers
     }
 
     public static IUserRoleStore<TUser> TestUserRoleStore<TUser, TRole>(
-        IUserStore<TUser>? userStore = null, 
-        IRoleStore<TRole>? roleStore = null, 
-        IDictionary<TUser, List<TRole>>? userRoles = null) 
+        IUserStore<TUser>? userStore = null,
+        IRoleStore<TRole>? roleStore = null,
+        IDictionary<TUser, List<TRole>>? userRoles = null)
         where TUser : IdentityUser where TRole : IdentityRole
     {
         userStore ??= TestUserStore<TUser>();

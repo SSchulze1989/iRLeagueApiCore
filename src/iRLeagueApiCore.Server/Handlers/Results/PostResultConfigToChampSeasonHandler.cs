@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record PostResultConfigToChampSeasonRequest(long ChampSeasonId, LeagueUser User, PostResultConfigModel Model) : IRequest<ResultConfigModel>;
 
-public sealed class PostResultConfigToChampSeasonHandler : ResultConfigHandlerBase<PostResultConfigToChampSeasonHandler,  PostResultConfigToChampSeasonRequest, ResultConfigModel>
+public sealed class PostResultConfigToChampSeasonHandler : ResultConfigHandlerBase<PostResultConfigToChampSeasonHandler, PostResultConfigToChampSeasonRequest, ResultConfigModel>
 {
-    public PostResultConfigToChampSeasonHandler(ILogger<PostResultConfigToChampSeasonHandler> logger, LeagueDbContext dbContext, 
+    public PostResultConfigToChampSeasonHandler(ILogger<PostResultConfigToChampSeasonHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<PostResultConfigToChampSeasonRequest>> validators) :
         base(logger, dbContext, validators)
     {

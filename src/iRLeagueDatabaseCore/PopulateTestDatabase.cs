@@ -230,7 +230,7 @@ public static class PopulateTestDatabase
             Name = "Championship"
         };
         league1.Championships.Add(championship);
-        foreach(var season in league1.Seasons)
+        foreach (var season in league1.Seasons)
         {
             var champSeason = new ChampSeasonEntity()
             {
@@ -315,7 +315,8 @@ public static class PopulateTestDatabase
             var voteCategory = new VoteCategoryEntity()
             {
                 Text = $"Category {i + 1}",
-                DefaultPenalty = new() {
+                DefaultPenalty = new()
+                {
                     Type = PenaltyType.Points,
                     Points = i + 1,
                 }

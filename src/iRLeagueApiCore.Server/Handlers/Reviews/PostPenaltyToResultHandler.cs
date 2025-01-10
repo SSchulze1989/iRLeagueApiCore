@@ -4,7 +4,7 @@ using iRLeagueApiCore.Services.ResultService.Excecution;
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostPenaltyToResultRequest(long ResultId, long ScoredResultRowId, PostPenaltyModel Model) : IRequest<PenaltyModel>;
-public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResultHandler,  PostPenaltyToResultRequest, PenaltyModel>
+public class PostPenaltyToResultHandler : ReviewsHandlerBase<PostPenaltyToResultHandler, PostPenaltyToResultRequest, PenaltyModel>
 {
     public PostPenaltyToResultHandler(ILogger<PostPenaltyToResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostPenaltyToResultRequest>> validators,
         IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)

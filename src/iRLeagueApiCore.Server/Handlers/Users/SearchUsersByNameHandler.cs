@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record SearchUsersByNameRequest(string[] SearchKeys) : IRequest<IEnumerable<UserModel>>;
 
-public sealed class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNameHandler,  SearchUsersByNameRequest, IEnumerable<UserModel>>
+public sealed class SearchUsersByNameHandler : UsersHandlerBase<SearchUsersByNameHandler, SearchUsersByNameRequest, IEnumerable<UserModel>>
 {
     private readonly UserDbContext userDbContext;
 

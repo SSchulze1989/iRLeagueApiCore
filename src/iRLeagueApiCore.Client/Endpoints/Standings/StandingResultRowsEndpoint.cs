@@ -4,7 +4,7 @@ using iRLeagueApiCore.Client.QueryBuilder;
 namespace iRLeagueApiCore.Client.Endpoints.Standings;
 internal sealed class StandingResultRowsEndpoint : EndpointBase, IWithIdEndpoint<IStandingResultRowByIdEndpoint>
 {
-    public StandingResultRowsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) 
+    public StandingResultRowsEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder)
         : base(httpClient, routeBuilder)
     {
         RouteBuilder.AddEndpoint("ResultRows");

@@ -131,7 +131,7 @@ public abstract class ResultConfigHandlerBase<THandler, TRequest, TResponse> : H
     private async Task<ICollection<AutoPenaltyConfigEntity>> MapToAutoPenaltyCollection(IEnumerable<AutoPenaltyConfiguration> models, ICollection<AutoPenaltyConfigEntity> entities,
         CancellationToken cancellationToken)
     {
-        foreach(var model in models)
+        foreach (var model in models)
         {
             var entity = entities
                 .Where(x => x.PenaltyConfigId != 0 && x.PenaltyConfigId == model.PenaltyConfigId)

@@ -1,8 +1,8 @@
-﻿using iRLeagueApiCore.Services.ResultService.Calculation;
+﻿using iRLeagueApiCore.Mocking.Extensions;
+using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Mocking.Extensions;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
@@ -36,8 +36,8 @@ public sealed class ExecuteEventResultCalculationTests
             .Callback(new InvocationAction(invocation =>
             {
                 var logLevel = (LogLevel)invocation.Arguments[0]; // The first two will always be whatever is specified in the setup above
-                    var eventId = (EventId)invocation.Arguments[1];  // so I'm not sure you would ever want to actually use them
-                    var state = invocation.Arguments[2];
+                var eventId = (EventId)invocation.Arguments[1];  // so I'm not sure you would ever want to actually use them
+                var state = invocation.Arguments[2];
                 var exception = (Exception?)invocation.Arguments[3];
                 var formatter = invocation.Arguments[4];
 

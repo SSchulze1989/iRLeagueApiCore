@@ -4,10 +4,10 @@ namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 
 public record PostPaymentRequest(long LeagueId, PostPaymentModel Model) : IRequest<PaymentModel>;
 
-public sealed class PostPaymentHandler : AdminHandlerBase<PostPaymentHandler,  PostPaymentRequest, PaymentModel>
+public sealed class PostPaymentHandler : AdminHandlerBase<PostPaymentHandler, PostPaymentRequest, PaymentModel>
 {
-    public PostPaymentHandler(ILogger<PostPaymentHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<PostPaymentRequest>> validators) 
+    public PostPaymentHandler(ILogger<PostPaymentHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<PostPaymentRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

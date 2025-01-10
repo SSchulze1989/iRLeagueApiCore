@@ -23,7 +23,7 @@ public sealed class GetAllPaymentHandlerTests
         return new GetAllPaymentsRequest(leagueId);
     }
 
-    protected override void DefaultAssertions(GetAllPaymentsRequest request, 
+    protected override void DefaultAssertions(GetAllPaymentsRequest request,
         IEnumerable<PaymentModel> result, LeagueDbContext dbContext)
     {
         base.DefaultAssertions(request, result, dbContext);

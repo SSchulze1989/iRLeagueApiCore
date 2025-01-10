@@ -119,17 +119,18 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
             }).ToList(),
     };
 
-    protected Expression<Func<DropweekOverrideEntity, DropweekOverrideModel>> MapToDropweekOverrideModelExpression => dropweek => new() 
+    protected Expression<Func<DropweekOverrideEntity, DropweekOverrideModel>> MapToDropweekOverrideModelExpression => dropweek => new()
     {
         StandingConfigId = dropweek.StandingConfigId,
         ScoredResultRowId = dropweek.ScoredResultRowId,
-        Member = dropweek.ScoredResultRow.Member == null ? null : new() 
+        Member = dropweek.ScoredResultRow.Member == null ? null : new()
         {
             MemberId = dropweek.ScoredResultRow.Member.Id,
             FirstName = dropweek.ScoredResultRow.Member.Firstname,
             LastName = dropweek.ScoredResultRow.Member.Lastname,
         },
-        Team = dropweek.ScoredResultRow.Team == null ? null : new() {
+        Team = dropweek.ScoredResultRow.Team == null ? null : new()
+        {
             TeamId = dropweek.ScoredResultRow.Team.TeamId,
             Name = dropweek.ScoredResultRow.Team.Name,
             TeamColor = dropweek.ScoredResultRow.Team.TeamColor,

@@ -29,7 +29,7 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
     {
         MemberId = member.Member.Id,
         FirstName = member.Member.Firstname,
-        LastName= member.Member.Lastname,
+        LastName = member.Member.Lastname,
         IRacingId = member.Member.IRacingId,
         TeamName = member.Team == null ? string.Empty : member.Team.Name,
     };

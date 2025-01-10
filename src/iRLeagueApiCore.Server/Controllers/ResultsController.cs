@@ -162,7 +162,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [HttpGet]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
-    public async Task<ActionResult<RawEventResultModel>> GetRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId,  CancellationToken cancellationToken = default)
+    public async Task<ActionResult<RawEventResultModel>> GetRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId, CancellationToken cancellationToken = default)
     {
         var request = new GetRawEventResultRequest(eventId);
         var result = await mediator.Send(request, cancellationToken);
@@ -172,7 +172,7 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Events/{eventId:long}/Results/Raw")]
-    public async Task<ActionResult<RawEventResultModel>> PutRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId, [FromBody] RawEventResultModel model, 
+    public async Task<ActionResult<RawEventResultModel>> PutRawEventResult([FromRoute] string leagueName, [FromRoute] long eventId, [FromBody] RawEventResultModel model,
         CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);

@@ -12,7 +12,7 @@ internal sealed class LeagueApiClientFactory
 
     private readonly string baseAddress;
 
-    public LeagueApiClientFactory(string baseAddress, ILoggerFactory loggerFactory, IHttpClientFactory httpClientFactory, 
+    public LeagueApiClientFactory(string baseAddress, ILoggerFactory loggerFactory, IHttpClientFactory httpClientFactory,
         ITokenStore tokenStore, HttpClientWrapperFactory clientWrapperFactory)
     {
         this.baseAddress = baseAddress;

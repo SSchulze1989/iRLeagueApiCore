@@ -5,14 +5,14 @@ using iRLeagueApiCore.Services.ResultService.Excecution;
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostReviewToSessionRequest(long SessionId, LeagueUser User, PostReviewModel Model) : IRequest<ReviewModel>;
-public sealed class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewToSessionHandler,  PostReviewToSessionRequest, ReviewModel>
+public sealed class PostReviewToSessionHandler : ReviewsHandlerBase<PostReviewToSessionHandler, PostReviewToSessionRequest, ReviewModel>
 {
     /// <summary>
     /// Always include comments because this can only be called by an authorized user
     /// </summary>
     private const bool includeComments = true;
 
-    public PostReviewToSessionHandler(ILogger<PostReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewToSessionRequest>> validators, 
+    public PostReviewToSessionHandler(ILogger<PostReviewToSessionHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewToSessionRequest>> validators,
         IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }

@@ -2,7 +2,7 @@
 
 public record DeleteReviewCommentRequest(long CommentId) : IRequest<Unit>;
 
-public sealed class DeleteReviewCommentHandler : CommentHandlerBase<DeleteReviewCommentHandler,  DeleteReviewCommentRequest, Unit>
+public sealed class DeleteReviewCommentHandler : CommentHandlerBase<DeleteReviewCommentHandler, DeleteReviewCommentRequest, Unit>
 {
     public DeleteReviewCommentHandler(ILogger<DeleteReviewCommentHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteReviewCommentRequest>> validators) :
         base(logger, dbContext, validators)

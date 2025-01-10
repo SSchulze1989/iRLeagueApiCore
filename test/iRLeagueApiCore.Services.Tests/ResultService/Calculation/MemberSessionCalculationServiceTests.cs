@@ -1,10 +1,10 @@
 ﻿using AutoFixture.Dsl;
-using iRLeagueApiCore.Services.ResultService.Calculation;
-using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Mocking.Extensions;
+using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
+using iRLeagueApiCore.Services.ResultService.Extensions;
+using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
 

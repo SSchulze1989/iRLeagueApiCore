@@ -309,7 +309,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         {
             foreach ((var testRow, var resultRow) in testSession.SessionResult.ResultRows.OrderBy(x => x.FinishPosition).Zip(sessionResult.results))
             {
-                testRow.FinishPosition.Should().Be(resultRow.position+1);
+                testRow.FinishPosition.Should().Be(resultRow.position + 1);
                 testRow.Member.IRacingId.Should().Be(resultRow.cust_id.ToString());
             }
         }
@@ -348,7 +348,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             testRow.Division.Should().Be(resultRow.division);
             testRow.FastestLapTime.Should().Be(TimeSpan.FromSeconds(resultRow.best_lap_time / 10000D));
             testRow.FastLapNr.Should().Be(resultRow.best_lap_num);
-            testRow.FinishPosition.Should().Be(resultRow.position+1);
+            testRow.FinishPosition.Should().Be(resultRow.position + 1);
             testRow.Incidents.Should().Be(resultRow.incidents);
             testRow.Interval.Should().Be(TimeSpan.FromSeconds(resultRow.class_interval / 10000D));
             testRow.IRacingId.Should().Be(resultRow.cust_id.ToString());

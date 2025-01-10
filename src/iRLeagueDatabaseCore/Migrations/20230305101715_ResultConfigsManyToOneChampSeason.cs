@@ -7,7 +7,7 @@ namespace iRLeagueDatabaseCore.Migrations
     public partial class ResultConfigsManyToOneChampSeason : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
-        { 
+        {
             migrationBuilder.AddColumn<long>(
                 name: "ChampSeasonId",
                 table: "ResultConfigurations",

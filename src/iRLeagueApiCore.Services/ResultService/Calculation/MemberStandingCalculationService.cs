@@ -14,7 +14,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         static long? keySelector(ResultRowCalculationResult x) => x.MemberId;
         data.PreviousEventResults.ForEach(x => CalculateFinalEventScore(x, keySelector));
         CalculateFinalEventScore(data.CurrentEventResult, keySelector);
-        
+
         var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data);
 
         var previousMemberEventResults = GetGroupedEventResults(previousSessionResults, keySelector);

@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetPrivateUserRequest(string UserId) : IRequest<PrivateUserModel>;
 
-public sealed class GetPrivateUserHandler : UsersHandlerBase<GetPrivateUserHandler,  GetPrivateUserRequest, PrivateUserModel>
+public sealed class GetPrivateUserHandler : UsersHandlerBase<GetPrivateUserHandler, GetPrivateUserRequest, PrivateUserModel>
 {
     public GetPrivateUserHandler(ILogger<GetPrivateUserHandler> logger, UserDbContext userDbContext, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<GetPrivateUserRequest>> validators) : base(logger, userManager, validators)

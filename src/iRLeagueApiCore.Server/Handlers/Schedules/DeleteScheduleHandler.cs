@@ -2,7 +2,7 @@
 
 public record DeleteScheduleRequest(long ScheduleId) : IRequest<Unit>;
 
-public sealed class DeleteScheduleHandler : ScheduleHandlerBase<DeleteScheduleHandler,  DeleteScheduleRequest, Unit>
+public sealed class DeleteScheduleHandler : ScheduleHandlerBase<DeleteScheduleHandler, DeleteScheduleRequest, Unit>
 {
     public DeleteScheduleHandler(ILogger<DeleteScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteScheduleRequest>> validators) :
         base(logger, dbContext, validators)

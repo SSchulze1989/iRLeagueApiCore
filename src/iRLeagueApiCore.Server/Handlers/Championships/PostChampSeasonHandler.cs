@@ -7,9 +7,9 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record PostChampSeasonRequest(long ChampionshipId, long SeasonId, LeagueUser User, PostChampSeasonModel Model) : IRequest<ChampSeasonModel>;
 
-public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSeasonHandler,  PostChampSeasonRequest, ChampSeasonModel>
+public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSeasonHandler, PostChampSeasonRequest, ChampSeasonModel>
 {
-    public PostChampSeasonHandler(ILogger<PostChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampSeasonRequest>> validators) 
+    public PostChampSeasonHandler(ILogger<PostChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampSeasonRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }
@@ -111,7 +111,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
         return target;
     }
 
-    private FilterOptionEntity CopyFilterOptionEntity(LeagueUser user, FilterOptionEntity source) 
+    private FilterOptionEntity CopyFilterOptionEntity(LeagueUser user, FilterOptionEntity source)
     {
         var target = CreateVersionEntity(user, new FilterOptionEntity()
         {
@@ -176,7 +176,7 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
 
     private ResultConfigurationEntity CopyResultConfigurationEntity(LeagueUser user, ChampSeasonEntity currentChampSeason, ResultConfigurationEntity source)
     {
-        var target = CreateVersionEntity(user, new ResultConfigurationEntity() 
+        var target = CreateVersionEntity(user, new ResultConfigurationEntity()
         {
             DisplayName = source.DisplayName,
             Name = source.Name,

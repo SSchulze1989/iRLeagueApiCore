@@ -12,7 +12,7 @@ public class PostTeamModel
     [DataMember]
     public string TeamHomepage { get; set; } = string.Empty;
     [DataMember]
-    public long? IRacingTeamId { get; set; } 
+    public long? IRacingTeamId { get; set; }
     [DataMember]
     public ICollection<MemberInfoModel> Members { get; set; } = new List<MemberInfoModel>();
 }

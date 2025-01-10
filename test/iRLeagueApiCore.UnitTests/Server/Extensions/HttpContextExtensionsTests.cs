@@ -38,7 +38,7 @@ public sealed class HttpContextExtensionsTests
             .Create();
 
         var leagueUser = httpContext.GetLeagueUser();
-        
+
         leagueUser.Should().NotBeNull();
         leagueUser.Roles.Should().BeEmpty();
     }

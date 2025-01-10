@@ -8,7 +8,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record UploadResultRequest(long EventId, ParseSimSessionResult ResultData) : IRequest<bool>;
 
-public sealed class UploadResultHandler : HandlerBase<UploadResultHandler,  UploadResultRequest, bool>
+public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest, bool>
 {
     private readonly IResultCalculationQueue calculationQueue;
     private IDictionary<long, int> SeasonStartIratings;
@@ -209,7 +209,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler,  Uplo
             dbContext.Teams.Add(team);
         }
 
-        foreach(var driverRow in row.driver_results)
+        foreach (var driverRow in row.driver_results)
         {
             var member = await GetOrCreateMemberAsync(leagueId, driverRow, cancellationToken);
             member.Team = team;
@@ -231,7 +231,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler,  Uplo
         var dataRows = data.results.AsEnumerable();
         if (isTeamResult)
         {
-            foreach(var teamRow in dataRows)
+            foreach (var teamRow in dataRows)
             {
                 await UpdateOrCreateTeamAsync(leagueId, teamRow, cancellationToken);
             }

@@ -24,7 +24,7 @@ public class ConfirmEmailHandler : IRequestHandler<ConfirmEmailRequest, (bool su
         var result = await userManager.ConfirmEmailAsync(user, request.EmailConfirmationToken);
         if (result.Succeeded == false)
         {
-            return (false, string.Join("\n",  result.Errors.Select(x => x.Description)));
+            return (false, string.Join("\n", result.Errors.Select(x => x.Description)));
         }
         return (true, "Success");
     }

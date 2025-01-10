@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record GetEventsFromScheduleRequest(long ScheduleId, bool IncludeDetails = false) : IRequest<IEnumerable<EventModel>>;
 
-public sealed class GetEventsFromScheduleHandler : EventHandlerBase<GetEventsFromScheduleHandler,  GetEventsFromScheduleRequest, IEnumerable<EventModel>>
+public sealed class GetEventsFromScheduleHandler : EventHandlerBase<GetEventsFromScheduleHandler, GetEventsFromScheduleRequest, IEnumerable<EventModel>>
 {
     public GetEventsFromScheduleHandler(ILogger<GetEventsFromScheduleHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetEventsFromScheduleRequest>> validators) : base(logger, dbContext, validators)

@@ -29,7 +29,7 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<ScheduleModel>> Get([FromRoute] string leagueName, [FromRoute] long id, 
+    public async Task<ActionResult<ScheduleModel>> Get([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken = default)
     {
         var request = new GetScheduleRequest(id);
@@ -40,7 +40,7 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromRoute] long seasonId, 
+    public async Task<ActionResult<IEnumerable<ScheduleModel>>> GetFromSeason([FromRoute] string leagueName, [FromRoute] long seasonId,
         CancellationToken cancellationToken = default)
     {
         var request = new GetSchedulesFromSeasonRequest(seasonId);
@@ -51,7 +51,7 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpPost]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Seasons/{seasonId:long}/[controller]")]
-    public async Task<ActionResult<ScheduleModel>> Post([FromRoute] string leagueName, [FromRoute] long seasonId, [FromBody] PostScheduleModel postSchedule, 
+    public async Task<ActionResult<ScheduleModel>> Post([FromRoute] string leagueName, [FromRoute] long seasonId, [FromBody] PostScheduleModel postSchedule,
         CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
@@ -63,7 +63,7 @@ public sealed class SchedulesController : LeagueApiController<SchedulesControlle
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("{id:long}")]
-    public async Task<ActionResult<ScheduleModel>> Put([FromRoute] string leagueName, [FromRoute] long id, [FromBody] PutScheduleModel putSchedule, 
+    public async Task<ActionResult<ScheduleModel>> Put([FromRoute] string leagueName, [FromRoute] long id, [FromBody] PutScheduleModel putSchedule,
         CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);

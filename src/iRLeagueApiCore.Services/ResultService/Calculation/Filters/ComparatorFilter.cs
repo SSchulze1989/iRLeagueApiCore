@@ -18,7 +18,8 @@ internal sealed class ComparatorFilter
 
     public IEnumerable<T> GetFilteredRows<T>(IEnumerable<T> rows, Func<T, IComparable?> getCompareValue, IEnumerable<IComparable?> filterValues)
     {
-        if (rows.Any()) {
+        if (rows.Any())
+        {
             filterValues = ComparatorType switch
             {
                 // Min and Max comaparators do not have fixed compare values - fetch value from row column

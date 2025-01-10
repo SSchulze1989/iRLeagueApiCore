@@ -3,5 +3,5 @@
 [DataContract]
 public sealed class IracingLeagueSeasonModel
 {
-    
+
 }

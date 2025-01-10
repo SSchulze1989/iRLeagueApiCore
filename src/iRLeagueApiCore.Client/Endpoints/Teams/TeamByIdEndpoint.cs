@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Teams;
 
 internal sealed class TeamByIdEndpoint : UpdateEndpoint<TeamModel, PutTeamModel>, ITeamByIdEndpoint
 {
-    public TeamByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long teamId) : 
+    public TeamByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long teamId) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddParameter(teamId);

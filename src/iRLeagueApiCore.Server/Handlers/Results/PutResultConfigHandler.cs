@@ -5,10 +5,10 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record PutResultConfigRequest(long ResultConfigId, LeagueUser User, PutResultConfigModel Model) : IRequest<ResultConfigModel>;
 
-public sealed class PutResultConfigHandler : ResultConfigHandlerBase<PutResultConfigHandler,  PutResultConfigRequest, ResultConfigModel>
+public sealed class PutResultConfigHandler : ResultConfigHandlerBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
 {
-    public PutResultConfigHandler(ILogger<PutResultConfigHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<PutResultConfigRequest>> validators) 
+    public PutResultConfigHandler(ILogger<PutResultConfigHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<PutResultConfigRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record GetEventsFromSeasonRequest(long SeasonId, bool IncludeDetails) : IRequest<IEnumerable<EventModel>>;
 
-public sealed class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromSeasonHandler,  GetEventsFromSeasonRequest, IEnumerable<EventModel>>
+public sealed class GetEventsFromSeasonHandler : EventHandlerBase<GetEventsFromSeasonHandler, GetEventsFromSeasonRequest, IEnumerable<EventModel>>
 {
     public GetEventsFromSeasonHandler(ILogger<GetEventsFromSeasonHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetEventsFromSeasonRequest>> validators) : base(logger, dbContext, validators)

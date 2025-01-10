@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Standings;
 
 public record GetStandingsFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<StandingsModel>>;
 
-public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler,  GetStandingsFromSeasonRequest, IEnumerable<StandingsModel>>
+public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler, GetStandingsFromSeasonRequest, IEnumerable<StandingsModel>>
 {
     public GetStandingsFromSeasonHandler(ILogger<GetStandingsFromSeasonHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetStandingsFromSeasonRequest>> validators) : base(logger, dbContext, validators)

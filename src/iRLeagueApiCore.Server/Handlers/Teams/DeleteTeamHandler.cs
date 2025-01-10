@@ -2,9 +2,9 @@
 
 public record DeleteTeamRequest(long TeamId) : IRequest<Unit>;
 
-public class DeleteTeamHandler : TeamsHandlerBase<DeleteTeamHandler,  DeleteTeamRequest, Unit>
+public class DeleteTeamHandler : TeamsHandlerBase<DeleteTeamHandler, DeleteTeamRequest, Unit>
 {
-    public DeleteTeamHandler(ILogger<DeleteTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteTeamRequest>> validators) : 
+    public DeleteTeamHandler(ILogger<DeleteTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteTeamRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

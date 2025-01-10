@@ -16,11 +16,11 @@ internal sealed class CredentialList : ICredentials
 
     public CredentialList(IConfiguration configuration) : this()
     {
-        foreach(var credentialConfig in configuration.GetChildren()) 
+        foreach (var credentialConfig in configuration.GetChildren())
         {
             var credential = new NetworkCredential(credentialConfig["Username"], credentialConfig["Password"]);
             var uri = new Uri(credentialConfig["Uri"] ?? string.Empty);
-            var authenticationType = credentialConfig["AuthenticationType"] ?? 
+            var authenticationType = credentialConfig["AuthenticationType"] ??
                 throw new InvalidConfigurationException($"Invalid credentials for {uri}, username: {credential.UserName} - AuthenticationType required)");
             Add(uri, authenticationType, credential);
         }

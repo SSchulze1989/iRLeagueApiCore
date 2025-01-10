@@ -327,9 +327,9 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
         );
 
         var sut = new CheckLeagueSubscriptionAttribute(dbContext, memoryCacheMock.Object);
-        
 
-        await TestOnActionExecutionAsync(sut, 
+
+        await TestOnActionExecutionAsync(sut,
             actionContext: actionContext,
             executedDelegate: () => { hasInvokedNext = true; return Task.FromResult(executedContext); });
 
@@ -349,9 +349,9 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
         ActionContext actionContext = default!,
         ActionExecutingContext executingContext = default!,
         ActionExecutionDelegate executedDelegate = default!)
-    { 
+    {
         actionContext ??= new ActionContext()
-        { 
+        {
             ActionDescriptor = new ActionDescriptor(),
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(),

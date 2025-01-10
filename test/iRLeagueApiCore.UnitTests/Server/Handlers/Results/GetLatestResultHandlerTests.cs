@@ -48,7 +48,7 @@ public sealed class GetLatestResultHandlerTests : ResultHandlersTestsBase<GetLat
     [Fact]
     public async Task ShouldReturnEmptyResult_WhenNoResultExists()
     {
-        foreach(var scoredResult in dbContext.ScoredEventResults)
+        foreach (var scoredResult in dbContext.ScoredEventResults)
         {
             dbContext.Remove(scoredResult);
         }

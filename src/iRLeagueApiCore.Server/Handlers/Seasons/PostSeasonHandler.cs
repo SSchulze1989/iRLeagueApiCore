@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record PostSeasonRequest(LeagueUser User, PostSeasonModel Model) : IRequest<SeasonModel>;
 
-public sealed class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler,  PostSeasonRequest, SeasonModel>
+public sealed class PostSeasonHandler : SeasonHandlerBase<PostSeasonHandler, PostSeasonRequest, SeasonModel>
 {
-    public PostSeasonHandler(ILogger<PostSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSeasonRequest>> validators) 
+    public PostSeasonHandler(ILogger<PostSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostSeasonRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

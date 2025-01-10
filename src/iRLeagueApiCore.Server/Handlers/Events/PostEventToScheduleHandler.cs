@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record PostEventToScheduleRequest(long ScheduleId, LeagueUser User, PostEventModel Event) : IRequest<EventModel>;
 
-public sealed class PostEventToScheduleHandler : EventHandlerBase<PostEventToScheduleHandler,  PostEventToScheduleRequest, EventModel>
+public sealed class PostEventToScheduleHandler : EventHandlerBase<PostEventToScheduleHandler, PostEventToScheduleRequest, EventModel>
 {
     public PostEventToScheduleHandler(ILogger<PostEventToScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostEventToScheduleRequest>> validators) :
         base(logger, dbContext, validators)

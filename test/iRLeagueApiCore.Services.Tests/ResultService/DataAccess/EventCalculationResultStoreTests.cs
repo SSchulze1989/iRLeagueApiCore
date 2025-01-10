@@ -247,7 +247,7 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
         testRow.FinalPositionChange.Should().Be(compareRow.FinalPositionChange);
         testRow.TotalPoints.Should().Be(compareRow.TotalPoints);
         testRow.PointsEligible.Should().Be(compareRow.PointsEligible);
-}
+    }
 
     private EventCalculationResultStore CreateSut()
     {

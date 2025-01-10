@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultRequest(long ResultId) : IRequest<EventResultModel>;
 
-public sealed class GetResultHandler : ResultHandlerBase<GetResultHandler,  GetResultRequest, EventResultModel>
+public sealed class GetResultHandler : ResultHandlerBase<GetResultHandler, GetResultRequest, EventResultModel>
 {
     public GetResultHandler(ILogger<GetResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultRequest>> validators) :
         base(logger, dbContext, validators)

@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record PutChampionshipRequest(long ChampionshipId, LeagueUser User, PutChampionshipModel Model) : IRequest<ChampionshipModel>;
 
-public sealed class PutChampionshipHandler : ChampionshipHandlerBase<PutChampionshipHandler,  PutChampionshipRequest, ChampionshipModel>
+public sealed class PutChampionshipHandler : ChampionshipHandlerBase<PutChampionshipHandler, PutChampionshipRequest, ChampionshipModel>
 {
-    public PutChampionshipHandler(ILogger<PutChampionshipHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutChampionshipRequest>> validators) : 
+    public PutChampionshipHandler(ILogger<PutChampionshipHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutChampionshipRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

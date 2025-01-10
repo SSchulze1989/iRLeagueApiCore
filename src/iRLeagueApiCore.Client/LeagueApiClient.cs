@@ -60,7 +60,7 @@ public sealed class LeagueApiClient : ILeagueApiClient
                 await Reauthorize();
             }
             catch (Exception ex) when (
-                ex is InvalidOperationException || 
+                ex is InvalidOperationException ||
                 ex is ApiServiceUnavailableException ||
                 ex is HttpRequestException)
             {
@@ -110,7 +110,7 @@ public sealed class LeagueApiClient : ILeagueApiClient
             username = username,
             password = password
         };
-        
+
         var result = await httpClientWrapper.PostAsClientActionResult<LoginResponse>(requestUrl, body, cancellationToken);
 
         if (result.Success)

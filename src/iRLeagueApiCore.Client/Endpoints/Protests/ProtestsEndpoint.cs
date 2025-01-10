@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Protests;
 
 internal sealed class ProtestsEndpoint : PostGetAllEndpoint<ProtestModel, PostProtestModel>, IProtestsEndpoint
 {
-    public ProtestsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+    public ProtestsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddEndpoint("Protests");

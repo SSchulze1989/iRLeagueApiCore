@@ -33,7 +33,7 @@ internal sealed class CheckLeagueSubscriptionAttribute : ActionFilterAttribute
             await next();
             return;
         }
-        var league = await GetLeagueByName(leagueName) 
+        var league = await GetLeagueByName(leagueName)
             ?? throw new InvalidOperationException("League data could not be found for given name");
         if (CheckSubscriptionStatus(league) == false)
         {

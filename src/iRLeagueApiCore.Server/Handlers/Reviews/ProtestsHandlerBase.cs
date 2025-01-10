@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public abstract class ProtestsHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    public ProtestsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+    public ProtestsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -30,7 +30,7 @@ public abstract class ProtestsHandlerBase<THandler, TRequest, TResponse> : Handl
         return entity;
     }
 
-    protected virtual async Task<ICollection<LeagueMemberEntity>> MapToLeagueMemberList(IEnumerable<long> involvedMemberIds, 
+    protected virtual async Task<ICollection<LeagueMemberEntity>> MapToLeagueMemberList(IEnumerable<long> involvedMemberIds,
         ICollection<LeagueMemberEntity> involvedMembers, CancellationToken cancellationToken)
     {
         var members = await dbContext.LeagueMembers

@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Tracks;
 
 public record GetTracksRequest() : IRequest<IEnumerable<TrackGroupModel>>;
 
-public sealed class GetTracksHandler : TracksHandlerBase<GetTracksHandler,  GetTracksRequest, IEnumerable<TrackGroupModel>>
+public sealed class GetTracksHandler : TracksHandlerBase<GetTracksHandler, GetTracksRequest, IEnumerable<TrackGroupModel>>
 {
     public GetTracksHandler(ILogger<GetTracksHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetTracksRequest>> validators) : base(logger, dbContext, validators)

@@ -29,7 +29,7 @@ public sealed class LeagueApiClientConfiguration
 
     public LeagueApiClientConfiguration UseTokenStore<T>() where T : class, ITokenStore
     {
-        services.Replace(ServiceDescriptor.Scoped<ITokenStore,  T>());
+        services.Replace(ServiceDescriptor.Scoped<ITokenStore, T>());
         return this;
     }
 

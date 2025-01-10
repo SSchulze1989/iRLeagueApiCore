@@ -27,7 +27,7 @@ public abstract class UserHandlerTestsBase<THandler, TRequest> : IClassFixture<I
     protected IPostprocessComposer<ApplicationUser> UserBuilder()
     {
         return fixture.Build<ApplicationUser>()
-            .With(x => x.FullName, () => GetFullName(fixture.Create<string>().Substring(0,10), fixture.Create<string>().Substring(0,10)));
+            .With(x => x.FullName, () => GetFullName(fixture.Create<string>().Substring(0, 10), fixture.Create<string>().Substring(0, 10)));
     }
 
     protected string GetFullName(string firstname, string lastname)

@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public sealed record GetLeagueByNameRequest(string LeagueName, bool IncludeSubscriptionDetails) : IRequest<LeagueModel>;
 
-public sealed class GetLeagueByNameHandler : LeagueHandlerBase<GetLeagueByNameHandler,  GetLeagueByNameRequest, LeagueModel>
+public sealed class GetLeagueByNameHandler : LeagueHandlerBase<GetLeagueByNameHandler, GetLeagueByNameRequest, LeagueModel>
 {
     public GetLeagueByNameHandler(ILogger<GetLeagueByNameHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetLeagueByNameRequest>> validators) :
         base(logger, dbContext, validators)

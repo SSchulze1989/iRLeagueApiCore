@@ -11,7 +11,7 @@ public abstract class DataAccessTestsBase : IAsyncLifetime
     protected readonly Fixture fixture;
     protected readonly DataAccessMockHelper accessMockHelper;
     protected readonly LeagueDbContext dbContext;
-    
+
     protected ILeagueProvider LeagueProvider => accessMockHelper.LeagueProvider;
 
     protected const object? defaultId = null;

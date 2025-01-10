@@ -6,7 +6,7 @@ public record DeleteRawEventResultRequest(long EventId, bool DeleteAllScoredResu
 
 public class DeleteRawEventResultHandler : ResultHandlerBase<DeleteRawEventResultHandler, DeleteRawEventResultRequest, Unit>
 {
-    public DeleteRawEventResultHandler(ILogger<DeleteRawEventResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteRawEventResultRequest>> validators) 
+    public DeleteRawEventResultHandler(ILogger<DeleteRawEventResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteRawEventResultRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

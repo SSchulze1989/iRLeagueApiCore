@@ -8,12 +8,12 @@ public sealed class EventCarInfoModel
 {
     [DataMember]
     public string Number { get; set; } = string.Empty;
-    [DataMember] 
+    [DataMember]
     public string Car { get; set; } = string.Empty;
     [DataMember]
     public int CarId { get; set; }
-    [DataMember] 
-    public int ClassId { get;}
+    [DataMember]
+    public int ClassId { get; }
     [DataMember]
     public string Class { get; set; } = string.Empty;
     [DataMember]

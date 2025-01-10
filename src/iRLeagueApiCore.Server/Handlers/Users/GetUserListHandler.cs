@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetUserListRequest(string LeagueName) : IRequest<IEnumerable<LeagueUserModel>>;
 
-public sealed class GetUserListHandler : UsersHandlerBase<GetUserListHandler,  GetUserListRequest, IEnumerable<LeagueUserModel>>
+public sealed class GetUserListHandler : UsersHandlerBase<GetUserListHandler, GetUserListRequest, IEnumerable<LeagueUserModel>>
 {
     public GetUserListHandler(ILogger<GetUserListHandler> logger, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<GetUserListRequest>> validators) : base(logger, userManager, validators)

@@ -4,9 +4,9 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PutVoteCategoryRequest(long CatId, PutVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
 
-public class PutVoteCategoryHandler : VoteCategoriesHandlerBase<PutVoteCategoryHandler,  PutVoteCategoryRequest, VoteCategoryModel>
+public class PutVoteCategoryHandler : VoteCategoriesHandlerBase<PutVoteCategoryHandler, PutVoteCategoryRequest, VoteCategoryModel>
 {
-    public PutVoteCategoryHandler(ILogger<PutVoteCategoryHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutVoteCategoryRequest>> validators) : 
+    public PutVoteCategoryHandler(ILogger<PutVoteCategoryHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutVoteCategoryRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

@@ -4,8 +4,8 @@ public record DeleteResultConfigRequest(long ResultConfigId) : IRequest<Unit>;
 
 public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest, Unit>
 {
-    public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<DeleteResultConfigRequest>> validators) 
+    public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<DeleteResultConfigRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

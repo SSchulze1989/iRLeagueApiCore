@@ -4,9 +4,9 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record DeletePenaltyRequest(long PenaltyId) : IRequest<Unit>;
 
-public class DeletePenaltyHandler : ReviewsHandlerBase<DeletePenaltyHandler,  DeletePenaltyRequest, Unit>
+public class DeletePenaltyHandler : ReviewsHandlerBase<DeletePenaltyHandler, DeletePenaltyRequest, Unit>
 {
-    public DeletePenaltyHandler(ILogger<DeletePenaltyHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeletePenaltyRequest>> validators, 
+    public DeletePenaltyHandler(ILogger<DeletePenaltyHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeletePenaltyRequest>> validators,
         IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }

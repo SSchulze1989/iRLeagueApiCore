@@ -6,7 +6,7 @@ public record GetRawResultsFromEventRequest(long EventId) : IRequest<RawEventRes
 
 public class GetRawResultsFromEventHandler : ResultHandlerBase<GetRawResultsFromEventHandler, GetRawResultsFromEventRequest, RawEventResultModel>
 {
-    public GetRawResultsFromEventHandler(ILogger<GetRawResultsFromEventHandler> logger, LeagueDbContext dbContext, 
+    public GetRawResultsFromEventHandler(ILogger<GetRawResultsFromEventHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetRawResultsFromEventRequest>> validators) : base(logger, dbContext, validators)
     {
     }

@@ -10,7 +10,7 @@ public sealed class RemoveLeagueRoleHandlerTests : UserHandlerTestsBase<RemoveLe
 {
     private string TestLeagueName => identityFixture.testLeague;
 
-    public RemoveLeagueRoleHandlerTests(IdentityFixture identityFixture) : 
+    public RemoveLeagueRoleHandlerTests(IdentityFixture identityFixture) :
         base(identityFixture)
     {
     }
@@ -20,7 +20,7 @@ public sealed class RemoveLeagueRoleHandlerTests : UserHandlerTestsBase<RemoveLe
     {
         var testUser = CreateTestUser();
         var testRole = CreateTestRole(TestLeagueName);
-        identityFixture.UserRoles.Add(testUser, new() {testRole});
+        identityFixture.UserRoles.Add(testUser, new() { testRole });
         var request = CreateRequest(TestLeagueName, testUser, testRole);
         var sut = CreateSut();
 
@@ -55,7 +55,7 @@ public sealed class RemoveLeagueRoleHandlerTests : UserHandlerTestsBase<RemoveLe
         result.LeagueRoles.Should().NotContain(LeagueRoles.GetRoleName(testRole.Name!));
     }
 
-    
+
     private RemoveLeagueRoleRequest CreateRequest(string leagueName, ApplicationUser user, IdentityRole role)
     {
         return new(leagueName, user.Id, LeagueRoles.GetRoleName(role.Name!)!);

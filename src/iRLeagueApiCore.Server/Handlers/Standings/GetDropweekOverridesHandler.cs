@@ -6,7 +6,7 @@ public record GetDropweekOverridesRequest(long StandingConfigId) : IRequest<IEnu
 
 public sealed class GetDropweekOverridesHandler : StandingsHandlerBase<GetDropweekOverridesHandler, GetDropweekOverridesRequest, IEnumerable<DropweekOverrideModel>>
 {
-    public GetDropweekOverridesHandler(ILogger<GetDropweekOverridesHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetDropweekOverridesRequest>> validators) 
+    public GetDropweekOverridesHandler(ILogger<GetDropweekOverridesHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetDropweekOverridesRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

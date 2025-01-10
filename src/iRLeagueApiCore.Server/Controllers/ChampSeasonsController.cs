@@ -29,7 +29,7 @@ public class ChampSeasonsController : LeagueApiController<ChampSeasonsController
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<ChampSeasonModel>> Get([FromRoute] string leagueName, [FromRoute] long id, 
+    public async Task<ActionResult<ChampSeasonModel>> Get([FromRoute] string leagueName, [FromRoute] long id,
         CancellationToken cancellationToken = default)
     {
         var request = new GetChampSeasonRequest(id);
@@ -102,7 +102,7 @@ public class ChampSeasonsController : LeagueApiController<ChampSeasonsController
     /// <returns></returns>
     [HttpPost]
     [Route("/{leagueName}/Seasons/{seasonId:long}/Championships/{championshipId:long}")]
-    public async Task<ActionResult<ChampSeasonModel>> Post([FromRoute] string leagueName, [FromRoute] long championshipId, [FromRoute] long seasonId, 
+    public async Task<ActionResult<ChampSeasonModel>> Post([FromRoute] string leagueName, [FromRoute] long championshipId, [FromRoute] long seasonId,
         [FromBody] PostChampSeasonModel postChampSeason, CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
@@ -122,7 +122,7 @@ public class ChampSeasonsController : LeagueApiController<ChampSeasonsController
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("{id:long}")]
-    public async Task<ActionResult<ChampSeasonModel>> Put([FromRoute] string leagueName, [FromRoute] long id, 
+    public async Task<ActionResult<ChampSeasonModel>> Put([FromRoute] string leagueName, [FromRoute] long id,
         [FromBody] PutChampSeasonModel putChampSeason, CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);

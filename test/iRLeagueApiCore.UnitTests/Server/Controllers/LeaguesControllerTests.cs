@@ -143,7 +143,7 @@ public sealed class LeaguesControllerTests : DataAccessTestsBase
             x => x.IncludeSubscriptionDetails == includeDetails,
             result: testModel);
         var controller = AddContexts.AddControllerContext(
-            new LeaguesController(MockLogger, mediator), 
+            new LeaguesController(MockLogger, mediator),
             new[] { LeagueRoles.GetLeagueRoleName(testLeagueName, leagueRole)! });
         var routeValuesMock = new Mock<IRouteValuesFeature>();
         routeValuesMock.SetupGet(x => x.RouteValues).Returns(new RouteValueDictionary(new Dictionary<string, object?>() { { "leagueName", testLeagueName } }));

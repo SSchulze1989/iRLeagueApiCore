@@ -118,7 +118,7 @@ internal abstract class StandingCalculationServiceBase : ICalculationService<Sta
         else
         {
             previousResults = data.PreviousEventResults
-                .Select(eventResult => new EventSessionResults(eventResult, eventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying) 
+                .Select(eventResult => new EventSessionResults(eventResult, eventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying)
                     && x.SessionNr != 999)));
             currentResult = new EventSessionResults(data.CurrentEventResult,
                 data.CurrentEventResult.SessionResults.Where(x => x.SessionType is not (SessionType.Practice or SessionType.Qualifying) && x.SessionNr != 999));

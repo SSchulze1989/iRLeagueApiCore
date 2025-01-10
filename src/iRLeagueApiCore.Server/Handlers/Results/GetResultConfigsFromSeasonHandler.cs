@@ -4,10 +4,10 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigsFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<ResultConfigModel>>;
 
-public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResultConfigsFromSeasonHandler,  GetResultConfigsFromSeasonRequest, IEnumerable<ResultConfigModel>>
+public class GetResultConfigsFromSeasonHandler : ResultConfigHandlerBase<GetResultConfigsFromSeasonHandler, GetResultConfigsFromSeasonRequest, IEnumerable<ResultConfigModel>>
 {
-    public GetResultConfigsFromSeasonHandler(ILogger<GetResultConfigsFromSeasonHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetResultConfigsFromSeasonRequest>> validators) 
+    public GetResultConfigsFromSeasonHandler(ILogger<GetResultConfigsFromSeasonHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetResultConfigsFromSeasonRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

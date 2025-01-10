@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Schedules;
 
 public record PostScheduleRequest(long seasonId, LeagueUser User, PostScheduleModel Model) : IRequest<ScheduleModel>;
 
-public sealed class PostScheduleHandler : ScheduleHandlerBase<PostScheduleHandler,  PostScheduleRequest, ScheduleModel>
+public sealed class PostScheduleHandler : ScheduleHandlerBase<PostScheduleHandler, PostScheduleRequest, ScheduleModel>
 {
     public PostScheduleHandler(ILogger<PostScheduleHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostScheduleRequest>> validators) : base(logger, dbContext, validators)
     {

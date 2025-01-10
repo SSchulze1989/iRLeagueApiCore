@@ -440,7 +440,7 @@ public sealed class MemberStandingCalculationServiceTests
         return CalculationDataBuilder().Create();
     }
 
-    private IPostprocessComposer<StandingCalculationData> CalculationDataBuilder(int nEvents = 3, int nRacesPerEvent = 3, bool hasCombinedResult = false, 
+    private IPostprocessComposer<StandingCalculationData> CalculationDataBuilder(int nEvents = 3, int nRacesPerEvent = 3, bool hasCombinedResult = false,
         bool randomMemberOrder = true)
     {
         var memberIds = fixture.CreateMany<long>(10);
@@ -451,14 +451,14 @@ public sealed class MemberStandingCalculationServiceTests
                 randomMemberOrder: randomMemberOrder).Create());
     }
 
-    private IPostprocessComposer<EventCalculationResult> EventResultDataBuilder(IEnumerable<long> memberIds, int nRaces = 2, bool hasCombinedResult = false, 
+    private IPostprocessComposer<EventCalculationResult> EventResultDataBuilder(IEnumerable<long> memberIds, int nRaces = 2, bool hasCombinedResult = false,
         bool randomMemberOrder = true)
     {
         return fixture.Build<EventCalculationResult>()
             .With(x => x.SessionResults, () => SessionResultDataBuilder(memberIds, randomMemberOrder: randomMemberOrder).CreateMany(nRaces));
     }
 
-    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds, SessionType sessionType = SessionType.Race, 
+    private IPostprocessComposer<SessionCalculationResult> SessionResultDataBuilder(IEnumerable<long> memberIds, SessionType sessionType = SessionType.Race,
         bool randomMemberOrder = true)
     {
         return fixture

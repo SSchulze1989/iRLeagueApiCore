@@ -2,7 +2,7 @@
 
 public record DeleteChampSeasonRequest(long ChampSeasonId) : IRequest<Unit>;
 
-public sealed class DeleteChampSeasonHandler : ChampSeasonHandlerBase<DeleteChampSeasonHandler,  DeleteChampSeasonRequest, Unit>
+public sealed class DeleteChampSeasonHandler : ChampSeasonHandlerBase<DeleteChampSeasonHandler, DeleteChampSeasonRequest, Unit>
 {
     public DeleteChampSeasonHandler(ILogger<DeleteChampSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteChampSeasonRequest>> validators) :
         base(logger, dbContext, validators)

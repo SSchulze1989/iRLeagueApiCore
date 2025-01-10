@@ -4,10 +4,10 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigsFromLeagueRequest() : IRequest<IEnumerable<ResultConfigModel>>;
 
-public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler,  GetResultConfigsFromLeagueRequest, IEnumerable<ResultConfigModel>>
+public sealed class GetResultConfigsFromLeagueHandler : ResultConfigHandlerBase<GetResultConfigsFromLeagueHandler, GetResultConfigsFromLeagueRequest, IEnumerable<ResultConfigModel>>
 {
-    public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetResultConfigsFromLeagueRequest>> validators) 
+    public GetResultConfigsFromLeagueHandler(ILogger<GetResultConfigsFromLeagueHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetResultConfigsFromLeagueRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

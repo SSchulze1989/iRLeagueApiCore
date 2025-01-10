@@ -203,7 +203,7 @@ public sealed class DataAccessMockHelper
     }
 
     public EventResultEntity CreateResult(
-        EventEntity @event, 
+        EventEntity @event,
         IEnumerable<LeagueMemberEntity> members)
     {
         return fixture.Build<EventResultEntity>()
@@ -216,7 +216,7 @@ public sealed class DataAccessMockHelper
     }
 
     public IEnumerable<SessionResultEntity> CreateSessionResults(
-        EventEntity @event, 
+        EventEntity @event,
         IEnumerable<LeagueMemberEntity> members,
         IEnumerable<double>? startPositions = null,
         IEnumerable<double>? positions = null,

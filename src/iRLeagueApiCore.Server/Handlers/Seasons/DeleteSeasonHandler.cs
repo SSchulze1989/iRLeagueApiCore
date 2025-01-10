@@ -30,7 +30,7 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
                 .ThenInclude(x => x.DefaultResultConfig)
             .SingleOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        foreach(var champSeason in deleteSeason.ChampSeasons)
+        foreach (var champSeason in deleteSeason.ChampSeasons)
         {
             var deleteFilterOptions = await dbContext.FilterOptions
                 .Where(x => x.ChampSeasonId == champSeason.ChampSeasonId)

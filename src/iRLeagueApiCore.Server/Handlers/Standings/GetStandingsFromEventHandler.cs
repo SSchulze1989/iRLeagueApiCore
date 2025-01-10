@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Standings;
 
 public record GetStandingsFromEventRequest(long EventId) : IRequest<IEnumerable<StandingsModel>>;
 
-public sealed class GetStandingsFromEventHandler : StandingsHandlerBase<GetStandingsFromEventHandler,  GetStandingsFromEventRequest, IEnumerable<StandingsModel>>
+public sealed class GetStandingsFromEventHandler : StandingsHandlerBase<GetStandingsFromEventHandler, GetStandingsFromEventRequest, IEnumerable<StandingsModel>>
 {
     public GetStandingsFromEventHandler(ILogger<GetStandingsFromEventHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetStandingsFromEventRequest>> validators) : base(logger, dbContext, validators)

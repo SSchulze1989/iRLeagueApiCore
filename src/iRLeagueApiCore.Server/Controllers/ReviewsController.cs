@@ -69,7 +69,7 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Sessions/{sessionId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromSession([FromRoute] string leagueName, [FromRoute] long sessionId, 
+    public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromSession([FromRoute] string leagueName, [FromRoute] long sessionId,
         CancellationToken cancellationToken)
     {
         var includeComments = IncludeComments(new LeagueUser(leagueName, User));
@@ -81,7 +81,7 @@ public sealed class ReviewsController : LeagueApiController<ReviewsController>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]")]
-    public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId, 
+    public async Task<ActionResult<IEnumerable<ReviewModel>>> GetFromEvent([FromRoute] string leagueName, [FromRoute] long eventId,
         CancellationToken cancellationToken)
     {
         var includeComments = IncludeComments(new LeagueUser(leagueName, User));

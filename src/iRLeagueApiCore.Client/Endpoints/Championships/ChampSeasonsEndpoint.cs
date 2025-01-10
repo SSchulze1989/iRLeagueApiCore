@@ -5,7 +5,7 @@ using iRLeagueApiCore.Common.Models;
 namespace iRLeagueApiCore.Client.Endpoints.Championships;
 internal class ChampSeasonsEndpoint : GetAllEndpoint<ChampSeasonModel>, IChampSeasonsEndpoint, ISeasonChampSeasonsEndpoint, IChampionshipChampSeasonsEndpoint
 {
-    public ChampSeasonsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+    public ChampSeasonsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddEndpoint("ChampSeasons");

@@ -2,9 +2,9 @@
 
 public record DeleteVoteCategoryRequest(long CatId) : IRequest<Unit>;
 
-public class DeleteVoteCategoryHandler : VoteCategoriesHandlerBase<DeleteVoteCategoryHandler,  DeleteVoteCategoryRequest, Unit>
+public class DeleteVoteCategoryHandler : VoteCategoriesHandlerBase<DeleteVoteCategoryHandler, DeleteVoteCategoryRequest, Unit>
 {
-    public DeleteVoteCategoryHandler(ILogger<DeleteVoteCategoryHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteVoteCategoryRequest>> validators) : 
+    public DeleteVoteCategoryHandler(ILogger<DeleteVoteCategoryHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteVoteCategoryRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

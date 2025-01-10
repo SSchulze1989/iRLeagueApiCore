@@ -6,7 +6,7 @@ using iRLeagueApiCore.Common.Models;
 namespace iRLeagueApiCore.Client.Endpoints.Penalties;
 internal sealed class PenaltiesEndpoint : EndpointBase, IPenaltiesEndpoint, IGetAllEndpoint<PenaltyModel>
 {
-    public PenaltiesEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) 
+    public PenaltiesEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder)
         : base(httpClient, routeBuilder)
     {
         RouteBuilder.AddEndpoint("Penalties");

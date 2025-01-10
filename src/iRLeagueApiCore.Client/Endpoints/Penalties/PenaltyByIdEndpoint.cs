@@ -7,7 +7,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Penalties;
 
 internal sealed class PenaltyByIdEndpoint : EndpointBase, IPenaltyByIdEndpoint
 {
-    public PenaltyByIdEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder, long id) 
+    public PenaltyByIdEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder, long id)
         : base(httpClient, routeBuilder)
     {
         RouteBuilder.AddParameter(id);

@@ -207,7 +207,7 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         var fastestQualyLap = fixture.Create<TimeSpan>();
         var fastestAvgLap = fixture.Create<TimeSpan>();
         var rawResult = @event.EventResult;
-        foreach(var session in rawResult.SessionResults)
+        foreach (var session in rawResult.SessionResults)
         {
             session.ResultRows.ForEach(x =>
             {
@@ -229,7 +229,7 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         var test = (await sut.GetData(config))!;
 
         test.Should().NotBeNull();
-        foreach(var session in test.SessionResults)
+        foreach (var session in test.SessionResults)
         {
             session.FastestLap.Should().Be(fastestLap);
             session.FastestQualyLap.Should().Be(fastestQualyLap);
