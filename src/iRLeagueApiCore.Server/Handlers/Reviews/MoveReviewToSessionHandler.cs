@@ -28,7 +28,7 @@ public sealed class MoveReviewToSessionHandler : ReviewsHandlerBase<MoveReviewTo
         await dbContext.SaveChangesAsync(cancellationToken);
         var getReview = await MapToReviewModel(moveReview.ReviewId, includeComments, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");
-        if (moveReview.AcceptedReviewVotes.Any())
+        if (moveReview.AcceptedReviewVotes.Count != 0)
         {
             resultCalculationQueue.QueueEventResultDebounced(toSession.EventId, reviewCalcDebounceMs);
         }

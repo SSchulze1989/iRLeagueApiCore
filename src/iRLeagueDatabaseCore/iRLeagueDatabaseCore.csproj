@@ -35,7 +35,7 @@
 	<TargetFramework>net8.0</TargetFramework>
 	<LangVersion>12</LangVersion>
     <PackageId>iRLeagueDatabaseCore</PackageId>
-    <Version>0.14.1</Version>
+    <Version>0.14.2</Version>
 	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
