@@ -7,7 +7,7 @@ public record GetIracingLeagueSeasonsRequest(int iracingLeagueId) : IRequest<IEn
 
 public class GetIracingLeagueSeasonsHandler : IracingApiHandlerBase<GetIracingLeagueSeasonsHandler, GetIracingLeagueSeasonsRequest, IEnumerable<IracingLeagueSeasonModel>>
 {
-    public GetIracingLeagueSeasonsHandler(ILogger<GetIracingLeagueSeasonsHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetIracingLeagueSeasonsRequest>> validators, IDataClient dataClient) : 
+    public GetIracingLeagueSeasonsHandler(ILogger<GetIracingLeagueSeasonsHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetIracingLeagueSeasonsRequest>> validators, IDataClient dataClient) :
         base(logger, dbContext, validators, dataClient)
     {
     }

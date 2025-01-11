@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Members;
 
 public record GetMembersFromEventRequest(long EventId) : IRequest<IEnumerable<MemberModel>>;
 
-public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler,  GetMembersFromEventRequest, IEnumerable<MemberModel>>
+public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler, GetMembersFromEventRequest, IEnumerable<MemberModel>>
 {
     public GetMembersFromEventHandler(ILogger<GetMembersFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetMembersFromEventRequest>> validators) : base(logger, dbContext, validators)
     {

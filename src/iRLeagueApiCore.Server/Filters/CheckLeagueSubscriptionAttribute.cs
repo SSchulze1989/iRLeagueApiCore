@@ -1,9 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Common.Responses;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 
@@ -35,7 +33,7 @@ internal sealed class CheckLeagueSubscriptionAttribute : ActionFilterAttribute
             await next();
             return;
         }
-        var league = await GetLeagueByName(leagueName) 
+        var league = await GetLeagueByName(leagueName)
             ?? throw new InvalidOperationException("League data could not be found for given name");
         if (CheckSubscriptionStatus(league) == false)
         {

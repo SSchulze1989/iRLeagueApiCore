@@ -44,7 +44,7 @@ public sealed class PointRulesController : LeagueApiController<PointRulesControl
     public async Task<ActionResult<PointRuleModel>> Put([FromRoute] string leagueName, [FromRoute] long id,
         [FromBody] PutPointRuleModel putPointRule, CancellationToken cancellationToken)
     {
-                var leagueUser = new LeagueUser(leagueName, User);
+        var leagueUser = new LeagueUser(leagueName, User);
         var request = new PutPointRuleRequest(id, leagueUser, putPointRule);
         var getPointRule = await mediator.Send(request, cancellationToken);
         _logger.LogInformation("Return entry for pointRule {PointRuleId} from {LeagueName}", getPointRule.PointRuleId, leagueName);

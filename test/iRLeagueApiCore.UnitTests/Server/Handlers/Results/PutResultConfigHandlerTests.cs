@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Results;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Identity.Test;
 

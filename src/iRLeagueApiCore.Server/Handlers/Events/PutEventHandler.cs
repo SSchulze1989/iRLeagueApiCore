@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Events;
 
 public record PutEventRequest(long EventId, LeagueUser User, PutEventModel Event) : IRequest<EventModel>;
 
-public sealed class PutEventHandler : EventHandlerBase<PutEventHandler,  PutEventRequest, EventModel>
+public sealed class PutEventHandler : EventHandlerBase<PutEventHandler, PutEventRequest, EventModel>
 {
     public PutEventHandler(ILogger<PutEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutEventRequest>> validators) :
         base(logger, dbContext, validators)

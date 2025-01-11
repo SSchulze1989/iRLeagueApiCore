@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using iRLeagueApiCore.Server.Authentication;
-using iRLeagueApiCore.Server.Handlers.Users;
+﻿using iRLeagueApiCore.Server.Handlers.Users;
 using iRLeagueApiCore.UnitTests.Fixtures;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Users;

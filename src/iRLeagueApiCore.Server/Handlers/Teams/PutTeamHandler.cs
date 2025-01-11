@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Teams;
 
 public record PutTeamRequest(long TeamId, LeagueUser User, PutTeamModel Model) : IRequest<TeamModel>;
 
-public class PutTeamHandler : TeamsHandlerBase<PutTeamHandler,  PutTeamRequest, TeamModel>
+public class PutTeamHandler : TeamsHandlerBase<PutTeamHandler, PutTeamRequest, TeamModel>
 {
-    public PutTeamHandler(ILogger<PutTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutTeamRequest>> validators) : 
+    public PutTeamHandler(ILogger<PutTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutTeamRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

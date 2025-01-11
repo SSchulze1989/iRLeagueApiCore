@@ -2,9 +2,9 @@
 
 public record DeleteProtestRequest(long ProtestId) : IRequest<Unit>;
 
-public class DeleteProtestHandler : ProtestsHandlerBase<DeleteProtestHandler,  DeleteProtestRequest, Unit>
+public class DeleteProtestHandler : ProtestsHandlerBase<DeleteProtestHandler, DeleteProtestRequest, Unit>
 {
-    public DeleteProtestHandler(ILogger<DeleteProtestHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteProtestRequest>> validators) : 
+    public DeleteProtestHandler(ILogger<DeleteProtestHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteProtestRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

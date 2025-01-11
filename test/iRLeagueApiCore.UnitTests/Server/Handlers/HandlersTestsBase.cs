@@ -6,12 +6,9 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueApiCore.UnitTests.Extensions;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Test;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 

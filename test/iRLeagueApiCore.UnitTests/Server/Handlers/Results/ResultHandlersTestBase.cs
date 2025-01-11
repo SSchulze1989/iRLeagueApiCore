@@ -1,10 +1,9 @@
 ﻿using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
-public abstract class ResultHandlersTestsBase<THandler, TRequest, TResult> : 
+public abstract class ResultHandlersTestsBase<THandler, TRequest, TResult> :
     HandlersTestsBase<THandler, TRequest, TResult>
     where THandler : IRequestHandler<TRequest, TResult>
     where TRequest : class, IRequest<TResult>

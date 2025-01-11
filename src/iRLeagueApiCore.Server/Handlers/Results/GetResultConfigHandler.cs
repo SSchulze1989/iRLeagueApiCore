@@ -1,14 +1,13 @@
 ﻿using iRLeagueApiCore.Common.Models;
-using iRLeagueDatabaseCore;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultConfigRequest(long ResultConfigId) : IRequest<ResultConfigModel>;
 
-public sealed class GetResultConfigHandler : ResultConfigHandlerBase<GetResultConfigHandler,  GetResultConfigRequest, ResultConfigModel>
+public sealed class GetResultConfigHandler : ResultConfigHandlerBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
 {
-    public GetResultConfigHandler(ILogger<GetResultConfigHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetResultConfigRequest>> validators) 
+    public GetResultConfigHandler(ILogger<GetResultConfigHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetResultConfigRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

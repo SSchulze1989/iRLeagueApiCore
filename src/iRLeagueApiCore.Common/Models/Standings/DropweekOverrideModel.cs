@@ -1,5 +1,3 @@
-using iRLeagueApiCore.Common.Models.Tracks;
-
 namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]

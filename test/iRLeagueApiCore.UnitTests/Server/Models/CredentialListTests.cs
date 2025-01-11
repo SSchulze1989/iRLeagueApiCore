@@ -40,9 +40,9 @@ public sealed class CredentialListTests
         var newPassword = fixture.Create<string>();
         var updated = new NetworkCredential(username, newPassword);
         var sut = new CredentialList();
-        
+
         sut.Add(uri, authenticationType, original);
-        sut.Add(uri, authenticationType , updated);
+        sut.Add(uri, authenticationType, updated);
 
         var test = sut.GetCredential(uri, authenticationType);
         test.Should().NotBeNull();
@@ -62,7 +62,7 @@ public sealed class CredentialListTests
         var sut = new CredentialList();
 
         sut.Add(uri1, authenticationType, credential1);
-        sut.Add(uri2, authenticationType , credential2);
+        sut.Add(uri2, authenticationType, credential2);
 
         var test1 = sut.GetCredential(uri1, authenticationType);
         var test2 = sut.GetCredential(uri2, authenticationType);

@@ -3,7 +3,7 @@
 namespace iRLeagueApiCore.Services.ResultService.Models;
 
 public sealed class AddPenaltyCalculationData
-{ 
+{
     public int SessionNr { get; set; }
     public long? MemberId { get; set; }
     public long? TeamId { get; set; }

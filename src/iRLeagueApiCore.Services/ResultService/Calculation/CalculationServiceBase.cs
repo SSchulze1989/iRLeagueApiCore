@@ -1,9 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
-using iRLeagueDatabaseCore.Models;
-using System.ComponentModel;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation;
 

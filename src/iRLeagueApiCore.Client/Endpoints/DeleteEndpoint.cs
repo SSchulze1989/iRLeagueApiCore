@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints;
 
 internal class DeleteEndpoint : EndpointBase, IDeleteEndpoint
 {
-    public DeleteEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) : 
+    public DeleteEndpoint(HttpClientWrapper httpClient, RouteBuilder routeBuilder) :
         base(httpClient, routeBuilder)
     {
     }

@@ -1,11 +1,10 @@
 ﻿using AutoFixture.Dsl;
-using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.AdminPanel;
-public abstract class AdminPanelTestsBase<THandler, TRequest, TResult> 
+public abstract class AdminPanelTestsBase<THandler, TRequest, TResult>
     : HandlersTestsBase<THandler, TRequest, TResult>
     where THandler : IRequestHandler<TRequest, TResult>
     where TRequest : class, IRequest<TResult>

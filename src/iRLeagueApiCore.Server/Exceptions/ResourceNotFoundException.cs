@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace iRLeagueApiCore.Server.Exceptions;
+﻿namespace iRLeagueApiCore.Server.Exceptions;
 
 public sealed class ResourceNotFoundException : Exception
 {

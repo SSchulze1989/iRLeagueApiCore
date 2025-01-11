@@ -5,7 +5,8 @@ using System.Linq.Expressions;
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
-{    public ChampSeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
+{
+    public ChampSeasonHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -22,7 +23,7 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(LeagueUser user, PutChampSeasonModel model, ChampSeasonEntity target, 
+    protected virtual async Task<ChampSeasonEntity> MapToChampSeasonEntityAsync(LeagueUser user, PutChampSeasonModel model, ChampSeasonEntity target,
         CancellationToken cancellationToken)
     {
         target.Championship.Name = model.ChampionshipName;
@@ -31,7 +32,7 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         target.ResultConfigurations = await MapToResultConfigurationListAsync(model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
         target.DefaultResultConfig = target.ResultConfigurations.FirstOrDefault(x => x.ResultConfigId == model.DefaultResultConfig?.ResultConfigId);
         target.ResultKind = model.ResultKind;
-        target.Filters = await MapToFilterOptionListAsync(user, model.Filters, target.Filters, cancellationToken); 
+        target.Filters = await MapToFilterOptionListAsync(user, model.Filters, target.Filters, cancellationToken);
         return await Task.FromResult(target);
     }
 
@@ -42,7 +43,7 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
             return null;
         }
 
-        var entity =  await dbContext.StandingConfigurations
+        var entity = await dbContext.StandingConfigurations
             .Where(x => x.StandingConfigId == model.StandingConfigId && model.StandingConfigId != 0)
             .FirstOrDefaultAsync(cancellationToken);
         entity ??= CreateVersionEntity(user, new StandingConfigurationEntity()
@@ -58,7 +59,7 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         return entity;
     }
 
-    protected async Task<ICollection<ResultConfigurationEntity>> MapToResultConfigurationListAsync(IEnumerable<long> resultConfigId, 
+    protected async Task<ICollection<ResultConfigurationEntity>> MapToResultConfigurationListAsync(IEnumerable<long> resultConfigId,
         ICollection<ResultConfigurationEntity> target, CancellationToken cancellationToken)
     {
         target = await dbContext.ResultConfigurations

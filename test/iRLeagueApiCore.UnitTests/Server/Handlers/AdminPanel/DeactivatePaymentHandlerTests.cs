@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Server.Handlers.AdminPanel;
 using iRLeagueApiCore.Server.Models.Payments;
 using iRLeagueDatabaseCore.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.AdminPanel;

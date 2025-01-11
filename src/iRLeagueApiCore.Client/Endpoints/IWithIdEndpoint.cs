@@ -1,6 +1,4 @@
-﻿using iRLeagueApiCore.Client.Endpoints.Teams;
-
-namespace iRLeagueApiCore.Client.Endpoints;
+﻿namespace iRLeagueApiCore.Client.Endpoints;
 
 public interface IWithIdEndpoint<TEndpoint, TId>
 {

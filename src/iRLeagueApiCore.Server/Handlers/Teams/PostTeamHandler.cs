@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Teams;
 
 public record PostTeamRequest(LeagueUser User, PostTeamModel Model) : IRequest<TeamModel>;
 
-public class PostTeamHandler : TeamsHandlerBase<PostTeamHandler,  PostTeamRequest, TeamModel>
+public class PostTeamHandler : TeamsHandlerBase<PostTeamHandler, PostTeamRequest, TeamModel>
 {
-    public PostTeamHandler(ILogger<PostTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostTeamRequest>> validators) : 
+    public PostTeamHandler(ILogger<PostTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostTeamRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

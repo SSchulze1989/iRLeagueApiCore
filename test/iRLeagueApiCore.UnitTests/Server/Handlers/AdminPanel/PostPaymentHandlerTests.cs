@@ -2,7 +2,6 @@
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Handlers.AdminPanel;
 using iRLeagueApiCore.Server.Models.Payments;
-using iRLeagueApiCore.UnitTests.Server.Handlers.AdminPanel;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 

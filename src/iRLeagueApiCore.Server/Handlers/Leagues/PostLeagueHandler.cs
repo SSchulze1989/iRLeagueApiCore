@@ -7,13 +7,13 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record PostLeagueRequest(LeagueUser User, PostLeagueModel Model) : IRequest<LeagueModel>;
 
-public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler,  PostLeagueRequest, LeagueModel>
+public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler, PostLeagueRequest, LeagueModel>
 {
     private readonly UserManager<ApplicationUser> userManager;
     private readonly RoleManager<IdentityRole> roleManager;
 
     public PostLeagueHandler(ILogger<PostLeagueHandler> logger, LeagueDbContext dbContext,
-        IEnumerable<IValidator<PostLeagueRequest>> validators, UserManager<ApplicationUser> userManager, 
+        IEnumerable<IValidator<PostLeagueRequest>> validators, UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager)
         : base(logger, dbContext, validators)
     {
@@ -33,7 +33,7 @@ public sealed class PostLeagueHandler : LeagueHandlerBase<PostLeagueHandler,  Po
         }
         await dbContext.SaveChangesAsync(cancellationToken);
         _logger.LogInformation("League {LeagueName} successfully created", request.Model.Name);
-        var getLeague = await MapToGetLeagueModelAsync(leagueEntity.Id, true, cancellationToken) 
+        var getLeague = await MapToGetLeagueModelAsync(leagueEntity.Id, true, cancellationToken)
             ?? throw new ResourceNotFoundException("Created resource not found!");
         return getLeague;
     }

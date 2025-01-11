@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record PutUserRequest(string UserId, PutUserModel Model) : IRequest<PrivateUserModel>;
 
-public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler,  PutUserRequest, PrivateUserModel>
+public sealed class PutUserHandler : UsersHandlerBase<PutUserHandler, PutUserRequest, PrivateUserModel>
 {
     private readonly UserDbContext userDbContext;
 

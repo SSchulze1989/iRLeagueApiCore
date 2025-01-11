@@ -1,6 +1,4 @@
-﻿using iRLeagueApiCore.Services.ResultService.Extensions;
-
-namespace iRLeagueApiCore.Server.Handlers.Seasons;
+﻿namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record DeleteSeasonRequest(long SeasonId) : IRequest<Unit>;
 
@@ -32,7 +30,7 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
                 .ThenInclude(x => x.DefaultResultConfig)
             .SingleOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
-        foreach(var champSeason in deleteSeason.ChampSeasons)
+        foreach (var champSeason in deleteSeason.ChampSeasons)
         {
             var deleteFilterOptions = await dbContext.FilterOptions
                 .Where(x => x.ChampSeasonId == champSeason.ChampSeasonId)

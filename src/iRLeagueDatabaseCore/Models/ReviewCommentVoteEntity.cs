@@ -20,7 +20,7 @@ public partial class ReviewCommentVoteEntity
     public virtual ReviewCommentEntity Comment { get; set; }
     public virtual VoteCategoryEntity VoteCategory { get; set; }
     public virtual MemberEntity MemberAtFault { get; set; }
-    public virtual TeamEntity TeamAtFault { get; set;}
+    public virtual TeamEntity TeamAtFault { get; set; }
 }
 
 public class CommentReviewVoteEntityConfiguration : IEntityTypeConfiguration<ReviewCommentVoteEntity>

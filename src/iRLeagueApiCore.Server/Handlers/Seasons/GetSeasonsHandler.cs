@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Seasons;
 
 public record GetSeasonsRequest() : IRequest<IEnumerable<SeasonModel>>;
 
-public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler,  GetSeasonsRequest, IEnumerable<SeasonModel>>
+public sealed class GetSeasonsHandler : SeasonHandlerBase<GetSeasonsHandler, GetSeasonsRequest, IEnumerable<SeasonModel>>
 {
     public GetSeasonsHandler(ILogger<GetSeasonsHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetSeasonsRequest>> validators) :
         base(logger, dbContext, validators)

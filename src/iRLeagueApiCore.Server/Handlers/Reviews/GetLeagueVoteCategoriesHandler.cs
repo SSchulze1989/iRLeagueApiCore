@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetLeagueVoteCategoriesRequest() : IRequest<IEnumerable<VoteCategoryModel>>;
 
-public sealed class GetLeagueVoteCategoriesHandler : VoteCategoriesHandlerBase<GetLeagueVoteCategoriesHandler,  GetLeagueVoteCategoriesRequest, IEnumerable<VoteCategoryModel>>
+public sealed class GetLeagueVoteCategoriesHandler : VoteCategoriesHandlerBase<GetLeagueVoteCategoriesHandler, GetLeagueVoteCategoriesRequest, IEnumerable<VoteCategoryModel>>
 {
     public GetLeagueVoteCategoriesHandler(ILogger<GetLeagueVoteCategoriesHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetLeagueVoteCategoriesRequest>> validators) : base(logger, dbContext, validators)

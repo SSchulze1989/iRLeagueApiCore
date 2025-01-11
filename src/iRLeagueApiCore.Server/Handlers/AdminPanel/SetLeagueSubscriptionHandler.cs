@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models.Payments;
 
@@ -7,10 +6,10 @@ namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 
 public record SetLeagueSubscriptionRequest(long LeagueId, SetLeagueSubscriptionModel Model) : IRequest<LeagueModel>;
 
-public class SetLeagueSubscriptionHandler : LeagueHandlerBase<SetLeagueSubscriptionHandler,  SetLeagueSubscriptionRequest, LeagueModel>
+public class SetLeagueSubscriptionHandler : LeagueHandlerBase<SetLeagueSubscriptionHandler, SetLeagueSubscriptionRequest, LeagueModel>
 {
-    public SetLeagueSubscriptionHandler(ILogger<SetLeagueSubscriptionHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<SetLeagueSubscriptionRequest>> validators) 
+    public SetLeagueSubscriptionHandler(ILogger<SetLeagueSubscriptionHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<SetLeagueSubscriptionRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

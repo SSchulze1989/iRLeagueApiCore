@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Scorings;
 
 public record GetScoringRequest(long ScoringId) : IRequest<ScoringModel>;
 
-public sealed class GetScoringHandler : ScoringHandlerBase<GetScoringHandler,  GetScoringRequest, ScoringModel>
+public sealed class GetScoringHandler : ScoringHandlerBase<GetScoringHandler, GetScoringRequest, ScoringModel>
 {
     public GetScoringHandler(ILogger<GetScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetScoringRequest>> validators) :
         base(logger, dbContext, validators)

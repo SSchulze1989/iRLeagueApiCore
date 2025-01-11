@@ -248,7 +248,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         }
     }
 
-    private StandingCalculationConfiguration CreateStandingConfiguration(SeasonEntity season, EventEntity @event, 
+    private StandingCalculationConfiguration CreateStandingConfiguration(SeasonEntity season, EventEntity @event,
         ChampSeasonEntity? champSeason = null)
     {
         return fixture.Build<StandingCalculationConfiguration>()

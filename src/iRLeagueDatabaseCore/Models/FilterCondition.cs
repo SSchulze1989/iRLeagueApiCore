@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace iRLeagueDatabaseCore.Models;
+﻿namespace iRLeagueDatabaseCore.Models;
 
 public sealed class FilterCondition
 {

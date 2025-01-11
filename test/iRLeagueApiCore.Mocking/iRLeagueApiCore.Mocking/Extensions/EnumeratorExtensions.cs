@@ -24,10 +24,10 @@ public static class EnumeratorExtensions
         return () =>
         {
             lock (enumerator)
-            if (enumerator.MoveNext())
-            {
-                return enumerator.Current;
-            }
+                if (enumerator.MoveNext())
+                {
+                    return enumerator.Current;
+                }
             enumerator = enumerable.GetEnumerator();
             enumerator.MoveNext();
             return enumerator.Current;

@@ -6,14 +6,14 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PutReviewRequest(long ReviewId, LeagueUser User, PutReviewModel Model) : IRequest<ReviewModel>;
 
-public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler,  PutReviewRequest, ReviewModel>
+public sealed class PutReviewHandler : ReviewsHandlerBase<PutReviewHandler, PutReviewRequest, ReviewModel>
 {
     /// <summary>
     /// Always include comments because this can only be called by an authorized user
     /// </summary>
     private const bool includeComments = true;
 
-    public PutReviewHandler(ILogger<PutReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewRequest>> validators, 
+    public PutReviewHandler(ILogger<PutReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PutReviewRequest>> validators,
         IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }

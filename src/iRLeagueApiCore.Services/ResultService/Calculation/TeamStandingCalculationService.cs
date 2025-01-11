@@ -14,7 +14,7 @@ internal sealed class TeamStandingCalculationService : StandingCalculationServic
         static long? keySelector(ResultRowCalculationResult x) => x.TeamId;
         data.PreviousEventResults.ForEach(x => CalculateFinalEventScore(x, keySelector));
         CalculateFinalEventScore(data.CurrentEventResult, keySelector);
-        
+
         var (previousSessionResults, currentSessionResults) = GetPreviousAndCurrentSessionResults(data);
 
         var previousTeamEventResults = GetGroupedEventResults(previousSessionResults, keySelector);

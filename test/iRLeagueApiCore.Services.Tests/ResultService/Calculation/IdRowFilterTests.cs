@@ -47,7 +47,7 @@ public sealed class IdRowFilterTests
         var test = sut.FilterRows(rows);
 
         test.Should().HaveCount(valueCount);
-        foreach(var row in test)
+        foreach (var row in test)
         {
             memberIds.Should().Contain(row.MemberId);
         }

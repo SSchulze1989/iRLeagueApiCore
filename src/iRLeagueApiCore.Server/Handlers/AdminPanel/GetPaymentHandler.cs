@@ -4,10 +4,10 @@ namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 
 public record GetPaymentRequest(Guid Id) : IRequest<PaymentModel>;
 
-public class GetPaymentHandler : AdminHandlerBase<GetPaymentHandler,  GetPaymentRequest, PaymentModel>
+public class GetPaymentHandler : AdminHandlerBase<GetPaymentHandler, GetPaymentRequest, PaymentModel>
 {
-    public GetPaymentHandler(ILogger<GetPaymentHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetPaymentRequest>> validators) 
+    public GetPaymentHandler(ILogger<GetPaymentHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetPaymentRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

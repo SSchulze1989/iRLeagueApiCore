@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record GetUserRequest(string UserId) : IRequest<UserModel>;
 
-public sealed class GetUserHandler : UsersHandlerBase<GetUserHandler,  GetUserRequest, UserModel>
+public sealed class GetUserHandler : UsersHandlerBase<GetUserHandler, GetUserRequest, UserModel>
 {
     public GetUserHandler(ILogger<GetUserHandler> logger, UserManager<ApplicationUser> userManager,
         IEnumerable<IValidator<GetUserRequest>> validators) : base(logger, userManager, validators)

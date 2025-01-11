@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public abstract class ChampionshipHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    public ChampionshipHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+    public ChampionshipHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -20,7 +20,7 @@ public abstract class ChampionshipHandlerBase<THandler, TRequest, TResponse> : H
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ChampionshipEntity> MapToChampionshipEntityAsync(LeagueUser user, PostChampionshipModel postModel, ChampionshipEntity target, 
+    protected virtual async Task<ChampionshipEntity> MapToChampionshipEntityAsync(LeagueUser user, PostChampionshipModel postModel, ChampionshipEntity target,
         CancellationToken cancellationToken)
     {
         target.Name = postModel.Name;
@@ -41,17 +41,17 @@ public abstract class ChampionshipHandlerBase<THandler, TRequest, TResponse> : H
     protected virtual Expression<Func<ChampionshipEntity, ChampionshipModel>> MapToChampionshipModelExpression => championship => new()
     {
         ChampionshipId = championship.ChampionshipId,
-        Name= championship.Name,
+        Name = championship.Name,
         DisplayName = championship.DisplayName,
         Seasons = championship.ChampSeasons
             .Where(x => x.IsActive)
             .Select(champSeason => new ChampSeasonInfoModel()
-        {
-            ChampionshipId = championship.ChampionshipId,
-            ChampionshipName = championship.Name,
-            ChampSeasonId = champSeason.ChampSeasonId,
-            SeasonId = champSeason.SeasonId,
-            SeasonName = champSeason.Season.SeasonName,
-        }).ToList(),
+            {
+                ChampionshipId = championship.ChampionshipId,
+                ChampionshipName = championship.Name,
+                ChampSeasonId = champSeason.ChampSeasonId,
+                SeasonId = champSeason.SeasonId,
+                SeasonName = champSeason.Season.SeasonName,
+            }).ToList(),
     };
 }

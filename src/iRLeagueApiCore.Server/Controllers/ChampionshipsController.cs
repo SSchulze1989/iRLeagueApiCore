@@ -1,7 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Championships;
-using iRLeagueApiCore.Server.Handlers.Events;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

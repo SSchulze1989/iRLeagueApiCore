@@ -1,7 +1,4 @@
-﻿using iRLeagueApiCore.Common.Models;
-using System.Runtime.Serialization;
-
-namespace iRLeagueApiCore.Services.ResultService.Models;
+﻿namespace iRLeagueApiCore.Services.ResultService.Models;
 internal sealed class DropweekOverrideData
 {
     public long StandingConfigId { get; set; }

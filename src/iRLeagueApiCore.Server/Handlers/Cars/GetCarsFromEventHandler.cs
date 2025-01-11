@@ -9,7 +9,7 @@ public record GetCarsFromEventRequest(long EventId) : IRequest<CarListModel>;
 
 public class GetCarsFromEventHandler : HandlerBase<GetCarsFromEventHandler, GetCarsFromEventRequest, CarListModel>
 {
-    public GetCarsFromEventHandler(ILogger<GetCarsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetCarsFromEventRequest>> validators) : 
+    public GetCarsFromEventHandler(ILogger<GetCarsFromEventHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetCarsFromEventRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -52,8 +52,9 @@ public class GetCarsFromEventHandler : HandlerBase<GetCarsFromEventHandler, GetC
 
     private static Expression<Func<ResultRowEntity, MemberCarInfo>> MapToCarInfoModelExpression => row => new(
         row.MemberId,
-        new() {
-                Car = row.Car,
+        new()
+        {
+            Car = row.Car,
             CarId = row.CarId,
             Class = row.CarClass,
             Members = new[] { new MemberInfoModel()
@@ -61,7 +62,7 @@ public class GetCarsFromEventHandler : HandlerBase<GetCarsFromEventHandler, GetC
                     MemberId = row.MemberId,
                     FirstName = row.Member.Firstname,
                     LastName = row.Member.Lastname,
-                } 
+                }
             },
             Team = row.Team == null ? default : new()
             {

@@ -580,8 +580,8 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
     [Theory]
     [InlineData(
-        MatchedValueAction.Keep, FilterCombination.And, 
-        MatchedValueAction.Keep, FilterCombination.Or, 
+        MatchedValueAction.Keep, FilterCombination.And,
+        MatchedValueAction.Keep, FilterCombination.Or,
         MatchedValueAction.Remove, FilterCombination.And)]
     [InlineData(
         MatchedValueAction.Remove, FilterCombination.And,
@@ -825,7 +825,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
 
         var test = await sut.GetConfigurations(@event, config);
 
-        foreach(var sessionConfig in test)
+        foreach (var sessionConfig in test)
         {
             sessionConfig.MaxResultsPerGroup.Should().Be(expected);
         }

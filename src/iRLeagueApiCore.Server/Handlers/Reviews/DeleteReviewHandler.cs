@@ -19,7 +19,7 @@ public sealed class DeleteReviewHandler : ReviewsHandlerBase<DeleteReviewHandler
         var eventId = deleteReview.Session.EventId;
         dbContext.Remove(deleteReview);
         await dbContext.SaveChangesAsync(cancellationToken);
-        if (deleteReview.AcceptedReviewVotes.Any())
+        if (deleteReview.AcceptedReviewVotes.Count != 0)
         {
             resultCalculationQueue.QueueEventResultDebounced(eventId, reviewCalcDebounceMs);
         }

@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Services.ResultService.Calculation;
+﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;

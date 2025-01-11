@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
-
 namespace iRLeagueDatabaseCore.Models;
 
 public partial class LeagueDbContext : DbContext, ILeagueDbContext

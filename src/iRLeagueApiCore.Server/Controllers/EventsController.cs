@@ -24,7 +24,7 @@ public sealed class EventsController : LeagueApiController<EventsController>
     [HttpGet]
     [AllowAnonymous]
     [Route("{id:long}")]
-    public async Task<ActionResult<EventModel>> Get([FromRoute] string leagueName, [FromRoute] long id, [FromQuery] bool includeDetails = false, 
+    public async Task<ActionResult<EventModel>> Get([FromRoute] string leagueName, [FromRoute] long id, [FromQuery] bool includeDetails = false,
         CancellationToken cancellationToken = default)
     {
         var request = new GetEventRequest(id, includeDetails);
@@ -35,7 +35,7 @@ public sealed class EventsController : LeagueApiController<EventsController>
     [HttpGet]
     [AllowAnonymous]
     [Route("/{leagueName}/Schedules/{scheduleId:long}/Events")]
-    public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSchedule([FromRoute] string leagueName, [FromRoute] long scheduleId, [FromQuery] bool includeDetails = false, 
+    public async Task<ActionResult<IEnumerable<EventModel>>> GetFromSchedule([FromRoute] string leagueName, [FromRoute] long scheduleId, [FromQuery] bool includeDetails = false,
         CancellationToken cancellationToken = default)
     {
         var request = new GetEventsFromScheduleRequest(scheduleId, includeDetails);

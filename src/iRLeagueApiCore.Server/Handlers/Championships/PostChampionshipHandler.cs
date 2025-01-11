@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record PostChampionshipRequest(LeagueUser User, PostChampionshipModel Model) : IRequest<ChampionshipModel>;
 
-public sealed class PostChampionshipHandler : ChampionshipHandlerBase<PostChampionshipHandler,  PostChampionshipRequest, ChampionshipModel>
+public sealed class PostChampionshipHandler : ChampionshipHandlerBase<PostChampionshipHandler, PostChampionshipRequest, ChampionshipModel>
 {
-    public PostChampionshipHandler(ILogger<PostChampionshipHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampionshipRequest>> validators) : 
+    public PostChampionshipHandler(ILogger<PostChampionshipHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostChampionshipRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

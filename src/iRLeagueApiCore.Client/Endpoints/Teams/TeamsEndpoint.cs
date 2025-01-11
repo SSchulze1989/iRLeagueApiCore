@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.Teams;
 
 internal sealed class TeamsEndpoint : PostGetAllEndpoint<TeamModel, PostTeamModel>, ITeamsEndpoint
 {
-    public TeamsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) : 
+    public TeamsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddEndpoint("Teams");

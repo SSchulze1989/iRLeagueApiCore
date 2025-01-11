@@ -4,9 +4,9 @@ namespace iRLeagueApiCore.Server.Handlers.Teams;
 
 public record GetTeamRequest(long teamId) : IRequest<TeamModel>;
 
-public class GetTeamHandler : TeamsHandlerBase<GetTeamHandler,  GetTeamRequest, TeamModel>
+public class GetTeamHandler : TeamsHandlerBase<GetTeamHandler, GetTeamRequest, TeamModel>
 {
-    public GetTeamHandler(ILogger<GetTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetTeamRequest>> validators) : 
+    public GetTeamHandler(ILogger<GetTeamHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetTeamRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

@@ -1,7 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Reviews;
-using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

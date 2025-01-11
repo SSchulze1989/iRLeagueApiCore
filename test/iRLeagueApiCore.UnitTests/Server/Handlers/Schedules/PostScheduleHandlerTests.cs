@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Schedules;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Schedules;

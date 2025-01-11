@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetPenaltiesFromEventResultRequest(long ResultId) : IRequest<IEnumerable<PenaltyModel>>;
 
-public class GetPenaltiesFromEventResultHandler : ReviewsHandlerBase<GetPenaltiesFromEventResultHandler,  GetPenaltiesFromEventResultRequest, IEnumerable<PenaltyModel>>
+public class GetPenaltiesFromEventResultHandler : ReviewsHandlerBase<GetPenaltiesFromEventResultHandler, GetPenaltiesFromEventResultRequest, IEnumerable<PenaltyModel>>
 {
-    public GetPenaltiesFromEventResultHandler(ILogger<GetPenaltiesFromEventResultHandler> logger, LeagueDbContext dbContext, 
+    public GetPenaltiesFromEventResultHandler(ILogger<GetPenaltiesFromEventResultHandler> logger, LeagueDbContext dbContext,
         IEnumerable<IValidator<GetPenaltiesFromEventResultRequest>> validators, IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }

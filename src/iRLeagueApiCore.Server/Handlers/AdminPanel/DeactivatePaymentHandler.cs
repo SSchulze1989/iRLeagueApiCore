@@ -4,11 +4,11 @@ namespace iRLeagueApiCore.Server.Handlers.AdminPanel;
 
 public record DeactivatePaymentRequest(Guid Id) : IRequest<PaymentModel>;
 
-public class DeactivatePaymentHandler : AdminHandlerBase<DeactivatePaymentHandler, DeactivatePaymentRequest, PaymentModel>, 
+public class DeactivatePaymentHandler : AdminHandlerBase<DeactivatePaymentHandler, DeactivatePaymentRequest, PaymentModel>,
     IRequestHandler<DeactivatePaymentRequest, PaymentModel>
 {
     public DeactivatePaymentHandler(ILogger<DeactivatePaymentHandler> logger, LeagueDbContext dbContext,
-        IEnumerable<IValidator<DeactivatePaymentRequest>> validators) 
+        IEnumerable<IValidator<DeactivatePaymentRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }

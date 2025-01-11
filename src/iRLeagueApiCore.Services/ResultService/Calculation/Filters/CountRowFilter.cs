@@ -1,6 +1,4 @@
-﻿
-using Google.Protobuf.WellKnownTypes;
-using iRLeagueApiCore.Common.Enums;
+﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.ResultService.Calculation.Filters;

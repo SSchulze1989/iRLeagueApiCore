@@ -1,7 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueDatabaseCore;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
@@ -38,7 +37,7 @@ public class GetProtestsFromEventHandler : ProtestsHandlerBase<GetProtestsFromEv
         _ => isSteward
     };
 
-private async Task<IEnumerable<ProtestModel>> MapToProtestModelsFromEvent(long eventId, bool includeAuthor, CancellationToken cancellationToken)
+    private async Task<IEnumerable<ProtestModel>> MapToProtestModelsFromEvent(long eventId, bool includeAuthor, CancellationToken cancellationToken)
     {
         return await dbContext.Protests
             .Where(x => x.Session.EventId == eventId)

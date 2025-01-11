@@ -9,7 +9,6 @@ using iRLeagueApiCore.Client.QueryBuilder;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Results;
 using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Common.Models.Standings;
 
 namespace iRLeagueApiCore.Client.Endpoints.Sessions;
 

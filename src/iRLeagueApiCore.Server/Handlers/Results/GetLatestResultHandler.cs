@@ -4,7 +4,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetLatestResultRequest() : IRequest<IEnumerable<EventResultModel>>;
 
-public class GetLatestResultHandler : ResultHandlerBase<GetLatestResultHandler,  GetLatestResultRequest, IEnumerable<EventResultModel>>
+public class GetLatestResultHandler : ResultHandlerBase<GetLatestResultHandler, GetLatestResultRequest, IEnumerable<EventResultModel>>
 {
     public GetLatestResultHandler(ILogger<GetLatestResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetLatestResultRequest>> validators) : base(logger, dbContext, validators)
     {

@@ -153,7 +153,8 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
     {
         var currentEvent = await dbContext.Events
             .FirstOrDefaultAsync(x => x.EventId == eventId, cancellationToken);
-        if (currentEvent is null) {
+        if (currentEvent is null)
+        {
             return null;
         }
         var nextEvent = await dbContext.Events

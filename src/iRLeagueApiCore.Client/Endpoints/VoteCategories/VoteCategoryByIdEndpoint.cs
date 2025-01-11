@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Client.Endpoints.VoteCategories;
 
 internal sealed class VoteCategoryByIdEndpoint : UpdateEndpoint<VoteCategoryModel, PutVoteCategoryModel>, IVoteCategoryByIdEndpoint
 {
-    public VoteCategoryByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long id) : 
+    public VoteCategoryByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long id) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddParameter(id);

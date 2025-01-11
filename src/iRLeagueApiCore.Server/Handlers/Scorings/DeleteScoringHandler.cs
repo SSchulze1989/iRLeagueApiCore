@@ -2,7 +2,7 @@
 
 public record DeleteScoringRequest(long ScoringId) : IRequest<Unit>;
 
-public sealed class DeleteScoringHandler : ScoringHandlerBase<DeleteScoringHandler,  DeleteScoringRequest, Unit>
+public sealed class DeleteScoringHandler : ScoringHandlerBase<DeleteScoringHandler, DeleteScoringRequest, Unit>
 {
     public DeleteScoringHandler(ILogger<DeleteScoringHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteScoringRequest>> validators) : base(logger, dbContext, validators)
     {

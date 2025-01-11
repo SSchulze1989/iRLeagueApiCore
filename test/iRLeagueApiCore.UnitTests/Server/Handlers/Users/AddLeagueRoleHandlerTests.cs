@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Users;
 public sealed class AddLeagueRoleHandlerTests : UserHandlerTestsBase<AddLeagueRoleHandler, AddLeagueRoleRequest>
 {
-    public AddLeagueRoleHandlerTests(IdentityFixture identityFixture) : 
+    public AddLeagueRoleHandlerTests(IdentityFixture identityFixture) :
         base(identityFixture)
     {
     }

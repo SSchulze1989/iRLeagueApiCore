@@ -4,10 +4,10 @@ namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record GetChampionshipsFromLeagueRequest() : IRequest<IEnumerable<ChampionshipModel>>;
 
-public sealed class GetChampionshipsFromLeagueHandler : ChampionshipHandlerBase<GetChampionshipsFromLeagueHandler,  GetChampionshipsFromLeagueRequest, IEnumerable<ChampionshipModel>>
+public sealed class GetChampionshipsFromLeagueHandler : ChampionshipHandlerBase<GetChampionshipsFromLeagueHandler, GetChampionshipsFromLeagueRequest, IEnumerable<ChampionshipModel>>
 {
-    public GetChampionshipsFromLeagueHandler(ILogger<GetChampionshipsFromLeagueHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetChampionshipsFromLeagueRequest>> validators) : 
+    public GetChampionshipsFromLeagueHandler(ILogger<GetChampionshipsFromLeagueHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetChampionshipsFromLeagueRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

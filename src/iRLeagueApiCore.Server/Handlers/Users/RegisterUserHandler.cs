@@ -2,9 +2,6 @@
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Services.EmailService;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using System.Text;
 
 namespace iRLeagueApiCore.Server.Handlers.Users;
 

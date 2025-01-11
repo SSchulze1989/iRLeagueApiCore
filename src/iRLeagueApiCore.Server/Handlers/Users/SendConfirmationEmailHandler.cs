@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Users;
 
 public record SendConfirmationEmailRequest(string Email, string LinkTemplate) : IRequest<Unit>;
 
-public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEmailHandler,  SendConfirmationEmailRequest, Unit>
+public class SendConfirmationEmailHandler : UsersHandlerBase<SendConfirmationEmailHandler, SendConfirmationEmailRequest, Unit>
 {
     private readonly IEmailClient emailClient;
 

@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Converters;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace iRLeagueDatabaseCore.Models;
 
@@ -17,7 +16,8 @@ public partial class ReviewPenaltyEntity
 }
 
 public class ReviewPenaltyEntityConfiguration : IEntityTypeConfiguration<ReviewPenaltyEntity>
-{    public void Configure(EntityTypeBuilder<ReviewPenaltyEntity> entity)
+{
+    public void Configure(EntityTypeBuilder<ReviewPenaltyEntity> entity)
     {
         entity.HasKey(e => new { e.LeagueId, e.ResultRowId, e.ReviewId, e.ReviewVoteId });
 

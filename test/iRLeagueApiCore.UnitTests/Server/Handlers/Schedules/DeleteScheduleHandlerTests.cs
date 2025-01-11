@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Server.Handlers.Schedules;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 

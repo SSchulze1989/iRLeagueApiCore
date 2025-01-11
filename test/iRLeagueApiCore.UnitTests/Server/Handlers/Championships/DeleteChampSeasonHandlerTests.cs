@@ -2,13 +2,12 @@
 using iRLeagueApiCore.Server.Handlers.Championships;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Championships;
 public sealed class DeleteChampSeasonHandlerTests :
     ChampionshipHandlersTestsBase<DeleteChampSeasonHandler, DeleteChampSeasonRequest, Unit>
 {
-    protected override DeleteChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, 
+    protected override DeleteChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext,
         IValidator<DeleteChampSeasonRequest> validator)
     {
         return new DeleteChampSeasonHandler(logger, dbContext, new[] { validator });

@@ -19,7 +19,7 @@ public abstract class ReviewsHandlersTestsBase<THandler, TRequest, TResult> :
         var reviews = accessMockHelper.CreateReviews(@event);
         dbContext.IncidentReviews.RemoveRange(dbContext.IncidentReviews);
         dbContext.IncidentReviews.AddRange(reviews);
-        foreach(var review in reviews)
+        foreach (var review in reviews)
         {
             review.Comments = accessMockHelper.CreateComments(review).ToList();
             dbContext.ReviewComments.AddRange(review.Comments);

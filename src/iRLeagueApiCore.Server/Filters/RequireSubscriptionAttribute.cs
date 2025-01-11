@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-
-namespace iRLeagueApiCore.Server.Filters;
+﻿namespace iRLeagueApiCore.Server.Filters;
 
 /// <summary>
 /// Sets requirement for having an active subscription in order to hit this endpoint -

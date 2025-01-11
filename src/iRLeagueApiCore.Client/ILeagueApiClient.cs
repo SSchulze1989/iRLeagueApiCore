@@ -5,7 +5,6 @@ using iRLeagueApiCore.Client.Endpoints.Seasons;
 using iRLeagueApiCore.Client.Endpoints.Tracks;
 using iRLeagueApiCore.Client.Endpoints.Users;
 using iRLeagueApiCore.Client.Results;
-using iRLeagueApiCore.Common.Models.Users;
 
 namespace iRLeagueApiCore.Client;
 

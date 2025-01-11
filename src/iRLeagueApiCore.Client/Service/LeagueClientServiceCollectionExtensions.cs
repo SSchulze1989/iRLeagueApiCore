@@ -3,9 +3,8 @@ using iRLeagueApiCore.Client.Http;
 using iRLeagueApiCore.Client.Service;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using System.Text.Json.Serialization;
 using System.Text.Json;
-using iRLeagueApiCore.Common.Converters;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class IRLeagueApiClientServiceExtensions

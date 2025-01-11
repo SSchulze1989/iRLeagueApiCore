@@ -2,9 +2,9 @@
 
 public record DeleteChampionshipRequest(long ChampionshipId) : IRequest<Unit>;
 
-public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampionshipHandler,  DeleteChampionshipRequest, Unit>
+public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampionshipHandler, DeleteChampionshipRequest, Unit>
 {
-    public DeleteChampionshipHandler(ILogger<DeleteChampionshipHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteChampionshipRequest>> validators) : 
+    public DeleteChampionshipHandler(ILogger<DeleteChampionshipHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteChampionshipRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -16,7 +16,7 @@ public class DeleteChampionshipHandler : ChampionshipHandlerBase<DeleteChampions
             ?? throw new ResourceNotFoundException();
         // only archive championship instead of deleting
         deleteChampionship.IsArchived = true;
-        foreach(var champSeason in deleteChampionship.ChampSeasons)
+        foreach (var champSeason in deleteChampionship.ChampSeasons)
         {
             champSeason.IsActive = false;
         }

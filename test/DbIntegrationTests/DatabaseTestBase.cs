@@ -1,10 +1,10 @@
-﻿using iRLeagueDatabaseCore.Models;
+﻿using AutoFixture;
 using iRLeagueDatabaseCore;
+using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using System;
-using AutoFixture;
 using System.Linq;
 
 namespace DbIntegrationTests;

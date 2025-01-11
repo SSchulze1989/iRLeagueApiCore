@@ -1,7 +1,7 @@
 ﻿namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
-public sealed class TeamInfoModel 
+public sealed class TeamInfoModel
 {
     [DataMember]
     public long TeamId { get; set; }

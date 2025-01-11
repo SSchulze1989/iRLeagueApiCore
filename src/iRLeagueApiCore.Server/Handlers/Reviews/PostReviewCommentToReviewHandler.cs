@@ -5,7 +5,7 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostReviewCommentToReviewRequest(long ReviewId, LeagueUser User, PostReviewCommentModel Model) : IRequest<ReviewCommentModel>;
 
-public sealed class PostReviewCommentToReviewHandler : CommentHandlerBase<PostReviewCommentToReviewHandler,  PostReviewCommentToReviewRequest, ReviewCommentModel>
+public sealed class PostReviewCommentToReviewHandler : CommentHandlerBase<PostReviewCommentToReviewHandler, PostReviewCommentToReviewRequest, ReviewCommentModel>
 {
     public PostReviewCommentToReviewHandler(ILogger<PostReviewCommentToReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostReviewCommentToReviewRequest>> validators) :
         base(logger, dbContext, validators)

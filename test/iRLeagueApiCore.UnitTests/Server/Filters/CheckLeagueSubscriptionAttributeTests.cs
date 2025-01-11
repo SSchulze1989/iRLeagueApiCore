@@ -7,12 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Net.Http.Headers;
-using System.Diagnostics.Contracts;
 using System.Net;
 
 namespace iRLeagueApiCore.UnitTests.Server.Filters;
@@ -330,9 +327,9 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
         );
 
         var sut = new CheckLeagueSubscriptionAttribute(dbContext, memoryCacheMock.Object);
-        
 
-        await TestOnActionExecutionAsync(sut, 
+
+        await TestOnActionExecutionAsync(sut,
             actionContext: actionContext,
             executedDelegate: () => { hasInvokedNext = true; return Task.FromResult(executedContext); });
 
@@ -352,9 +349,9 @@ public sealed class CheckLeagueSubscriptionAttributeTests : DataAccessTestsBase
         ActionContext actionContext = default!,
         ActionExecutingContext executingContext = default!,
         ActionExecutionDelegate executedDelegate = default!)
-    { 
+    {
         actionContext ??= new ActionContext()
-        { 
+        {
             ActionDescriptor = new ActionDescriptor(),
             HttpContext = new DefaultHttpContext(),
             RouteData = new RouteData(),

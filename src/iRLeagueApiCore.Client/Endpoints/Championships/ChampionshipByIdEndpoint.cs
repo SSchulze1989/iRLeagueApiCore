@@ -6,7 +6,7 @@ using iRLeagueApiCore.Common.Models;
 namespace iRLeagueApiCore.Client.Endpoints.Championships;
 internal sealed class ChampionshipByIdEndpoint : UpdateEndpoint<ChampionshipModel, PutChampionshipModel>, IChampionshipByIdEndpoint, ISeasonChampionshipByIdEndpoint
 {
-    public ChampionshipByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long id) : 
+    public ChampionshipByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long id) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddParameter(id);

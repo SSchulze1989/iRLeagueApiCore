@@ -1,14 +1,12 @@
 ﻿using iRLeagueApiCore.Common.Models.Reviews;
-using iRLeagueApiCore.Server.Models;
-using Microsoft.OpenApi.Any;
 
 namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record PostVoteCategoryRequest(PostVoteCategoryModel Model) : IRequest<VoteCategoryModel>;
 
-public sealed class PostVoteCategoryHandler : VoteCategoriesHandlerBase<PostVoteCategoryHandler,  PostVoteCategoryRequest, VoteCategoryModel>
+public sealed class PostVoteCategoryHandler : VoteCategoriesHandlerBase<PostVoteCategoryHandler, PostVoteCategoryRequest, VoteCategoryModel>
 {
-    public PostVoteCategoryHandler(ILogger<PostVoteCategoryHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostVoteCategoryRequest>> validators) : 
+    public PostVoteCategoryHandler(ILogger<PostVoteCategoryHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<PostVoteCategoryRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }

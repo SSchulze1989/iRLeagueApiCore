@@ -6,7 +6,7 @@ namespace iRLeagueApiCore.Server.Handlers.Teams;
 
 public abstract class TeamsHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    protected TeamsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) : 
+    protected TeamsHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
@@ -47,7 +47,7 @@ public abstract class TeamsHandlerBase<THandler, TRequest, TResponse> : HandlerB
         return UpdateVersionEntity(user, entity);
     }
 
-    private async Task<ICollection<LeagueMemberEntity>> MapToTeamMemberListAsync(ICollection<MemberInfoModel> memberModels, 
+    private async Task<ICollection<LeagueMemberEntity>> MapToTeamMemberListAsync(ICollection<MemberInfoModel> memberModels,
         ICollection<LeagueMemberEntity> memberEntities, CancellationToken cancellationToken)
     {
         var memberIds = memberModels.Select(x => x.MemberId);

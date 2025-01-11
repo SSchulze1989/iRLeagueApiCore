@@ -1,5 +1,4 @@
-﻿using iRLeagueApiCore.Common.Enums;
-using iRLeagueApiCore.Mocking.Extensions;
+﻿using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Calculation.Filters;
 using System.Diagnostics;
 
@@ -27,7 +26,7 @@ public sealed class FilterGroupRowFilterTests
         testRows.Select(x => x.Value1).Should().BeEquivalentTo(pos.Take(5));
     }
 
-    [Fact] 
+    [Fact]
     public void FilterRows_ShouldFilter_MultipleAndFilters()
     {
         var pos = Enumerable.Range(1, 10);

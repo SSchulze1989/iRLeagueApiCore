@@ -1,4 +1,4 @@
-public enum BonusPointType 
+public enum BonusPointType
 {
     Position,
     QualyPosition,

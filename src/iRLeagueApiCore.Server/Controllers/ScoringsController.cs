@@ -58,7 +58,7 @@ public sealed class ScoringsController : LeagueApiController<ScoringsController>
     [Route("{id:long}")]
     [HttpPut]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
-    public async Task<ActionResult<ScoringModel>> Put([FromRoute] string leagueName, [FromRoute] long id, [FromBody] PutScoringModel model, 
+    public async Task<ActionResult<ScoringModel>> Put([FromRoute] string leagueName, [FromRoute] long id, [FromBody] PutScoringModel model,
         CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);

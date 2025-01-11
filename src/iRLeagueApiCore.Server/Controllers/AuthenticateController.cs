@@ -56,7 +56,8 @@ public sealed class AuthenticateController : Controller
         {
             if (user.EmailConfirmed == false)
             {
-                return Unauthorized(new UnauthorizedResponse() {
+                return Unauthorized(new UnauthorizedResponse()
+                {
                     Status = "MailConfirm",
                     Errors = new object[] { "Missing email confirmation" },
                 });
@@ -124,7 +125,7 @@ public sealed class AuthenticateController : Controller
             ValidIssuer = jwtConfig["ValidIssuer"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
         };
-        
+
         try
         {
             var principal = tokenHandler.ValidateToken(model.IdToken, validationParameters, out SecurityToken validatedToken);
@@ -217,7 +218,7 @@ public sealed class AuthenticateController : Controller
     {
         // prune expired logins
         var logins = await userManager.GetLoginsAsync(user);
-        foreach(var login in logins)
+        foreach (var login in logins)
         {
             var (id, exp) = DecodeLoginKey(login.ProviderKey);
             if (exp <= DateTime.UtcNow)
@@ -304,7 +305,7 @@ public sealed class AuthenticateController : Controller
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
-        
+
         return token;
     }
 }

@@ -1,7 +1,5 @@
 ﻿using iRLeagueApiCore.Client.Results;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -72,7 +70,7 @@ public sealed class HttpClientWrapper
 #endif
             var result = await httpClient.SendAsync(request, cancellationToken);
 #if DEBUG
-        logger.LogDebug("Returned: [StatusCode {StatusCode}]", result.StatusCode);
+            logger.LogDebug("Returned: [StatusCode {StatusCode}]", result.StatusCode);
 #endif
 
             if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiClient is not null)
@@ -94,7 +92,7 @@ public sealed class HttpClientWrapper
         var request = new HttpRequestMessage(method, new Uri(uri, UriKind.RelativeOrAbsolute));
         if (options is not null)
         {
-            foreach(var option in options)
+            foreach (var option in options)
             {
                 request.Options.TryAdd(option.Key, option.Value);
             }

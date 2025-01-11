@@ -26,6 +26,7 @@ public abstract class ReviewsHandlerBase<THandler, TRequest, TResponse> : Handle
             .Include(x => x.InvolvedTeams)
             .Include(x => x.AcceptedReviewVotes)
                 .ThenInclude(x => x.ReviewPenaltys)
+            .Include(x => x.Session)
             .Where(x => x.ReviewId == reviewId)
             .FirstOrDefaultAsync(cancellationToken);
     }

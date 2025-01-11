@@ -4,7 +4,6 @@ using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueApiCore.UnitTests.Fixtures;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Test;

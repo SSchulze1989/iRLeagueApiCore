@@ -5,9 +5,9 @@ namespace iRLeagueApiCore.Server.Handlers.Reviews;
 
 public record GetReviewRequest(long ReviewId, bool IncludeComments) : IRequest<ReviewModel>;
 
-public sealed class GetReviewHandler : ReviewsHandlerBase<GetReviewHandler,  GetReviewRequest, ReviewModel>
+public sealed class GetReviewHandler : ReviewsHandlerBase<GetReviewHandler, GetReviewRequest, ReviewModel>
 {
-    public GetReviewHandler(ILogger<GetReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetReviewRequest>> validators, 
+    public GetReviewHandler(ILogger<GetReviewHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetReviewRequest>> validators,
         IResultCalculationQueue resultCalculationQueue) : base(logger, dbContext, validators, resultCalculationQueue)
     {
     }

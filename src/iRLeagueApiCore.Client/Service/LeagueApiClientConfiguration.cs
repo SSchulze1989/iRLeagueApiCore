@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Client.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -30,7 +29,7 @@ public sealed class LeagueApiClientConfiguration
 
     public LeagueApiClientConfiguration UseTokenStore<T>() where T : class, ITokenStore
     {
-        services.Replace(ServiceDescriptor.Scoped<ITokenStore,  T>());
+        services.Replace(ServiceDescriptor.Scoped<ITokenStore, T>());
         return this;
     }
 

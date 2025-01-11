@@ -38,7 +38,7 @@ public sealed class TeamStandingCalculationServiceTests
         foreach (var (result, rowData) in tmp)
         {
             //result.ResultRows = result.ResultRows.Concat(new[] { rowData });
-            result.ResultRows = [..result.ResultRows, rowData];
+            result.ResultRows = [.. result.ResultRows, rowData];
         }
         var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
             .With(x => x.ResultKind, ResultKind.Team)
@@ -198,7 +198,7 @@ public sealed class TeamStandingCalculationServiceTests
             .With(x => x.SessionType, sessionType);
     }
 
-    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId, 
+    private IPostprocessComposer<StandingCalculationConfiguration> CalculationConfigurationBuilder(long leagueId, long eventId,
         ChampSeasonEntity? champSeason = null)
     {
         return fixture.Build<StandingCalculationConfiguration>()

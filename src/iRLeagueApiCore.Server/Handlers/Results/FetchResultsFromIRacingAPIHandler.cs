@@ -1,6 +1,5 @@
 ﻿using Aydsko.iRacingData;
 using Aydsko.iRacingData.Results;
-using iRLeagueApiCore.Client.ResultsParsing;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using System.Net;
@@ -10,7 +9,7 @@ namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record FetchResultsFromIRacingAPIRequest(long EventId, int IRSubsessionId) : IRequest<bool>;
 
-public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRacingAPIHandler,  FetchResultsFromIRacingAPIRequest, bool>
+public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRacingAPIHandler, FetchResultsFromIRacingAPIRequest, bool>
 {
     private readonly ICredentials credentials;
     private readonly IDataClient iRDataClient;

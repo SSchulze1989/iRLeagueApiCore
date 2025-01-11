@@ -1,14 +1,13 @@
 ﻿using iRLeagueApiCore.Common.Models;
-using iRLeagueDatabaseCore;
 
 namespace iRLeagueApiCore.Server.Handlers.Championships;
 
 public record GetChampSeasonFromSeasonChampionshipRequest(long SeasonId, long ChampionshipId) : IRequest<ChampSeasonModel>;
 
-public class GetChampSeasonFromSeasonChampionshipHandler : ChampSeasonHandlerBase<GetChampSeasonFromSeasonChampionshipHandler,  GetChampSeasonFromSeasonChampionshipRequest, ChampSeasonModel>
+public class GetChampSeasonFromSeasonChampionshipHandler : ChampSeasonHandlerBase<GetChampSeasonFromSeasonChampionshipHandler, GetChampSeasonFromSeasonChampionshipRequest, ChampSeasonModel>
 {
-    public GetChampSeasonFromSeasonChampionshipHandler(ILogger<GetChampSeasonFromSeasonChampionshipHandler> logger, LeagueDbContext dbContext, 
-        IEnumerable<IValidator<GetChampSeasonFromSeasonChampionshipRequest>> validators) 
+    public GetChampSeasonFromSeasonChampionshipHandler(ILogger<GetChampSeasonFromSeasonChampionshipHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetChampSeasonFromSeasonChampionshipRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }
