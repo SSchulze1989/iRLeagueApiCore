@@ -24,6 +24,7 @@ public sealed class GetChampSeasonFromSeasonHandler : ChampSeasonHandlerBase<Get
     {
         return await ChampSeasonsQuery()
             .Where(x => x.SeasonId == seasonId)
+            .OrderBy(x => x.Index)
             .Select(MapToChampSeasonModelExpression)
             .ToListAsync(cancellationToken);
     }
