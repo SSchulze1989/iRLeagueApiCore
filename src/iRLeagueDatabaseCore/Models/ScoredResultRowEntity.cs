@@ -70,6 +70,7 @@ public partial class ScoredResultRowEntity : ResultRowBase
     /// Will be deleted after imports have finished
     /// </summary>
     public long? ImportId { get; set; }
+    public string CountryCode { get; set; }
 
     public double BonusPoints { get; set; }
     public double PenaltyPoints { get; set; }

@@ -14,6 +14,7 @@ public partial class ResultRowEntity : ResultRowBase
     public long MemberId { get; set; }
     public long? TeamId { get; set; }
     public bool PointsEligible { get; set; }
+    public string CountryCode { get; set; }
 
 
     public virtual MemberEntity Member { get; set; }

@@ -24,7 +24,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageDescription>This package contains shared objects for all members of the iRLeagueDatabase-iRLeagueApi stack</PackageDescription>
-		<RepositoryUrl>https://github.com/SSchulze1989/iRLeagueApiCore.Common</RepositoryUrl>
+		<RepositoryUrl>https://github.com/SSchulze1989/iRLeagueApiCore</RepositoryUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

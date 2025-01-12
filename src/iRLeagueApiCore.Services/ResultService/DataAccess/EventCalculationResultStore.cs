@@ -168,6 +168,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
             .Where(x => row.ScoredMemberResultRowIds.Contains(x.ScoredResultRowId)).ToList();
         rowEntity.PenaltyTime = row.PenaltyTime;
         rowEntity.PenaltyPositions = row.PenaltyPositions;
+        rowEntity.CountryCode = row.CountryCode;
         return rowEntity;
     }
 
