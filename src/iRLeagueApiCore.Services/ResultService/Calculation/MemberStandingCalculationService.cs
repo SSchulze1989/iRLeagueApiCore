@@ -60,16 +60,16 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         return Task.FromResult(standingResult);
     }
 
-    private IEnumerable<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> CalculateMemberStandingRows(
+    private List<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> CalculateMemberStandingRows(
         Dictionary<long, IEnumerable<GroupedEventResult<long>>> previousMemberResults,
         Dictionary<long, GroupedEventResult<long>> currentMemberResult)
     {
         var memberIds = previousMemberResults.Keys.Concat(currentMemberResult.Keys).Distinct();
-        List<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> memberStandingRows = new();
+        List<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> memberStandingRows = [];
         foreach (var memberId in memberIds)
         {
             // sort by best race points each event 
-            var previousEventResults = (previousMemberResults.GetValueOrDefault(memberId) ?? Array.Empty<GroupedEventResult<long>>())
+            var previousEventResults = (previousMemberResults.GetValueOrDefault(memberId) ?? [])
                 .OrderByDescending(GetEventOrderValue)
                 .OrderBy(GetDropweekOverrideOrderValue);
             var currentResult = currentMemberResult.GetValueOrDefault(memberId);
@@ -87,6 +87,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
             standingRow.TeamId = lastRow.TeamId;
             standingRow.StartIrating = lastRow.SeasonStartIrating;
             standingRow.LastIrating = lastRow.NewIrating;
+            standingRow.CountryCode = lastRow.CountryCode;
 
             // accumulated data
             var previousStandingRow = new StandingRowCalculationResult(standingRow);
@@ -101,7 +102,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
 
             if (currentResult is not null)
             {
-                var currentSessionResults = previousEventResults.Concat(new[] { currentResult })
+                var currentSessionResults = previousEventResults.Concat([currentResult])
                     .OrderByDescending(GetEventOrderValue)
                     .OrderBy(GetDropweekOverrideOrderValue);
                 var currentMemberSessionResults = currentSessionResults.SelectMany(x => x.SessionResults);

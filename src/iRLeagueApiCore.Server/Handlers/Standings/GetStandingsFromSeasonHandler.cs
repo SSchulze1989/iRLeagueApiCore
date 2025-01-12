@@ -27,6 +27,7 @@ public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStan
             .FirstOrDefaultAsync(cancellationToken);
         var standings = await dbContext.Standings
             .Where(x => x.EventId == lastEventWithStandingsId)
+            .OrderBy(x => x.ChampSeason != null ? x.ChampSeason.Index : 999)
             .Select(MapToStandingModelExpression)
             .ToListAsync(cancellationToken);
         if (standings.Any() == false)

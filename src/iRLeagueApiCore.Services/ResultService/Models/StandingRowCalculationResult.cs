@@ -39,6 +39,7 @@ internal class StandingRowCalculationResult
         IncidentsChange = data.IncidentsChange;
         PositionChange = data.PositionChange;
         ResultRows = data.ResultRows;
+        CountryCode = data.CountryCode;
     }
 
     public long? MemberId { get; set; }
@@ -76,6 +77,7 @@ internal class StandingRowCalculationResult
     public int PositionChange { get; set; }
     public int StartIrating { get; set; }
     public int LastIrating { get; set; }
+    public string? CountryCode { get; set; }
 
     public IList<ResultRowCalculationResult> ResultRows { get; set; } = new List<ResultRowCalculationResult>();
 }

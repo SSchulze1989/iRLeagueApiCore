@@ -22,6 +22,7 @@ public sealed class GetStandingsFromEventHandler : StandingsHandlerBase<GetStand
     {
         var standings = await dbContext.Standings
             .Where(x => x.EventId == eventId)
+            .OrderBy(x => x.ChampSeason != null ? x.ChampSeason.Index : 999)
             .Select(MapToStandingModelExpression)
             .ToListAsync(cancellationToken);
         if (standings.Any() == false)
