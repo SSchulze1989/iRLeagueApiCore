@@ -11,14 +11,14 @@ public record UploadResultRequest(long EventId, ParseSimSessionResult ResultData
 public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, UploadResultRequest, bool>
 {
     private readonly IResultCalculationQueue calculationQueue;
-    private IDictionary<long, int> SeasonStartIratings;
+    private Dictionary<long, int> SeasonStartIratings;
 
     public UploadResultHandler(ILogger<UploadResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<UploadResultRequest>> validators,
         IResultCalculationQueue calculationQueue) :
         base(logger, dbContext, validators)
     {
         this.calculationQueue = calculationQueue;
-        SeasonStartIratings = new Dictionary<long, int>();
+        SeasonStartIratings = [];
     }
 
     public override async Task<bool> Handle(UploadResultRequest request, CancellationToken cancellationToken)
@@ -62,12 +62,6 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    private async Task<ParseSimSessionResult> ParseDataStream(Stream dataStream, CancellationToken cancellationToken)
-    {
-        return await JsonSerializer.DeserializeAsync<ParseSimSessionResult>(dataStream, cancellationToken: cancellationToken)
-            ?? throw new InvalidOperationException("Failed to parse results from json");
-    }
-
     private async Task<EventResultEntity> ReadResultsAsync(ParseSimSessionResult data, EventEntity @event,
         CancellationToken cancellationToken)
     {
@@ -90,7 +84,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         return result;
     }
 
-    private static ICollection<(int resultNr, int sessionNr)> CreateSessionMapping(IEnumerable<ParseSessionResult> sessionResults, EventEntity @event)
+    private static List<(int resultNr, int sessionNr)> CreateSessionMapping(IEnumerable<ParseSessionResult> sessionResults, EventEntity @event)
     {
         var map = new List<(int resultNr, int sessionNr)>();
 
@@ -146,7 +140,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         if (leagueMember == null)
         {
             var league = await dbContext.Leagues
-                .FirstAsync(x => x.Id == leagueId);
+                .FirstAsync(x => x.Id == leagueId, cancellationToken: cancellationToken);
             var (firstname, lastname) = GetFirstnameLastname(displayName);
             var member = new MemberEntity()
             {
@@ -227,7 +221,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         };
         var laps = data.results.Max(x => x.laps_complete);
         var resultRows = new List<ResultRowEntity>();
-        bool isTeamResult = data.results.Any(x => x.driver_results.Any());
+        bool isTeamResult = data.results.Any(x => x.driver_results.Length != 0);
         var dataRows = data.results.AsEnumerable();
         if (isTeamResult)
         {
@@ -246,7 +240,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
         return new KeyValuePair<int, SessionResultEntity>(sessionResultNr, sessionResult);
     }
 
-    private IRSimSessionDetailsEntity ReadDetails(ParseSimSessionResult data)
+    private static IRSimSessionDetailsEntity ReadDetails(ParseSimSessionResult data)
     {
         var details = new IRSimSessionDetailsEntity
         {
