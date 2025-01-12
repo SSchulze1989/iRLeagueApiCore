@@ -116,6 +116,9 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
                     TotalPoints = standingResultRow.ScoredResultRow.TotalPoints,
                     IsScored = standingResultRow.IsScored,
                 }).ToList(),
+                CountryCode = standingRow.ResultRows.Count != 0
+                    ? standingRow.ResultRows.OrderBy(x => x.ScoredResultRow.ScoredSessionResult.ScoredEventResult.Event.Date).Last().ScoredResultRow.CountryCode
+                    : null,
             }).ToList(),
     };
 
