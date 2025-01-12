@@ -63,4 +63,5 @@ public sealed class ParseSessionResultRow
     public bool friend { get; set; }
     public ParseSessionResultRow[] driver_results { get; set; } = [];
     public bool ai { get; set; }
+    public string? country_code { get; set; }
 }

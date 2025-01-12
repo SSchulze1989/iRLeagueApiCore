@@ -71,6 +71,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
         entity.TeamId = model.TeamId;
         entity.Team = team;
         entity.PointsEligible = model.PointsEligible;
+        entity.CountryCode = model.CountryCode;
         return entity;
     }
 
@@ -121,6 +122,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
         model.RacePoints = entity.RacePoints;
         model.TeamId = entity.TeamId;
         model.PointsEligible = entity.PointsEligible;
+        model.CountryCode = entity.CountryCode;
         return model;
     }
 
@@ -195,6 +197,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
                         TeamColor = (row.Team != null) ? row.Team.TeamColor : string.Empty,
                         PenaltyTime = row.PenaltyTime,
                         PenaltyPositions = row.PenaltyPositions,
+                        CountryCode = row.CountryCode,
                     }),
                 FastestLapTime = sessionResult.FastestLap,
                 FastestLapDriver = sessionResult.FastestLapDriver == null ? null : new()
@@ -278,6 +281,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
                         RacePoints = row.RacePoints,
                         TeamId = row.TeamId,
                         PointsEligible = row.PointsEligible,
+                        CountryCode = row.CountryCode,
                     }).ToList(),
             }).ToList(),
     };

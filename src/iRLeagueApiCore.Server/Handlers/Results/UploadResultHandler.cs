@@ -340,7 +340,8 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
             StartPosition = data.starting_position + 1,
             Status = data.reason_out_id,
             Team = team,
-            RacePoints = data.champ_points
+            RacePoints = data.champ_points,
+            CountryCode = data.country_code,
         };
         row.SeasonStartIRating = SeasonStartIratings.TryGetValue(row.Member.Id, out int irating) ? irating : row.OldIRating;
 

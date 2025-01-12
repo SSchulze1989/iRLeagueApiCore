@@ -93,4 +93,6 @@ public sealed class RawResultRowModel
     public long? TeamId { get; set; }
     [DataMember]
     public bool PointsEligible { get; set; }
+    [DataMember]
+    public string? CountryCode { get; set; }
 }

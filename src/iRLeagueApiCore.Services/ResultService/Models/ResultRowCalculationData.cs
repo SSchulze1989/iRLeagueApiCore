@@ -56,6 +56,7 @@ internal class ResultRowCalculationData : IPointRow, IPenaltyRow
     public bool PointsEligible { get; set; }
     public TimeSpan PenaltyTime { get; set; }
     public int PenaltyPositions { get; set; }
+    public string? CountryCode { get; set; }
     public ICollection<AddPenaltyCalculationData> AddPenalties { get; set; } = [];
     public ICollection<ReviewPenaltyCalculationResult> ReviewPenalties { get; set; } = [];
     IEnumerable<AddPenaltyCalculationData> IPenaltyRow.AddPenalties => AddPenalties;

@@ -281,6 +281,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         row.Status = data.ReasonOutId;
         row.RacePoints = data.ChampionshipPoints;
         row.SeasonStartIRating = SeasonStartIratings.TryGetValue(row.Member.Id, out int irating) ? irating : row.OldIRating;
+        row.CountryCode = data.CountryCode;
 
         return row;
     }
@@ -335,6 +336,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         row.Team = leagueMember.Team;
         row.RacePoints = data.ChampPoints;
         row.SeasonStartIRating = SeasonStartIratings.TryGetValue(row.Member.Id, out int irating) ? irating : row.OldIRating;
+        row.CountryCode = data.CountryCode;
 
         return row;
     }
