@@ -167,6 +167,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
                         Reason = x.Reason,
                     })
                     .FirstOrDefault(),
+                CountryCode = row.CountryCode,
             }).ToList(),
         }).ToList(),
     };

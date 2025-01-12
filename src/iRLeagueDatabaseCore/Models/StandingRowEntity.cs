@@ -46,6 +46,7 @@ public class StandingRowEntity
     public int PositionChange { get; set; }
     public int StartIrating { get; set; }
     public int LastIrating { get; set; }
+    public string CountryCode { get; set; }
 
     public virtual StandingEntity SeasonStanding { get; set; }
     public virtual MemberEntity Member { get; set; }

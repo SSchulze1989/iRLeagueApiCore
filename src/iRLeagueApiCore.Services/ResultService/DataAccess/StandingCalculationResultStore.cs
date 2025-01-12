@@ -119,6 +119,7 @@ internal class StandingCalculationResultStore : DatabaseAccessBase, IStandingCal
             rowEntity.ResultRows = MapToStandingResultRowsList(result.LeagueId, row.ResultRows, rowEntity.ResultRows, requiredEntities);
             rowEntity.StartIrating = row.StartIrating;
             rowEntity.LastIrating = row.LastIrating;
+            rowEntity.CountryCode = row.CountryCode;
         }
 
         var memberIds = result.StandingRows.Select(x => x.MemberId);

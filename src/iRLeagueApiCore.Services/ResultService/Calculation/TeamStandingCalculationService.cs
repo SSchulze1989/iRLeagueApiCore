@@ -49,6 +49,7 @@ internal sealed class TeamStandingCalculationService : StandingCalculationServic
             SeasonId = config.SeasonId,
             StandingConfigId = config.StandingConfigId,
             StandingRows = finalStandingRows,
+            ChampSeasonId = config.ChampSeasonId,
             IsTeamStanding = true
         };
         return Task.FromResult(standingResult);
