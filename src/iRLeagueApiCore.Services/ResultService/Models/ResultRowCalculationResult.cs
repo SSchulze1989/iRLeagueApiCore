@@ -57,6 +57,7 @@ internal sealed class ResultRowCalculationResult : ResultRowCalculationData
         PointsEligible = data.PointsEligible;
         PenaltyTime = data.PenaltyTime;
         PenaltyPositions = data.PenaltyPositions;
+        CountryCode = data.CountryCode;
     }
 
     public bool IsScored { get; set; }
