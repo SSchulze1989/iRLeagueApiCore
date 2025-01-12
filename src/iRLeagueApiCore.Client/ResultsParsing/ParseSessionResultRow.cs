@@ -61,6 +61,6 @@ public sealed class ParseSessionResultRow
     public ParseLivery livery { get; set; } = new();
     public bool watched { get; set; }
     public bool friend { get; set; }
-    public ParseSessionResultRow[] driver_results { get; set; } = Array.Empty<ParseSessionResultRow>();
+    public ParseSessionResultRow[] driver_results { get; set; } = [];
     public bool ai { get; set; }
 }

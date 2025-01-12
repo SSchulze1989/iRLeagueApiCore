@@ -121,7 +121,7 @@ public abstract class HandlerBase<THandler, TRequest, TResponse> : IRequestHandl
         return target;
     }
 
-    protected async Task<IDictionary<long, int>> GetMemberSeasonStartIratingAsync(long seasonId, CancellationToken cancellationToken)
+    protected async Task<Dictionary<long, int>> GetMemberSeasonStartIratingAsync(long seasonId, CancellationToken cancellationToken)
     {
         return (await dbContext.ResultRows
             .Where(x => x.SubResult.Result.Event.Schedule.SeasonId == seasonId)
@@ -153,7 +153,7 @@ public abstract class HandlerBase<THandler, TRequest, TResponse> : IRequestHandl
     protected static (string, string) GetFirstnameLastname(string name)
     {
         var parts = name.Split(' ', 2);
-        var fullName = (parts[0], parts.ElementAt(1) ?? string.Empty);
+        var fullName = (parts[0], parts.Length > 1 ? parts[1] : string.Empty);
         return fullName;
     }
 

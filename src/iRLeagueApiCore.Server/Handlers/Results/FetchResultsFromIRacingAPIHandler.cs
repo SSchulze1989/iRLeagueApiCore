@@ -3,6 +3,7 @@ using Aydsko.iRacingData.Results;
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using System.Net;
+using System.Threading;
 using System.Transactions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
@@ -13,7 +14,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
 {
     private readonly ICredentials credentials;
     private readonly IDataClient iRDataClient;
-    private IDictionary<long, int> SeasonStartIratings;
+    private Dictionary<long, int> SeasonStartIratings;
     private readonly IResultCalculationQueue calculationQueue;
 
     public FetchResultsFromIRacingAPIHandler(ILogger<FetchResultsFromIRacingAPIHandler> logger, LeagueDbContext dbContext,
@@ -22,7 +23,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
     {
         this.credentials = credentials;
         this.iRDataClient = iRDataClient;
-        SeasonStartIratings = new Dictionary<long, int>();
+        SeasonStartIratings = [];
         this.calculationQueue = calculationQueue;
     }
 
@@ -79,7 +80,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         return result;
     }
 
-    private static ICollection<(int resultNr, int sessionNr)> CreateSessionMapping(IEnumerable<SessionResults> sessionResults, EventEntity @event)
+    private static List<(int resultNr, int sessionNr)> CreateSessionMapping(IEnumerable<SessionResults> sessionResults, EventEntity @event)
     {
         var map = new List<(int resultNr, int sessionNr)>();
 
@@ -120,26 +121,61 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         return map;
     }
 
-    private async Task<LeagueMemberEntity> GetOrCreateMemberAsync(long leagueId, Result row, CancellationToken cancellationToken)
+    private async Task<TeamEntity?> GetTeamAsync(long leagueId, int? iRacingTeamId, CancellationToken cancellationToken)
+    {
+        if (iRacingTeamId is null)
+        {
+            return null;
+        }
+        return await dbContext.Teams
+            .Include(x => x.Members)
+            .Where(x => x.LeagueId == leagueId)
+            .Where(x => x.IRacingTeamId == iRacingTeamId)
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? dbContext.Teams.Local
+            .SingleOrDefault(x => x.IRacingTeamId == iRacingTeamId);
+    }
+
+    private async Task<TeamEntity> GetOrCreateTeamAsync(long leagueId, int iRacingTeamId, string teamName, CancellationToken cancellationToken)
+    {
+        iRacingTeamId = Math.Abs(iRacingTeamId);
+        var team = await GetTeamAsync(leagueId, iRacingTeamId, cancellationToken);
+        if (team is null)
+        {
+            var league = await dbContext.Leagues
+                .FirstAsync(x => x.Id == leagueId, cancellationToken);
+            team = new()
+            {
+                League = league,
+                LeagueId = league.Id,
+                IRacingTeamId = iRacingTeamId,
+                Name = teamName,
+            };
+            dbContext.Teams.Add(team);
+        }
+        return team;
+    }
+
+    private async Task<LeagueMemberEntity> GetOrCreateMemberAsync(long leagueId, int customerId, string displayName, CancellationToken cancellationToken)
     {
         var leagueMember = await dbContext.LeagueMembers
             .Include(x => x.Team)
             .Include(x => x.Member)
             .Where(x => x.LeagueId == leagueId)
-            .Where(x => x.Member.IRacingId == row.CustomerId.ToString())
+            .Where(x => x.Member.IRacingId == customerId.ToString())
             .SingleOrDefaultAsync(cancellationToken)
             ?? dbContext.LeagueMembers.Local
-            .SingleOrDefault(x => x.Member.IRacingId == row.CustomerId.ToString());
+            .SingleOrDefault(x => x.Member.IRacingId == customerId.ToString());
         if (leagueMember == null)
         {
             var league = await dbContext.Leagues
-                .FirstAsync(x => x.Id == leagueId);
-            var (firstname, lastname) = GetFirstnameLastname(row.DisplayName ?? string.Empty);
+                .FirstAsync(x => x.Id == leagueId, cancellationToken: cancellationToken);
+            var (firstname, lastname) = GetFirstnameLastname(displayName ?? string.Empty);
             var member = new MemberEntity()
             {
                 Firstname = firstname,
                 Lastname = lastname,
-                IRacingId = row.CustomerId.ToString(),
+                IRacingId = customerId.ToString(),
             };
             leagueMember = new LeagueMemberEntity()
             {
@@ -151,7 +187,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         else
         {
             // update member name
-            var (firstname, lastname) = GetFirstnameLastname(row.DisplayName ?? string.Empty);
+            var (firstname, lastname) = GetFirstnameLastname(displayName ?? string.Empty);
             leagueMember.Member.Firstname = firstname;
             leagueMember.Member.Lastname = lastname;
         }
@@ -161,14 +197,22 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
     private async Task<KeyValuePair<int, SessionResultEntity>> ReadSessionResultsAsync(long leagueId, SubSessionResult sessionData, SessionResults data,
         IRSimSessionDetailsEntity details, CancellationToken cancellationToken)
     {
-        var sessionResult = new SessionResultEntity();
-        sessionResult.LeagueId = leagueId;
-        sessionResult.IRSimSessionDetails = details;
-        sessionResult.SimSessionType = (SimSessionType)data.SimSessionType;
+        var sessionResult = new SessionResultEntity
+        {
+            LeagueId = leagueId,
+            IRSimSessionDetails = details,
+            SimSessionType = (SimSessionType)data.SimSessionType
+        };
         var laps = data.Results.Max(x => x.LapsComplete);
         var resultRows = new List<ResultRowEntity>();
         foreach (var row in data.Results)
         {
+            if (row.TeamId is not null)
+            {
+                var team = await GetOrCreateTeamAsync(leagueId, row.TeamId.Value, row.DisplayName, cancellationToken);
+                resultRows.AddRange(await ReadTeamResultRowAsync(leagueId, sessionData, row, laps, team, cancellationToken));
+                continue;
+            }
             resultRows.Add(await ReadResultRowAsync(leagueId, sessionData, row, laps, cancellationToken));
         }
         sessionResult.ResultRows = resultRows;
@@ -176,14 +220,79 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         return new KeyValuePair<int, SessionResultEntity>(sessionResultNr, sessionResult);
     }
 
+    private async Task<IEnumerable<ResultRowEntity>> ReadTeamResultRowAsync(long leagueId, SubSessionResult sessionData, Result data,
+        int laps, TeamEntity team, CancellationToken cancellationToken)
+    {
+        var resultRows = new List<ResultRowEntity>();
+        foreach (var driverData in data.DriverResults ?? [])
+        {
+            resultRows.Add(await ReadResultRowAsync(leagueId, sessionData, data, driverData, laps, team, cancellationToken));
+        }
+        return resultRows;
+    }
+
+    private async Task<ResultRowEntity> ReadResultRowAsync(long leagueId, SubSessionResult sessionData, Result teamData, DriverResult data,
+        int laps, TeamEntity team, CancellationToken cancellationToken)
+    {
+        var row = new ResultRowEntity();
+        var leagueMember = await GetOrCreateMemberAsync(leagueId, data.CustomerId, data.DisplayName, cancellationToken);
+        row.Team = leagueMember.Team = team;
+        row.LeagueId = leagueId;
+        row.AvgLapTime = data.AverageLap ?? TimeSpan.Zero;
+        row.Car = teamData.CarName;
+        row.CarClass = sessionData.CarClasses.FirstOrDefault(x => x.CarClassId == data.CarClassId)?.ShortName ?? string.Empty;
+        row.CarId = data.CarId;
+        row.CarNumber = data.Livery.CarNumber ?? string.Empty;
+        row.ClassId = data.CarClassId;
+        row.ClubId = data.ClubId;
+        row.ClubName = data.ClubName;
+        row.CompletedLaps = data.LapsComplete;
+        row.CompletedPct = laps != 0 ? data.LapsComplete / (double)laps : 0;
+        row.ContactLaps = "";
+        row.Division = data.Division;
+        row.FastestLapTime = data.BestLapTime ?? TimeSpan.Zero;
+        row.FastLapNr = data.BestLapNumber;
+        row.FinishPosition = data.Position + 1;
+        row.Incidents = data.Incidents;
+        row.Interval = ParseInterval(data.Interval ?? TimeSpan.Zero, data.LapsComplete, laps);
+        row.IRacingId = data.CustomerId.ToString();
+        row.LeadLaps = data.LapsLead;
+        row.License = sessionData.LicenseCategory;
+        row.Member = leagueMember.Member;
+        row.NewCpi = (int)data.NewCornersPerIncident;
+        row.NewIRating = data.NewIRating;
+        row.NewLicenseLevel = data.NewLicenseLevel;
+        row.NewSafetyRating = data.NewSubLevel;
+        row.NumContactLaps = -1;
+        row.NumOfftrackLaps = -1;
+        row.NumPitStops = -1;
+        row.OfftrackLaps = "";
+        row.OldCpi = (int)data.OldCornersPerIncident;
+        row.OldIRating = data.OldIRating;
+        row.OldLicenseLevel = data.OldLicenseLevel;
+        row.OldSafetyRating = data.OldSubLevel;
+        row.PittedLaps = "";
+        row.PointsEligible = true;
+        row.PositionChange = data.Position - data.StartingPosition;
+        row.QualifyingTime = data.BestQualifyingLapTime ?? TimeSpan.Zero;
+        row.QualifyingTimeAt = data.BestQualifyingLapAt?.UtcDateTime;
+        row.SimSessionType = -1;
+        row.StartPosition = data.StartingPosition + 1;
+        row.Status = data.ReasonOutId;
+        row.RacePoints = data.ChampionshipPoints;
+        row.SeasonStartIRating = SeasonStartIratings.TryGetValue(row.Member.Id, out int irating) ? irating : row.OldIRating;
+
+        return row;
+    }
+
     private async Task<ResultRowEntity> ReadResultRowAsync(long leagueId, SubSessionResult sessionData, Result data,
         int laps, CancellationToken cancellationToken)
     {
         var row = new ResultRowEntity();
-        var leagueMember = await GetOrCreateMemberAsync(leagueId, data, cancellationToken);
+        var leagueMember = await GetOrCreateMemberAsync(leagueId, data.CustomerId.GetValueOrDefault(), data.DisplayName, cancellationToken);
         row.LeagueId = leagueId;
         row.AvgLapTime = data.AverageLap ?? TimeSpan.Zero;
-        //row.Car = FIXME is this data important??
+        row.Car = data.CarName;
         row.CarClass = sessionData.CarClasses.FirstOrDefault(x => x.CarClassId == data.CarClassId)?.ShortName ?? string.Empty;
         row.CarId = data.CarId;
         row.CarNumber = data.Livery.CarNumber ?? string.Empty;
@@ -230,10 +339,9 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         return row;
     }
 
-    private IRSimSessionDetailsEntity ReadDetails(SubSessionResult data)
+    private static IRSimSessionDetailsEntity ReadDetails(SubSessionResult data)
     {
         var details = new IRSimSessionDetailsEntity();
-
         details.IRSessionId = data.SessionId;
         details.IRSubsessionId = data.SubSessionId;
         details.IRTrackId = data.Track.TrackId;
