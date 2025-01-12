@@ -88,5 +88,7 @@ public class StandingRowModel
     [DataMember]
     public int LastIrating { get; set; }
     [DataMember]
+    public string? CountryCode { get; set; }
+    [DataMember]
     public IEnumerable<StandingResultRowModel?> ResultRows { get; set; } = Array.Empty<StandingResultRowModel>();
 }
