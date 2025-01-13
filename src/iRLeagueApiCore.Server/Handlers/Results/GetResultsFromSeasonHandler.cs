@@ -23,13 +23,14 @@ public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFr
 
     private async Task<IEnumerable<SeasonEventResultModel>> MapToGetResultModelsFromSeasonAsync(long seasonId, CancellationToken cancellationToken)
     {
-        var seasonResults = await dbContext.ScoredEventResults
+        var seasonResults = (await dbContext.ScoredEventResults
             .Where(x => x.Event.Schedule.SeasonId == seasonId)
             .OrderBy(x => x.ResultConfigId)
             .Select(MapToEventResultModelExpression)
             .OrderBy(x => x.Index)
+            .ToListAsync(cancellationToken))
             .OrderBy(x => x.Date)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         var groupedResults = seasonResults.GroupBy(x => x.EventId);
         var seasonEventResults = groupedResults.Select(x => new SeasonEventResultModel()
