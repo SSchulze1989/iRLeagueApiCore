@@ -9,6 +9,7 @@ public sealed class UserDbContext : IdentityDbContext<ApplicationUser>
     {
 
     }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
