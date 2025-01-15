@@ -156,6 +156,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
     {
         LeagueId = eventResult.LeagueId,
         EventId = eventResult.EventId,
+        Date = eventResult.Event.Date,
         SessionResults = eventResult.SessionResults
             .OrderBy(sessionResult => sessionResult.Session.SessionNr)
             .Select(sessionResult => new SessionCalculationData()
@@ -229,6 +230,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
     {
         LeagueId = eventResult.LeagueId,
         EventId = eventResult.EventId,
+        Date = eventResult.Event.Date,
         SessionResults = eventResult.ScoredSessionResults
             .OrderBy(sessionResult => sessionResult.SessionNr)
             .Select(sessionResult => new SessionCalculationData()

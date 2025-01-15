@@ -74,7 +74,9 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
                 .OrderBy(GetDropweekOverrideOrderValue);
             var currentResult = currentMemberResult.GetValueOrDefault(memberId);
             var standingRow = new StandingRowCalculationResult();
-            var lastResult = currentResult ?? previousEventResults.FirstOrDefault();
+            var lastResult = currentResult ?? previousEventResults
+                .OrderBy(x => x.EventResult.Date)
+                .LastOrDefault();
             var lastRow = lastResult?.SessionResults.LastOrDefault()?.ResultRow;
             if (lastRow is null)
             {
