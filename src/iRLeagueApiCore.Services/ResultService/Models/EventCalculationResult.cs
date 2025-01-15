@@ -8,10 +8,12 @@ internal sealed class EventCalculationResult
     {
         LeagueId = data.LeagueId;
         EventId = data.EventId;
+        Date = data.Date;
     }
 
     public long LeagueId { get; set; }
     public long EventId { get; set; }
+    public DateTime? Date { get; set; }
     public long? ResultId { get; set; }
     public long? ChampSeasonId { get; set; }
     public long? ResultConfigId { get; set; }

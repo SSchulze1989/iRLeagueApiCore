@@ -90,6 +90,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
     {
         LeagueId = eventResult.LeagueId,
         EventId = eventResult.EventId,
+        Date = eventResult.Event.Date,
         Name = eventResult.Name,
         ResultConfigId = eventResult.ResultConfigId,
         ResultId = eventResult.ResultId,
