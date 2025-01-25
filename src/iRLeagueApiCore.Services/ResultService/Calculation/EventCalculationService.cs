@@ -23,12 +23,14 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
             throw new InvalidOperationException($"EventId in configuration and provided data set does not match -> config:{config.EventId} | data:{data.EventId}");
         }
 
-        EventCalculationResult result = new(data);
-        result.ResultId = config.ResultId;
-        result.ResultConfigId = config.ResultConfigId;
-        result.ChampSeasonId = config.ChampSeasonId;
-        result.Name = config.DisplayName;
-        List<SessionCalculationResult> sessionResults = new();
+        EventCalculationResult result = new(data)
+        {
+            ResultId = config.ResultId,
+            ResultConfigId = config.ResultConfigId,
+            ChampSeasonId = config.ChampSeasonId,
+            Name = config.DisplayName
+        };
+        List<SessionCalculationResult> sessionResults = [];
         foreach (var sessionConfig in config.SessionResultConfigurations.Where(x => x.IsCombinedResult == false).OrderBy(x => x.SessionNr))
         {
             var sessionData = data.SessionResults
@@ -53,8 +55,9 @@ internal sealed class EventCalculationService : ICalculationService<EventCalcula
             else
             {
                 var combinedSessionNrs = config.SessionResultConfigurations
-                .Where(x => x.IsCombinedResult == false)
-                .Select(x => x.SessionNr);
+                    .Where(x => x.IsCombinedResult == false)
+                    .Select(x => x.SessionNr)
+                    .ToList();
                 combinedRows = sessionResults
                     .Where(x => combinedSessionNrs.Contains(x.SessionNr))
                     .OrderByDescending(x => x.SessionNr)

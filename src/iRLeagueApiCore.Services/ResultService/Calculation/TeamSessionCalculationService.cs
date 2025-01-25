@@ -14,8 +14,12 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
 
     public override Task<SessionCalculationResult> Calculate(SessionCalculationData data)
     {
-        var memberRows = data.ResultRows.Select(x => new ResultRowCalculationResult(x))
+        IEnumerable<ResultRowCalculationResult> memberRows = data.ResultRows.Select(x => new ResultRowCalculationResult(x))
             .OrderBy(x => x.FinalPosition);
+        if (config.IsCombinedResult)
+        {
+            memberRows = CombineResults(memberRows, x => x.TeamId);
+        }
         var teamRowGroups = memberRows
             .GroupBy(x => x.TeamId)
             .Where(x => x.Key != null);
@@ -53,6 +57,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
         var dataRow = teamMemberRows.First();
         var teamRow = new ResultRowCalculationResult()
         {
+            SessionType = dataRow.SessionType,
             TeamId = dataRow.TeamId,
             TeamColor = dataRow.TeamColor,
             TeamName = dataRow.TeamName,
