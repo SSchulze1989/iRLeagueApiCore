@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Mocking.Extensions;
 using iRLeagueApiCore.Services.ResultService.Calculation;
+using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService.Calculation;
@@ -290,6 +291,7 @@ public sealed class TeamSessionCalculationServiceTests
             .With(x => x.LeagueId, leagueId)
             .With(x => x.SessionId, sessionId)
             .With(x => x.ResultKind, ResultKind.Team)
+            .With(x => x.IsCombinedResult, false)
             .Create();
     }
 
