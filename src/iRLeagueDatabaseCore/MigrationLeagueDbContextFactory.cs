@@ -8,10 +8,16 @@ internal class MigrationLeagueDbContextFactory : IDesignTimeDbContextFactory<Lea
 {
     public LeagueDbContext CreateDbContext(string[] args)
     {
-        var connectionString = Environment.GetEnvironmentVariable("EFCORETOOLSDB")
-            ?? throw new InvalidOperationException("No connection string for migration provided. Please set $env:EFCORETOOLSDB");
+        var connectionString = Environment.GetEnvironmentVariable("EFCORETOOLSDB");
         var optionsBuilder = new DbContextOptionsBuilder<LeagueDbContext>();
-        optionsBuilder.UseMySQL(connectionString);
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            optionsBuilder.UseMySQL();
+        }
+        else
+        {
+            optionsBuilder.UseMySQL(connectionString);
+        }
         var leagueProvider = Mock.Of<ILeagueProvider>();
 
         var dbContext = new LeagueDbContext(optionsBuilder.Options, leagueProvider);
