@@ -46,6 +46,11 @@ jobs:
   push-to-dockerhub:
     name: Push image to dockerhub
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
 
     steps:
     - name: Check out the repo
@@ -69,7 +74,7 @@ jobs:
       with:
         context: .
         file: ./Dockerfile
-        push: false
+        push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
@@ -78,4 +83,4 @@ jobs:
       with:
         subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
         subject-digest: ${{ steps.push.outputs.digest }}
-        push-to-registry: false
+        push-to-registry: true
