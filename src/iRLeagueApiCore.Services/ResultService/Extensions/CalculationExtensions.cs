@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Services.ResultService.Extensions;
+﻿using iRLeagueApiCore.Common.Enums;
+
+namespace iRLeagueApiCore.Services.ResultService.Extensions;
 
 public static class CalculationExtensions
 {
@@ -28,4 +30,13 @@ public static class CalculationExtensions
             .Where(x => keys.Contains(x.Key))
             .Select(x => x.Value);
     }
+
+    public static int GetRaceStatusOrderValue(this RaceStatus raceStatus) => raceStatus switch
+    {
+        RaceStatus.Running => 0,
+        RaceStatus.Disconnected => 1,
+        RaceStatus.Disqualified => 2,
+        RaceStatus.Unknown => 3,
+        _ => 99,
+    };
 }

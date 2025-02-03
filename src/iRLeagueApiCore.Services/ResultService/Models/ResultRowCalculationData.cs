@@ -28,7 +28,7 @@ internal class ResultRowCalculationData : IPointRow, IPenaltyRow
     public double LeadLaps { get; set; }
     public int FastLapNr { get; set; }
     public double Incidents { get; set; }
-    public int Status { get; set; }
+    public RaceStatus Status { get; set; }
     public TimeSpan QualifyingTime { get; set; }
     public TimeSpan Interval { get; set; }
     public TimeSpan AvgLapTime { get; set; }

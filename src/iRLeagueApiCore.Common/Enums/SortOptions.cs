@@ -54,4 +54,5 @@ public enum SortOptions
     RacesScoredDesc,
     RacesInPointsAsc,
     RacesInPointsDesc,
+    StatusDSQ,
 }
