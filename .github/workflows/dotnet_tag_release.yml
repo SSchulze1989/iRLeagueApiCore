@@ -3,41 +3,79 @@ name: .NET
 on:
   push:
     tags: 
-      - "*"
+      - "*.*.*"
 
 jobs:
-  publish:
-    env:
-      BUILD_CONFIG: Release
-      NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
-      TEST_USER: root
-      TEST_PASSWORD: TestPass123
-      TEST_DATABASE: TestDatabase
-      DB_TEST_PROJECT: test/DbIntegrationTests
+  # publish:
+  #   name: Publish packages to NuGet
+  #   env:
+  #     BUILD_CONFIG: Release
+  #     NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
+  #     TEST_USER: root
+  #     TEST_PASSWORD: TestPass123
+  #     TEST_DATABASE: TestDatabase
+  #     DB_TEST_PROJECT: test/DbIntegrationTests
 
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Setup .NET 8
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: 8.0.x
+  #       source-url: https://api.nuget.org/v3/index.json
+  #   - name: Setup MySQL
+  #     uses: mirromutth/mysql-action@v1.1
+  #     with:        
+  #       # Required if "mysql user" is empty, default is empty. The root superuser password
+  #       mysql root password: $TEST_PASSWORD
+  #       # MYSQL_DATABASE - name for the default database that is created
+  #       mysql database: $TEST_DATABASE
+  #   - name: Set secrets
+  #     run: dotnet user-secrets set "ConnectionStrings:ModelDb" "server=localhost;database=$TEST_DATABASE;user=$TEST_USER;password=$TEST_PASSWORD" --project $DB_TEST_PROJECT
+  #   - name: Restore dependencies
+  #     run: dotnet restore
+  #   - name: Build
+  #     run: dotnet build -c $BUILD_CONFIG --no-restore
+  #   - name: Test
+  #     run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
+  #   - name: Publish
+  #     run: dotnet nuget push **\*.nupkg --skip-duplicate -k ${NUGET_AUTH_TOKEN}
+
+  push-to-dockerhub:
+    name: Push image to dockerhub
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v3
+    - name: Check out the repo
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
       with:
-        dotnet-version: 8.0.x
-        source-url: https://api.nuget.org/v3/index.json
-    - name: Setup MySQL
-      uses: mirromutth/mysql-action@v1.1
-      with:        
-        # Required if "mysql user" is empty, default is empty. The root superuser password
-        mysql root password: $TEST_PASSWORD
-        # MYSQL_DATABASE - name for the default database that is created
-        mysql database: $TEST_DATABASE
-    - name: Set secrets
-      run: dotnet user-secrets set "ConnectionStrings:ModelDb" "server=localhost;database=$TEST_DATABASE;user=$TEST_USER;password=$TEST_PASSWORD" --project $DB_TEST_PROJECT
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build -c $BUILD_CONFIG --no-restore
-    - name: Test
-      run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
-    - name: Publish
-      run: dotnet nuget push **\*.nupkg --skip-duplicate -k ${NUGET_AUTH_TOKEN}
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: sschulze1989/irleagueapicore.server
+
+    - name: Build and push Docker image
+      id: push
+      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Generate artifact attestation
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: false
