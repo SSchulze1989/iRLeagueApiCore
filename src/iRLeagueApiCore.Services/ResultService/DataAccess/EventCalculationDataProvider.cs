@@ -82,7 +82,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         return data;
     }
 
-    private EventCalculationData FillFastestLapTimes(EventCalculationData data)
+    private static EventCalculationData FillFastestLapTimes(EventCalculationData data)
     {
         foreach (var sessionResult in data.SessionResults)
         {
@@ -218,7 +218,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                         RacePoints = row.RacePoints,
                         SeasonStartIrating = row.SeasonStartIRating,
                         StartPosition = row.StartPosition,
-                        Status = row.Status,
+                        Status = (RaceStatus)row.Status,
                         TotalPoints = row.RacePoints,
                         PointsEligible = row.PointsEligible,
                         CountryCode = row.CountryCode,
@@ -276,7 +276,7 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
                         PenaltyPoints = row.PenaltyPoints,
                         SeasonStartIrating = row.SeasonStartIRating,
                         StartPosition = row.StartPosition,
-                        Status = row.Status,
+                        Status = (RaceStatus)row.Status,
                         TotalPoints = row.RacePoints,
                         PointsEligible = row.PointsEligible,
                         PenaltyTime = row.PenaltyTime,

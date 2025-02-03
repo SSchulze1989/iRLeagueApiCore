@@ -146,7 +146,7 @@ internal sealed class StandingCalculationDataProvider : DatabaseAccessBase, ISta
                 RacePoints = row.RacePoints,
                 SeasonStartIrating = row.SeasonStartIRating,
                 StartPosition = row.StartPosition,
-                Status = row.Status,
+                Status = (RaceStatus)row.Status,
                 TotalPoints = row.RacePoints,
                 BonusPoints = row.BonusPoints,
                 ClubName = row.ClubName,

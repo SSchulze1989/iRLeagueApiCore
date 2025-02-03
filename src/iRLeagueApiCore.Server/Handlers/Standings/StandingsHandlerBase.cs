@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Standings;
 using System.Linq.Expressions;
 
@@ -112,7 +113,7 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
                     RacePoints = standingResultRow.ScoredResultRow.RacePoints,
                     SeasonStartIrating = standingResultRow.ScoredResultRow.SeasonStartIRating,
                     StartPosition = standingResultRow.ScoredResultRow.StartPosition,
-                    Status = standingResultRow.ScoredResultRow.Status,
+                    Status = (RaceStatus)standingResultRow.ScoredResultRow.Status,
                     TotalPoints = standingResultRow.ScoredResultRow.TotalPoints,
                     IsScored = standingResultRow.IsScored,
                 }).ToList(),

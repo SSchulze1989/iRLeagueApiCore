@@ -68,6 +68,10 @@ internal sealed class ColumnValueRowFilter : RowFilter<ResultRowCalculationResul
         {
             return values.Select(x => TimeSpan.Parse(x)).Cast<IComparable>();
         }
+        if (type.IsEnum)
+        {
+            return values.Select(x => Enum.Parse(type, x)).Cast<IComparable>();
+        }
         return values.Select(x => Convert.ChangeType(x, type, CultureInfo.InvariantCulture)).Cast<IComparable>();
     }
 }

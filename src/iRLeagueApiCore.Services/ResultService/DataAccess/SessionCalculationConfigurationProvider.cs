@@ -148,6 +148,9 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             pointRule.PointFilters = CreatePointsEligibleFilter();
         }
 
+        // Move dsq drivers to bottom by default
+        pointRule.PointSortOptions = [SortOptions.StatusDSQ, .. pointRule.PointSortOptions];
+
         // Add normal status filter for Disqualified drivers, when status is not explicitly filtered already.
         var hasStatusPointFilter = configurationEntity.PointFilters.Any(x => x.Conditions.Any(y => y.ColumnPropertyName == nameof(ResultRowCalculationResult.Status)));
         if (hasStatusPointFilter == false)
@@ -155,7 +158,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             var statusFilter = (FilterCombination.And, new ColumnValueRowFilter(
                 propertyName: nameof(ResultRowCalculationResult.Status),
                 comparatorType: ComparatorType.IsEqual,
-                values: [((int)RaceStatus.Disqualified).ToString()],
+                values: [RaceStatus.Disqualified.ToString()],
                 action: MatchedValueAction.Remove) as RowFilter<ResultRowCalculationResult>);
             pointRule.PointFilters = new FilterGroupRowFilter<ResultRowCalculationResult>(
                 pointRule.PointFilters.GetFilters().Concat([statusFilter]));
@@ -211,7 +214,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return MapToFilterGroup(pointFilters.Select(x => x.Conditions.FirstOrDefault()));
     }
 
-    private static IReadOnlyDictionary<int, T> PointsPerPlaceToDictionary<T>(IEnumerable<T> points)
+    private static Dictionary<int, T> PointsPerPlaceToDictionary<T>(IEnumerable<T> points)
     {
         return points
             .Select((x, i) => new { pos = i + 1, value = x })

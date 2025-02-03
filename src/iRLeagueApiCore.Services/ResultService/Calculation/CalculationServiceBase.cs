@@ -127,7 +127,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
                 row.PenaltyPoints += sessionRow.PenaltyPoints;
                 row.RacePoints += sessionRow.RacePoints;
                 row.PointsEligible |= sessionRow.PointsEligible;
-                row.Status = Math.Min(row.Status, sessionRow.Status);
+                row.Status = CombineRaceStatus(row.Status, sessionRow.Status);
             }
             // handle practice and qualy sessions separately
             var otherSessions = group.Except(raceSessions);
@@ -152,6 +152,29 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
 
         return combined.ToList();
+    }
+
+    protected static RaceStatus CombineRaceStatus(params RaceStatus[] raceStatuses)
+    {
+        if (raceStatuses.Length == 0)
+        {
+            return RaceStatus.Unknown;
+        }
+
+        var currentStatus = raceStatuses[0];
+        foreach (var raceStatus in raceStatuses.Skip(1))
+        {
+            if (currentStatus == raceStatus)
+            {
+                continue;
+            }
+            if (currentStatus.GetRaceStatusOrderValue() <= raceStatus.GetRaceStatusOrderValue())
+            {
+                continue;
+            }
+            currentStatus = raceStatus;
+        }
+        return currentStatus;
     }
 
     private static AddPenaltyCalculationData CreateAddPenaltyFromReviewPenalty(ResultRowCalculationResult row, ReviewPenaltyCalculationResult reviewPenalty)
@@ -202,7 +225,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     {
         foreach (var row in rows.Where(x => x.AddPenalties.Any(x => x.Type == PenaltyType.Disqualification)))
         {
-            row.Status = (int)RaceStatus.Disqualified;
+            row.Status = RaceStatus.Disqualified;
         }
         return rows;
     }

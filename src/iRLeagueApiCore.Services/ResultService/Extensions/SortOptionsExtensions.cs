@@ -1,5 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Services.ResultService.Models;
+using Mysqlx.Resultset;
 
 namespace iRLeagueApiCore.Services.ResultService.Extensions;
 
@@ -37,6 +38,7 @@ internal static class SortOptionsExtensions
             SortOptions.TotalPtsWoBonusDesc => row => -(row.RacePoints - row.PenaltyPoints),
             SortOptions.TotalPtsWoPenaltyAsc => row => row.RacePoints + row.BonusPoints,
             SortOptions.TotalPtsWoPenaltyDesc => row => -(row.RacePoints + row.BonusPoints),
+            SortOptions.StatusDSQ => row => row.Status == RaceStatus.Disqualified ? 1 : 0,
             _ => row => 0,
         };
     }

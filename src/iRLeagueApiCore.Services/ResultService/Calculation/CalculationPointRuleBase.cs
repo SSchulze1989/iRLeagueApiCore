@@ -10,10 +10,10 @@ internal abstract class CalculationPointRuleBase : PointRule<ResultRowCalculatio
     public FilterGroupRowFilter<ResultRowCalculationResult> PointFilters { get; set; } = new();
     public FilterGroupRowFilter<ResultRowCalculationResult> ChampSeasonFilters { get; set; } = new();
     public FilterGroupRowFilter<ResultRowCalculationResult> ResultFilters { get; set; } = new();
-    public IEnumerable<SortOptions> PointSortOptions { get; set; } = Array.Empty<SortOptions>();
-    public IEnumerable<SortOptions> FinalSortOptions { get; set; } = Array.Empty<SortOptions>();
-    public IEnumerable<BonusPointConfiguration> BonusPoints { get; set; } = Array.Empty<BonusPointConfiguration>();
-    public IEnumerable<AutoPenaltyConfigurationData> AutoPenalties { get; set; } = Array.Empty<AutoPenaltyConfigurationData>();
+    public IEnumerable<SortOptions> PointSortOptions { get; set; } = [];
+    public IEnumerable<SortOptions> FinalSortOptions { get; set; } = [];
+    public IEnumerable<BonusPointConfiguration> BonusPoints { get; set; } = [];
+    public IEnumerable<AutoPenaltyConfigurationData> AutoPenalties { get; set; } = [];
 
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetResultFilters() => ResultFilters;
     public override FilterGroupRowFilter<ResultRowCalculationResult> GetPointFilters() => PointFilters;
