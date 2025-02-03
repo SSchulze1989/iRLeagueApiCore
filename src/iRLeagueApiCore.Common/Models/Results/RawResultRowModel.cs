@@ -28,7 +28,7 @@ public sealed class RawResultRowModel
     [DataMember]
     public double Incidents { get; set; }
     [DataMember]
-    public RaceStatus Status { get; set; }
+    public int Status { get; set; }
     [DataMember]
     public TimeSpan QualifyingTime { get; set; }
     [DataMember]

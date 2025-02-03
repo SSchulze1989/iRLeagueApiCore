@@ -113,7 +113,7 @@ public abstract class StandingsHandlerBase<THandler, TRequest, TResponse> : Hand
                     RacePoints = standingResultRow.ScoredResultRow.RacePoints,
                     SeasonStartIrating = standingResultRow.ScoredResultRow.SeasonStartIRating,
                     StartPosition = standingResultRow.ScoredResultRow.StartPosition,
-                    Status = (RaceStatus)standingResultRow.ScoredResultRow.Status,
+                    Status = standingResultRow.ScoredResultRow.Status,
                     TotalPoints = standingResultRow.ScoredResultRow.TotalPoints,
                     IsScored = standingResultRow.IsScored,
                 }).ToList(),
