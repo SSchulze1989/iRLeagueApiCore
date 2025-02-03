@@ -37,7 +37,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build -c $BUILD_CONFIG --no-restore
+      run: dotnet build -c $BUILD_CONFIG --no-restore -p:TreatWarningsAsErrors=true
     - name: Test
       run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
     - name: Publish
