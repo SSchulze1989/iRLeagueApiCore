@@ -32,7 +32,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
         entity.LeadLaps = model.LeadLaps;
         entity.FastLapNr = model.FastLapNr;
         entity.Incidents = model.Incidents;
-        entity.Status = model.Status;
+        entity.Status = (int)model.Status;
         entity.QualifyingTime = model.QualifyingTime;
         entity.Interval = model.Interval;
         entity.AvgLapTime = model.AvgLapTime;
@@ -89,7 +89,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
         model.LeadLaps = entity.LeadLaps;
         model.FastLapNr = entity.FastLapNr;
         model.Incidents = entity.Incidents;
-        model.Status = entity.Status;
+        model.Status = (RaceStatus)entity.Status;
         model.QualifyingTime = entity.QualifyingTime;
         model.Interval = entity.Interval;
         model.AvgLapTime = entity.AvgLapTime;
@@ -248,7 +248,7 @@ public abstract class ResultHandlerBase<THandler, TRequest, TResponse> : Handler
                         LeadLaps = row.LeadLaps,
                         FastLapNr = row.FastLapNr,
                         Incidents = row.Incidents,
-                        Status = row.Status,
+                        Status = (RaceStatus)row.Status,
                         QualifyingTime = row.QualifyingTime,
                         Interval = row.Interval,
                         AvgLapTime = row.AvgLapTime,

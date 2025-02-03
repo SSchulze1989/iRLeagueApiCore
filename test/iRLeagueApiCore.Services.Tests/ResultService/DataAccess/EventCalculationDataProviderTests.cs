@@ -176,7 +176,7 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         testRow.LeadLaps.Should().Be(compareRow.LeadLaps);
         testRow.FastLapNr.Should().Be(compareRow.FastLapNr);
         testRow.Incidents.Should().Be(compareRow.Incidents);
-        testRow.Status.Should().Be(compareRow.Status);
+        testRow.Status.Should().Be((RaceStatus)compareRow.Status);
         testRow.QualifyingTime.Should().Be(compareRow.QualifyingTime);
         testRow.Interval.Should().Be(compareRow.Interval);
         testRow.AvgLapTime.Should().Be(compareRow.AvgLapTime);

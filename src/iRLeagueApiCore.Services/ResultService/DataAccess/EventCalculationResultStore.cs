@@ -70,7 +70,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         return sessionResultEntities;
     }
 
-    private ScoredSessionResultEntity MapToScoredSessionResultEntity(SessionCalculationResult result, ScoredSessionResultEntity entity,
+    private static ScoredSessionResultEntity MapToScoredSessionResultEntity(SessionCalculationResult result, ScoredSessionResultEntity entity,
         RequiredEntities requiredEntities)
     {
         entity.Name = result.Name;
@@ -88,7 +88,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         return entity;
     }
 
-    private ICollection<ScoredResultRowEntity> MapToScoredResultRows(IEnumerable<ResultRowCalculationResult> resultRows,
+    private static ICollection<ScoredResultRowEntity> MapToScoredResultRows(IEnumerable<ResultRowCalculationResult> resultRows,
         ICollection<ScoredResultRowEntity> rowEntities, RequiredEntities requiredEntities)
     {
         var keepRows = new List<ScoredResultRowEntity>();
@@ -120,7 +120,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         return rowEntities;
     }
 
-    private ScoredResultRowEntity MaptoScoredResultRow(ResultRowCalculationResult row, ScoredResultRowEntity rowEntity,
+    private static ScoredResultRowEntity MaptoScoredResultRow(ResultRowCalculationResult row, ScoredResultRowEntity rowEntity,
         RequiredEntities requiredEntities)
     {
         rowEntity.Member = requiredEntities.Members.FirstOrDefault(x => x.Id == row.MemberId);
@@ -162,7 +162,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         rowEntity.ReviewPenalties = MapToReviewPenaltyList(row, rowEntity.ReviewPenalties, requiredEntities);
         rowEntity.SeasonStartIRating = row.SeasonStartIrating;
         rowEntity.StartPosition = row.StartPosition;
-        rowEntity.Status = row.Status;
+        rowEntity.Status = (int)row.Status;
         rowEntity.TotalPoints = row.TotalPoints;
         rowEntity.TeamResultRows = requiredEntities.ScoredResultRows
             .Where(x => row.ScoredMemberResultRowIds.Contains(x.ScoredResultRowId)).ToList();
@@ -172,7 +172,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
         return rowEntity;
     }
 
-    private ICollection<ReviewPenaltyEntity> MapToReviewPenaltyList(ResultRowCalculationResult row, ICollection<ReviewPenaltyEntity> penaltyEntities,
+    private static ICollection<ReviewPenaltyEntity> MapToReviewPenaltyList(ResultRowCalculationResult row, ICollection<ReviewPenaltyEntity> penaltyEntities,
         RequiredEntities requiredEntities)
     {
         foreach (var penalty in row.ReviewPenalties)

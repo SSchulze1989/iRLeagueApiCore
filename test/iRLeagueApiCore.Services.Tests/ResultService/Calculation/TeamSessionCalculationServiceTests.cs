@@ -212,7 +212,7 @@ public sealed class TeamSessionCalculationServiceTests
                 testRow.FinalPosition.Should().Be(position + penalty.Positions);
                 break;
             case PenaltyType.Disqualification:
-                testRow.Status.Should().Be((int)RaceStatus.Disqualified);
+                testRow.Status.Should().Be(RaceStatus.Disqualified);
                 break;
             default:
                 break;
