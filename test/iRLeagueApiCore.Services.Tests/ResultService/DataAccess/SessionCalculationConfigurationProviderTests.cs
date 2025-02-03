@@ -828,6 +828,27 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         }
     }
 
+    [Fact]
+    public async Task GetConfiguration_ShouldProvidePointRuleWithDSQSortOptionAsDefault()
+    {
+        var @event = await GetFirstEventEntity();
+        var config = accessMockHelper.CreateConfiguration(@event);
+        dbContext.ResultConfigurations.Add(config);
+        await dbContext.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var test = await sut.GetConfigurations(@event, config);
+
+        foreach (var sessionConfig in test)
+        {
+            if (sessionConfig.PointRule is CalculationPointRuleBase baseRule)
+            {
+                baseRule.PointSortOptions.Should().HaveCountGreaterThan(0);
+                baseRule.PointSortOptions.Should().HaveElementAt(0, SortOptions.StatusDSQ);
+            }
+        }
+    }
+
     private SessionCalculationConfigurationProvider CreateSut()
     {
         return fixture.Create<SessionCalculationConfigurationProvider>();
