@@ -530,7 +530,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             testFilter.Should().NotBeNull();
             testFilter!.Comparator.ComparatorType.Should().Be(ComparatorType.IsEqual);
             testFilter.Comparator.Action.Should().Be(MatchedValueAction.Remove);
-            testFilter.FilterValues.Should().BeEquivalentTo(new[] { (int)RaceStatus.Disqualified });
+            testFilter.FilterValues.Should().BeEquivalentTo([RaceStatus.Disqualified]);
         }
     }
 
@@ -544,13 +544,10 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             .With(x => x.Comparator, ComparatorType.NotEqual)
             .With(x => x.Action, MatchedValueAction.Keep)
             .With(x => x.ColumnPropertyName, nameof(ResultRowCalculationResult.Status))
-            .With(x => x.FilterValues, new[] { ((int)RaceStatus.Disconnected).ToString() })
+            .With(x => x.FilterValues, [RaceStatus.Disconnected.ToString()])
             .Create();
         var filter = fixture.Build<FilterOptionEntity>()
-            .With(x => x.Conditions, new[]
-            {
-                    condition,
-            })
+            .With(x => x.Conditions, [condition])
             .Without(x => x.PointFilterResultConfig)
             .Without(x => x.ResultFilterResultConfig)
             .Without(x => x.ChampSeason)
@@ -574,7 +571,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
             testFilter.Should().NotBeNull();
             testFilter!.Comparator.ComparatorType.Should().Be(ComparatorType.NotEqual);
             testFilter.Comparator.Action.Should().Be(MatchedValueAction.Keep);
-            testFilter.FilterValues.Should().BeEquivalentTo(new[] { (int)RaceStatus.Disconnected });
+            testFilter.FilterValues.Should().BeEquivalentTo([RaceStatus.Disconnected]);
         }
     }
 

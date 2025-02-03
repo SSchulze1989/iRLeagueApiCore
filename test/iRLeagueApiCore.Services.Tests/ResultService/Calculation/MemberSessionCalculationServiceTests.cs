@@ -659,7 +659,7 @@ public sealed class MemberSessionCalculationServiceTests
         const int rowCount = 3;
         var data = GetCalculationData();
         data.ResultRows = TestRowBuilder()
-            .With(x => x.Status, (int)RaceStatus.Running)
+            .With(x => x.Status, RaceStatus.Running)
             .CreateMany(rowCount);
         var addPenalty = fixture.Build<AddPenaltyCalculationData>()
             .With(x => x.Type, PenaltyType.Disqualification)
@@ -673,7 +673,7 @@ public sealed class MemberSessionCalculationServiceTests
         var test = await sut.Calculate(data);
 
         var testResultRow = test.ResultRows.First(x => x.ScoredResultRowId == penaltyRow.ScoredResultRowId);
-        testResultRow.Status.Should().Be((int)RaceStatus.Disqualified);
+        testResultRow.Status.Should().Be(RaceStatus.Disqualified);
     }
 
     [Fact]

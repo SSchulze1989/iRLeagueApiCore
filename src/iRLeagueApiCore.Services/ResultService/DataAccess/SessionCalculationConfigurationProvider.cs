@@ -158,7 +158,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
             var statusFilter = (FilterCombination.And, new ColumnValueRowFilter(
                 propertyName: nameof(ResultRowCalculationResult.Status),
                 comparatorType: ComparatorType.IsEqual,
-                values: [((int)RaceStatus.Disqualified).ToString()],
+                values: [RaceStatus.Disqualified.ToString()],
                 action: MatchedValueAction.Remove) as RowFilter<ResultRowCalculationResult>);
             pointRule.PointFilters = new FilterGroupRowFilter<ResultRowCalculationResult>(
                 pointRule.PointFilters.GetFilters().Concat([statusFilter]));
