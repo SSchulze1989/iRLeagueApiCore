@@ -5,7 +5,7 @@ using iRLeagueApiCore.TrackImport.Service;
 
 namespace iRLeagueApiCore.Server.Handlers.Tracks;
 
-public record ImportTracksCommand() : IRequest;
+public record ImportTracksCommand() : IRequest<Unit>;
 
 public sealed class ImportTracksHandler : HandlerBase<ImportTracksHandler, ImportTracksCommand, Unit>
 {

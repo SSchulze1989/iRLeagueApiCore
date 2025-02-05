@@ -7,8 +7,8 @@ namespace iRLeagueApiCore.Server.Handlers.Leagues;
 
 public record SearchIracingLeaguesRequest(string Search, int Page, int PageSize) : IRequest<PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>>;
 
-public class SearchIracingLeaguesHandler : HandlerBase<SearchIracingLeaguesHandler, SearchIracingLeaguesRequest>,
-    IRequestHandler<SearchIracingLeaguesRequest, PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>>
+public class SearchIracingLeaguesHandler : HandlerBase<SearchIracingLeaguesHandler, SearchIracingLeaguesRequest, 
+    PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>>, IRequestHandler<SearchIracingLeaguesRequest, PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>>
 {
     private readonly IDataClient dataClient;
 
@@ -18,7 +18,7 @@ public class SearchIracingLeaguesHandler : HandlerBase<SearchIracingLeaguesHandl
         this.dataClient = dataClient;
     }
 
-    public async Task<PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>> Handle(SearchIracingLeaguesRequest request, CancellationToken cancellationToken)
+    public override async Task<PaginatedResultModel<IEnumerable<SearchIracingLeagueResultModel>>> Handle(SearchIracingLeaguesRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var lowerbound = (request.Page - 1) * request.PageSize + 1;
