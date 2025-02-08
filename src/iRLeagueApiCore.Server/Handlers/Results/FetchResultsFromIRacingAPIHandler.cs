@@ -36,8 +36,18 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         var credential = credentials.GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
             ?? throw new InvalidOperationException("Could not find credentials for iracing service - check configuration");
         iRDataClient.UseUsernameAndPassword(credential.UserName, credential.Password);
-        var resultResponse = await iRDataClient.GetSubSessionResultAsync(request.IRSubsessionId, true, cancellationToken);
-        var resultData = resultResponse.Data;
+
+        SubSessionResult resultData;
+        try
+        {
+            var resultResponse = await iRDataClient.GetSubSessionResultAsync(request.IRSubsessionId, true, cancellationToken);
+            resultData = resultResponse.Data;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new ResourceNotFoundException();
+        }
+        
         using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
             if (@event.EventResult is not null)
