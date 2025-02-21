@@ -16,7 +16,7 @@ internal sealed class TeamSessionCalculationService : CalculationServiceBase
     {
         IEnumerable<ResultRowCalculationResult> memberRows = data.ResultRows.Select(x => new ResultRowCalculationResult(x))
             .OrderBy(x => x.FinalPosition);
-        if (config.IsCombinedResult)
+        if (config.IsCombinedResult && !config.UseExternalSourcePoints)
         {
             memberRows = CombineResults(memberRows, x => x.TeamId);
         }
