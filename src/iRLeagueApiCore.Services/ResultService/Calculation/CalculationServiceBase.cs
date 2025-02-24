@@ -116,6 +116,10 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         foreach (var group in groupedRows.Where(x => x.Any()))
         {
             var raceSessions = group.Where(x => x.SessionType == SessionType.Race).ToList();
+            if (raceSessions.Count == 0)
+            {
+                continue;
+            }
             var row = new ResultRowCalculationResult(raceSessions.First());
 
             foreach (var sessionRow in raceSessions.Skip(1))
