@@ -47,6 +47,12 @@ public abstract class TeamsHandlerBase<THandler, TRequest, TResponse> : HandlerB
         return UpdateVersionEntity(user, entity);
     }
 
+    protected virtual async Task<TeamEntity> MapToTeamEntityAsync(LeagueUser user, PutTeamModel model, TeamEntity entity, CancellationToken cancellationToken)
+    {
+        entity.IsArchived = model.IsArchived;
+        return await MapToTeamEntityAsync(user, (PostTeamModel)model, entity, cancellationToken);
+    }
+
     private async Task<ICollection<LeagueMemberEntity>> MapToTeamMemberListAsync(ICollection<MemberInfoModel> memberModels,
         ICollection<LeagueMemberEntity> memberEntities, CancellationToken cancellationToken)
     {
