@@ -3,4 +3,6 @@
 [DataContract]
 public class PutTeamModel : PostTeamModel
 {
+    [DataMember]
+    public bool IsArchived { get; set; }
 }
