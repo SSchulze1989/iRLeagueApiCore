@@ -68,4 +68,15 @@ public static class EnumerableExtensions
     {
         return enumerable.Any() ? enumerable.Max(selector)! : default(T)!;
     }
+    /// <summary>
+    /// Returs an enumerable with index for each item
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerable"></param>
+    /// <param name="start">start index for the first element</param>
+    /// <returns></returns>
+    public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> enumerable, int start = 0)
+    {
+        return enumerable.Select((x, i) => (x, i + start));
+    }
 }
