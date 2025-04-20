@@ -21,6 +21,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         ApplyAddPenaltyTimes(rows);
         rows = pointRule.SortForPoints(rows);
         rows = ApplyAddPenaltyPositions(rows);
+        SetFinishingPosition(rows);
 
         IEnumerable<ResultRowCalculationResult> pointRows = rows.ToList();
         // Filter for points only
@@ -50,6 +51,15 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
         }
 
         return finalRows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> SetFinishingPosition(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        foreach (var (row, index) in rows.WithIndex())
+        {
+            row.FinishPosition = index + 1;
+        }
+        return rows;
     }
 
     protected static (TId? id, TimeSpan lap) GetBestLapValue<T, TId>(IEnumerable<T> rows, Func<T, TId?> idSelector, Func<T, TimeSpan> valueSelector)
