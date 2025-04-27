@@ -4,6 +4,7 @@ using iRLeagueApiCore.Client.Endpoints.Penalties;
 using iRLeagueApiCore.Client.Endpoints.Protests;
 using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
+using iRLeagueApiCore.Client.Endpoints.Rosters;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
@@ -62,6 +63,11 @@ internal sealed class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueBy
     IReviewCommentsEndpoint ILeagueByNameEndpoint.ReviewComments()
     {
         return new ReviewCommentsEndpoint(HttpClientWrapper, RouteBuilder);
+    }
+
+    IRostersEndpoint ILeagueByNameEndpoint.Rosters()
+    {
+        return new RostersEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
     ISessionsEndpoint ILeagueByNameEndpoint.Sessions()

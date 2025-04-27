@@ -4,6 +4,7 @@ using iRLeagueApiCore.Client.Endpoints.Penalties;
 using iRLeagueApiCore.Client.Endpoints.Protests;
 using iRLeagueApiCore.Client.Endpoints.Results;
 using iRLeagueApiCore.Client.Endpoints.Reviews;
+using iRLeagueApiCore.Client.Endpoints.Rosters;
 using iRLeagueApiCore.Client.Endpoints.Schedules;
 using iRLeagueApiCore.Client.Endpoints.Scorings;
 using iRLeagueApiCore.Client.Endpoints.Seasons;
@@ -28,6 +29,7 @@ public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     IProtestsEndpoint Protests();
     IReviewsEndpoint Reviews();
     IReviewCommentsEndpoint ReviewComments();
+    IRostersEndpoint Rosters();
     ISessionsEndpoint Sessions();
     IStandingsEndpoint Standings();
     ILeagueUsersEndpoint Users();
