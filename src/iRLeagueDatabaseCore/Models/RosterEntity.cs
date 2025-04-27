@@ -2,6 +2,11 @@
 namespace iRLeagueDatabaseCore.Models;
 public partial class RosterEntity : Revision, IVersionEntity
 {
+    public RosterEntity()
+    {
+        RosterEntries = new HashSet<RosterEntryEntity>();
+    }
+
     public long LeagueId { get; set; }
     public long RosterId { get; set; }
     public string Name { get; set; }
