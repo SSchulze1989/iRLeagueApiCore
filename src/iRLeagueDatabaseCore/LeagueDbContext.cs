@@ -35,6 +35,7 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
     public virtual DbSet<ResultRowEntity> ResultRows { get; set; }
     public virtual DbSet<FilterOptionEntity> FilterOptions { get; set; }
     public virtual DbSet<ReviewPenaltyEntity> ReviewPenaltys { get; set; }
+    public virtual DbSet<RosterEntity> Rosters { get; set; }
     public virtual DbSet<ScheduleEntity> Schedules { get; set; }
     public virtual DbSet<ScoredEventResultEntity> ScoredEventResults { get; set; }
     public virtual DbSet<ScoredResultRowEntity> ScoredResultRows { get; set; }
