@@ -11,7 +11,7 @@ public sealed class RosterEntryInfoModel
     public string Lastname { get; set; } = string.Empty;
 
     [DataMember]
-    public long TeamId { get; set; }
+    public long? TeamId { get; set; }
     [DataMember]
     public string TeamName {  get; set; } = string.Empty;
     [DataMember]
