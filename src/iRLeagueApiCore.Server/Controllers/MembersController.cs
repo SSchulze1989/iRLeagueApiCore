@@ -1,6 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Members;
+using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,9 @@ public sealed class MembersController : LeagueApiController<MembersController>
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<MemberInfoModel>>> GetFromLeague([FromRoute] string leagueName, CancellationToken cancellationToken)
     {
-        var request = new GetMembersFromLeagueRequest();
+        var leagueUser = new LeagueUser(leagueName, User);
+        var includeProfile = leagueUser.IsInRole(LeagueRoles.Admin, LeagueRoles.Organizer);
+        var request = new GetMembersFromLeagueRequest(IncludeProfile: includeProfile);
         var getMembers = await mediator.Send(request, cancellationToken);
         return Ok(getMembers);
     }
@@ -34,7 +37,9 @@ public sealed class MembersController : LeagueApiController<MembersController>
     public async Task<ActionResult<IEnumerable<MemberInfoModel>>> Get([FromRoute] string leagueName, [FromRoute] long eventId,
         CancellationToken cancellationToken)
     {
-        var request = new GetMembersFromEventRequest(eventId);
+        var leagueUser = new LeagueUser(leagueName, User);
+        var includeProfile = leagueUser.IsInRole(LeagueRoles.Admin, LeagueRoles.Organizer);
+        var request = new GetMembersFromEventRequest(eventId, IncludeProfile: includeProfile);
         var getMembers = await mediator.Send(request, cancellationToken);
         return Ok(getMembers);
     }
