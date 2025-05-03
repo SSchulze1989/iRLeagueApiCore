@@ -17,6 +17,10 @@ public class PostRosterHandler : RostersHandlerBase<PostRosterHandler, PostRoste
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var postRoster = CreateVersionEntity<RosterEntity>(request.User, new());
         postRoster = MapToRosterEntity(postRoster, request.Model, request.User);
+        var league = await dbContext.Leagues
+            .FirstOrDefaultAsync(x => x.Id == dbContext.LeagueProvider.LeagueId, cancellationToken)
+            ?? throw new InvalidOperationException("Current league not found");
+        league.Rosters.Add(postRoster);
         await dbContext.SaveChangesAsync(cancellationToken);
         var getRoster = await GetRosterModel(postRoster.RosterId, cancellationToken)
             ?? throw new InvalidOperationException("Created resource was not found");

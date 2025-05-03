@@ -15,4 +15,6 @@ public class RosterInfoModel
     /// </summary>
     [DataMember]
     public string Description { get; set; } = string.Empty;
+    [DataMember]
+    public int EntryCount { get; set; }
 }
