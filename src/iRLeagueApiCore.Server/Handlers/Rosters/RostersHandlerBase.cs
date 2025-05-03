@@ -52,6 +52,7 @@ public abstract class RostersHandlerBase<THandler, TRequest, TResponse> : Handle
         RosterId = roster.RosterId,
         Name = roster.Name,
         Description = roster.Description,
+        EntryCount = roster.RosterEntries.Count,
     };
 
     protected async Task<RosterModel?> GetRosterModel(long rosterId, CancellationToken cancellationToken)
