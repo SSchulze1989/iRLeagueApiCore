@@ -1,16 +1,23 @@
 ﻿#nullable disable
 
+using iRLeagueApiCore.Common.Models;
+using System.Text.Json;
+
 namespace iRLeagueDatabaseCore.Models;
 
 public partial class LeagueMemberEntity
 {
     public LeagueMemberEntity()
     {
+        ProtestsInvolved = new HashSet<ProtestEntity>();
     }
 
     public long MemberId { get; set; }
     public long LeagueId { get; set; }
     public long? TeamId { get; set; }
+    public string Number { get; set; }
+    public string DiscordId { get; set; }
+    public Dictionary<string, string> Profile { get; set; } = [];
 
     public virtual MemberEntity Member { get; set; }
     public virtual LeagueEntity League { get; set; }
@@ -25,6 +32,14 @@ public class LeagueMemberEntityConfiguration : IEntityTypeConfiguration<LeagueMe
         entity.HasKey(e => new { e.LeagueId, e.MemberId });
 
         entity.HasIndex(e => e.MemberId);
+
+        entity.Property(e => e.Profile)
+            .HasColumnType("json")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, default(JsonSerializerOptions)),
+                v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, default(JsonSerializerOptions)),
+                new ValueComparer<Dictionary<string, string>>(false))
+            .IsRequired(false);
 
         entity.HasOne(e => e.League)
             .WithMany(e => e.LeagueMembers)
