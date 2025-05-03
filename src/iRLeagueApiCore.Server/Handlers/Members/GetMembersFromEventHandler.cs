@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Members;
 
-public record GetMembersFromEventRequest(long EventId) : IRequest<IEnumerable<MemberModel>>;
+public record GetMembersFromEventRequest(long EventId, bool IncludeProfile = false) : IRequest<IEnumerable<MemberModel>>;
 
 public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFromEventHandler, GetMembersFromEventRequest, IEnumerable<MemberModel>>
 {
@@ -13,11 +13,11 @@ public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFr
     public override async Task<IEnumerable<MemberModel>> Handle(GetMembersFromEventRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getMembers = await GetMembersFromEvent(request.EventId, cancellationToken);
+        var getMembers = await GetMembersFromEvent(request.EventId, request.IncludeProfile, cancellationToken);
         return getMembers;
     }
 
-    private async Task<IEnumerable<MemberModel>> GetMembersFromEvent(long eventId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<MemberModel>> GetMembersFromEvent(long eventId, bool includeProfile, CancellationToken cancellationToken)
     {
         var resultMembers = await dbContext.EventResults
             .Where(x => x.EventId == eventId)
@@ -38,6 +38,6 @@ public sealed class GetMembersFromEventHandler : MembersHandlerBase<GetMembersFr
             .Concat(scoredResultMembers)
             .Distinct();
 
-        return await MapToMemberListAsync(memberIds, cancellationToken);
+        return await MapToMemberListAsync(memberIds, includeProfile: includeProfile, cancellationToken: cancellationToken);
     }
 }

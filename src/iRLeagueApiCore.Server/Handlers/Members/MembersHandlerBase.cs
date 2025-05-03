@@ -10,11 +10,11 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
     {
     }
 
-    protected async Task<IEnumerable<MemberModel>> MapToMemberListAsync(IEnumerable<long> memberIds, CancellationToken cancellationToken)
+    protected async Task<IEnumerable<MemberModel>> MapToMemberListAsync(IEnumerable<long> memberIds, bool includeProfile = false, CancellationToken cancellationToken = default)
     {
         return await dbContext.LeagueMembers
             .Where(x => memberIds.Contains(x.MemberId))
-            .Select(MapToMemberModelExpression)
+            .Select(MapToMemberModelExpression(includeProfile: includeProfile))
             .ToListAsync(cancellationToken);
     }
 
@@ -25,12 +25,14 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
         LastName = member.Lastname,
     };
 
-    protected Expression<Func<LeagueMemberEntity, MemberModel>> MapToMemberModelExpression => member => new()
+    protected Expression<Func<LeagueMemberEntity, MemberModel>> MapToMemberModelExpression(bool includeProfile = false) => member => new()
     {
         MemberId = member.Member.Id,
         FirstName = member.Member.Firstname,
         LastName = member.Member.Lastname,
         IRacingId = member.Member.IRacingId,
         TeamName = member.Team == null ? string.Empty : member.Team.Name,
+        Number = member.Number,
+        DiscordId = includeProfile ? member.DiscordId : string.Empty,
     };
 }
