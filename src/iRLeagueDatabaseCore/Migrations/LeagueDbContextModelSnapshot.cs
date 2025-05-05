@@ -1153,11 +1153,17 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.Property<long>("MemberId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("CountryFlag")
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
+
                     b.Property<string>("DiscordId")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Number")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
 
                     b.Property<string>("Profile")
                         .HasColumnType("json");

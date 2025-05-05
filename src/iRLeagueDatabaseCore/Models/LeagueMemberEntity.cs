@@ -17,6 +17,7 @@ public partial class LeagueMemberEntity
     public long? TeamId { get; set; }
     public string Number { get; set; }
     public string DiscordId { get; set; }
+    public string CountryFlag { get; set; }
     public Dictionary<string, string> Profile { get; set; } = [];
 
     public virtual MemberEntity Member { get; set; }
@@ -40,6 +41,15 @@ public class LeagueMemberEntityConfiguration : IEntityTypeConfiguration<LeagueMe
                 v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, default(JsonSerializerOptions)),
                 new ValueComparer<Dictionary<string, string>>(false))
             .IsRequired(false);
+
+        entity.Property(e => e.Number)
+            .HasMaxLength(3);
+
+        entity.Property(e => e.DiscordId)
+            .HasMaxLength(255);
+
+        entity.Property(e => e.CountryFlag)
+            .HasMaxLength(3);
 
         entity.HasOne(e => e.League)
             .WithMany(e => e.LeagueMembers)

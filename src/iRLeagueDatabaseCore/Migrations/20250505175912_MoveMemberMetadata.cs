@@ -19,15 +19,24 @@ namespace iRLeagueDatabaseCore.Migrations
                 table: "Members");
 
             migrationBuilder.AddColumn<string>(
+                name: "CountryFlag",
+                table: "LeagueMembers",
+                type: "varchar(3)",
+                maxLength: 3,
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
                 name: "DiscordId",
                 table: "LeagueMembers",
-                type: "longtext",
+                type: "varchar(255)",
+                maxLength: 255,
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "Number",
                 table: "LeagueMembers",
-                type: "longtext",
+                type: "varchar(3)",
+                maxLength: 3,
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
@@ -40,6 +49,10 @@ namespace iRLeagueDatabaseCore.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "CountryFlag",
+                table: "LeagueMembers");
+
             migrationBuilder.DropColumn(
                 name: "DiscordId",
                 table: "LeagueMembers");
