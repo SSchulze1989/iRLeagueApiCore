@@ -6,8 +6,8 @@ namespace iRLeagueApiCore.Server.Handlers.Members;
 
 public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    public MembersHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
-        base(logger, dbContext, validators)
+    public MembersHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators)
+        : base(logger, dbContext, validators)
     {
     }
 
@@ -25,6 +25,7 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
         entity.Number = model.Number;
         entity.DiscordId = model.DiscordId;
         entity.Team = await dbContext.Teams.FirstOrDefaultAsync(x => x.TeamId == model.TeamId, cancellationToken);
+        entity.CountryFlag = model.CountryFlag;
         return entity;
     }
 
@@ -41,7 +42,7 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
         return await dbContext.LeagueMembers
             .Select(MapToMemberModelExpression(includeProfile))
             .FirstOrDefaultAsync(x => x.MemberId == memberId, cancellationToken);
-            
+
     }
 
     protected Expression<Func<MemberEntity, MemberInfoModel>> MapToMemberInfoExpression => member => new()
@@ -51,14 +52,15 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
         LastName = member.Lastname,
     };
 
-    protected Expression<Func<LeagueMemberEntity, MemberModel>> MapToMemberModelExpression(bool includeProfile = false) => member => new()
+    protected Expression<Func<LeagueMemberEntity, MemberModel>> MapToMemberModelExpression(bool includeProfile = false) => leagueMember => new()
     {
-        MemberId = member.Member.Id,
-        Firstname = member.Member.Firstname,
-        Lastname = member.Member.Lastname,
-        IRacingId = member.Member.IRacingId,
-        TeamName = member.Team == null ? string.Empty : member.Team.Name,
-        Number = member.Number,
-        DiscordId = includeProfile ? member.DiscordId : string.Empty,
+        MemberId = leagueMember.Member.Id,
+        Firstname = leagueMember.Member.Firstname,
+        Lastname = leagueMember.Member.Lastname,
+        IRacingId = leagueMember.Member.IRacingId,
+        TeamName = leagueMember.Team == null ? string.Empty : leagueMember.Team.Name,
+        Number = leagueMember.Number,
+        DiscordId = includeProfile ? leagueMember.DiscordId : string.Empty,
+        CountryFlag = leagueMember.CountryFlag,
     };
 }
