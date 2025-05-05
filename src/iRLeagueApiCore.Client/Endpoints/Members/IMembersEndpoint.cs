@@ -2,6 +2,6 @@
 
 namespace iRLeagueApiCore.Client.Endpoints.Members;
 
-public interface IMembersEndpoint : IGetAllEndpoint<MemberModel>
+public interface IMembersEndpoint : IGetAllEndpoint<MemberModel>, IWithIdEndpoint<IMemberByIdEndpoint>
 {
 }

@@ -11,4 +11,9 @@ internal sealed class MembersEndpoint : GetAllEndpoint<MemberModel>, IMembersEnd
     {
         RouteBuilder.AddEndpoint("Members");
     }
+
+    IMemberByIdEndpoint IWithIdEndpoint<IMemberByIdEndpoint, long>.WithId(long id)
+    {
+        return new MemberByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
+    }
 }
