@@ -77,7 +77,7 @@ public sealed class ImportTracksHandler : HandlerBase<ImportTracksHandler, Impor
     private static TrackConfigEntity MapToTrackConfigEntity(TrackImportModel importTrack, TrackConfigEntity entity)
     {
         entity.ConfigName = importTrack.config_name ?? "-";
-        entity.ConfigType = GetConfigType(importTrack.track_types?[0].track_type ?? string.Empty);
+        entity.ConfigType = GetConfigType(importTrack.track_types?.Length > 0 ? importTrack.track_types[0].track_type : string.Empty);
         entity.HasNightLighting = importTrack.night_lighting;
         entity.LengthKm = importTrack.track_config_length * TrackImportService.m2km;
         entity.Turns = importTrack.corners_per_lap;
