@@ -58,6 +58,7 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
         Firstname = leagueMember.Member.Firstname,
         Lastname = leagueMember.Member.Lastname,
         IRacingId = leagueMember.Member.IRacingId,
+        TeamId = leagueMember.TeamId,
         TeamName = leagueMember.Team == null ? string.Empty : leagueMember.Team.Name,
         Number = leagueMember.Number,
         DiscordId = includeProfile ? leagueMember.DiscordId : string.Empty,

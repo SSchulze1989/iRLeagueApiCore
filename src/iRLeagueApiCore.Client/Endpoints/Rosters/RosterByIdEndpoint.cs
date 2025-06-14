@@ -10,4 +10,9 @@ internal sealed class RosterByIdEndpoint : UpdateEndpoint<RosterModel, PutRoster
     {
         RouteBuilder.AddParameter(rosterId);
     }
+
+    public IWithIdEndpoint<IRosterEntryByIdEndpoint> Entries()
+    {
+        return new RosterEntriesEndpoint(HttpClientWrapper, RouteBuilder);
+    }
 }
