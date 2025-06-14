@@ -10,5 +10,5 @@ public class PutMemberModel
     [DataMember]
     public string DiscordId { get; set; } = string.Empty;
     [DataMember]
-    public string CountryFlag {  get; set; } = string.Empty;
+    public string CountryFlag { get; set; } = string.Empty;
 }

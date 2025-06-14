@@ -1,4 +1,6 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using Aydsko.iRacingData;
+using Aydsko.iRacingData.Member;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
 using System.Linq.Expressions;
 
@@ -43,6 +45,32 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
             .Select(MapToMemberModelExpression(includeProfile))
             .FirstOrDefaultAsync(x => x.MemberId == memberId, cancellationToken);
 
+    }
+
+    protected async Task<MemberProfile?> FetchMemberInfo(string iracingId, DataClient iRacingDataClient, CancellationToken cancellationToken)
+    {
+        if (int.TryParse(iracingId, out var customerId))
+        {
+            throw new ArgumentException($"Invalid iRacing ID: {iracingId}. It must be a valid integer.", nameof(iracingId));
+        }
+        var profile = await iRacingDataClient.GetMemberProfileAsync(customerId: customerId, cancellationToken: cancellationToken);
+        if (profile.Data.Success)
+        {
+            return null;
+        }
+        return profile.Data;
+    }
+
+    protected (string firstName, string lastName) ParseFullName(string fullName)
+    {
+        var nameParts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (nameParts.Length < 2)
+        {
+            throw new ArgumentException($"Invalid full name: {fullName}. It must contain at least a first and last name.", nameof(fullName));
+        }
+        var firstName = nameParts[0];
+        var lastName = string.Join(' ', nameParts.Skip(1));
+        return (firstName, lastName);
     }
 
     protected Expression<Func<MemberEntity, MemberInfoModel>> MapToMemberInfoExpression => member => new()
