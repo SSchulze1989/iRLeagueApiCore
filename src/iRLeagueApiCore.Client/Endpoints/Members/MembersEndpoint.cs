@@ -16,4 +16,14 @@ internal sealed class MembersEndpoint : GetAllEndpoint<MemberModel>, IMembersEnd
     {
         return new MemberByIdEndpoint(HttpClientWrapper, RouteBuilder, id);
     }
+
+    IPostEndpoint<MemberModel> IMembersEndpoint.FetchProfileFromIracing(string iracingId)
+    {
+        return new FetchProfileEndpoint(HttpClientWrapper, RouteBuilder, iracingId.ToString());
+    }
+
+    IPostEndpoint<MemberModel> IMembersEndpoint.AddMemberFromIracing(string iracingId)
+    {
+        return new AddProfileEndpoint(HttpClientWrapper, RouteBuilder, iracingId.ToString());
+    }
 }
