@@ -51,7 +51,7 @@ public class RostersController : LeagueApiController<RostersController>
     [Route("{id:long}")]
     public async Task<ActionResult<RosterModel>> Put([FromRoute] string leagueName, [FromRoute] long id, [FromBody] PutRosterModel model, CancellationToken cancellationToken)
     {
-        var leagueUser = new LeagueUser (leagueName, User);
+        var leagueUser = new LeagueUser(leagueName, User);
         var request = new PutRosterRequest(id, model, leagueUser);
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
@@ -65,5 +65,24 @@ public class RostersController : LeagueApiController<RostersController>
         var request = new DeleteRosterRequest(id, leagueUser);
         var resutl = await mediator.Send(request, cancellationToken);
         return NoContent();
+    }
+
+    [HttpPut]
+    [Route("{id:long}/Entries/{memberId:long}")]
+    public async Task<ActionResult<RosterEntryModel>> PutEntry([FromRoute] string leagueName, [FromRoute] long id, [FromRoute] long memberId, [FromBody] RosterEntryModel model,
+        CancellationToken cancellationToken)
+    {
+        var request = new PutRosterEntryRequest(id, memberId, model);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpDelete]
+    [Route("{id:long}/Entries/{memberId:long}")]
+    public async Task<ActionResult<RosterEntryModel>> DeleteEntry([FromRoute] string leagueName, [FromRoute] long id, [FromRoute] long memberId, CancellationToken cancellationToken)
+    {
+        var request = new DeleteRosterEntryRequest(id, memberId);
+        var result = await mediator.Send(request, cancellationToken);
+        return Ok(result);
     }
 }

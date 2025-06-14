@@ -9,5 +9,5 @@ public sealed class RosterModel : PutRosterModel
     /// List of detailed information for each driver in the roster
     /// </summary>
     [DataMember]
-    public IEnumerable<RosterEntryInfoModel> EntryInfos { get; set; } = [];
+    public IEnumerable<RosterEntryInfoModel> RosterEntries { get; set; } = [];
 }

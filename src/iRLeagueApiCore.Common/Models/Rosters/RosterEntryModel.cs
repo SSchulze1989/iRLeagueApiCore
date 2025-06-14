@@ -7,4 +7,6 @@ public class RosterEntryModel
     public long MemberId { get; set; }
     [DataMember]
     public long? TeamId { get; set; }
+    [DataMember]
+    public string Number { get; set; } = string.Empty;
 }

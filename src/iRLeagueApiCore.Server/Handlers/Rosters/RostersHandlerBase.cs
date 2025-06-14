@@ -17,6 +17,7 @@ public abstract class RostersHandlerBase<THandler, TRequest, TResponse> : Handle
         return await dbContext.Rosters
             .Where(x => x.RosterId == rosterId)
             .Include(x => x.RosterEntries)
+                .ThenInclude(x => x.Member)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -24,7 +25,6 @@ public abstract class RostersHandlerBase<THandler, TRequest, TResponse> : Handle
     {
         entity.Name = model.Name;
         entity.Description = model.Description;
-        entity.RosterEntries = MapRosterEntries(entity.RosterEntries, model.RosterEntries);
         return UpdateVersionEntity(user, entity);
     }
 
@@ -68,12 +68,7 @@ public abstract class RostersHandlerBase<THandler, TRequest, TResponse> : Handle
         RosterId = roster.RosterId,
         Name = roster.Name,
         Description = roster.Description,
-        RosterEntries = roster.RosterEntries.Select(entry => new RosterEntryModel()
-        {
-            MemberId = entry.MemberId,
-            TeamId = entry.TeamId,
-        }).ToList(),
-        EntryInfos = roster.RosterEntries.Select(entry => new RosterEntryInfoModel()
+        RosterEntries = roster.RosterEntries.Select(entry => new RosterEntryInfoModel()
         {
             MemberId = entry.MemberId,
             Firstname = entry.Member.Member.Firstname,
