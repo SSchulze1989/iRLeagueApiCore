@@ -264,6 +264,9 @@ namespace iRLeagueDatabaseCore.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<long?>("RosterId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("SeasonId")
                         .HasColumnType("bigint");
 
@@ -280,6 +283,8 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.HasIndex("LeagueId", "ChampionshipId");
 
                     b.HasIndex("LeagueId", "DefaultResultConfigId");
+
+                    b.HasIndex("LeagueId", "RosterId");
 
                     b.HasIndex("LeagueId", "SeasonId");
 
@@ -1133,9 +1138,6 @@ namespace iRLeagueDatabaseCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Subscription")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SyncIracingLeagueId")
                         .HasColumnType("int");
 
                     b.Property<int>("Version")
@@ -3152,6 +3154,10 @@ namespace iRLeagueDatabaseCore.Migrations
                         .WithMany()
                         .HasForeignKey("LeagueId", "DefaultResultConfigId");
 
+                    b.HasOne("iRLeagueDatabaseCore.Models.RosterEntity", "Roster")
+                        .WithMany()
+                        .HasForeignKey("LeagueId", "RosterId");
+
                     b.HasOne("iRLeagueDatabaseCore.Models.SeasonEntity", "Season")
                         .WithMany("ChampSeasons")
                         .HasForeignKey("LeagueId", "SeasonId")
@@ -3165,6 +3171,8 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.Navigation("Championship");
 
                     b.Navigation("DefaultResultConfig");
+
+                    b.Navigation("Roster");
 
                     b.Navigation("Season");
 
