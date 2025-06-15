@@ -258,5 +258,11 @@ public sealed class Startup
         {
             endpoints.MapControllers();
         });
+
+        var iRDataClient = app.ApplicationServices.GetRequiredService<IDataClient>();
+        var credential = new CredentialList(Configuration.GetSection("Credentials"))
+                .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
+                ?? new();
+        iRDataClient.UseUsernameAndPassword(credential.UserName, credential.Password);
     }
 }

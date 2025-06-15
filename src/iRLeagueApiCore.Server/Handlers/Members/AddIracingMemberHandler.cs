@@ -4,45 +4,43 @@ using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Server.Handlers.Members;
 
-public record  AdIracingMemberRequest(string IracingId) : IRequest<MemberModel>;
+public record AddIracingMemberRequest(string IracingId) : IRequest<MemberModel>;
 
-public class AddIracingMemberHandler : MembersHandlerBase<FetchIracingMemberHandler, FetchIracingMemberRequest, MemberModel>
+public class AddIracingMemberHandler : MembersHandlerBase<AddIracingMemberHandler, AddIracingMemberRequest, MemberModel>
 {
-    private readonly DataClient iRacingDataClient;
+    private readonly IDataClient iRacingDataClient;
 
-    public AddIracingMemberHandler(ILogger<FetchIracingMemberHandler> logger, LeagueDbContext dbContext, DataClient iRacingDataClient, IEnumerable<IValidator<FetchIracingMemberRequest>> validators) 
+    public AddIracingMemberHandler(ILogger<AddIracingMemberHandler> logger, LeagueDbContext dbContext, IDataClient iRacingDataClient, IEnumerable<IValidator<AddIracingMemberRequest>> validators)
         : base(logger, dbContext, validators)
     {
         this.iRacingDataClient = iRacingDataClient;
     }
 
-    public override async Task<MemberModel> Handle(FetchIracingMemberRequest request, CancellationToken cancellationToken)
+    public override async Task<MemberModel> Handle(AddIracingMemberRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
 
         // fetch member from iRacing
         var memberProfile = await FetchMemberInfo(request.IracingId, iRacingDataClient, cancellationToken)
             ?? throw new ResourceNotFoundException($"Member with iRacing ID {request.IracingId} not found");
-        // check if member already exists in league
-        var existingMember = await dbContext.LeagueMembers
-            .Include(x => x.Member)
-            .FirstOrDefaultAsync(x => x.Member.IRacingId == request.IracingId, cancellationToken);
-        if (existingMember != null)
-        {
-            throw new InvalidOperationException("Member already exists in league with ID {existingMember.MemberId} and iRacing ID {existingMember.Member.IRacingId}");
-        }
         var (firstName, lastName) = ParseFullName(memberProfile.Info.DisplayName);
-        var newMember = new MemberEntity()
+        // check if member already exists in database
+        var member = await dbContext.Members
+            .FirstOrDefaultAsync(m => m.IRacingId == request.IracingId, cancellationToken);
+        if (member is null)
         {
-            Firstname = firstName,
-            Lastname = lastName,
-            IRacingId = request.IracingId,
+            member = new MemberEntity()
+            {
+                IRacingId = request.IracingId,
+            };
+            dbContext.Members.Add(member);
         };
-        dbContext.Members.Add(newMember);
+        member.Firstname = firstName;
+        member.Lastname = lastName;
         var newLeagueMember = new LeagueMemberEntity()
         {
             LeagueId = dbContext.LeagueProvider.LeagueId,
-            Member = newMember,
+            Member = member,
             Number = string.Empty,
             DiscordId = string.Empty,
             CountryFlag = string.Empty,
