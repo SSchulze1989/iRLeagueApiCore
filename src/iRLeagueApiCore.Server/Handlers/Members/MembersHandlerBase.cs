@@ -47,14 +47,14 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
 
     }
 
-    protected async Task<MemberProfile?> FetchMemberInfo(string iracingId, DataClient iRacingDataClient, CancellationToken cancellationToken)
+    protected async Task<MemberProfile?> FetchMemberInfo(string iracingId, IDataClient iRacingDataClient, CancellationToken cancellationToken)
     {
-        if (int.TryParse(iracingId, out var customerId))
+        if (!int.TryParse(iracingId, out var customerId))
         {
             throw new ArgumentException($"Invalid iRacing ID: {iracingId}. It must be a valid integer.", nameof(iracingId));
         }
         var profile = await iRacingDataClient.GetMemberProfileAsync(customerId: customerId, cancellationToken: cancellationToken);
-        if (profile.Data.Success)
+        if (!profile.Data.Success)
         {
             return null;
         }

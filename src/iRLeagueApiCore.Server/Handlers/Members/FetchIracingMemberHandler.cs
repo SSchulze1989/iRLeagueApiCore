@@ -8,9 +8,9 @@ public record  FetchIracingMemberRequest(string IracingId) : IRequest<MemberMode
 
 public class FetchIracingMemberHandler : MembersHandlerBase<FetchIracingMemberHandler, FetchIracingMemberRequest, MemberModel>
 {
-    private readonly DataClient iRacingDataClient;
+    private readonly IDataClient iRacingDataClient;
 
-    public FetchIracingMemberHandler(ILogger<FetchIracingMemberHandler> logger, LeagueDbContext dbContext, DataClient iRacingDataClient, IEnumerable<IValidator<FetchIracingMemberRequest>> validators) 
+    public FetchIracingMemberHandler(ILogger<FetchIracingMemberHandler> logger, LeagueDbContext dbContext, IDataClient iRacingDataClient, IEnumerable<IValidator<FetchIracingMemberRequest>> validators) 
         : base(logger, dbContext, validators)
     {
         this.iRacingDataClient = iRacingDataClient;
@@ -23,19 +23,11 @@ public class FetchIracingMemberHandler : MembersHandlerBase<FetchIracingMemberHa
         // fetch member from iRacing
         var memberProfile = await FetchMemberInfo(request.IracingId, iRacingDataClient, cancellationToken)
             ?? throw new ResourceNotFoundException($"Member with iRacing ID {request.IracingId} not found");
-        // check if member already exists in league
-        var existingMember = await dbContext.LeagueMembers
-            .Include(x => x.Member)
-            .FirstOrDefaultAsync(x => x.Member.IRacingId == request.IracingId, cancellationToken);
-        if (existingMember != null)
-        {
-            throw new InvalidOperationException("Member already exists in league with ID {existingMember.MemberId} and iRacing ID {existingMember.Member.IRacingId}");
-        }
 
         var (firstName, lastName) = ParseFullName(memberProfile.Info.DisplayName);
         return new MemberModel()
         {
-            IRacingId = string.Empty,
+            IRacingId = memberProfile.CustomerId.ToString(),
             Firstname = firstName,
             Lastname = lastName,
         };

@@ -66,6 +66,26 @@ public sealed class MembersController : LeagueApiController<MembersController>
         return Ok(getMembers);
     }
 
+    [HttpPost]
+    [Route("Iracing/Fetch")]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    public async Task<ActionResult<MemberModel>> FetchFromIracing([FromRoute] string leagueName, [FromQuery(Name = "iracing_id")] string iracingId, CancellationToken cancellationToken)
+    {
+        var request = new FetchIracingMemberRequest(iracingId);
+        var member = await mediator.Send(request, cancellationToken);
+        return Ok(member);
+    }
+
+    [HttpPost]
+    [Route("Iracing/Add")]
+    [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+    public async Task<ActionResult<MemberModel>> AddFromIracing([FromRoute] string leagueName, [FromQuery(Name = "iracing_id")] string iracingId, CancellationToken cancellationToken)
+    {
+        var request = new AddIracingMemberRequest(iracingId);
+        var member = await mediator.Send(request, cancellationToken);
+        return Ok(member);
+    }
+
     private static bool IsIncludeProfile(LeagueUser user)
     {
         return user.IsInRole(LeagueRoles.Admin, LeagueRoles.Organizer);
