@@ -182,7 +182,7 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
                 .FirstAsync(x => x.Id == leagueId, cancellationToken: cancellationToken);
             var (firstname, lastname) = GetFirstnameLastname(displayName ?? string.Empty);
             var member = await dbContext.Members
-                .FirstAsync(x => x.IRacingId == customerId.ToString(), cancellationToken: cancellationToken);
+                .FirstOrDefaultAsync(x => x.IRacingId == customerId.ToString(), cancellationToken: cancellationToken);
             member ??= new MemberEntity()
             {
                 IRacingId = customerId.ToString(),

@@ -11,6 +11,7 @@ internal sealed class EventCalculationConfiguration
     public long? ChampSeasonId { get; set; }
     public long? ResultConfigId { get; set; }
     public long? SourceResultConfigId { get; set; }
+    public long? RosterId { get; set; }
 
     public string DisplayName { get; set; } = string.Empty;
     public IEnumerable<SessionCalculationConfiguration> SessionResultConfigurations { get; set; } = Array.Empty<SessionCalculationConfiguration>();
