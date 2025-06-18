@@ -11,4 +11,6 @@ public class PutMemberModel
     public string DiscordId { get; set; } = string.Empty;
     [DataMember]
     public string CountryFlag { get; set; } = string.Empty;
+    [DataMember]
+    public Dictionary<string, string> Profile { get; set; } = [];
 }

@@ -28,6 +28,7 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
         entity.DiscordId = model.DiscordId;
         entity.Team = await dbContext.Teams.FirstOrDefaultAsync(x => x.TeamId == model.TeamId, cancellationToken);
         entity.CountryFlag = model.CountryFlag;
+        entity.Profile = model.Profile;
         return entity;
     }
 
@@ -91,5 +92,6 @@ public abstract class MembersHandlerBase<THandler, TRequest, TResponse> : Handle
         Number = leagueMember.Number,
         DiscordId = includeProfile ? leagueMember.DiscordId : string.Empty,
         CountryFlag = leagueMember.CountryFlag,
+        Profile = includeProfile ? leagueMember.Profile : new(),
     };
 }
