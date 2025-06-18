@@ -86,6 +86,7 @@ public sealed class DataAccessMockHelper
             .Without(x => x.Teams)
             .Without(x => x.Championships)
             .Without(x => x.StandingConfigs)
+            .Without(x => x.Rosters)
             .Without(x => x.Payments)
             .Create();
     }
@@ -147,6 +148,15 @@ public sealed class DataAccessMockHelper
                 .Without(x => x.InvolvedReviews)
                 .Create())
             .ToList();
+        if (!teams.Any())
+        {
+            teams.Add(fixture.Build<TeamEntity>()
+                .With(x => x.League, league)
+                .With(x => x.LeagueId, league.Id)
+                .Without(x => x.Members)
+                .Without(x => x.InvolvedReviews)
+                .Create());
+        }
 
         return teams;
     }
@@ -418,6 +428,7 @@ public sealed class DataAccessMockHelper
             .With(x => x.StandingConfiguration, () => CreateStandingConfiguration(championship.League))
             .With(x => x.ResultConfigurations, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(nResultConfigs).ToList())
             .With(x => x.IsActive, true)
+            .With(x => x.Roster, default(RosterEntity))
             .Without(x => x.Filters)
             .Without(x => x.DefaultResultConfig)
             .Without(x => x.Standings)
@@ -457,6 +468,21 @@ public sealed class DataAccessMockHelper
             .Without(x => x.PointFilterResultConfigId)
             .Without(x => x.ResultFilterResultConfig)
             .Without(x => x.ResultFilterResultConfigId);
+    }
+
+    public IPostprocessComposer<RosterEntity> RosterBuilder(LeagueEntity league, IEnumerable<LeagueMemberEntity> members)
+    {
+        return fixture.Build<RosterEntity>()
+            .With(x => x.League, league)
+            .With(x => x.LeagueId, league.Id)
+            .With(x => x.RosterEntries, members.Select(member => fixture.Build<RosterEntryEntity>()
+                .With(x => x.Member, member)
+                .With(x => x.MemberId, member.MemberId)
+                .With(x => x.LeagueId, member.LeagueId)
+                .With(x => x.Team, member.Team)
+                .Without(x => x.Roster)
+                .Create()).ToList())
+            .Without(x => x.League);
     }
 
     public void SetCurrentLeague(LeagueEntity league)

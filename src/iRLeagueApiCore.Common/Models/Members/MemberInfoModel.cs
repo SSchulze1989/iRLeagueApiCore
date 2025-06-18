@@ -1,4 +1,5 @@
-﻿namespace iRLeagueApiCore.Common.Models;
+﻿
+namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
 public class MemberInfoModel : IEquatable<MemberInfoModel>
@@ -14,4 +15,11 @@ public class MemberInfoModel : IEquatable<MemberInfoModel>
     {
         return MemberId == other?.MemberId;
     }
+
+    public static implicit operator MemberInfoModel(MemberModel m) => new()
+    {
+        MemberId = m.MemberId,
+        FirstName = m.Firstname,
+        LastName = m.Lastname,
+    };
 }

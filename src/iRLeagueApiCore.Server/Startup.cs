@@ -189,6 +189,12 @@ public sealed class Startup
 
         services.AddIRacingDataApi(options =>
         {
+            var credential = new CredentialList(Configuration.GetSection("Credentials"))
+                .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
+                ?? new();
+            options.Username = credential.UserName;
+            options.Password = credential.Password;
+            options.PasswordIsEncoded = true;
             options.UserAgentProductName = "iRLeagueApiCore";
             options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
         });
@@ -252,5 +258,11 @@ public sealed class Startup
         {
             endpoints.MapControllers();
         });
+
+        var iRDataClient = app.ApplicationServices.GetRequiredService<IDataClient>();
+        var credential = new CredentialList(Configuration.GetSection("Credentials"))
+                .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
+                ?? new();
+        iRDataClient.UseUsernameAndPassword(credential.UserName, credential.Password);
     }
 }

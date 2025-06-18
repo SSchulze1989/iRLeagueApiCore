@@ -3,6 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Extensions;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Resultset;
 
 namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 
@@ -19,6 +20,11 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         if (data is null)
         {
             return data;
+        }
+
+        if (config.RosterId is not null)
+        {
+            data = await UseRoster(data, config.RosterId.Value);
         }
 
         data = await AssociatePenalties(config, data, cancellationToken);
@@ -42,6 +48,35 @@ internal sealed class EventCalculationDataProvider : DatabaseAccessBase, IEventC
         return await dbContext.EventResults
             .Select(MapToEventResultCalculationDataExpression)
             .FirstOrDefaultAsync(x => x.EventId == config.EventId, cancellationToken);
+    }
+
+    private async Task<EventCalculationData> UseRoster(EventCalculationData data, long rosterId)
+    {
+        var roster = await dbContext.Rosters
+            .Include(x => x.RosterEntries)
+                .ThenInclude(x => x.Member)
+                .ThenInclude(x => x.Team)
+            .FirstOrDefaultAsync(x => x.RosterId == rosterId);
+        if (roster is null)
+        {
+            return data;
+        }
+        // use roster to fill missing member/team information
+        var rosterMemberIds = roster.RosterEntries
+            .Select(x => x.MemberId)
+            .ToHashSet();
+        foreach (var session in data.SessionResults)
+        {
+            session.ResultRows = session.ResultRows.Where(x => rosterMemberIds.Contains(x.MemberId.GetValueOrDefault())).ToList();
+            foreach(var row in session.ResultRows)
+            {
+                var rosterMember = roster.RosterEntries.First(x => x.MemberId == row.MemberId);
+                row.TeamId = rosterMember.TeamId;
+                row.TeamName = rosterMember.Team?.Name ?? string.Empty;
+                row.TeamColor = rosterMember.Team?.TeamColor ?? string.Empty;
+            }
+        }
+        return data;
     }
 
     /// <summary>

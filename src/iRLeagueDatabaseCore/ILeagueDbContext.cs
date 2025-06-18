@@ -25,6 +25,7 @@ public interface ILeagueDbContext
     public DbSet<ResultRowEntity> ResultRows { get; set; }
     public DbSet<FilterOptionEntity> FilterOptions { get; set; }
     public DbSet<ReviewPenaltyEntity> ReviewPenaltys { get; set; }
+    public DbSet<RosterEntity> Rosters { get; set; }
     public DbSet<ScheduleEntity> Schedules { get; set; }
     public DbSet<ScoredEventResultEntity> ScoredEventResults { get; set; }
     public DbSet<ScoredResultRowEntity> ScoredResultRows { get; set; }

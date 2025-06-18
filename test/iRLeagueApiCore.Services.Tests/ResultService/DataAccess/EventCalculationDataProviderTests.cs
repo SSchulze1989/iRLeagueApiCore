@@ -237,6 +237,67 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         }
     }
 
+    [Fact]
+    public async Task GetData_ShouldReturnOnlyMembersInRoster()
+    {
+        var @event = await GetFirstEventEntity();
+        var rawResult = @event.EventResult;
+        var config = GetConfiguration(@event);
+        var rosterMembers = rawResult.SessionResults.First().ResultRows
+            .Select(x => x.LeagueMember)
+            .Take(3)
+            .ToList();
+        var roster = accessMockHelper.RosterBuilder(@event.Schedule.Season.League, rosterMembers).Create();
+        dbContext.Rosters.Add(roster);
+        await dbContext.SaveChangesAsync();
+        config.RosterId = roster.RosterId;
+        var sut = CreateSut();
+
+        var test = (await sut.GetData(config))!;
+
+        test.Should().NotBeNull();
+        test!.EventId.Should().Be(@event.EventId);
+        foreach(var result in test.SessionResults)
+        {
+            result.ResultRows.Count().Should().Be(rosterMembers.Count);
+            result.ResultRows.Should().OnlyContain(x => rosterMembers.Any(m => m.MemberId == x.MemberId));
+        }
+    }
+
+    [Fact]
+    public async Task GetData_ShouldUseRosterTeam()
+    {
+        var @event = await GetFirstEventEntity();
+        var rawResult = @event.EventResult;
+        var config = GetConfiguration(@event);
+        var rosterMembers = rawResult.SessionResults.First().ResultRows
+            .Select(x => x.LeagueMember)
+            .Take(3)
+            .ToList();
+        var roster = accessMockHelper.RosterBuilder(@event.Schedule.Season.League, rosterMembers).Create();
+        dbContext.Rosters.Add(roster);
+        var testMemberEntry = roster.RosterEntries.First();
+        var testTeam = accessMockHelper.CreateTeams(@event.Schedule.Season.League, []).First();
+        dbContext.Teams.Add(testTeam);
+        testMemberEntry.Team = testTeam;
+        await dbContext.SaveChangesAsync();
+        config.RosterId = roster.RosterId;
+        var sut = CreateSut();
+
+        var test = (await sut.GetData(config))!;
+
+        test.Should().NotBeNull();
+        test!.EventId.Should().Be(@event.EventId);
+        foreach (var result in test.SessionResults)
+        {
+            var testMemberRow = result.ResultRows
+                .FirstOrDefault(x => x.MemberId == testMemberEntry.MemberId);
+            testMemberRow.Should().NotBeNull();
+            testMemberRow!.TeamId.Should().Be(testTeam.TeamId);
+            testMemberRow.TeamId.Should().NotBe(testMemberEntry.Member.TeamId);
+        }
+    }
+
     private EventCalculationDataProvider CreateSut()
     {
         return fixture.Create<EventCalculationDataProvider>();
