@@ -23,8 +23,6 @@ public partial class MemberEntity
     public string Firstname { get; set; }
     public string Lastname { get; set; }
     public string IRacingId { get; set; }
-    public string DanLisaId { get; set; }
-    public string DiscordId { get; set; }
     /// <summary>
     /// Imported Id from old database
     /// Will be deleted after imports have finished
