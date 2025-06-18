@@ -1,5 +1,5 @@
-﻿using iRLeagueApiCore.TrackImport.Models;
-using System.Net.Http.Json;
+﻿using Aydsko.iRacingData;
+using iRLeagueApiCore.TrackImport.Models;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -10,64 +10,22 @@ public sealed class TrackImportService
     public const double m2km = 1.60934;
 
     private readonly HttpClient httpClient;
-    private const string AuthenticationUrl = "https://members-ng.iracing.com/auth";
-    private const string GetTrackDataUrl = "https://members-ng.iracing.com/data/track/get";
-    private const string GetTrackAssetsUrl = "https://members-ng.iracing.com/data/track/assets";
+    private readonly IDataClient dataClient;
 
-    public TrackImportService(HttpClient httpClient)
+    public TrackImportService(IDataClient dataClient, HttpClient httpClient)
     {
+        this.dataClient = dataClient;
         this.httpClient = httpClient;
     }
 
-    public async Task<bool> Authenticate(string userName, string password, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Aydsko.iRacingData.Tracks.Track>> GetTracksData(CancellationToken cancellationToken = default)
     {
-        var data = new Dictionary<string, string>()
-            {
-                { "email", userName },
-                { "password", EncodePassword(userName, password) },
-            };
-        var content = new FormUrlEncodedContent(data);
-        var response = await httpClient.PostAsync(AuthenticationUrl, content, cancellationToken);
-        var result = await response.Content.ReadFromJsonAsync<IRacingAuthResponse>();
-        if (result?.Authcode == null || result.Authcode == "0")
-        {
-            return false;
-        }
-        return true;
+        return (await dataClient.GetTracksAsync(cancellationToken)).Data;
     }
 
-    public async Task<IEnumerable<TrackImportModel>> GetTracksData(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyDictionary<string, Aydsko.iRacingData.Tracks.TrackAssets>> GetTrackAssets(CancellationToken cancellationToken = default)
     {
-        var result = await httpClient.GetAsync(GetTrackDataUrl);
-        if (result.IsSuccessStatusCode == false)
-        {
-            throw new Exception($"Result was: {result.StatusCode}");
-        }
-        var linkResponse = await result.Content.ReadFromJsonAsync<LinkResponseModel>(cancellationToken: cancellationToken);
-        result = await httpClient.GetAsync(linkResponse.link);
-        if (result.IsSuccessStatusCode == false)
-        {
-            throw new Exception($"Result was: {result.StatusCode}");
-        }
-        var data = await result.Content.ReadFromJsonAsync<IEnumerable<TrackImportModel>>(cancellationToken: cancellationToken);
-        return data!;
-    }
-
-    public async Task<IDictionary<int, TrackAssetsModel>> GetTrackAssets(CancellationToken cancellationToken = default)
-    {
-        var result = await httpClient.GetAsync(GetTrackAssetsUrl);
-        if (result.IsSuccessStatusCode == false)
-        {
-            throw new Exception($"Result was: {result.StatusCode}");
-        }
-        var linkResponse = await result.Content.ReadFromJsonAsync<LinkResponseModel>(cancellationToken: cancellationToken);
-        result = await httpClient.GetAsync(linkResponse.link);
-        if (result.IsSuccessStatusCode == false)
-        {
-            throw new Exception($"Result was: {result.StatusCode}");
-        }
-        var data = await result.Content.ReadFromJsonAsync<IDictionary<int, TrackAssetsModel>>(cancellationToken: cancellationToken);
-        return data!;
+        return (await dataClient.GetTrackAssetsAsync(cancellationToken)).Data;
     }
 
     public async Task<TrackMapLayersModel> LoadTrackSvgs(TrackAssetsModel trackAssets, CancellationToken cancellationToken = default)

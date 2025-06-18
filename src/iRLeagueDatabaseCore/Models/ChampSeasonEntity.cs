@@ -15,6 +15,7 @@ public partial class ChampSeasonEntity : IVersionEntity
     public long SeasonId { get; set; }
     public long? DefaultResultConfigId { get; set; }
     public long? StandingConfigId { get; set; }
+    public long? RosterId { get; set; }
     public ResultKind ResultKind { get; set; }
     public bool IsActive { get; set; }
     public int Index { get; set; }
@@ -22,6 +23,7 @@ public partial class ChampSeasonEntity : IVersionEntity
     public virtual ChampionshipEntity Championship { get; set; }
     public virtual SeasonEntity Season { get; set; }
     public virtual ResultConfigurationEntity DefaultResultConfig { get; set; }
+    public virtual RosterEntity Roster { get; set; }
     public virtual ICollection<ResultConfigurationEntity> ResultConfigurations { get; set; }
     public virtual StandingConfigurationEntity StandingConfiguration { get; set; }
     public virtual IEnumerable<ScoredEventResultEntity> EventResults { get; set; }
@@ -94,6 +96,12 @@ public sealed class ChampSeasonEntityConfiguration : IEntityTypeConfiguration<Ch
         entity.HasMany(p => p.Standings)
             .WithOne(d => d.ChampSeason)
             .HasForeignKey(d => new { d.LeagueId, d.ChampSeasonId })
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
+        entity.HasOne(d => d.Roster)
+            .WithMany()
+            .HasForeignKey(d => new { d.LeagueId, d.RosterId })
             .IsRequired(false)
             .OnDelete(DeleteBehavior.ClientSetNull);
     }

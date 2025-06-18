@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Rosters;
 using iRLeagueApiCore.Server.Models;
 using System.Linq.Expressions;
 
@@ -34,6 +35,8 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         target.ResultKind = model.ResultKind;
         target.Filters = await MapToFilterOptionListAsync(user, model.Filters, target.Filters, cancellationToken);
         target.Index = model.Index;
+        target.Roster = model.Roster is not null ? await dbContext.Rosters.FirstOrDefaultAsync(x => x.RosterId == model.Roster.RosterId, cancellationToken) : null;
+        target.RosterId = target.Roster?.RosterId;
         return await Task.FromResult(target);
     }
 
@@ -91,6 +94,13 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         ChampionshipDisplayName = champSeason.Championship.DisplayName,
         ResultKind = champSeason.ResultKind,
         Index = champSeason.Index,
+        Roster = champSeason.Roster == null ? null : new RosterInfoModel()
+        {
+            RosterId = champSeason.Roster.RosterId,
+            Name = champSeason.Roster.Name,
+            Description = champSeason.Roster.Description,
+            EntryCount = champSeason.Roster.RosterEntries.Count,
+        },
         ResultConfigs = champSeason.ResultConfigurations.Select(config => new ResultConfigInfoModel()
         {
             LeagueId = champSeason.LeagueId,

@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
-    <PackageReference Include="Aydsko.iRacingData" Version="2501.0.0" />
+    <PackageReference Include="Aydsko.iRacingData" Version="2502.0.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
 	<PackageReference Include="MediatR" Version="12.4.1" />
@@ -78,7 +78,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Version>0.15.6</Version>
+		<Version>0.16.0-dev.9</Version>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 

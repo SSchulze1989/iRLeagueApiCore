@@ -109,6 +109,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
         configuration.SourceResultConfigId = configEntity?.SourceResultConfigId;
         configuration.DisplayName = (string.IsNullOrWhiteSpace(championship?.DisplayName) ? championship?.Name : championship.DisplayName) ?? "Default";
         configuration.SessionResultConfigurations = await sessionConfigurationProvider.GetConfigurations(eventEntity, configEntity, cancellationToken);
+        configuration.RosterId = champSeason?.RosterId;
         return configuration;
     }
 

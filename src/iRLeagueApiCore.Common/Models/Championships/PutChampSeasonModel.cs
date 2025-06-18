@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models.Rosters;
+
+namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
 public class PutChampSeasonModel : PostChampSeasonModel
@@ -13,6 +15,8 @@ public class PutChampSeasonModel : PostChampSeasonModel
     public ICollection<ResultConfigInfoModel> ResultConfigs { get; set; } = new List<ResultConfigInfoModel>();
     [DataMember]
     public ResultConfigInfoModel? DefaultResultConfig { get; set; }
+    [DataMember]
+    public RosterInfoModel? Roster { get; set; }
     [DataMember]
     public ResultKind ResultKind { get; set; }
     [DataMember]

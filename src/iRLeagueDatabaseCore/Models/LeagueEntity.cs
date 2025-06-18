@@ -12,6 +12,7 @@ public class LeagueEntity : Revision, IVersionEntity
         VoteCategories = new HashSet<VoteCategoryEntity>();
         Championships = new HashSet<ChampionshipEntity>();
         StandingConfigs = new HashSet<StandingConfigurationEntity>();
+        Rosters = new HashSet<RosterEntity>();
     }
     public long Id { get; set; }
     public string Name { get; set; }
@@ -47,6 +48,7 @@ public class LeagueEntity : Revision, IVersionEntity
     public virtual ICollection<VoteCategoryEntity> VoteCategories { get; set; }
     public virtual ICollection<ChampionshipEntity> Championships { get; set; }
     public virtual ICollection<StandingConfigurationEntity> StandingConfigs { get; set; }
+    public virtual ICollection<RosterEntity> Rosters { get; set; }
     public virtual IEnumerable<PaymentEntity> Payments { get; set; }
 }
 
