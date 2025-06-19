@@ -18,6 +18,7 @@ public class PutRosterHandler : RostersHandlerBase<PutRosterHandler, PutRosterRe
         var putRoster = await GetRosterEntity(request.rosterId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         MapToRosterEntity(putRoster, request.Model, request.User);
+        putRoster.IsArchived = false;
         await dbContext.SaveChangesAsync(cancellationToken);
         var getRoster = await GetRosterModel(request.rosterId, cancellationToken)
             ?? throw new InvalidOperationException("Updated resource was not found");
