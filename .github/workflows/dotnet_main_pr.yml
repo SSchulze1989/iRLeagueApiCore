@@ -38,3 +38,24 @@ jobs:
       run: dotnet build -c $BUILD_CONFIG --no-restore -p:TreatWarningsAsErrors=true
     - name: Test
       run: dotnet test -c $BUILD_CONFIG --no-build --verbosity normal
+  build-docker:
+    name: Build docker image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4
+
+    - name: Build Docker image
+      id: build
+      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        no-cache: true
