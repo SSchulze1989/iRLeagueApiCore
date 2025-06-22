@@ -264,5 +264,7 @@ public sealed class Startup
                 .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
                 ?? new();
         iRDataClient.UseUsernameAndPassword(credential.UserName, credential.Password);
+
+        // Random change to invalidate docker cache??
     }
 }
