@@ -20,9 +20,9 @@ public class RostersController : LeagueApiController<RostersController>
     [HttpGet]
     [Route("")]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<RosterInfoModel>>> GetList([FromRoute] string leagueName, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<RosterInfoModel>>> GetList([FromRoute] string leagueName, [FromQuery(Name = "include_archived")] bool includeArchived, CancellationToken cancellationToken)
     {
-        var request = new GetRosterListRequest();
+        var request = new GetRosterListRequest(includeArchived);
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
     }
