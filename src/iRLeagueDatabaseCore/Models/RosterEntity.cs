@@ -23,9 +23,9 @@ public class RosterEntityConfiguration : IEntityTypeConfiguration<RosterEntity>
         entity.ToTable("Rosters");
 
         entity.HasKey(e => new { e.LeagueId, e.RosterId });
-        
+
         entity.HasAlternateKey(e => e.RosterId);
-        
+
         entity.Property(e => e.RosterId).ValueGeneratedOnAdd();
 
         entity.Property(e => e.Name)

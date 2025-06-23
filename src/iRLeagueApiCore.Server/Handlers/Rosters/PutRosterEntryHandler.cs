@@ -32,7 +32,8 @@ public class PutRosterEntryHandler : RostersHandlerBase<PutRosterEntryHandler, P
                 Roster = roster,
                 MemberId = request.MemberId,
                 TeamId = request.Model.TeamId,
-                Member = member
+                Member = member,
+                Profile = request.Model.Profile,
             };
             roster.RosterEntries.Add(entry);
         }
@@ -40,6 +41,7 @@ public class PutRosterEntryHandler : RostersHandlerBase<PutRosterEntryHandler, P
         {
             // Vorhandenen Entry aktualisieren
             entry.TeamId = request.Model.TeamId;
+            entry.Profile = request.Model.Profile;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

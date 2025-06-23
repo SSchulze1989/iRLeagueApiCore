@@ -1,14 +1,12 @@
 ﻿namespace iRLeagueApiCore.Common.Models.Rosters;
 
 [DataContract]
-public sealed class RosterEntryInfoModel
+public sealed class RosterMemberModel
 {
     [DataMember]
     public long MemberId { get; set; }
     [DataMember]
-    public string Firstname { get; set; } = string.Empty;
-    [DataMember]
-    public string Lastname { get; set; } = string.Empty;
+    public MemberModel Member { get; set; } = new();
 
     [DataMember]
     public long? TeamId { get; set; }

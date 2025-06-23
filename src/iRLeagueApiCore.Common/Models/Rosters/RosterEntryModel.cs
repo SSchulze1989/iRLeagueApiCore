@@ -9,4 +9,6 @@ public class RosterEntryModel
     public long? TeamId { get; set; }
     [DataMember]
     public string Number { get; set; } = string.Empty;
+    [DataMember]
+    public Dictionary<string, string> Profile { get; set; } = [];
 }
