@@ -1,4 +1,5 @@
 ﻿
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Rosters;
 using iRLeagueApiCore.Server.Models;
 using System.Linq.Expressions;
@@ -28,25 +29,6 @@ public abstract class RostersHandlerBase<THandler, TRequest, TResponse> : Handle
         return UpdateVersionEntity(user, entity);
     }
 
-    protected ICollection<RosterEntryEntity> MapRosterEntries(ICollection<RosterEntryEntity> entities, IEnumerable<RosterEntryModel> models)
-    {
-        foreach (var entryModel in models)
-        {
-            var entryEntity = entities.FirstOrDefault(x => x.MemberId == entryModel.MemberId);
-            if (entryEntity is null)
-            {
-                entryEntity = new RosterEntryEntity()
-                {
-                    MemberId = entryModel.MemberId,
-                };
-                entities.Add(entryEntity);
-            }
-            entryEntity.TeamId = entryModel.TeamId;
-        }
-
-        return entities;
-    }
-
     protected Expression<Func<RosterEntity, RosterInfoModel>> MapToRosterInfoModelExpression => roster => new()
     {
         RosterId = roster.RosterId,
@@ -68,14 +50,26 @@ public abstract class RostersHandlerBase<THandler, TRequest, TResponse> : Handle
         RosterId = roster.RosterId,
         Name = roster.Name,
         Description = roster.Description,
-        RosterEntries = roster.RosterEntries.Select(entry => new RosterEntryInfoModel()
+        RosterEntries = roster.RosterEntries.Select(entry => new RosterMemberModel()
         {
             MemberId = entry.MemberId,
-            Firstname = entry.Member.Member.Firstname,
-            Lastname = entry.Member.Member.Lastname,
+            Member = new MemberModel
+            {
+                MemberId = entry.Member.MemberId,
+                IRacingId = entry.Member.Member.IRacingId,
+                Firstname = entry.Member.Member.Firstname,
+                Lastname = entry.Member.Member.Lastname,
+                TeamId = entry.Member.TeamId,
+                TeamName = entry.Member.TeamId != null ? entry.Member.Team.Name : "",
+                DiscordId = entry.Member.DiscordId,
+                CountryFlag = entry.Member.CountryFlag,
+                Number = entry.Member.Number,
+                Profile = entry.Member.Profile ?? new Dictionary<string, string>(),
+            },
             TeamId = entry.TeamId,
             TeamName = entry.TeamId != null ? entry.Team.Name : "",
             TeamColor = entry.TeamId != null ? entry.Team.TeamColor : "",
+            Profile = entry.Profile != null ? entry.Profile : new Dictionary<string, string>(),
         }).ToList(),
     };
 }
