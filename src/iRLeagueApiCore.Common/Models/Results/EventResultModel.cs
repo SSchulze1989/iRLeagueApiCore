@@ -1,4 +1,6 @@
-﻿namespace iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models.Rosters;
+
+namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
 public class EventResultModel
