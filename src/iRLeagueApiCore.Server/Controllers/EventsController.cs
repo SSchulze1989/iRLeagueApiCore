@@ -1,6 +1,8 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Common.Models.Rosters;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Events;
+using iRLeagueApiCore.Server.Handlers.Rosters;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -87,5 +89,16 @@ public sealed class EventsController : LeagueApiController<EventsController>
         var request = new DeleteEventRequest(id);
         await mediator.Send(request, cancellationToken);
         return NoContent();
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("{id:long}/Rosters")]
+    public async Task<ActionResult<IEnumerable<RosterModel>>> GetEventRosters([FromRoute] string leagueName, [FromRoute] long id,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new GetEventRostersRequest(id);
+        var getEventRosters = await mediator.Send(request, cancellationToken);
+        return Ok(getEventRosters);
     }
 }
