@@ -166,6 +166,7 @@ public sealed class Startup
             options.Password.RequiredUniqueChars = 1;
             options.Password.RequireUppercase = true;
             options.Password.RequireLowercase = true;
+            options.User.RequireUniqueEmail = true;
         });
 
         services.AddMemoryCache();

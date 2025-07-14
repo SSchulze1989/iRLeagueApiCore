@@ -49,9 +49,12 @@ public sealed class AuthenticateController : Controller
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
         _logger.LogInformation("Log in requested with {UserName}", model.Username);
-        var userAgent = Request.Headers["User-Agent"].ToString();
+        var userAgent = Request.Headers.UserAgent.ToString();
 
-        var user = await userManager.FindByNameAsync(model.Username);
+        // Get user by Username or Emailadress
+        var user = await userManager.FindByNameAsync(model.Username) 
+            ?? await userManager.FindByEmailAsync(model.Username);
+
         if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
         {
             if (user.EmailConfirmed == false)
@@ -189,7 +192,7 @@ public sealed class AuthenticateController : Controller
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<ActionResult> ResetPassword([FromBody] PasswordResetModel model, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("[{Method}] Generate password reset token for user {User} by {UserName}", "Post", model.UserName, User.Identity?.Name);
+        _logger.LogInformation("[{Method}] Generate password reset token using {Email} by {UserName}", "Post", model.Email, User.Identity?.Name);
         var request = new PasswordResetRequest(model);
         await mediator.Send(request, cancellationToken);
         return NoContent();
