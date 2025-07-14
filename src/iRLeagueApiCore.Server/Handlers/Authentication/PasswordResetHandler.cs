@@ -27,7 +27,7 @@ public sealed class PasswordResetHandler : IRequestHandler<PasswordResetRequest,
     public async Task<Unit> Handle(PasswordResetRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var user = await userManager.FindByNameAsync(request.Model.UserName)
+        var user = await userManager.FindByEmailAsync(request.Model.Email)
             ?? throw new ResourceNotFoundException();
         var token = await GetResetToken(user);
         if (user.Email is null || user.Email.Equals(request.Model.Email, StringComparison.OrdinalIgnoreCase) == false)
