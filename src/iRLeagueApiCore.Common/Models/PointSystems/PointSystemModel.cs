@@ -6,7 +6,7 @@ public class PointSystemModel : PutPointSystemModel
     [DataMember]
     public long LeagueId { get; set; }
     [DataMember]
-    public long ResultConfigId { get; set; }
+    public long PointSystemId { get; set; }
     [DataMember]
     public long ChampSeasonId { get; set; }
     [DataMember]

@@ -31,7 +31,7 @@ public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostP
     protected override void DefaultAssertions(PostPointSystemToChampSeasonRequest request, PointSystemModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.ResultConfigId.Should().NotBe(0);
+        result.PointSystemId.Should().NotBe(0);
         result.Name.Should().Be(expected.Name);
         result.DisplayName.Should().Be(expected.DisplayName);
         result.ResultsPerTeam.Should().Be(expected.ResultsPerTeam);

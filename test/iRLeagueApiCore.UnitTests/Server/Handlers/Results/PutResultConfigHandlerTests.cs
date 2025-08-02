@@ -38,7 +38,7 @@ public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutPoi
     protected override void DefaultAssertions(PutPointSystemRequest request, PointSystemModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
-        result.ResultConfigId.Should().Be(request.ResultConfigId);
+        result.PointSystemId.Should().Be(request.ResultConfigId);
         result.Name.Should().Be(expected.Name);
         result.DisplayName.Should().Be(expected.DisplayName);
         result.ResultsPerTeam.Should().Be(expected.ResultsPerTeam);

@@ -24,7 +24,7 @@ public interface ILeagueByNameEndpoint : IGetEndpoint<LeagueModel>
     ISchedulesEndpoint Schedules();
     IEventsEndpoint Events();
     IResultsEndpoint Results();
-    IResultConfigsEndpoint ResultConfigs();
+    IPointSystemsEndpoint PointSystems();
     IPointRulesEndpoint PointRules();
     IProtestsEndpoint Protests();
     IReviewsEndpoint Reviews();

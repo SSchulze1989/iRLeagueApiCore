@@ -45,9 +45,9 @@ internal sealed class LeagueByNameEndpoint : GetEndpoint<LeagueModel>, ILeagueBy
         return new EventsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
-    IResultConfigsEndpoint ILeagueByNameEndpoint.ResultConfigs()
+    IPointSystemsEndpoint ILeagueByNameEndpoint.PointSystems()
     {
-        return new ResultConfigsEndpoint(HttpClientWrapper, RouteBuilder);
+        return new PointSystemsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
     IPointRulesEndpoint ILeagueByNameEndpoint.PointRules()

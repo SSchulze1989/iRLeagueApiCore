@@ -33,7 +33,7 @@ public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetPoi
         var resultConfigEntity = dbContext.ResultConfigurations
             .FirstOrDefault(x => x.PointSystemId == request.ResultConfigId);
         resultConfigEntity.Should().NotBeNull();
-        result.ResultConfigId.Should().Be(request.ResultConfigId);
+        result.PointSystemId.Should().Be(request.ResultConfigId);
         result.Name.Should().Be(resultConfigEntity!.Name);
         result.DisplayName.Should().Be(resultConfigEntity.DisplayName);
         result.ResultsPerTeam.Should().Be(resultConfigEntity.ResultsPerTeam);

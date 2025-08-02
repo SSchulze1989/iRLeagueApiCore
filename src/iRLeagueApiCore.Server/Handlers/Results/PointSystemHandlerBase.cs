@@ -180,7 +180,7 @@ public abstract class PointSystemHandlerBase<THandler, TRequest, TResponse> : Ha
     public Expression<Func<PointSystemEntity, PointSystemModel>> MapToResultConfigModelExpression => resultConfig => new PointSystemModel()
     {
         LeagueId = resultConfig.LeagueId,
-        ResultConfigId = resultConfig.PointSystemId,
+        PointSystemId = resultConfig.PointSystemId,
         ChampSeasonId = resultConfig.ChampSeasonId,
         ChampionshipName = resultConfig.ChampSeason.Championship.Name,
         SourceResultConfig = resultConfig.SourcePointSystem != null

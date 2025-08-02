@@ -49,7 +49,7 @@ internal class SeasonByIdEndpoint : UpdateEndpoint<SeasonModel, PutSeasonModel>,
 
     IGetAllEndpoint<PointSystemModel> ISeasonByIdEndpoint.ResultsConfigs()
     {
-        return new ResultConfigsEndpoint(HttpClientWrapper, RouteBuilder);
+        return new PointSystemsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
     ISeasonChampionshipsEndpoint ISeasonByIdEndpoint.Championships()

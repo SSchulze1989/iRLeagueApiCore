@@ -14,6 +14,6 @@ internal class ChampSeasonByIdEndpoint : UpdateEndpoint<ChampSeasonModel, PutCha
 
     IPostEndpoint<PointSystemModel, PostPointSystemModel> IChampSeasonByIdEndpoint.ResultConfigs()
     {
-        return new ResultConfigsEndpoint(HttpClientWrapper, RouteBuilder);
+        return new PointSystemsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 }

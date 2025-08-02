@@ -4,9 +4,9 @@ using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results;
 
-internal class ResultConfigByIdEndpoint : UpdateEndpoint<PointSystemModel, PutPointSystemModel>, IResultConfigByIdEndpoint
+internal class PointSystemByIdEndpoint : UpdateEndpoint<PointSystemModel, PutPointSystemModel>, IPointSystemByIdEndpoint
 {
-    public ResultConfigByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long resultConfigId) :
+    public PointSystemByIdEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder, long resultConfigId) :
         base(httpClientWrapper, routeBuilder)
     {
         RouteBuilder.AddParameter(resultConfigId);
