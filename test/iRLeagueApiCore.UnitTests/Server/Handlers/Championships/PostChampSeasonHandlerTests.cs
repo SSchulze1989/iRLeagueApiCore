@@ -34,12 +34,12 @@ public sealed class PostChampSeasonHandlerTests : ChampionshipHandlersTestsBase<
         var request = DefaultRequest(TestChampionshipId, (await dbContext.Seasons.Skip(1).FirstAsync()).SeasonId);
         var champSeasonQuery = dbContext.ChampSeasons
             .Include(x => x.Championship)
-            .Include(x => x.ResultConfigurations)
+            .Include(x => x.PointSystems)
                 .ThenInclude(x => x.Scorings)
                     .ThenInclude(x => x.PointsRule)
-            .Include(x => x.ResultConfigurations)
+            .Include(x => x.PointSystems)
                 .ThenInclude(x => x.PointFilters)
-            .Include(x => x.ResultConfigurations)
+            .Include(x => x.PointSystems)
                 .ThenInclude(x => x.ResultFilters)
             .Include(x => x.StandingConfiguration);
         var prevChampSeason = await champSeasonQuery
@@ -52,8 +52,8 @@ public sealed class PostChampSeasonHandlerTests : ChampionshipHandlersTestsBase<
                 .FirstAsync();
             postChampSeason.ChampionshipId.Should().Be(prevChampSeason.ChampionshipId);
             CompareStandingConfigurationEntity(postChampSeason.StandingConfiguration, prevChampSeason.StandingConfiguration);
-            postChampSeason.ResultConfigurations.Should().HaveSameCount(prevChampSeason.ResultConfigurations);
-            postChampSeason.ResultConfigurations.Zip(prevChampSeason.ResultConfigurations)
+            postChampSeason.PointSystems.Should().HaveSameCount(prevChampSeason.PointSystems);
+            postChampSeason.PointSystems.Zip(prevChampSeason.PointSystems)
                 .ToList()
                 .ForEach(x => CompareResultConfigurationEntity(x.First, x.Second));
         },

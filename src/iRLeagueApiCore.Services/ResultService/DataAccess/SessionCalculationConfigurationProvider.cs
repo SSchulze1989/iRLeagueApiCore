@@ -15,7 +15,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     }
 
     public async Task<IEnumerable<SessionCalculationConfiguration>> GetConfigurations(EventEntity eventEntity,
-        ResultConfigurationEntity? configurationEntity, CancellationToken cancellationToken = default)
+        PointSystemEntity? configurationEntity, CancellationToken cancellationToken = default)
     {
         if (configurationEntity == null)
         {
@@ -26,9 +26,9 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     }
 
     private async Task<IEnumerable<SessionCalculationConfiguration>> DefaultSessionResultCalculationConfigurations(EventEntity eventEntity,
-        ResultConfigurationEntity? configurationEntity, CancellationToken cancellationToken)
+        PointSystemEntity? configurationEntity, CancellationToken cancellationToken)
     {
-        var configId = configurationEntity?.ResultConfigId;
+        var configId = configurationEntity?.PointSystemId;
         var sessionResultIds = await dbContext.ScoredSessionResults
             .Where(x => x.ScoredEventResult.EventId == eventEntity.EventId)
             .Where(x => x.ScoredEventResult.ResultConfigId == configId)
@@ -55,11 +55,11 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
     }
 
     private async Task<IEnumerable<SessionCalculationConfiguration>> GetSessionConfigurationsFromEntity(EventEntity eventEntity,
-        ResultConfigurationEntity configurationEntity, CancellationToken cancellationToken)
+        PointSystemEntity configurationEntity, CancellationToken cancellationToken)
     {
         var sessionResultIds = await dbContext.ScoredSessionResults
             .Where(x => x.ScoredEventResult.EventId == eventEntity.EventId)
-            .Where(x => x.ScoredEventResult.ResultConfigId == configurationEntity.ResultConfigId)
+            .Where(x => x.ScoredEventResult.ResultConfigId == configurationEntity.PointSystemId)
             .OrderBy(x => x.SessionNr)
             .Select(x => x.SessionResultId)
             .ToListAsync(cancellationToken);
@@ -108,7 +108,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return sessionConfigurations;
     }
 
-    private static SessionCalculationConfiguration MapFromScoringEntity(ScoringEntity? scoring, ResultConfigurationEntity configurationEntity,
+    private static SessionCalculationConfiguration MapFromScoringEntity(ScoringEntity? scoring, PointSystemEntity configurationEntity,
         SessionCalculationConfiguration sessionConfiguration, bool includePointFilters = true)
     {
         sessionConfiguration.PointRule = GetPointRuleFromEntity(scoring?.PointsRule, configurationEntity, includePointFilters: includePointFilters);
@@ -120,7 +120,7 @@ internal sealed class SessionCalculationConfigurationProvider : DatabaseAccessBa
         return sessionConfiguration;
     }
 
-    private static PointRule<ResultRowCalculationResult> GetPointRuleFromEntity(PointRuleEntity? pointsRuleEntity, ResultConfigurationEntity configurationEntity,
+    private static PointRule<ResultRowCalculationResult> GetPointRuleFromEntity(PointRuleEntity? pointsRuleEntity, PointSystemEntity configurationEntity,
         bool includePointFilters = true)
     {
         CalculationPointRuleBase pointRule;

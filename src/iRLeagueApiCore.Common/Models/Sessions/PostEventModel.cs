@@ -29,5 +29,5 @@ public class PostEventModel
     [DataMember]
     public ICollection<SessionModel> Sessions { get; set; } = new List<SessionModel>();
     [DataMember]
-    public ICollection<ResultConfigInfoModel> ResultConfigs { get; set; } = new List<ResultConfigInfoModel>();
+    public ICollection<PointSystemInfoModel> ResultConfigs { get; set; } = new List<PointSystemInfoModel>();
 }

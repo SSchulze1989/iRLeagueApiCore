@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Validation.Results;
 
-public sealed class PutResultConfigModelValidator : AbstractValidator<PutResultConfigModel>
+public sealed class PutResultConfigModelValidator : AbstractValidator<PutPointSystemModel>
 {
     public PutResultConfigModelValidator(PostResultConfigModelValidator includeValidator)
     {

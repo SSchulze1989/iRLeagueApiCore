@@ -138,7 +138,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
                 .FirstAsync();
             var config = accessMockHelper.CreateConfiguration(@event);
             var pointRule = accessMockHelper.CreatePointRule(@event.Schedule.Season.League);
-            configId = config.ResultConfigId;
+            configId = config.PointSystemId;
             pointRuleId = pointRule.PointRuleId;
             scoringCount = config.Scorings.Count();
             dbContext.ResultConfigurations.Add(config);
@@ -151,7 +151,7 @@ public sealed class DataAccessMockHelperTests : IAsyncLifetime
         {
             var config = await dbContext.ResultConfigurations
                 .Include(x => x.Scorings)
-                .FirstAsync(x => x.ResultConfigId == configId);
+                .FirstAsync(x => x.PointSystemId == configId);
 
             config.Scorings.Should().HaveCount(scoringCount);
         }

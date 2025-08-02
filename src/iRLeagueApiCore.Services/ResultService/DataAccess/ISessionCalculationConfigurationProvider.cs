@@ -6,5 +6,5 @@ namespace iRLeagueApiCore.Services.ResultService.DataAccess;
 internal interface ISessionCalculationConfigurationProvider
 {
     public Task<IEnumerable<SessionCalculationConfiguration>> GetConfigurations(EventEntity eventEntity,
-        ResultConfigurationEntity? configurationEntity, CancellationToken cancellationToken);
+        PointSystemEntity? configurationEntity, CancellationToken cancellationToken);
 }

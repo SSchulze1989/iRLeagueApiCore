@@ -4,34 +4,34 @@ using System.Linq.Expressions;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public abstract class ResultConfigHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
+public abstract class PointSystemHandlerBase<THandler, TRequest, TResponse> : HandlerBase<THandler, TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    public ResultConfigHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
+    public PointSystemHandlerBase(ILogger<THandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<TRequest>> validators) :
         base(logger, dbContext, validators)
     {
     }
 
-    protected virtual async Task<ResultConfigurationEntity?> GetResultConfigEntity(long resultConfigId, CancellationToken cancellationToken)
+    protected virtual async Task<PointSystemEntity?> GetResultConfigEntity(long resultConfigId, CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
             .Include(x => x.ChampSeason)
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
                     .ThenInclude(x => x.AutoPenalties)
-            .Include(x => x.SourceResultConfig)
+            .Include(x => x.SourcePointSystem)
             .Include(x => x.ResultFilters)
             .Include(x => x.PointFilters)
-            .Where(x => x.ResultConfigId == resultConfigId)
+            .Where(x => x.PointSystemId == resultConfigId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PostResultConfigModel postResultConfig,
-        ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
+    protected virtual async Task<PointSystemEntity> MapToResultConfigEntityAsync(LeagueUser user, PostPointSystemModel postResultConfig,
+        PointSystemEntity resultConfigEntity, CancellationToken cancellationToken)
     {
         resultConfigEntity.DisplayName = postResultConfig.DisplayName;
-        resultConfigEntity.SourceResultConfig = postResultConfig.SourceResultConfig != null
+        resultConfigEntity.SourcePointSystem = postResultConfig.SourceResultConfig != null
             ? await dbContext.ResultConfigurations
-                .FirstOrDefaultAsync(x => x.ResultConfigId == postResultConfig.SourceResultConfig.ResultConfigId, cancellationToken)
+                .FirstOrDefaultAsync(x => x.PointSystemId == postResultConfig.SourceResultConfig.ResultConfigId, cancellationToken)
             : null;
         resultConfigEntity.Name = postResultConfig.Name;
         resultConfigEntity.ResultsPerTeam = postResultConfig.ResultsPerTeam;
@@ -164,39 +164,39 @@ public abstract class ResultConfigHandlerBase<THandler, TRequest, TResponse> : H
         return await Task.FromResult(entity);
     }
 
-    protected virtual async Task<ResultConfigurationEntity> MapToResultConfigEntityAsync(LeagueUser user, PutResultConfigModel putResultConfig, ResultConfigurationEntity resultConfigEntity, CancellationToken cancellationToken)
+    protected virtual async Task<PointSystemEntity> MapToResultConfigEntityAsync(LeagueUser user, PutPointSystemModel putResultConfig, PointSystemEntity resultConfigEntity, CancellationToken cancellationToken)
     {
-        return await MapToResultConfigEntityAsync(user, (PostResultConfigModel)putResultConfig, resultConfigEntity, cancellationToken);
+        return await MapToResultConfigEntityAsync(user, (PostPointSystemModel)putResultConfig, resultConfigEntity, cancellationToken);
     }
 
-    protected virtual async Task<ResultConfigModel?> MapToResultConfigModel(long resultConfigId, CancellationToken cancellationToken)
+    protected virtual async Task<PointSystemModel?> MapToResultConfigModel(long resultConfigId, CancellationToken cancellationToken)
     {
         return await dbContext.ResultConfigurations
-            .Where(x => x.ResultConfigId == resultConfigId)
+            .Where(x => x.PointSystemId == resultConfigId)
             .Select(MapToResultConfigModelExpression)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Expression<Func<ResultConfigurationEntity, ResultConfigModel>> MapToResultConfigModelExpression => resultConfig => new ResultConfigModel()
+    public Expression<Func<PointSystemEntity, PointSystemModel>> MapToResultConfigModelExpression => resultConfig => new PointSystemModel()
     {
         LeagueId = resultConfig.LeagueId,
-        ResultConfigId = resultConfig.ResultConfigId,
+        ResultConfigId = resultConfig.PointSystemId,
         ChampSeasonId = resultConfig.ChampSeasonId,
         ChampionshipName = resultConfig.ChampSeason.Championship.Name,
-        SourceResultConfig = resultConfig.SourceResultConfig != null
-            ? new ResultConfigInfoModel()
+        SourceResultConfig = resultConfig.SourcePointSystem != null
+            ? new PointSystemInfoModel()
             {
-                ResultConfigId = resultConfig.SourceResultConfig.ResultConfigId,
-                ChampSeasonId = resultConfig.SourceResultConfig.ChampSeasonId,
-                ChampionshipName = resultConfig.SourceResultConfig.ChampSeason.Championship.Name,
-                DisplayName = resultConfig.SourceResultConfig.DisplayName,
-                LeagueId = resultConfig.SourceResultConfig.LeagueId,
-                Name = resultConfig.SourceResultConfig.Name,
+                ResultConfigId = resultConfig.SourcePointSystem.PointSystemId,
+                ChampSeasonId = resultConfig.SourcePointSystem.ChampSeasonId,
+                ChampionshipName = resultConfig.SourcePointSystem.ChampSeason.Championship.Name,
+                DisplayName = resultConfig.SourcePointSystem.DisplayName,
+                LeagueId = resultConfig.SourcePointSystem.LeagueId,
+                Name = resultConfig.SourcePointSystem.Name,
             }
             : null,
         Name = resultConfig.Name,
         DisplayName = resultConfig.DisplayName,
-        IsDefaultConfig = resultConfig.ResultConfigId == resultConfig.ChampSeason.DefaultResultConfigId,
+        IsDefaultConfig = resultConfig.PointSystemId == resultConfig.ChampSeason.DefaultPointSystemId,
         ResultsPerTeam = resultConfig.ResultsPerTeam,
         Scorings = resultConfig.Scorings.Select(scoring => new ScoringModel()
         {

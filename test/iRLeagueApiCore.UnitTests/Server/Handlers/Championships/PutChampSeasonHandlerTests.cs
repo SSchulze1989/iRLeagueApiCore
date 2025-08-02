@@ -22,22 +22,22 @@ public sealed class PutChampSeasonHandlerTests : ChampionshipHandlersTestsBase<P
     public async Task ShouldSetDefaultResultConfig()
     {
         var champSeason = await dbContext.ChampSeasons
-            .Include(x => x.DefaultResultConfig)
-            .Include(x => x.ResultConfigurations)
+            .Include(x => x.DefaultPointSystem)
+            .Include(x => x.PointSystems)
             .FirstAsync();
-        var defaultResultConfig = champSeason.ResultConfigurations.Last();
-        champSeason.DefaultResultConfig?.ResultConfigId.Should().NotBe(defaultResultConfig.ResultConfigId);
+        var defaultResultConfig = champSeason.PointSystems.Last();
+        champSeason.DefaultPointSystem?.PointSystemId.Should().NotBe(defaultResultConfig.PointSystemId);
         var request = new PutChampSeasonRequest(champSeason.ChampSeasonId, DefaultUser(), new()
         {
-            DefaultResultConfig = new() { LeagueId = champSeason.LeagueId, ResultConfigId = defaultResultConfig.ResultConfigId },
-            ResultConfigs = champSeason.ResultConfigurations.Select(x => new ResultConfigInfoModel() { ResultConfigId = x.ResultConfigId, Name = x.Name }).ToArray(),
+            DefaultResultConfig = new() { LeagueId = champSeason.LeagueId, ResultConfigId = defaultResultConfig.PointSystemId },
+            ResultConfigs = champSeason.PointSystems.Select(x => new PointSystemInfoModel() { ResultConfigId = x.PointSystemId, Name = x.Name }).ToArray(),
         });
         var sut = CreateSut();
 
         var test = await sut.Handle(request, default);
 
         test.DefaultResultConfig.Should().NotBeNull();
-        test.DefaultResultConfig!.ResultConfigId.Should().Be(defaultResultConfig.ResultConfigId);
+        test.DefaultResultConfig!.ResultConfigId.Should().Be(defaultResultConfig.PointSystemId);
     }
 
     private PutChampSeasonHandler CreateSut()

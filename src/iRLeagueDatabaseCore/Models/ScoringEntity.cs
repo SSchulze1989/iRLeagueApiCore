@@ -25,7 +25,7 @@ public partial class ScoringEntity : IVersionEntity
     public bool UseExternalSourcePoints { get; set; } = false;
 
     public virtual ScoringEntity ExtScoringSource { get; set; }
-    public virtual ResultConfigurationEntity ResultConfiguration { get; set; }
+    public virtual PointSystemEntity ResultConfiguration { get; set; }
     public virtual PointRuleEntity PointsRule { get; set; }
     public virtual ICollection<ScoringEntity> DependendScorings { get; set; }
 

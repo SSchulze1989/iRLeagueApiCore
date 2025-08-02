@@ -33,11 +33,11 @@ public sealed class PostEventModelValidator : AbstractValidator<PostEventModel>
         return result;
     }
 
-    private async Task<bool> OnlyOneResultConfigPerChampSeason(IEnumerable<ResultConfigInfoModel> configs, CancellationToken cancellationToken)
+    private async Task<bool> OnlyOneResultConfigPerChampSeason(IEnumerable<PointSystemInfoModel> configs, CancellationToken cancellationToken)
     {
         var configIds = configs.Select(x => x.ResultConfigId).ToList();
         var configEntities = await dbContext.ResultConfigurations
-            .Where(x => configIds.Contains(x.ResultConfigId))
+            .Where(x => configIds.Contains(x.PointSystemId))
             .ToListAsync(cancellationToken);
         // Return true if list has no duplicates
         return configEntities
@@ -46,14 +46,14 @@ public sealed class PostEventModelValidator : AbstractValidator<PostEventModel>
             .Count() == configs.Count();
     }
 
-    private async Task<bool> MustIncludeDependResultConfigs(IEnumerable<ResultConfigInfoModel> configs, CancellationToken cancellationToken)
+    private async Task<bool> MustIncludeDependResultConfigs(IEnumerable<PointSystemInfoModel> configs, CancellationToken cancellationToken)
     {
         var configIds = configs.Select(x => x.ResultConfigId).ToList();
         var configEntities = await dbContext.ResultConfigurations
-            .Where(x => configIds.Contains(x.ResultConfigId))
+            .Where(x => configIds.Contains(x.PointSystemId))
             .ToListAsync(cancellationToken);
         // Return true if all dependant result config were found in event configs list (or source is null)
         return configEntities
-            .All(x => x.SourceResultConfigId == null || configIds.Contains(x.SourceResultConfigId.Value));
+            .All(x => x.SourcePointSystemId == null || configIds.Contains(x.SourcePointSystemId.Value));
     }
 }

@@ -85,7 +85,7 @@ public sealed class EventCalculationDataProviderTests : DataAccessTestsBase
         dbContext.ScoredEventResults.Add(sourceResult);
         await dbContext.SaveChangesAsync();
         var config = GetConfiguration(@event);
-        config.SourceResultConfigId = sourceConfig.ResultConfigId;
+        config.SourceResultConfigId = sourceConfig.PointSystemId;
         var sut = CreateSut();
 
         var test = await sut.GetData(config);

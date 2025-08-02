@@ -23,7 +23,7 @@ public class ScoredEventResultEntity : IVersionEntity
     public virtual EventEntity Event { get; set; }
     public virtual ChampSeasonEntity ChampSeason { get; set; }
     public virtual ICollection<ScoredSessionResultEntity> ScoredSessionResults { get; set; }
-    public virtual ResultConfigurationEntity ResultConfig { get; set; }
+    public virtual PointSystemEntity ResultConfig { get; set; }
 
     #region version
     public DateTime? CreatedOn { get; set; }

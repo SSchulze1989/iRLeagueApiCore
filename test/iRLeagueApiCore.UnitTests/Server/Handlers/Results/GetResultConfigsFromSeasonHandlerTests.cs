@@ -5,24 +5,24 @@ using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
-public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTestsBase<GetResultConfigsFromSeasonHandler, GetResultConfigsFromSeasonRequest, IEnumerable<ResultConfigModel>>
+public sealed class GetResultConfigsFromSeasonHandlerTests : ResultHandlersTestsBase<GetPointSystemsFromSeasonHandler, GetPointSystemsFromSeasonRequest, IEnumerable<PointSystemModel>>
 {
-    protected override GetResultConfigsFromSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultConfigsFromSeasonRequest> validator)
+    protected override GetPointSystemsFromSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetPointSystemsFromSeasonRequest> validator)
     {
         return new(logger, dbContext, new[] { validator });
     }
 
-    protected override GetResultConfigsFromSeasonRequest DefaultRequest() => DefaultRequest(TestSeasonId);
+    protected override GetPointSystemsFromSeasonRequest DefaultRequest() => DefaultRequest(TestSeasonId);
 
-    private GetResultConfigsFromSeasonRequest DefaultRequest(long seasonId) => new(seasonId);
+    private GetPointSystemsFromSeasonRequest DefaultRequest(long seasonId) => new(seasonId);
 
-    protected override void DefaultAssertions(GetResultConfigsFromSeasonRequest request, IEnumerable<ResultConfigModel> result, LeagueDbContext dbContext)
+    protected override void DefaultAssertions(GetPointSystemsFromSeasonRequest request, IEnumerable<PointSystemModel> result, LeagueDbContext dbContext)
     {
         base.DefaultAssertions(request, result, dbContext);
         var champSeasons = dbContext.ChampSeasons
             .Where(x => x.IsActive)
             .Where(x => x.SeasonId == request.SeasonId);
-        var resultConfig = champSeasons.SelectMany(x => x.ResultConfigurations);
+        var resultConfig = champSeasons.SelectMany(x => x.PointSystems);
         result.Should().HaveSameCount(resultConfig);
     }
 

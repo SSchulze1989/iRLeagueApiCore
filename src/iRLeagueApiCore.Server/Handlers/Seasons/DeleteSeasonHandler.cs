@@ -21,13 +21,13 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
     {
         var deleteSeason = await dbContext.Seasons
             .Include(x => x.ChampSeasons)
-                .ThenInclude(x => x.ResultConfigurations)
+                .ThenInclude(x => x.PointSystems)
                     .ThenInclude(x => x.PointFilters)
             .Include(x => x.ChampSeasons)
-                .ThenInclude(x => x.ResultConfigurations)
+                .ThenInclude(x => x.PointSystems)
                     .ThenInclude(x => x.ResultFilters)
             .Include(x => x.ChampSeasons)
-                .ThenInclude(x => x.DefaultResultConfig)
+                .ThenInclude(x => x.DefaultPointSystem)
             .SingleOrDefaultAsync(x => x.SeasonId == seasonId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         foreach (var champSeason in deleteSeason.ChampSeasons)
@@ -36,9 +36,9 @@ public sealed class DeleteSeasonHandler : SeasonHandlerBase<DeleteSeasonHandler,
                 .Where(x => x.ChampSeasonId == champSeason.ChampSeasonId)
                 .ToListAsync(cancellationToken);
             dbContext.RemoveRange(deleteFilterOptions);
-            dbContext.RemoveRange(champSeason.ResultConfigurations);
-            champSeason.DefaultResultConfig = null;
-            champSeason.ResultConfigurations = [];
+            dbContext.RemoveRange(champSeason.PointSystems);
+            champSeason.DefaultPointSystem = null;
+            champSeason.PointSystems = [];
             champSeason.StandingConfiguration = null;
         }
         await dbContext.SaveChangesAsync(cancellationToken);

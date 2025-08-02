@@ -221,7 +221,7 @@ internal sealed class EventCalculationResultStore : DatabaseAccessBase, IEventCa
             .FirstOrDefaultAsync(x => x.EventId == eventId, cancellationToken)
             ?? throw new InvalidOperationException($"No event with id:{eventId} exists");
         var resultConfig = await dbContext.ResultConfigurations
-            .FirstOrDefaultAsync(x => x.ResultConfigId == resultConfigId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.PointSystemId == resultConfigId, cancellationToken);
         var eventResult = new ScoredEventResultEntity()
         {
             Event = @event,

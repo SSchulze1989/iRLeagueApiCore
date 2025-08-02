@@ -1,14 +1,14 @@
 ﻿namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
-public class PostResultConfigModel
+public class PostPointSystemModel
 {
     [DataMember]
     public string Name { get; set; } = string.Empty;
     [DataMember]
     public string DisplayName { get; set; } = string.Empty;
     [DataMember]
-    public ResultConfigInfoModel? SourceResultConfig { get; set; }
+    public PointSystemInfoModel? SourceResultConfig { get; set; }
     [DataMember]
     public int ResultsPerTeam { get; set; }
     [DataMember]

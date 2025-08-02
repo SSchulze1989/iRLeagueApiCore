@@ -3,7 +3,7 @@ using iRLeagueApiCore.Server.Handlers.Results;
 
 namespace iRLeagueApiCore.Server.Validation.Results;
 
-public sealed class PutResultConfigRequestValidator : AbstractValidator<PutResultConfigRequest>
+public sealed class PutResultConfigRequestValidator : AbstractValidator<PutPointSystemRequest>
 {
     private readonly LeagueDbContext dbContext;
 
@@ -16,7 +16,7 @@ public sealed class PutResultConfigRequestValidator : AbstractValidator<PutResul
             .MustAsync(ScoringIdValid);
     }
 
-    private async Task<bool> ScoringIdValid(PutResultConfigRequest request, ScoringModel scoringModel, CancellationToken cancellationToken)
+    private async Task<bool> ScoringIdValid(PutPointSystemRequest request, ScoringModel scoringModel, CancellationToken cancellationToken)
     {
         if (scoringModel.Id == 0)
         {

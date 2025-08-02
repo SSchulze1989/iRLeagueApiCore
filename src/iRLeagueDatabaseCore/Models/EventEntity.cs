@@ -6,7 +6,7 @@ public class EventEntity : IVersionEntity
     {
         Sessions = new HashSet<SessionEntity>();
         ScoredEventResults = new HashSet<ScoredEventResultEntity>();
-        ResultConfigs = new HashSet<ResultConfigurationEntity>();
+        ResultConfigs = new HashSet<PointSystemEntity>();
         SimSessionDetails = new HashSet<IRSimSessionDetailsEntity>();
     }
 
@@ -32,7 +32,7 @@ public class EventEntity : IVersionEntity
     public virtual EventResultEntity EventResult { get; set; }
     public virtual ICollection<SessionEntity> Sessions { get; set; }
     public virtual ICollection<ScoredEventResultEntity> ScoredEventResults { get; set; }
-    public virtual ICollection<ResultConfigurationEntity> ResultConfigs { get; set; }
+    public virtual ICollection<PointSystemEntity> ResultConfigs { get; set; }
     public virtual ICollection<IRSimSessionDetailsEntity> SimSessionDetails { get; set; }
 
     #region version

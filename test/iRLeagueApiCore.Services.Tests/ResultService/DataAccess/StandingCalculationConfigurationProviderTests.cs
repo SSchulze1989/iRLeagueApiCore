@@ -75,7 +75,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         dbContext.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.Add(config);
         champSeason.StandingConfiguration = standingConfig;
-        champSeason.ResultConfigurations = [config];
+        champSeason.PointSystems = [config];
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
@@ -85,7 +85,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         test.SeasonId.Should().Be(season.SeasonId);
         test.EventId.Should().Be(@event.EventId);
         test.ResultConfigs.Should().HaveCount(1);
-        test.ResultConfigs.First().Should().Be(champSeason.ResultConfigurations.First().ResultConfigId);
+        test.ResultConfigs.First().Should().Be(champSeason.PointSystems.First().PointSystemId);
         test.StandingConfigId.Should().Be(standingConfig.StandingConfigId);
     }
 
@@ -103,14 +103,14 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         dbContext.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.AddRange(configs);
         champSeason.StandingConfiguration = standingConfig;
-        champSeason.ResultConfigurations = configs.ToList();
+        champSeason.PointSystems = configs.ToList();
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
         var test = await sut.GetConfiguration(season.SeasonId, @event.EventId, standingConfig.StandingConfigId);
 
         test.ResultConfigs.Should().HaveCount(configCount);
-        test.ResultConfigs.First().Should().Be(champSeason.ResultConfigurations.First().ResultConfigId);
+        test.ResultConfigs.First().Should().Be(champSeason.PointSystems.First().PointSystemId);
         test.StandingConfigId.Should().Be(standingConfig.StandingConfigId);
     }
 
@@ -127,7 +127,7 @@ public sealed class StandingCalculationConfigurationProviderTests : DataAccessTe
         dbContext.StandingConfigurations.Add(standingConfig);
         dbContext.ResultConfigurations.Add(config);
         champSeason.StandingConfiguration = standingConfig;
-        champSeason.ResultConfigurations = [config];
+        champSeason.PointSystems = [config];
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 

@@ -4,31 +4,31 @@ using iRLeagueDatabaseCore.Models;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<DeleteResultConfigHandler, DeleteResultConfigRequest, MediatR.Unit>
+public sealed class DeleteResultConfigHandlerTests : ResultHandlersTestsBase<DeletePointSystemHandler, DeletePointSystemRequest, MediatR.Unit>
 {
     public DeleteResultConfigHandlerTests() : base()
     {
     }
 
-    protected override DeleteResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteResultConfigRequest> validator)
+    protected override DeletePointSystemHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeletePointSystemRequest> validator)
     {
-        return new DeleteResultConfigHandler(logger, dbContext, new IValidator<DeleteResultConfigRequest>[] { validator });
+        return new DeletePointSystemHandler(logger, dbContext, new IValidator<DeletePointSystemRequest>[] { validator });
     }
 
-    private DeleteResultConfigRequest DefaultRequest(long resultConfigId)
+    private DeletePointSystemRequest DefaultRequest(long resultConfigId)
     {
-        return new DeleteResultConfigRequest(resultConfigId);
+        return new DeletePointSystemRequest(resultConfigId);
     }
 
-    protected override DeleteResultConfigRequest DefaultRequest()
+    protected override DeletePointSystemRequest DefaultRequest()
     {
         return DefaultRequest(TestResultConfigId);
     }
 
-    protected override void DefaultAssertions(DeleteResultConfigRequest request, MediatR.Unit result, LeagueDbContext dbContext)
+    protected override void DefaultAssertions(DeletePointSystemRequest request, MediatR.Unit result, LeagueDbContext dbContext)
     {
         var deletedResultConfig = dbContext.ResultConfigurations
-            .Where(x => x.ResultConfigId == request.ResultConfigId)
+            .Where(x => x.PointSystemId == request.ResultConfigId)
             .FirstOrDefault();
         deletedResultConfig.Should().BeNull();
         base.DefaultAssertions(request, result, dbContext);

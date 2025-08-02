@@ -62,7 +62,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         var championship = await dbContext.Championships.FirstAsync();
         var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
         var champSeason = accessMockHelper.CreateChampSeason(championship, season);
-        var resultConfig = champSeason.ResultConfigurations.First();
+        var resultConfig = champSeason.PointSystems.First();
         AddMultipleScoredEventResults(events, resultConfig, prevCount + 1);
         await dbContext.SaveChangesAsync();
         var config = CreateStandingConfiguration(season, events.ElementAt(prevCount), champSeason);
@@ -89,7 +89,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         var championship = await dbContext.Championships.FirstAsync();
         var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
         var champSeason = accessMockHelper.CreateChampSeason(championship, season);
-        var resultConfig = champSeason.ResultConfigurations.First();
+        var resultConfig = champSeason.PointSystems.First();
         AddMultipleScoredEventResults(events, resultConfig, prevCount + 1);
         await dbContext.SaveChangesAsync();
         var @event = events.ElementAt(prevCount);
@@ -113,7 +113,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         var championship = await dbContext.Championships.FirstAsync();
         var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
         var champSeason = accessMockHelper.CreateChampSeason(championship, season);
-        var resultConfigs = champSeason.ResultConfigurations = accessMockHelper.ConfigurationBuilder(events.First()).CreateMany(2).ToList();
+        var resultConfigs = champSeason.PointSystems = accessMockHelper.ConfigurationBuilder(events.First()).CreateMany(2).ToList();
         AddMultipleScoredEventResults(events.Take(1), resultConfigs.First(), 1);
         AddMultipleScoredEventResults(events.Skip(1), resultConfigs.Last(), prevCount);
         await dbContext.SaveChangesAsync();
@@ -141,7 +141,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         var championship = await dbContext.Championships.FirstAsync();
         var events = season.Schedules.SelectMany(x => x.Events).OrderBy(x => x.Date);
         var champSeason = accessMockHelper.CreateChampSeason(championship, season);
-        var resultConfigs = champSeason.ResultConfigurations = accessMockHelper.ConfigurationBuilder(events.First()).CreateMany(2).ToList();
+        var resultConfigs = champSeason.PointSystems = accessMockHelper.ConfigurationBuilder(events.First()).CreateMany(2).ToList();
         AddMultipleScoredEventResults(events.Take(1), resultConfigs.First(), 1);
         AddMultipleScoredEventResults(events.Skip(1), resultConfigs.Last(), prevCount);
         await dbContext.SaveChangesAsync();
@@ -205,7 +205,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
         dbContext.StandingConfigurations.Add(standingConfig);
         var champSeason = accessMockHelper.CreateChampSeason(championship, season);
         champSeason.StandingConfiguration = standingConfig;
-        var resultConfig = champSeason.ResultConfigurations.First();
+        var resultConfig = champSeason.PointSystems.First();
         AddMultipleScoredEventResults(events, resultConfig, prevCount + 1);
         var row = events.ElementAt(prevCount).ScoredEventResults.First().ScoredSessionResults.First().ScoredResultRows.First();
         var dropweekOverride = fixture.Build<DropweekOverrideEntity>()
@@ -238,7 +238,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
             .FirstAsync();
     }
 
-    private void AddMultipleScoredEventResults(IEnumerable<EventEntity> events, ResultConfigurationEntity? config, int count)
+    private void AddMultipleScoredEventResults(IEnumerable<EventEntity> events, PointSystemEntity? config, int count)
     {
         foreach (var @event in events.Take(count))
         {
@@ -255,7 +255,7 @@ public sealed class StandingCalculationDataProviderTests : DataAccessTestsBase
             .With(x => x.LeagueId, season.LeagueId)
             .With(x => x.SeasonId, season.SeasonId)
             .With(x => x.EventId, @event.EventId)
-            .With(x => x.ResultConfigs, champSeason?.ResultConfigurations.Select(x => x.ResultConfigId) ?? Array.Empty<long>())
+            .With(x => x.ResultConfigs, champSeason?.PointSystems.Select(x => x.PointSystemId) ?? Array.Empty<long>())
             .With(x => x.StandingConfigId, champSeason?.StandingConfiguration?.StandingConfigId)
             .With(x => x.WeeksCounted, 2)
             .Create();

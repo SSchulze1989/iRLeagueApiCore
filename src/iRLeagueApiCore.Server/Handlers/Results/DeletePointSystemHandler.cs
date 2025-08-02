@@ -1,16 +1,16 @@
 ﻿namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record DeleteResultConfigRequest(long ResultConfigId) : IRequest<Unit>;
+public record DeletePointSystemRequest(long ResultConfigId) : IRequest<Unit>;
 
-public sealed class DeleteResultConfigHandler : ResultConfigHandlerBase<DeleteResultConfigHandler, DeleteResultConfigRequest, Unit>
+public sealed class DeletePointSystemHandler : PointSystemHandlerBase<DeletePointSystemHandler, DeletePointSystemRequest, Unit>
 {
-    public DeleteResultConfigHandler(ILogger<DeleteResultConfigHandler> logger, LeagueDbContext dbContext,
-        IEnumerable<IValidator<DeleteResultConfigRequest>> validators)
+    public DeletePointSystemHandler(ILogger<DeletePointSystemHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<DeletePointSystemRequest>> validators)
         : base(logger, dbContext, validators)
     {
     }
 
-    public override async Task<Unit> Handle(DeleteResultConfigRequest request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(DeletePointSystemRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var deleteResultConfig = await GetResultConfigEntity(request.ResultConfigId, cancellationToken)

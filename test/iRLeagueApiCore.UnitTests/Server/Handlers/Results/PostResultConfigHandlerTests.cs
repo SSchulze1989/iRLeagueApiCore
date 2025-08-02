@@ -6,29 +6,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostResultConfigToChampSeasonHandler, PostResultConfigToChampSeasonRequest, ResultConfigModel>
+public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostPointSystemToChampSeasonHandler, PostPointSystemToChampSeasonRequest, PointSystemModel>
 {
     public PostResultConfigHandlerTests() : base()
     {
     }
 
-    protected override PostResultConfigToChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostResultConfigToChampSeasonRequest> validator)
+    protected override PostPointSystemToChampSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PostPointSystemToChampSeasonRequest> validator)
     {
-        return new PostResultConfigToChampSeasonHandler(logger, dbContext, new IValidator<PostResultConfigToChampSeasonRequest>[] { validator });
+        return new PostPointSystemToChampSeasonHandler(logger, dbContext, new IValidator<PostPointSystemToChampSeasonRequest>[] { validator });
     }
 
-    protected override PostResultConfigToChampSeasonRequest DefaultRequest()
+    protected override PostPointSystemToChampSeasonRequest DefaultRequest()
     {
-        var postResultConfig = new PostResultConfigModel()
+        var postResultConfig = new PostPointSystemModel()
         {
             Name = "TestresultConfig",
             DisplayName = "TestResultConfig DisplayName",
             ResultsPerTeam = 10,
         };
-        return new PostResultConfigToChampSeasonRequest(TestChampSeasonId, DefaultUser(), postResultConfig);
+        return new PostPointSystemToChampSeasonRequest(TestChampSeasonId, DefaultUser(), postResultConfig);
     }
 
-    protected override void DefaultAssertions(PostResultConfigToChampSeasonRequest request, ResultConfigModel result, LeagueDbContext dbContext)
+    protected override void DefaultAssertions(PostPointSystemToChampSeasonRequest request, PointSystemModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
         result.ResultConfigId.Should().NotBe(0);
@@ -59,7 +59,7 @@ public sealed class PostResultConfigHandlerTests : ResultHandlersTestsBase<PostR
         {
             model.SourceResultConfig.Should().NotBeNull();
             model.SourceResultConfig!.ResultConfigId.Should().Be(TestResultConfigId);
-            var sourceConfig = await dbContext.ResultConfigurations.FirstAsync(x => x.ResultConfigId == model.SourceResultConfig.ResultConfigId);
+            var sourceConfig = await dbContext.ResultConfigurations.FirstAsync(x => x.PointSystemId == model.SourceResultConfig.ResultConfigId);
             model.SourceResultConfig.DisplayName.Should().Be(sourceConfig.DisplayName);
             model.SourceResultConfig.Name.Should().Be(sourceConfig.Name);
             model.SourceResultConfig.LeagueId.Should().Be(sourceConfig.LeagueId);

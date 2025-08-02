@@ -40,8 +40,8 @@ public abstract class ChampionshipHandlersTestsBase<THandler, TRequest, TResult>
         test.ChampionshipId.Should().Be(expected.ChampionshipId);
         test.SeasonId.Should().Be(expected.SeasonId);
         CompareStandingConfigurationEntity(test.StandingConfiguration, expected.StandingConfiguration);
-        test.ResultConfigurations.Should().HaveSameCount(expected.ResultConfigurations);
-        test.ResultConfigurations.Zip(expected.ResultConfigurations)
+        test.PointSystems.Should().HaveSameCount(expected.PointSystems);
+        test.PointSystems.Zip(expected.PointSystems)
             .ToList()
             .ForEach(x => CompareResultConfigurationEntity(x.First, x.Second));
     }
@@ -53,7 +53,7 @@ public abstract class ChampionshipHandlersTestsBase<THandler, TRequest, TResult>
         test.WeeksCounted.Should().Be(expected.WeeksCounted);
     }
 
-    protected void CompareResultConfigurationEntity(ResultConfigurationEntity test, ResultConfigurationEntity expected)
+    protected void CompareResultConfigurationEntity(PointSystemEntity test, PointSystemEntity expected)
     {
         test.PointFilters.Should().HaveSameCount(expected.PointFilters);
         test.PointFilters.Zip(expected.PointFilters)

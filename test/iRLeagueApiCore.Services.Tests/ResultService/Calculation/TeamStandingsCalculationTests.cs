@@ -204,7 +204,7 @@ public sealed class TeamStandingCalculationServiceTests
         return fixture.Build<StandingCalculationConfiguration>()
             .With(x => x.LeagueId, leagueId)
             .With(x => x.EventId, eventId)
-            .With(x => x.ResultConfigs, champSeason?.ResultConfigurations.Select(x => x.ResultConfigId) ?? Array.Empty<long>());
+            .With(x => x.ResultConfigs, champSeason?.PointSystems.Select(x => x.PointSystemId) ?? Array.Empty<long>());
     }
 
     private IPostprocessComposer<ResultRowCalculationResult> TestRowBuilder()

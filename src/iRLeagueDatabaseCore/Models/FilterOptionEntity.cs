@@ -16,8 +16,8 @@ public partial class FilterOptionEntity : IVersionEntity
     public long? ResultFilterResultConfigId { get; set; }
     public long? ChampSeasonId { get; set; }
 
-    public virtual ResultConfigurationEntity PointFilterResultConfig { get; set; }
-    public virtual ResultConfigurationEntity ResultFilterResultConfig { get; set; }
+    public virtual PointSystemEntity PointFilterResultConfig { get; set; }
+    public virtual PointSystemEntity ResultFilterResultConfig { get; set; }
     public virtual ChampSeasonEntity ChampSeason { get; set; }
     public virtual ICollection<FilterConditionModel> Conditions { get; set; }
 

@@ -17,7 +17,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     public async Task GetConfigurations_ShouldProvideDefaultConfiguration_WhenConfigIsNull()
     {
         var @event = await GetFirstEventEntity();
-        var config = (ResultConfigurationEntity?)null;
+        var config = (PointSystemEntity?)null;
         var sut = fixture.Create<SessionCalculationConfigurationProvider>();
 
         var test = await sut.GetConfigurations(@event, config);
@@ -38,7 +38,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
     public async Task GetConfigurations_ShouldProvideDefaultSessionResultId_WhenCalculatedResultExistsAndConfigIsNull()
     {
         var @event = await GetFirstEventEntity();
-        var config = (ResultConfigurationEntity?)null;
+        var config = (PointSystemEntity?)null;
         var scoredEventResult = accessMockHelper.CreateScoredResult(@event, config);
         dbContext.ScoredEventResults.Add(scoredEventResult);
         await dbContext.SaveChangesAsync();
@@ -85,7 +85,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
         var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
         champSeason.ResultKind = ResultKind.Member;
-        champSeason.ResultConfigurations.Add(config);
+        champSeason.PointSystems.Add(config);
         championship.ChampSeasons.Add(champSeason);
         dbContext.Championships.Add(championship);
         dbContext.ResultConfigurations.Add(config);
@@ -108,7 +108,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         var championship = accessMockHelper.ChampionshipEntityBuilder(@event.Schedule.Season.League).Create();
         var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
         champSeason.ResultKind = ResultKind.Team;
-        champSeason.ResultConfigurations.Add(config);
+        champSeason.PointSystems.Add(config);
         championship.ChampSeasons.Add(champSeason);
         dbContext.Championships.Add(championship);
         dbContext.ResultConfigurations.Add(config);
@@ -182,7 +182,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
-            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            .FirstAsync(x => x.PointSystemId == config.PointSystemId);
         var scorings = await dbContext.Scorings
             .Include(x => x.ResultConfiguration)
             .ToListAsync();
@@ -251,7 +251,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
-            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            .FirstAsync(x => x.PointSystemId == config.PointSystemId);
         var scorings = await dbContext.Scorings
             .Include(x => x.ResultConfiguration)
             .ToListAsync();
@@ -280,7 +280,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
-            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            .FirstAsync(x => x.PointSystemId == config.PointSystemId);
         var scorings = await dbContext.Scorings
             .Include(x => x.ResultConfiguration)
             .ToListAsync();
@@ -311,7 +311,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
-            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            .FirstAsync(x => x.PointSystemId == config.PointSystemId);
         var scorings = await dbContext.Scorings
             .Include(x => x.ResultConfiguration)
             .ToListAsync();
@@ -692,7 +692,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
-            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            .FirstAsync(x => x.PointSystemId == config.PointSystemId);
         var scorings = await dbContext.Scorings
             .Include(x => x.ResultConfiguration)
             .ToListAsync();
@@ -784,7 +784,7 @@ public sealed class SessionCalculationConfigurationProviderTests : DataAccessTes
         config = await dbContext.ResultConfigurations
             .Include(x => x.Scorings)
                 .ThenInclude(x => x.PointsRule)
-            .FirstAsync(x => x.ResultConfigId == config.ResultConfigId);
+            .FirstAsync(x => x.PointSystemId == config.PointSystemId);
         var scorings = await dbContext.Scorings
             .Include(x => x.ResultConfiguration)
             .ToListAsync();

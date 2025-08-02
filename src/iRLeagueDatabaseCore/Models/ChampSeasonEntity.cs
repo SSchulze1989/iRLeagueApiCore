@@ -3,7 +3,7 @@ public partial class ChampSeasonEntity : IVersionEntity
 {
     public ChampSeasonEntity()
     {
-        ResultConfigurations = new HashSet<ResultConfigurationEntity>();
+        PointSystems = new HashSet<PointSystemEntity>();
         EventResults = new HashSet<ScoredEventResultEntity>();
         Standings = new HashSet<StandingEntity>();
         Filters = new HashSet<FilterOptionEntity>();
@@ -13,7 +13,7 @@ public partial class ChampSeasonEntity : IVersionEntity
     public long ChampSeasonId { get; set; }
     public long ChampionshipId { get; set; }
     public long SeasonId { get; set; }
-    public long? DefaultResultConfigId { get; set; }
+    public long? DefaultPointSystemId { get; set; }
     public long? StandingConfigId { get; set; }
     public long? RosterId { get; set; }
     public ResultKind ResultKind { get; set; }
@@ -22,9 +22,9 @@ public partial class ChampSeasonEntity : IVersionEntity
 
     public virtual ChampionshipEntity Championship { get; set; }
     public virtual SeasonEntity Season { get; set; }
-    public virtual ResultConfigurationEntity DefaultResultConfig { get; set; }
+    public virtual PointSystemEntity DefaultPointSystem { get; set; }
     public virtual RosterEntity Roster { get; set; }
-    public virtual ICollection<ResultConfigurationEntity> ResultConfigurations { get; set; }
+    public virtual ICollection<PointSystemEntity> PointSystems { get; set; }
     public virtual StandingConfigurationEntity StandingConfiguration { get; set; }
     public virtual IEnumerable<ScoredEventResultEntity> EventResults { get; set; }
     public virtual IEnumerable<StandingEntity> Standings { get; set; }
@@ -52,6 +52,9 @@ public sealed class ChampSeasonEntityConfiguration : IEntityTypeConfiguration<Ch
 
         entity.HasAlternateKey(e => e.ChampSeasonId);
 
+        entity.Property(e => e.DefaultPointSystemId).HasColumnName("DefaultResultConfigId")
+            .IsRequired(false);
+
         entity.Property(e => e.ChampSeasonId)
             .ValueGeneratedOnAdd();
 
@@ -77,7 +80,7 @@ public sealed class ChampSeasonEntityConfiguration : IEntityTypeConfiguration<Ch
             .IsRequired(false)
             .OnDelete(DeleteBehavior.ClientSetNull);
 
-        entity.HasMany(d => d.ResultConfigurations)
+        entity.HasMany(d => d.PointSystems)
             .WithOne(p => p.ChampSeason)
             .HasForeignKey(d => new { d.LeagueId, d.ChampSeasonId });
 
@@ -87,9 +90,9 @@ public sealed class ChampSeasonEntityConfiguration : IEntityTypeConfiguration<Ch
             .IsRequired(false)
             .OnDelete(DeleteBehavior.ClientSetNull);
 
-        entity.HasOne(d => d.DefaultResultConfig)
+        entity.HasOne(d => d.DefaultPointSystem)
             .WithMany()
-            .HasForeignKey(d => new { d.LeagueId, d.DefaultResultConfigId })
+            .HasForeignKey(d => new { d.LeagueId, d.DefaultPointSystemId })
             .IsRequired(false)
             .OnDelete(DeleteBehavior.ClientSetNull);
 

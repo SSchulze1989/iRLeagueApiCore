@@ -12,7 +12,7 @@ internal class ChampSeasonByIdEndpoint : UpdateEndpoint<ChampSeasonModel, PutCha
         RouteBuilder.AddParameter(id);
     }
 
-    IPostEndpoint<ResultConfigModel, PostResultConfigModel> IChampSeasonByIdEndpoint.ResultConfigs()
+    IPostEndpoint<PointSystemModel, PostPointSystemModel> IChampSeasonByIdEndpoint.ResultConfigs()
     {
         return new ResultConfigsEndpoint(HttpClientWrapper, RouteBuilder);
     }

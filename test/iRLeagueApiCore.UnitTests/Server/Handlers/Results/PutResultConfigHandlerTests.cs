@@ -7,35 +7,35 @@ using Microsoft.AspNetCore.Identity.Test;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutResultConfigHandler, PutResultConfigRequest, ResultConfigModel>
+public sealed class PutResultConfigHandlerTests : ResultHandlersTestsBase<PutPointSystemHandler, PutPointSystemRequest, PointSystemModel>
 {
     public PutResultConfigHandlerTests() : base()
     {
     }
 
-    protected override PutResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutResultConfigRequest>? validator = null)
+    protected override PutPointSystemHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<PutPointSystemRequest>? validator = null)
     {
-        return new PutResultConfigHandler(logger, dbContext,
-            new IValidator<PutResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<PutResultConfigRequest>() });
+        return new PutPointSystemHandler(logger, dbContext,
+            new IValidator<PutPointSystemRequest>[] { validator ?? MockHelpers.TestValidator<PutPointSystemRequest>() });
     }
 
-    private PutResultConfigRequest DefaultRequest(long resultConfigId)
+    private PutPointSystemRequest DefaultRequest(long resultConfigId)
     {
-        var PutResultConfig = new PutResultConfigModel()
+        var PutResultConfig = new PutPointSystemModel()
         {
             Name = "TestresultConfig",
             DisplayName = "TestResultConfig DisplayName",
             ResultsPerTeam = 10,
         };
-        return new PutResultConfigRequest(resultConfigId, DefaultUser(), PutResultConfig);
+        return new PutPointSystemRequest(resultConfigId, DefaultUser(), PutResultConfig);
     }
 
-    protected override PutResultConfigRequest DefaultRequest()
+    protected override PutPointSystemRequest DefaultRequest()
     {
         return DefaultRequest(TestResultConfigId);
     }
 
-    protected override void DefaultAssertions(PutResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
+    protected override void DefaultAssertions(PutPointSystemRequest request, PointSystemModel result, LeagueDbContext dbContext)
     {
         var expected = request.Model;
         result.ResultConfigId.Should().Be(request.ResultConfigId);

@@ -120,7 +120,7 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
         @event.Sessions = @event.Sessions.Where(x => x.SessionType == SessionType.Race).Take(1).ToList();
         var sourceConfigEntity = accessMockHelper.CreateConfiguration(@event);
         var configEntity = accessMockHelper.ConfigurationBuilder(@event)
-            .With(x => x.SourceResultConfig, sourceConfigEntity)
+            .With(x => x.SourcePointSystem, sourceConfigEntity)
             .Create();
         var sourceResultEntity = accessMockHelper.CreateScoredResult(@event, sourceConfigEntity);
         dbContext.ResultConfigurations.Add(sourceConfigEntity);
@@ -168,7 +168,7 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
 
         var test = await dbContext.ScoredEventResults
             .Where(x => x.EventId == @event.EventId)
-            .Where(x => x.ResultConfigId == configEntity.ResultConfigId)
+            .Where(x => x.ResultConfigId == configEntity.PointSystemId)
             .FirstOrDefaultAsync();
         test.Should().NotBeNull();
         test!.ChampSeasonId.Should().Be(champSeason.ChampSeasonId);
@@ -265,13 +265,13 @@ public sealed class EventCalculationResultStoreTests : DataAccessTestsBase
             .FirstAsync();
     }
 
-    private EventCalculationConfiguration GetConfiguration(EventEntity @event, ResultConfigurationEntity config)
+    private EventCalculationConfiguration GetConfiguration(EventEntity @event, PointSystemEntity config)
     {
         return fixture.Build<EventCalculationConfiguration>()
             .With(x => x.LeagueId, @event.LeagueId)
             .With(x => x.EventId, @event.EventId)
-            .With(x => x.ResultConfigId, config.ResultConfigId)
-            .With(x => x.SourceResultConfigId, config.SourceResultConfigId)
+            .With(x => x.ResultConfigId, config.PointSystemId)
+            .With(x => x.SourceResultConfigId, config.SourcePointSystemId)
             .With(x => x.SessionResultConfigurations, @event.Sessions
                 .Select(z => fixture.Build<SessionCalculationConfiguration>()
                     .With(x => x.SessionId, z.SessionId)

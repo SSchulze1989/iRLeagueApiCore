@@ -12,7 +12,7 @@ public interface ISeasonByIdEndpoint : IUpdateEndpoint<SeasonModel, PutSeasonMod
     IGetAllEndpoint<SeasonEventResultModel> Results();
     IGetAllEndpoint<EventModel> Events();
     IGetAllEndpoint<StandingsModel> Standings();
-    IGetAllEndpoint<ResultConfigModel> ResultsConfigs();
+    IGetAllEndpoint<PointSystemModel> ResultsConfigs();
     ISeasonChampionshipsEndpoint Championships();
     ISeasonChampSeasonsEndpoint ChampSeasons();
 }

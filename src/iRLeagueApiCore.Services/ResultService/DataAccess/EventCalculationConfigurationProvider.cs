@@ -18,9 +18,9 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
     {
         var configs = await dbContext.Events
             .Where(x => x.EventId == eventId)
-            .SelectMany(x => x.ResultConfigs.Select(y => new { y.ResultConfigId, y.SourceResultConfigId }))
+            .SelectMany(x => x.ResultConfigs.Select(y => new { y.PointSystemId, y.SourcePointSystemId }))
             .ToListAsync(cancellationToken);
-        return SortInOrderOfDependency(configs.Select(x => (x.ResultConfigId, x.SourceResultConfigId)));
+        return SortInOrderOfDependency(configs.Select(x => (x.PointSystemId, x.SourcePointSystemId)));
     }
 
     public async Task<EventCalculationConfiguration> GetConfiguration(long eventId, long? resultConfigId, CancellationToken cancellationToken = default)
@@ -36,7 +36,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
         return resultConfiguration;
     }
 
-    private async Task<ChampSeasonEntity?> GetChampSeasonEntity(EventEntity eventEntity, ResultConfigurationEntity? configEntity, CancellationToken cancellationToken)
+    private async Task<ChampSeasonEntity?> GetChampSeasonEntity(EventEntity eventEntity, PointSystemEntity? configEntity, CancellationToken cancellationToken)
     {
         if (configEntity is null)
         {
@@ -47,11 +47,11 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
             .Include(x => x.Championship)
             .Include(x => x.Filters)
             .Where(x => x.SeasonId == eventEntity.Schedule.SeasonId)
-            .Where(x => x.ResultConfigurations.Contains(configEntity))
+            .Where(x => x.PointSystems.Contains(configEntity))
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    private async Task<ResultConfigurationEntity?> GetResultConfigurationEntity(long? resultConfigId, CancellationToken cancellationToken)
+    private async Task<PointSystemEntity?> GetResultConfigurationEntity(long? resultConfigId, CancellationToken cancellationToken)
     {
         if (resultConfigId == null)
         {
@@ -66,7 +66,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
                 .ThenInclude(x => x.ExtScoringSource)
             .Include(x => x.PointFilters)
             .Include(x => x.ResultFilters)
-            .FirstOrDefaultAsync(x => x.ResultConfigId == resultConfigId, cancellationToken)
+            .FirstOrDefaultAsync(x => x.PointSystemId == resultConfigId, cancellationToken)
             ?? throw new InvalidOperationException($"No result configuration with id:{resultConfigId} found");
     }
 
@@ -86,16 +86,16 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
 
         return await events
             .Where(x => x.EventId == eventId)
-            .Where(x => x.ResultConfigs.Any(y => y.ResultConfigId == resultConfigId))
+            .Where(x => x.ResultConfigs.Any(y => y.PointSystemId == resultConfigId))
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new InvalidOperationException($"No event id:{eventId} registered with result configuration id:{resultConfigId}");
     }
 
-    private async Task<EventCalculationConfiguration> GetEventResultCalculationConfiguration(EventEntity eventEntity, ChampSeasonEntity? champSeason, ResultConfigurationEntity? configEntity,
+    private async Task<EventCalculationConfiguration> GetEventResultCalculationConfiguration(EventEntity eventEntity, ChampSeasonEntity? champSeason, PointSystemEntity? configEntity,
         CancellationToken cancellationToken)
     {
         EventCalculationConfiguration configuration = new();
-        var configId = configEntity?.ResultConfigId;
+        var configId = configEntity?.PointSystemId;
         var championship = champSeason?.Championship;
         configuration.EventId = eventEntity.EventId;
         configuration.LeagueId = eventEntity.LeagueId;
@@ -106,7 +106,7 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
             .FirstOrDefaultAsync(cancellationToken);
         configuration.ChampSeasonId = champSeason?.ChampSeasonId;
         configuration.ResultConfigId = configId;
-        configuration.SourceResultConfigId = configEntity?.SourceResultConfigId;
+        configuration.SourceResultConfigId = configEntity?.SourcePointSystemId;
         configuration.DisplayName = (string.IsNullOrWhiteSpace(championship?.DisplayName) ? championship?.Name : championship.DisplayName) ?? "Default";
         configuration.SessionResultConfigurations = await sessionConfigurationProvider.GetConfigurations(eventEntity, configEntity, cancellationToken);
         configuration.RosterId = champSeason?.RosterId;
@@ -124,12 +124,12 @@ internal sealed class EventCalculationConfigurationProvider : DatabaseAccessBase
 
         var source = configs.ToDictionary(k => k.id, v => v.sourceId);
         var startNodes = configs.Where(x => x.sourceId is null).ToList();
-        if (startNodes.Any() == false || startNodes.Any(x => x.id == x.sourceId))
+        if (startNodes.Count != 0 == false || startNodes.Any(x => x.id == x.sourceId))
         {
             throw new InvalidOperationException("ResultConfiguration list contains cyclic dependencies");
         }
 
-        while (startNodes.Any())
+        while (startNodes.Count != 0)
         {
             var node = startNodes.First();
             startNodes.Remove(node);

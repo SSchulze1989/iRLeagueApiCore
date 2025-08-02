@@ -24,7 +24,7 @@ public abstract class DataAccessTestsBase : IAsyncLifetime
     protected long TestSessionId => dbContext.Sessions.IgnoreQueryFilters().First().SessionId;
     protected long TestResultId => dbContext.ScoredEventResults.IgnoreQueryFilters().First().ResultId;
     protected long TestPointRuleId => dbContext.PointRules.IgnoreQueryFilters().First().PointRuleId;
-    protected long TestResultConfigId => dbContext.ResultConfigurations.IgnoreQueryFilters().First().ResultConfigId;
+    protected long TestResultConfigId => dbContext.ResultConfigurations.IgnoreQueryFilters().First().PointSystemId;
     protected long TestReviewId => dbContext.IncidentReviews.IgnoreQueryFilters().First().ReviewId;
     protected long TestMemberId => dbContext.Members.IgnoreQueryFilters().First().Id;
     protected long TestMemberId2 => dbContext.Members.Skip(1).IgnoreQueryFilters().First().Id;

@@ -266,9 +266,9 @@ public sealed class DataAccessMockHelper
             .ToList();
     }
 
-    public IPostprocessComposer<ResultConfigurationEntity> ConfigurationBuilder(EventEntity @event)
+    public IPostprocessComposer<PointSystemEntity> ConfigurationBuilder(EventEntity @event)
     {
-        return fixture.Build<ResultConfigurationEntity>()
+        return fixture.Build<PointSystemEntity>()
             .With(x => x.LeagueId, @event.LeagueId)
             .With(x => x.Events, new[] { @event })
             .With(x => x.Scorings, @event.Sessions
@@ -293,11 +293,11 @@ public sealed class DataAccessMockHelper
             .Without(x => x.League)
             .Without(x => x.PointFilters)
             .Without(x => x.ResultFilters)
-            .Without(x => x.SourceResultConfigId)
-            .Without(x => x.SourceResultConfig);
+            .Without(x => x.SourcePointSystemId)
+            .Without(x => x.SourcePointSystem);
     }
 
-    public ResultConfigurationEntity CreateConfiguration(EventEntity @event)
+    public PointSystemEntity CreateConfiguration(EventEntity @event)
     {
         return ConfigurationBuilder(@event)
             .Create();
@@ -314,7 +314,7 @@ public sealed class DataAccessMockHelper
             .Create();
     }
 
-    public ScoredEventResultEntity CreateScoredResult(EventEntity @event, ResultConfigurationEntity? config)
+    public ScoredEventResultEntity CreateScoredResult(EventEntity @event, PointSystemEntity? config)
     {
         return fixture.Build<ScoredEventResultEntity>()
             .With(x => x.LeagueId, @event.LeagueId)
@@ -334,7 +334,7 @@ public sealed class DataAccessMockHelper
                 .Create())
                 .ToList())
             .With(x => x.ResultConfig, config)
-            .With(x => x.ResultConfigId, config?.ResultConfigId)
+            .With(x => x.ResultConfigId, config?.PointSystemId)
             .Without(x => x.ChampSeason)
             .Create();
     }
@@ -426,11 +426,11 @@ public sealed class DataAccessMockHelper
             .With(x => x.SeasonId, season.SeasonId)
             .With(x => x.Season, season)
             .With(x => x.StandingConfiguration, () => CreateStandingConfiguration(championship.League))
-            .With(x => x.ResultConfigurations, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(nResultConfigs).ToList())
+            .With(x => x.PointSystems, () => ConfigurationBuilder(season.Schedules.First().Events.First()).CreateMany(nResultConfigs).ToList())
             .With(x => x.IsActive, true)
             .With(x => x.Roster, default(RosterEntity))
             .Without(x => x.Filters)
-            .Without(x => x.DefaultResultConfig)
+            .Without(x => x.DefaultPointSystem)
             .Without(x => x.Standings)
             .Without(x => x.EventResults);
     }

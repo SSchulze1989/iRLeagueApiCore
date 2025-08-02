@@ -50,7 +50,7 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
             var championship = champSeason.Championship;
             config.ChampSeasonId = standingConfig.ChampSeasons.FirstOrDefault(x => x.SeasonId == seasonId)?.ChampSeasonId;
             config.StandingConfigId = standingConfig.StandingConfigId;
-            config.ResultConfigs = champSeason.ResultConfigurations.Select(x => x.ResultConfigId);
+            config.ResultConfigs = champSeason.PointSystems.Select(x => x.PointSystemId);
             config.Name = champSeason.Championship.Name;
             config.DisplayName = string.IsNullOrWhiteSpace(championship.DisplayName) ? championship.Name : championship.DisplayName;
             config.UseCombinedResult = standingConfig.UseCombinedResult;
@@ -79,7 +79,7 @@ internal sealed class StandingCalculationConfigurationProvider : DatabaseAccessB
     {
         return await dbContext.StandingConfigurations
             .Include(x => x.ChampSeasons)
-                .ThenInclude(x => x.ResultConfigurations)
+                .ThenInclude(x => x.PointSystems)
             .Include(x => x.ChampSeasons)
                 .ThenInclude(x => x.Championship)
             .FirstOrDefaultAsync(x => x.StandingConfigId == standingConfigId, cancellationToken: cancellationToken);

@@ -68,11 +68,11 @@ public abstract class EventHandlerBase<THandler, TRequest, TResponse> : HandlerB
         }
     }
 
-    protected async Task<ICollection<ResultConfigurationEntity>> GetResultConfigEntities(IEnumerable<ResultConfigInfoModel> resultConfigModels, CancellationToken cancellationToken)
+    protected async Task<ICollection<PointSystemEntity>> GetResultConfigEntities(IEnumerable<PointSystemInfoModel> resultConfigModels, CancellationToken cancellationToken)
     {
         var resultConfigIds = resultConfigModels.Select(x => x.ResultConfigId);
         return await dbContext.ResultConfigurations
-            .Where(x => resultConfigIds.Contains(x.ResultConfigId))
+            .Where(x => resultConfigIds.Contains(x.PointSystemId))
             .ToListAsync(cancellationToken);
     }
     protected virtual SessionEntity MapToSessionEntity(LeagueUser user, PutSessionModel putSession, SessionEntity target)
@@ -125,10 +125,10 @@ public abstract class EventHandlerBase<THandler, TRequest, TResponse> : HandlerB
             LastModifiedByUserName = session.LastModifiedByUserName
         }).OrderBy(x => x.SessionNr).ToList(),
         TrackId = @event.TrackId,
-        ResultConfigs = @event.ResultConfigs.Select(config => new ResultConfigInfoModel()
+        ResultConfigs = @event.ResultConfigs.Select(config => new PointSystemInfoModel()
         {
             LeagueId = config.LeagueId,
-            ResultConfigId = config.ResultConfigId,
+            ResultConfigId = config.PointSystemId,
             ChampSeasonId = config.ChampSeasonId,
             ChampionshipName = config.ChampSeason.Championship.Name,
             Name = config.Name,

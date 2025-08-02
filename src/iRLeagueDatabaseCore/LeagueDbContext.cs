@@ -31,7 +31,7 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
     public virtual DbSet<PointRuleEntity> PointRules { get; set; }
     public virtual DbSet<ProtestEntity> Protests { get; set; }
     public virtual DbSet<EventResultEntity> EventResults { get; set; }
-    public virtual DbSet<ResultConfigurationEntity> ResultConfigurations { get; set; }
+    public virtual DbSet<PointSystemEntity> ResultConfigurations { get; set; }
     public virtual DbSet<ResultRowEntity> ResultRows { get; set; }
     public virtual DbSet<FilterOptionEntity> FilterOptions { get; set; }
     public virtual DbSet<ReviewPenaltyEntity> ReviewPenaltys { get; set; }
@@ -105,7 +105,7 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<EventResultEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
-        builder.Entity<ResultConfigurationEntity>()
+        builder.Entity<PointSystemEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<ResultRowEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
@@ -145,7 +145,7 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<SessionResultEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
-        builder.Entity<ResultConfigurationEntity>()
+        builder.Entity<PointSystemEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<EventResultConfigs>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);

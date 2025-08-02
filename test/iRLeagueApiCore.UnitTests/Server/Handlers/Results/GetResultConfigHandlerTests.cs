@@ -6,32 +6,32 @@ using Microsoft.AspNetCore.Identity.Test;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetResultConfigHandler, GetResultConfigRequest, ResultConfigModel>
+public sealed class GetResultConfigHandlerTests : ResultHandlersTestsBase<GetPointSystemHandler, GetPointSystemRequest, PointSystemModel>
 {
     public GetResultConfigHandlerTests() : base()
     {
     }
 
-    protected override GetResultConfigHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultConfigRequest>? validator = null)
+    protected override GetPointSystemHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetPointSystemRequest>? validator = null)
     {
-        return new GetResultConfigHandler(logger, dbContext,
-            new IValidator<GetResultConfigRequest>[] { validator ?? MockHelpers.TestValidator<GetResultConfigRequest>() });
+        return new GetPointSystemHandler(logger, dbContext,
+            new IValidator<GetPointSystemRequest>[] { validator ?? MockHelpers.TestValidator<GetPointSystemRequest>() });
     }
 
-    private GetResultConfigRequest DefaultRequest(long resultConfigId)
+    private GetPointSystemRequest DefaultRequest(long resultConfigId)
     {
-        return new GetResultConfigRequest(resultConfigId);
+        return new GetPointSystemRequest(resultConfigId);
     }
 
-    protected override GetResultConfigRequest DefaultRequest()
+    protected override GetPointSystemRequest DefaultRequest()
     {
         return DefaultRequest(TestResultConfigId);
     }
 
-    protected override void DefaultAssertions(GetResultConfigRequest request, ResultConfigModel result, LeagueDbContext dbContext)
+    protected override void DefaultAssertions(GetPointSystemRequest request, PointSystemModel result, LeagueDbContext dbContext)
     {
         var resultConfigEntity = dbContext.ResultConfigurations
-            .FirstOrDefault(x => x.ResultConfigId == request.ResultConfigId);
+            .FirstOrDefault(x => x.PointSystemId == request.ResultConfigId);
         resultConfigEntity.Should().NotBeNull();
         result.ResultConfigId.Should().Be(request.ResultConfigId);
         result.Name.Should().Be(resultConfigEntity!.Name);

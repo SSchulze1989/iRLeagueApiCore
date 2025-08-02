@@ -249,7 +249,7 @@ public static class PopulateTestDatabase
                     FilterValues = new[] { "Eins", "Zwei", "Drei" },
                 }},
             };
-            var resultConfig = new ResultConfigurationEntity()
+            var resultConfig = new PointSystemEntity()
             {
                 League = league1,
                 ChampSeason = champSeason,

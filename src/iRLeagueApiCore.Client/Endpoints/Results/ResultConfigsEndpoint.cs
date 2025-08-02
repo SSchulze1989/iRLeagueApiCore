@@ -4,7 +4,7 @@ using iRLeagueApiCore.Common.Models;
 
 namespace iRLeagueApiCore.Client.Endpoints.Results;
 
-internal class ResultConfigsEndpoint : PostGetAllEndpoint<ResultConfigModel, PostResultConfigModel>, IResultConfigsEndpoint
+internal class ResultConfigsEndpoint : PostGetAllEndpoint<PointSystemModel, PostPointSystemModel>, IResultConfigsEndpoint
 {
     public ResultConfigsEndpoint(HttpClientWrapper httpClientWrapper, RouteBuilder routeBuilder) :
         base(httpClientWrapper, routeBuilder)

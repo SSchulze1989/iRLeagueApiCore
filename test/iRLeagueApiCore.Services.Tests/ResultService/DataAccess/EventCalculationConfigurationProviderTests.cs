@@ -38,7 +38,7 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         var test = await sut.GetResultConfigIds(@event.EventId);
 
         test.Should().HaveSameCount(configs);
-        test.Should().BeEquivalentTo(configs.Select(x => x.ResultConfigId));
+        test.Should().BeEquivalentTo(configs.Select(x => x.PointSystemId));
     }
 
     [Fact]
@@ -48,11 +48,11 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         int resultConfigCount = 5;
         var resultConfigs = accessMockHelper.ConfigurationBuilder(@event).CreateMany(resultConfigCount).ToList();
         // add dependencies
-        resultConfigs[0].SourceResultConfigId = resultConfigs[2].ResultConfigId;
-        resultConfigs[1].SourceResultConfigId = resultConfigs[0].ResultConfigId;
-        resultConfigs[2].SourceResultConfigId = resultConfigs[4].ResultConfigId;
-        resultConfigs[3].SourceResultConfigId = null;
-        resultConfigs[4].SourceResultConfigId = resultConfigs[3].ResultConfigId;
+        resultConfigs[0].SourcePointSystemId = resultConfigs[2].PointSystemId;
+        resultConfigs[1].SourcePointSystemId = resultConfigs[0].PointSystemId;
+        resultConfigs[2].SourcePointSystemId = resultConfigs[4].PointSystemId;
+        resultConfigs[3].SourcePointSystemId = null;
+        resultConfigs[4].SourcePointSystemId = resultConfigs[3].PointSystemId;
         dbContext.ResultConfigurations.AddRange(resultConfigs);
         await dbContext.SaveChangesAsync();
         var expectedOrder = new[] { 3, 4, 2, 0, 1 };
@@ -62,7 +62,7 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
 
         foreach ((var configId, var expIndex) in test.Zip(expectedOrder))
         {
-            configId.Should().Be(resultConfigs[expIndex].ResultConfigId);
+            configId.Should().Be(resultConfigs[expIndex].PointSystemId);
         }
     }
 
@@ -73,11 +73,11 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         int resultConfigCount = 5;
         var resultConfigs = accessMockHelper.ConfigurationBuilder(@event).CreateMany(resultConfigCount).ToList();
         // add dependencies
-        resultConfigs[0].SourceResultConfigId = resultConfigs[1].ResultConfigId;
-        resultConfigs[1].SourceResultConfigId = resultConfigs[0].ResultConfigId;
-        resultConfigs[2].SourceResultConfigId = resultConfigs[4].ResultConfigId;
-        resultConfigs[3].SourceResultConfigId = null;
-        resultConfigs[4].SourceResultConfigId = resultConfigs[3].ResultConfigId;
+        resultConfigs[0].SourcePointSystemId = resultConfigs[1].PointSystemId;
+        resultConfigs[1].SourcePointSystemId = resultConfigs[0].PointSystemId;
+        resultConfigs[2].SourcePointSystemId = resultConfigs[4].PointSystemId;
+        resultConfigs[3].SourcePointSystemId = null;
+        resultConfigs[4].SourcePointSystemId = resultConfigs[3].PointSystemId;
         dbContext.ResultConfigurations.AddRange(resultConfigs);
         await dbContext.SaveChangesAsync();
         var expectedOrder = new[] { 3, 4, 2, 0, 1 };
@@ -116,13 +116,13 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         var championship = await dbContext.Championships.FirstAsync();
         var champSeason = accessMockHelper.CreateChampSeason(championship, @event.Schedule.Season);
         var config = accessMockHelper.CreateConfiguration(@event);
-        champSeason.ResultConfigurations = new[] { config };
+        champSeason.PointSystems = new[] { config };
         dbContext.ChampSeasons.Add(champSeason);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
-        var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
+        var test = await sut.GetConfiguration(@event.EventId, config.PointSystemId);
 
         test.ChampSeasonId.Should().Be(champSeason.ChampSeasonId);
     }
@@ -138,9 +138,9 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
-        var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
+        var test = await sut.GetConfiguration(@event.EventId, config.PointSystemId);
 
-        test.ResultConfigId.Should().Be(config.ResultConfigId);
+        test.ResultConfigId.Should().Be(config.PointSystemId);
     }
 
     [Fact]
@@ -149,13 +149,13 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         var @event = await dbContext.Events
             .Include(x => x.Sessions)
             .FirstAsync();
-        var config = (ResultConfigurationEntity?)null;
+        var config = (PointSystemEntity?)null;
         var eventResult = accessMockHelper.CreateScoredResult(@event, config);
         dbContext.ScoredEventResults.Add(eventResult);
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
-        var test = await sut.GetConfiguration(@event.EventId, config?.ResultConfigId);
+        var test = await sut.GetConfiguration(@event.EventId, config?.PointSystemId);
 
         test.ResultId.Should().Be(eventResult.ResultId);
     }
@@ -173,9 +173,9 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
-        var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
+        var test = await sut.GetConfiguration(@event.EventId, config.PointSystemId);
 
-        test.ResultConfigId.Should().Be(config.ResultConfigId);
+        test.ResultConfigId.Should().Be(config.PointSystemId);
         test.ResultId.Should().Be(eventResult.ResultId);
     }
 
@@ -187,16 +187,16 @@ public sealed class EventCalculationConfigurationProviderTests : DataAccessTests
             .FirstAsync();
         var sourceConfig = accessMockHelper.CreateConfiguration(@event);
         var config = accessMockHelper.CreateConfiguration(@event);
-        config.SourceResultConfig = sourceConfig;
+        config.SourcePointSystem = sourceConfig;
         dbContext.ResultConfigurations.Add(sourceConfig);
         dbContext.ResultConfigurations.Add(config);
         await dbContext.SaveChangesAsync();
         var sut = CreateSut();
 
-        var test = await sut.GetConfiguration(@event.EventId, config.ResultConfigId);
+        var test = await sut.GetConfiguration(@event.EventId, config.PointSystemId);
 
-        test.ResultConfigId.Should().Be(config.ResultConfigId);
-        test.SourceResultConfigId.Should().Be(sourceConfig.ResultConfigId);
+        test.ResultConfigId.Should().Be(config.PointSystemId);
+        test.SourceResultConfigId.Should().Be(sourceConfig.PointSystemId);
     }
 
     private EventCalculationConfigurationProvider CreateSut()

@@ -1,7 +1,7 @@
 ﻿namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
-public class ResultConfigInfoModel
+public class PointSystemInfoModel
 {
     [DataMember]
     public long LeagueId { get; set; }

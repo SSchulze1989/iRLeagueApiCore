@@ -17,8 +17,8 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         return await ChampSeasonsQuery()
             .Include(x => x.Championship)
             .Include(x => x.StandingConfiguration)
-            .Include(x => x.ResultConfigurations)
-            .Include(x => x.DefaultResultConfig)
+            .Include(x => x.PointSystems)
+            .Include(x => x.DefaultPointSystem)
             .Include(x => x.Filters)
             .Where(x => x.ChampSeasonId == champSeasonId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -30,8 +30,8 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         target.Championship.Name = model.ChampionshipName;
         target.Championship.DisplayName = model.ChampionshipDisplayName;
         target.StandingConfiguration = await MapToStandingConfigurationAsync(user, model.StandingConfig, cancellationToken);
-        target.ResultConfigurations = await MapToResultConfigurationListAsync(model.ResultConfigs.Select(x => x.ResultConfigId), target.ResultConfigurations, cancellationToken);
-        target.DefaultResultConfig = target.ResultConfigurations.FirstOrDefault(x => x.ResultConfigId == model.DefaultResultConfig?.ResultConfigId);
+        target.PointSystems = await MapToResultConfigurationListAsync(model.ResultConfigs.Select(x => x.ResultConfigId), target.PointSystems, cancellationToken);
+        target.DefaultPointSystem = target.PointSystems.FirstOrDefault(x => x.PointSystemId == model.DefaultResultConfig?.ResultConfigId);
         target.ResultKind = model.ResultKind;
         target.Filters = await MapToFilterOptionListAsync(user, model.Filters, target.Filters, cancellationToken);
         target.Index = model.Index;
@@ -63,11 +63,11 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
         return entity;
     }
 
-    protected async Task<ICollection<ResultConfigurationEntity>> MapToResultConfigurationListAsync(IEnumerable<long> resultConfigId,
-        ICollection<ResultConfigurationEntity> target, CancellationToken cancellationToken)
+    protected async Task<ICollection<PointSystemEntity>> MapToResultConfigurationListAsync(IEnumerable<long> resultConfigId,
+        ICollection<PointSystemEntity> target, CancellationToken cancellationToken)
     {
         target = await dbContext.ResultConfigurations
-            .Where(x => resultConfigId.Contains(x.ResultConfigId))
+            .Where(x => resultConfigId.Contains(x.PointSystemId))
             .ToListAsync(cancellationToken);
         return target;
     }
@@ -101,24 +101,24 @@ public abstract class ChampSeasonHandlerBase<THandler, TRequest, TResponse> : Ha
             Description = champSeason.Roster.Description,
             EntryCount = champSeason.Roster.RosterEntries.Count,
         },
-        ResultConfigs = champSeason.ResultConfigurations.Select(config => new ResultConfigInfoModel()
+        ResultConfigs = champSeason.PointSystems.Select(config => new PointSystemInfoModel()
         {
             LeagueId = champSeason.LeagueId,
-            ResultConfigId = config.ResultConfigId,
+            ResultConfigId = config.PointSystemId,
             ChampSeasonId = champSeason.ChampSeasonId,
             ChampionshipName = champSeason.Championship.Name,
             Name = config.Name,
             DisplayName = config.DisplayName,
-            IsDefaultConfig = config.ResultConfigId == champSeason.DefaultResultConfigId,
+            IsDefaultConfig = config.PointSystemId == champSeason.DefaultPointSystemId,
         }).ToList(),
-        DefaultResultConfig = champSeason.DefaultResultConfig == null ? null : new ResultConfigInfoModel()
+        DefaultResultConfig = champSeason.DefaultPointSystem == null ? null : new PointSystemInfoModel()
         {
             LeagueId = champSeason.LeagueId,
-            ResultConfigId = champSeason.DefaultResultConfig.ResultConfigId,
+            ResultConfigId = champSeason.DefaultPointSystem.PointSystemId,
             ChampSeasonId = champSeason.ChampSeasonId,
             ChampionshipName = champSeason.Championship.Name,
-            Name = champSeason.DefaultResultConfig.Name,
-            DisplayName = champSeason.DefaultResultConfig.DisplayName,
+            Name = champSeason.DefaultPointSystem.Name,
+            DisplayName = champSeason.DefaultPointSystem.DisplayName,
             IsDefaultConfig = true,
         },
         SeasonId = champSeason.SeasonId,

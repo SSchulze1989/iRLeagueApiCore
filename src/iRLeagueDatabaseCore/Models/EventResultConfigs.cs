@@ -7,5 +7,5 @@ public class EventResultConfigs
     public long ResultConfigRefId { get; set; }
 
     public virtual EventEntity Event { get; set; }
-    public virtual ResultConfigurationEntity ResultConfig { get; set; }
+    public virtual PointSystemEntity ResultConfig { get; set; }
 }

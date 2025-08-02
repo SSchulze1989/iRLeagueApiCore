@@ -47,7 +47,7 @@ internal class SeasonByIdEndpoint : UpdateEndpoint<SeasonModel, PutSeasonModel>,
         return new StandingsEndpoint(HttpClientWrapper, RouteBuilder);
     }
 
-    IGetAllEndpoint<ResultConfigModel> ISeasonByIdEndpoint.ResultsConfigs()
+    IGetAllEndpoint<PointSystemModel> ISeasonByIdEndpoint.ResultsConfigs()
     {
         return new ResultConfigsEndpoint(HttpClientWrapper, RouteBuilder);
     }

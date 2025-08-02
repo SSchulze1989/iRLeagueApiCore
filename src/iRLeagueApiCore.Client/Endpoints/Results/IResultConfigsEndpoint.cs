@@ -2,6 +2,6 @@
 
 namespace iRLeagueApiCore.Client.Endpoints.Results;
 
-public interface IResultConfigsEndpoint : IGetAllEndpoint<ResultConfigModel>, IWithIdEndpoint<IResultConfigByIdEndpoint>
+public interface IResultConfigsEndpoint : IGetAllEndpoint<PointSystemModel>, IWithIdEndpoint<IResultConfigByIdEndpoint>
 {
 }

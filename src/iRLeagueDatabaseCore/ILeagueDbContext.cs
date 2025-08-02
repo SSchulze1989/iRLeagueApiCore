@@ -21,7 +21,7 @@ public interface ILeagueDbContext
     public DbSet<PointRuleEntity> PointRules { get; set; }
     public DbSet<ProtestEntity> Protests { get; set; }
     public DbSet<EventResultEntity> EventResults { get; set; }
-    public DbSet<ResultConfigurationEntity> ResultConfigurations { get; set; }
+    public DbSet<PointSystemEntity> ResultConfigurations { get; set; }
     public DbSet<ResultRowEntity> ResultRows { get; set; }
     public DbSet<FilterOptionEntity> FilterOptions { get; set; }
     public DbSet<ReviewPenaltyEntity> ReviewPenaltys { get; set; }

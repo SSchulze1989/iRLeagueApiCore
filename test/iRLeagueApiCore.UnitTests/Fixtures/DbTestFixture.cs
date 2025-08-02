@@ -240,7 +240,7 @@ public sealed class DbTestFixture : DataAccessTestsBase
         }
 
         // create results
-        var resultConfig = new ResultConfigurationEntity()
+        var resultConfig = new PointSystemEntity()
         {
             Name = "Resultconfig 1",
             DisplayName = "Overall",
