@@ -113,7 +113,7 @@ public sealed class UploadResultHandler : HandlerBase<UploadResultHandler, Uploa
             .OrderBy(x => x.SessionNr)
             .Where(x => x.SessionType == SessionType.Race);
         var raceResults = sessionResults
-            .Where(x => raceSessionTypes.Contains(x.simsession_type)).Reverse();
+            .Where(x => raceSessionTypes.Contains(x.simsession_type));
         foreach ((var session, var result) in raceSessions.Zip(raceResults))
         {
             if (session is not null && result is not null)

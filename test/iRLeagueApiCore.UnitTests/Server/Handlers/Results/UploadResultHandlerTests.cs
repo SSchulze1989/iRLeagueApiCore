@@ -296,8 +296,7 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
         await sut.Handle(request, default);
 
         var raceResults = result.session_results
-            .Where(x => x.simsession_type == (int)SimSessionType.Race)
-            .Reverse();
+            .Where(x => x.simsession_type == (int)SimSessionType.Race);
         var testSessions = await dbContext.Sessions
             .Include(x => x.SessionResult)
                 .ThenInclude(x => x.ResultRows)
