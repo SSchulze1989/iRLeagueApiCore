@@ -199,6 +199,9 @@ public sealed class Startup
             options.UserAgentProductName = "iRLeagueApiCore";
             options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
         });
+
+        services.AddSingleton<ServerConfiguration>(x =>
+            Configuration.GetSection("ServerConfiguration").Get<ServerConfiguration>() ?? new ServerConfiguration());
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

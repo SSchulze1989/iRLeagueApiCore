@@ -7,12 +7,13 @@ namespace iRLeagueApiCore.Server.Validation.Leagues;
 
 public sealed class PostLeagueRequestValidator : AbstractValidator<PostLeagueRequest>
 {
-    private const int maxLeagues = 3;
-    private UserManager<ApplicationUser> userManager;
+    private readonly int maxLeagues;
+    private readonly UserManager<ApplicationUser> userManager;
 
-    public PostLeagueRequestValidator(PostLeagueModelValidator modelValidator, UserManager<ApplicationUser> userManager)
+    public PostLeagueRequestValidator(PostLeagueModelValidator modelValidator, UserManager<ApplicationUser> userManager, ServerConfiguration configuration)
     {
         this.userManager = userManager;
+        maxLeagues = configuration.MaxLeaguesPerUser;
 
         RuleFor(x => x.Model)
             .SetValidator(modelValidator);
