@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Enums;
+﻿using Aydsko.iRacingData.Tracks;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueApiCore.TrackImport.Models;
 using iRLeagueApiCore.TrackImport.Service;
@@ -72,15 +73,20 @@ public sealed class ImportTracksHandler : HandlerBase<ImportTracksHandler, Impor
     private static TrackConfigEntity MapToTrackConfigEntity(Aydsko.iRacingData.Tracks.Track importTrack, TrackConfigEntity entity)
     {
         entity.ConfigName = importTrack.ConfigName ?? "-";
-        entity.ConfigType = GetConfigType(importTrack.TrackTypes?[0].TrackType ?? string.Empty);
+        entity.ConfigType = GetConfigType(importTrack.TrackTypes);
         entity.HasNightLighting = importTrack.NightLighting;
         entity.LengthKm = decimal.ToDouble(importTrack.TrackConfigLength) * TrackImportService.m2km;
         entity.Turns = importTrack.CornersPerLap;
         return entity;
     }
 
-    private static ConfigType GetConfigType(string typeString)
+    private static ConfigType GetConfigType(TrackTypes[] trackTypes)
     {
+        if (trackTypes.Length == 0)
+        {
+            return ConfigType.Unknown;
+        }
+        var typeString = trackTypes?[0].TrackType.ToLower();
         switch (typeString)
         {
             case "road":
