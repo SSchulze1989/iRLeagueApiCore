@@ -1,5 +1,6 @@
 ﻿using FluentValidation.TestHelper;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Handlers.Leagues;
 using iRLeagueApiCore.Server.Models;
@@ -35,7 +36,11 @@ public sealed class PostLeagueRequestDbTestFixture : IClassFixture<DbTestFixture
 
     private static PostLeagueRequestValidator CreateValidator(LeagueDbContext dbContext)
     {
-        return new PostLeagueRequestValidator(new PostLeagueModelValidator(dbContext), MockHelpers.TestUserManager<ApplicationUser>());
+        var config = new ServerConfiguration()
+        {
+            MaxLeaguesPerUser = 3,
+        };
+        return new PostLeagueRequestValidator(new PostLeagueModelValidator(dbContext), MockHelpers.TestUserManager<ApplicationUser>(), config);
     }
 
     [Fact]
