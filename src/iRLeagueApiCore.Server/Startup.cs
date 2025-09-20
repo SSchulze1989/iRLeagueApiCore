@@ -185,6 +185,7 @@ public sealed class Startup
         services.AddEmailService();
         services.AddResultService();
         services.AddBackgroundQueue();
+        services.AddTriggerService();
 
         services.AddSingleton<ICredentials, CredentialList>(x => new(Configuration.GetSection("Credentials")));
 

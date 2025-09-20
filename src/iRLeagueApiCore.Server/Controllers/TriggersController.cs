@@ -1,11 +1,16 @@
 ﻿
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Handlers.Triggers;
 using iRLeagueApiCore.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace iRLeagueApiCore.Server.Controllers;
 
+[TypeFilter(typeof(LeagueAuthorizeAttribute))]
+[TypeFilter(typeof(SetTenantLeagueIdAttribute))]
+[RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
+[Route("{leagueName}/[controller]")]
 public class TriggersController : LeagueApiController<TriggersController>
 {
     public TriggersController(ILogger<TriggersController> logger, IMediator mediator) : base(logger, mediator)
