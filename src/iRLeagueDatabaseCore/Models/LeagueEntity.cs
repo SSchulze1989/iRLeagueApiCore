@@ -50,6 +50,7 @@ public class LeagueEntity : Revision, IVersionEntity
     public virtual ICollection<StandingConfigurationEntity> StandingConfigs { get; set; }
     public virtual ICollection<RosterEntity> Rosters { get; set; }
     public virtual IEnumerable<PaymentEntity> Payments { get; set; }
+    public virtual ICollection<TriggerEntity> Triggers { get; set; }
 }
 
 public class LeagueEntityConfiguration : IEntityTypeConfiguration<LeagueEntity>

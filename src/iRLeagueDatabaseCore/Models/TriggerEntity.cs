@@ -45,7 +45,7 @@ public class TriggerEntityConfiguration : IEntityTypeConfiguration<TriggerEntity
                 new ValueComparer<Dictionary<string, object>>(false));
 
         entity.HasOne(d => d.League)
-            .WithMany()
+            .WithMany(p => p.Triggers)
             .HasForeignKey(d => d.LeagueId);
     }
 }
