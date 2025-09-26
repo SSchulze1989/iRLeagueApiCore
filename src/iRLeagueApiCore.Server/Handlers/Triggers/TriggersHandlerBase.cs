@@ -16,9 +16,9 @@ public abstract class TriggersHandlerBase<THandler, TRequest, TResponse> : Handl
         entity.Name = model.Name;
         entity.Description = model.Description;
         entity.TriggerType = model.TriggerType;
-        entity.Parameters = model.Parameters != null ? new Dictionary<string, object>(model.Parameters) : new Dictionary<string, object>();
+        entity.Parameters = model.Parameters;
         entity.Action = model.Action;
-        entity.ActionParameters = model.ActionParameters != null ? new Dictionary<string, object>(model.ActionParameters) : new Dictionary<string, object>();
+        entity.ActionParameters = model.ActionParameters;
         return entity;
     }
 
