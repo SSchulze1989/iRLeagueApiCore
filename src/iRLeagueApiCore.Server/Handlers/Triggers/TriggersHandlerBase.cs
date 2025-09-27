@@ -1,4 +1,5 @@
-﻿using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Models;
 using System.Linq.Expressions;
 
@@ -19,6 +20,12 @@ public abstract class TriggersHandlerBase<THandler, TRequest, TResponse> : Handl
         entity.Parameters = model.Parameters;
         entity.Action = model.Action;
         entity.ActionParameters = model.ActionParameters;
+        entity.TimeElapesd = entity.TriggerType switch
+        {
+            TriggerType.Time => model.Parameters.Time?.ToUniversalTime(),
+            TriggerType.Interval => DateTimeOffset.UtcNow.Add(model.Parameters.Interval ?? TimeSpan.Zero),
+            _ => null
+        };
         return entity;
     }
 

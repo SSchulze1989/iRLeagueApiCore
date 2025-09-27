@@ -9,6 +9,7 @@ public partial class TriggerEntity : Revision, IVersionEntity
     public string Description { get; set; }
     public TriggerType TriggerType { get; set; }
     public TriggerParameterModel Parameters { get; set; }
+    public DateTimeOffset? TimeElapesd { get; set; }
     public TriggerAction Action { get; set; }
     public Dictionary<string, object> ActionParameters { get; set; }
 

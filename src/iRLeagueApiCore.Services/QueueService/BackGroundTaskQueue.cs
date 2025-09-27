@@ -39,11 +39,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
     public async ValueTask QueueBackgroundWorkItemAsync(
         Func<CancellationToken, ValueTask> workItem)
     {
-        if (workItem == null)
-        {
-            throw new ArgumentNullException(nameof(workItem));
-        }
-
+        ArgumentNullException.ThrowIfNull(workItem);
         await queue.Writer.WriteAsync(workItem);
     }
 
