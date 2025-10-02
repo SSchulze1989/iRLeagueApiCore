@@ -3,6 +3,7 @@ using iRLeagueApiCore.Services.TriggerService;
 using iRLeagueApiCore.Services.TriggerService.Actions;
 using iRLeagueApiCore.Services.TriggerService.Events;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class TriggerHostedServiceCollectionExtension
@@ -14,9 +15,8 @@ public static class TriggerHostedServiceCollectionExtension
         {
             configure(configuration);
         }
-        services.AddKeyedTransient<ITriggerAction, WebhookTriggerAction>(TriggerAction.Webhook);
-        services.AddScoped<TriggerActionProvider>();
-        services.AddSingleton(x => new TriggerHostedService(
+        services.TryAddScoped<TriggerActionProvider>();
+        services.TryAddSingleton(x => new TriggerHostedService(
             x.GetRequiredService<ILogger<TriggerHostedService>>(),
             configuration,
             x.GetRequiredService<IServiceProvider>(),
@@ -24,7 +24,19 @@ public static class TriggerHostedServiceCollectionExtension
         services.AddHostedService(sp => sp.GetRequiredService<TriggerHostedService>());
 
         // Event notification handlers
-        services.AddScoped<INotificationHandler<ResultCalculatedNotification>, ResultCalculatedHandler>();
+        services.TryAddScoped<INotificationHandler<ResultCalculatedNotification>, ResultCalculatedHandler>();
+
+        // Register trigger actions
+        if (configuration.AddDefaultActions)
+        {
+            services.AddTriggerAction<WebhookTriggerAction>(TriggerAction.Webhook);
+        }
+        return services;
+    }
+
+    public static IServiceCollection AddTriggerAction<TAction>(this IServiceCollection services, TriggerAction key) where TAction : class, ITriggerAction
+    {
+        services.TryAddKeyedTransient<ITriggerAction, TAction>(key);
         return services;
     }
 }

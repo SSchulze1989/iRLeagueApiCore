@@ -1,14 +1,15 @@
 using AspNetCoreRateLimit;
 using Aydsko.iRacingData;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.Services.TriggerService.Actions;
 using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
@@ -193,6 +194,7 @@ public sealed class Startup
         {
             options.ScanTriggersInterval = TimeSpan.FromMilliseconds(serverConfiguration.TriggerCheckIntervalMs); 
         });
+        services.AddTriggerAction<WebhookTriggerAction>(TriggerAction.Webhook);
 
         services.AddSingleton<ICredentials, CredentialList>(x => new(Configuration.GetSection("Credentials")));
 

@@ -1,6 +1,6 @@
 ﻿
 namespace iRLeagueApiCore.Services.TriggerService.Actions;
-internal sealed class WebhookTriggerAction : ITriggerAction
+public sealed class WebhookTriggerAction : ITriggerAction
 {
     private readonly ILogger<WebhookTriggerAction> logger;
 
