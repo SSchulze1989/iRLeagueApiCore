@@ -54,6 +54,11 @@ public class TriggerEntityConfiguration : IEntityTypeConfiguration<TriggerEntity
 
         entity.HasIndex(e => e.TriggerType);
 
+        entity.Property(e => e.EventType)
+            .HasConversion<string>();
+
+        entity.HasIndex(e => e.EventType);
+
         entity.Property(e => e.Interval)
             .HasConversion<TimeSpanToTicksConverter>();
 

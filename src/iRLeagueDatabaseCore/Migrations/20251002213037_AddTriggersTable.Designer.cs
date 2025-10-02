@@ -11,7 +11,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueDatabaseCore.Migrations
 {
     [DbContext(typeof(LeagueDbContext))]
-    [Migration("20251002173142_AddTriggersTable")]
+    [Migration("20251002213037_AddTriggersTable")]
     partial class AddTriggersTable
     {
         /// <inheritdoc />
@@ -3037,8 +3037,8 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("EventType")
-                        .HasColumnType("int");
+                    b.Property<string>("EventType")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<long?>("Interval")
                         .HasColumnType("bigint");
@@ -3077,6 +3077,8 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.HasKey("LeagueId", "TriggerId");
 
                     b.HasAlternateKey("TriggerId");
+
+                    b.HasIndex("EventType");
 
                     b.HasIndex("RefId1");
 

@@ -22,7 +22,7 @@ namespace iRLeagueDatabaseCore.Migrations
                     Name = table.Column<string>(type: "longtext", nullable: true),
                     Description = table.Column<string>(type: "longtext", nullable: true),
                     TriggerType = table.Column<string>(type: "varchar(255)", nullable: false),
-                    EventType = table.Column<int>(type: "int", nullable: true),
+                    EventType = table.Column<string>(type: "varchar(255)", nullable: true),
                     TimeElapses = table.Column<DateTimeOffset>(type: "datetime", nullable: true),
                     Interval = table.Column<long>(type: "bigint", nullable: true),
                     RefId1 = table.Column<long>(type: "bigint", nullable: true),
@@ -50,6 +50,11 @@ namespace iRLeagueDatabaseCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("Relational:Collation", "Latin1_General_CI_AS");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Triggers_EventType",
+                table: "Triggers",
+                column: "EventType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Triggers_RefId1",
