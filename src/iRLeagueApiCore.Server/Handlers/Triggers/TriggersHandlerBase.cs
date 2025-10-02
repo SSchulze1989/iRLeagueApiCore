@@ -17,13 +17,16 @@ public abstract class TriggersHandlerBase<THandler, TRequest, TResponse> : Handl
         entity.Name = model.Name;
         entity.Description = model.Description;
         entity.TriggerType = model.TriggerType;
-        entity.Parameters = model.Parameters;
-        entity.Action = model.Action;
+        entity.Interval = model.Interval;
+        entity.EventType = model.EventType;
+        entity.IsArchived = !model.IsActive;
+        entity.RefId1 = model.RefId1;
+        entity.RefId2 = model.RefId2;
         entity.ActionParameters = model.ActionParameters;
-        entity.TimeElapesd = entity.TriggerType switch
+        entity.TimeElapses = entity.TriggerType switch
         {
-            TriggerType.Time => model.Parameters.Time?.ToUniversalTime(),
-            TriggerType.Interval => DateTimeOffset.UtcNow.Add(model.Parameters.Interval ?? TimeSpan.Zero),
+            TriggerType.Time => model.Time?.ToUniversalTime(),
+            TriggerType.Interval => DateTimeOffset.UtcNow.Add(model.Interval ?? TimeSpan.Zero),
             _ => null
         };
         return entity;
@@ -35,8 +38,13 @@ public abstract class TriggersHandlerBase<THandler, TRequest, TResponse> : Handl
         Name = trigger.Name,
         Description = trigger.Description,
         TriggerType = trigger.TriggerType,
-        Parameters = trigger.Parameters,
+        EventType = trigger.EventType,
+        Interval = trigger.Interval,
+        Time = trigger.TimeElapses,
+        RefId1 = trigger.RefId1,
+        RefId2 = trigger.RefId2,
         Action = trigger.Action,
         ActionParameters = trigger.ActionParameters,
+        IsActive = !trigger.IsArchived,
     };
 }

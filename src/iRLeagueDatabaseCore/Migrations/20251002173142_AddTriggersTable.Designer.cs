@@ -11,7 +11,7 @@ using iRLeagueDatabaseCore.Models;
 namespace iRLeagueDatabaseCore.Migrations
 {
     [DbContext(typeof(LeagueDbContext))]
-    [Migration("20250919211230_AddTriggersTable")]
+    [Migration("20251002173142_AddTriggersTable")]
     partial class AddTriggersTable
     {
         /// <inheritdoc />
@@ -3037,6 +3037,12 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("EventType")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("Interval")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("IsArchived")
                         .HasColumnType("tinyint(1)");
 
@@ -3052,12 +3058,18 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Parameters")
-                        .HasColumnType("longtext");
+                    b.Property<long?>("RefId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RefId2")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("TimeElapses")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("TriggerType")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("Version")
                         .HasColumnType("int");
@@ -3065,6 +3077,12 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.HasKey("LeagueId", "TriggerId");
 
                     b.HasAlternateKey("TriggerId");
+
+                    b.HasIndex("RefId1");
+
+                    b.HasIndex("RefId2");
+
+                    b.HasIndex("TriggerType");
 
                     b.ToTable("Triggers", (string)null);
                 });
@@ -4038,7 +4056,7 @@ namespace iRLeagueDatabaseCore.Migrations
             modelBuilder.Entity("iRLeagueDatabaseCore.Models.TriggerEntity", b =>
                 {
                     b.HasOne("iRLeagueDatabaseCore.Models.LeagueEntity", "League")
-                        .WithMany()
+                        .WithMany("Triggers")
                         .HasForeignKey("LeagueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4126,6 +4144,8 @@ namespace iRLeagueDatabaseCore.Migrations
                     b.Navigation("StandingConfigs");
 
                     b.Navigation("Teams");
+
+                    b.Navigation("Triggers");
 
                     b.Navigation("VoteCategories");
                 });

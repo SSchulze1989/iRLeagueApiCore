@@ -21,8 +21,12 @@ namespace iRLeagueDatabaseCore.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: true),
                     Description = table.Column<string>(type: "longtext", nullable: true),
-                    TriggerType = table.Column<string>(type: "longtext", nullable: false),
-                    Parameters = table.Column<string>(type: "longtext", nullable: true),
+                    TriggerType = table.Column<string>(type: "varchar(255)", nullable: false),
+                    EventType = table.Column<int>(type: "int", nullable: true),
+                    TimeElapses = table.Column<DateTimeOffset>(type: "datetime", nullable: true),
+                    Interval = table.Column<long>(type: "bigint", nullable: true),
+                    RefId1 = table.Column<long>(type: "bigint", nullable: true),
+                    RefId2 = table.Column<long>(type: "bigint", nullable: true),
                     Action = table.Column<string>(type: "longtext", nullable: false),
                     ActionParameters = table.Column<string>(type: "longtext", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
@@ -46,6 +50,21 @@ namespace iRLeagueDatabaseCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("Relational:Collation", "Latin1_General_CI_AS");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Triggers_RefId1",
+                table: "Triggers",
+                column: "RefId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Triggers_RefId2",
+                table: "Triggers",
+                column: "RefId2");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Triggers_TriggerType",
+                table: "Triggers",
+                column: "TriggerType");
         }
 
         /// <inheritdoc />

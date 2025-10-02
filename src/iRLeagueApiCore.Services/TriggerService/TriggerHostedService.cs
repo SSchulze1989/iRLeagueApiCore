@@ -39,7 +39,7 @@ public sealed class TriggerHostedService : BackgroundService
             {
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    using var dbContext = scope.ServiceProvider.GetRequiredService<LeagueDbContext>();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<LeagueDbContext>();
                     await ScanTriggers(dbContext, stoppingToken);
                 }
 
@@ -65,7 +65,13 @@ public sealed class TriggerHostedService : BackgroundService
         return base.StopAsync(cancellationToken);
     }
 
-    private async Task ExecuteTrigger(TriggerEntity trigger, CancellationToken cancellationToken)
+    /// <summary>
+    /// Queues the execution of the specified trigger on the background task queue.
+    /// </summary>
+    /// <param name="trigger"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task QueueTriggerFunc(TriggerEntity trigger, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Executing trigger {triggerId}: {triggerName}", trigger.TriggerId, trigger.Name);
         await _taskQueue.QueueBackgroundWorkItemAsync(async token =>
@@ -88,6 +94,12 @@ public sealed class TriggerHostedService : BackgroundService
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Scan for triggers that need to be executed and queues their execution. Only time-based triggers are scanned here.
+    /// </summary>
+    /// <param name="dbContext"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private async Task ScanTriggers(LeagueDbContext dbContext, CancellationToken cancellationToken)
     {
         // Placeholder for trigger scanning logic
@@ -96,20 +108,18 @@ public sealed class TriggerHostedService : BackgroundService
 
         var timeTriggers = await dbContext.Triggers
             .IgnoreQueryFilters()
-            .Where(x => x.TriggerType == TriggerType.Time)
-            .Where(x => x.TimeElapesd != null && x.TimeElapesd <= now)
+            .Where(x => !x.IsArchived)
+            .Where(x => x.TriggerType == TriggerType.Time || x.TriggerType == TriggerType.Interval)
+            .Where(x => x.TimeElapses != null && x.TimeElapses <= now)
             .ToListAsync(cancellationToken);
 
         foreach (var trigger in timeTriggers)
         {
-            await ExecuteTrigger(trigger, cancellationToken);
-            if (trigger.Parameters.OnlyOnce)
+            await QueueTriggerFunc(trigger, cancellationToken);
+
+            if (trigger.TriggerType == TriggerType.Interval)
             {
-                trigger.TimeElapesd = null;
-            }
-            else if (!trigger.Parameters.OnlyOnce && trigger.Parameters.Interval is not null)
-            {
-                trigger.TimeElapesd += trigger.Parameters.Interval;
+                trigger.TimeElapses += trigger.Interval.GetValueOrDefault();
             }
         }
 
@@ -120,25 +130,26 @@ public sealed class TriggerHostedService : BackgroundService
     {
         try
         {
-            IEnumerable<TriggerEntity> eventTriggers = await dbContext.Triggers
+            var eventTriggersQuery = dbContext.Triggers
+                .Where(x => !x.IsArchived)
                 .Where(x => x.TriggerType == TriggerType.Event)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                .Where(x => x.EventType == eventType)
+                .AsNoTracking();
 
-            eventTriggers = eventTriggers.Where(x => x.Parameters.EventType == eventType);
-
-            eventTriggers = (eventType switch
+            eventTriggersQuery = eventType switch
             {
                 TriggerEventType.ResultUploaded or
                 TriggerEventType.ResultCalculated or
                 TriggerEventType.ResultUpdated or 
-                TriggerEventType.ResultDeleted => eventTriggers.Where(x => x.Parameters.EventId < 0 || x.Parameters.EventId == parameters.EventId),
-                _ => [],
-            }).ToList();
+                TriggerEventType.ResultDeleted => eventTriggersQuery.Where(x => x.RefId1 == null || x.RefId1 == parameters.EventId),
+                _ => ((List<TriggerEntity>)[]).AsQueryable(),
+            };
+
+            var eventTriggers = await eventTriggersQuery.ToListAsync(cancellationToken);
 
             foreach (var trigger in eventTriggers)
             {
-                await ExecuteTrigger(trigger, cancellationToken);
+                await QueueTriggerFunc(trigger, cancellationToken);
             }
         }
         catch (Exception ex)
