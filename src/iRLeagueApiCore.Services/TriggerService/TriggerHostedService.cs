@@ -1,5 +1,7 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Services.TriggerService.Actions;
+using iRLeagueApiCore.Services.TriggerService.Events;
 using iRLeagueDatabaseCore;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -90,7 +92,7 @@ public sealed class TriggerHostedService : BackgroundService
     {
         // Placeholder for trigger scanning logic
         var now = DateTimeOffset.Now;
-        _logger.LogInformation("Scanning triggers at: {time}", now);
+        _logger.LogDebug("Scanning triggers at: {time}", now);
 
         var timeTriggers = await dbContext.Triggers
             .IgnoreQueryFilters()
@@ -112,5 +114,36 @@ public sealed class TriggerHostedService : BackgroundService
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ProcessEventTriggers(LeagueDbContext dbContext, TriggerEventType eventType, TriggerParameterModel parameters, CancellationToken cancellationToken)
+    {
+        try
+        {
+            IEnumerable<TriggerEntity> eventTriggers = await dbContext.Triggers
+                .Where(x => x.TriggerType == TriggerType.Event)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            eventTriggers = eventTriggers.Where(x => x.Parameters.EventType == eventType);
+
+            eventTriggers = (eventType switch
+            {
+                TriggerEventType.ResultUploaded or
+                TriggerEventType.ResultCalculated or
+                TriggerEventType.ResultUpdated or 
+                TriggerEventType.ResultDeleted => eventTriggers.Where(x => x.Parameters.EventId < 0 || x.Parameters.EventId == parameters.EventId),
+                _ => [],
+            }).ToList();
+
+            foreach (var trigger in eventTriggers)
+            {
+                await ExecuteTrigger(trigger, cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred during processing of event triggers of type {EventType} and parameters {Parameters}", eventType, parameters);
+        }
     }
 }

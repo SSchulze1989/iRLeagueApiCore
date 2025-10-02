@@ -1,6 +1,9 @@
-﻿namespace iRLeagueApiCore.Common.Models;
+﻿using System.Diagnostics;
+
+namespace iRLeagueApiCore.Common.Models;
 
 [DataContract]
+[DebuggerDisplay("{" + nameof(ToString) + "()}")]
 public sealed class TriggerParameterModel
 {
     [DataMember(EmitDefaultValue = false)]
@@ -9,6 +12,8 @@ public sealed class TriggerParameterModel
     public TimeSpan? Interval { get; set; }
     [DataMember(EmitDefaultValue = false)]
     public DateTimeOffset? Time { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public TriggerEventType? EventType { get; set; }
     [DataMember(EmitDefaultValue = false)]
     public long? SeasonId { get; set; }
     [DataMember(EmitDefaultValue = false)]
@@ -19,4 +24,9 @@ public sealed class TriggerParameterModel
     public long? TeamId { get; set; }
     [DataMember(EmitDefaultValue = false)]
     public long? MemberId { get; set; }
+
+    public override string ToString()
+    {
+        return $"OnlyOnce: {OnlyOnce}, Interval: {Interval}, Time: {Time}, SeasonId: {SeasonId}, EventId: {EventId}, ReviewId: {ReviewId}, TeamId: {TeamId}, MemberId: {MemberId}";
+    }
 }

@@ -1,4 +1,4 @@
-﻿namespace iRLeagueApiCore.Services.TriggerService;
+﻿namespace iRLeagueApiCore.Common.Enums;
 public enum TriggerEventType
 {
     SeasonStart = 0,
