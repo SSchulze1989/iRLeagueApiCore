@@ -37,6 +37,7 @@ public interface ILeagueDbContext
     public DbSet<StatisticSetEntity> StatisticSets { get; set; }
     public DbSet<SubscriptionEntity> Subscriptions { get; set; }
     public DbSet<TeamEntity> Teams { get; set; }
+    public DbSet<TriggerEntity> Triggers { get; set; }
     public DbSet<VoteCategoryEntity> VoteCategories { get; set; }
     public DbSet<TrackGroupEntity> TrackGroups { get; set; }
     public DbSet<IRSimSessionDetailsEntity> IRSimSessionDetails { get; set; }

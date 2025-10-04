@@ -1,0 +1,26 @@
+﻿namespace iRLeagueApiCore.Common.Enums;
+public enum TriggerEventType
+{
+    SeasonStart = 0,
+    SeasonEnd = 1,
+    SessionCreated = 2,
+    SessionStarted = 3,
+    SessionFinished = 4,
+    SessionCancelled = 5,
+    ResultUploaded = 100,
+    ResultCalculated = 101,
+    ResultUpdated = 102,
+    ResultDeleted = 103,
+    ReviewsFinalized = 104,
+    StandingsUpdated = 105,
+    ProtestSubmitted = 106,
+    ReviewCreated = 107,
+    ReviewCommented = 108,
+    ReviewClosed = 109,
+    MemberRegistered = 200,
+    MemberUnregistered = 201,
+    TeamCreated = 202,
+    TeamDisbanded = 203,
+    TeamMemberAdded = 204,
+    TeamMemberRemoved = 205,
+}

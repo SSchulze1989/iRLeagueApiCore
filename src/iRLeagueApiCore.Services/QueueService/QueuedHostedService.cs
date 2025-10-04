@@ -34,12 +34,18 @@ public sealed class QueuedHostedService : BackgroundService
             {
                 await workItem(stoppingToken);
             }
+            catch (TaskCanceledException)
+            {
+                // stopping token was triggered, exit the loop
+                break;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
                     "Error occurred executing {WorkItem}.", nameof(workItem));
             }
         }
+        _logger.LogInformation("Queued Hosted Service is stopped");
     }
 
     public override async Task StopAsync(CancellationToken stoppingToken)

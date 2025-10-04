@@ -3,6 +3,7 @@ using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.Services.ResultService.Models;
 using iRLeagueDatabaseCore.Models;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,8 @@ public static class ResultServiceCollectionExtensions
             configProvider: x.GetRequiredService<IEventCalculationConfigurationProvider>(),
             dataStore: x.GetRequiredService<IEventCalculationResultStore>(),
             calculationServiceProvider: x.GetRequiredService<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
-            standingCalculationQueue: x.GetRequiredService<IStandingCalculationQueue>()));
+            standingCalculationQueue: x.GetRequiredService<IStandingCalculationQueue>(),
+            mediator: x.GetRequiredService<IMediator>()));
         services.TryAddScoped<IResultCalculationQueue>(x => new ResultCalculationQueue(x, x.GetRequiredService<IBackgroundTaskQueue>()));
         // Standing calculation
         services.TryAddScoped<ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult>>(
