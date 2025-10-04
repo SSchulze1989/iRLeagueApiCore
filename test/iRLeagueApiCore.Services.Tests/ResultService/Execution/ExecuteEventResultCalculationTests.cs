@@ -3,6 +3,7 @@ using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Excecution;
 using iRLeagueApiCore.Services.ResultService.Models;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
@@ -20,7 +21,7 @@ public sealed class ExecuteEventResultCalculationTests
         EventCalculationData, EventCalculationResult>> mockCalculationServiceProvider;
     private readonly Mock<IResultCalculationQueue> mockResultQueue;
     private readonly Mock<IStandingCalculationQueue> mockStandingQueue;
-
+    private readonly Mock<IMediator> mockMediator;
     public ExecuteEventResultCalculationTests(ITestOutputHelper testOutputHelper)
     {
         fixture = new();
@@ -53,6 +54,7 @@ public sealed class ExecuteEventResultCalculationTests
         mockCalculationServiceProvider = MockCalculationServiceProvider(fixture);
         mockResultQueue = MockResultQueue(fixture);
         mockStandingQueue = MockStandingQueue(fixture);
+        mockMediator = MockMediator(fixture);
         fixture.Register(() => logger);
         fixture.Register(() => mockConfigurationProvider.Object);
         fixture.Register(() => mockDataProvider.Object);
@@ -60,6 +62,7 @@ public sealed class ExecuteEventResultCalculationTests
         fixture.Register(() => mockCalculationServiceProvider.Object);
         fixture.Register(() => mockResultQueue.Object);
         fixture.Register(() => mockStandingQueue.Object);
+        fixture.Register(() => mockMediator.Object);
     }
 
     [Fact]
@@ -130,7 +133,8 @@ public sealed class ExecuteEventResultCalculationTests
             fixture.Create<IEventCalculationConfigurationProvider>(),
             fixture.Create<IEventCalculationResultStore>(),
             fixture.Create<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>>(),
-            standingCalculationQueue: fixture.Create<IStandingCalculationQueue>());
+            standingCalculationQueue: fixture.Create<IStandingCalculationQueue>(),
+            mediator: fixture.Create<IMediator>());
     }
 
     private static Mock<IEventCalculationConfigurationProvider> MockConfigurationProvider(Fixture fixture)
@@ -198,6 +202,15 @@ public sealed class ExecuteEventResultCalculationTests
         mockQueue.Setup(x => x.QueueStandingCalculationAsync(It.IsAny<long>()))
             .Returns(Task.FromResult(0));
         return mockQueue;
+    }
+
+    private static Mock<IMediator> MockMediator(Fixture fixture)
+    {
+        var mockMediator = new Mock<IMediator>();
+        mockMediator.Setup(x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(0))
+            .Verifiable();
+        return mockMediator;
     }
 
     private static Mock<ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult>> MockCalculationServiceProvider(Fixture fixture)

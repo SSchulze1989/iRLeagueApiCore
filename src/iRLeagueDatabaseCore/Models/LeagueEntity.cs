@@ -13,6 +13,7 @@ public class LeagueEntity : Revision, IVersionEntity
         Championships = new HashSet<ChampionshipEntity>();
         StandingConfigs = new HashSet<StandingConfigurationEntity>();
         Rosters = new HashSet<RosterEntity>();
+        Triggers = new HashSet<TriggerEntity>();
     }
     public long Id { get; set; }
     public string Name { get; set; }
@@ -50,6 +51,7 @@ public class LeagueEntity : Revision, IVersionEntity
     public virtual ICollection<StandingConfigurationEntity> StandingConfigs { get; set; }
     public virtual ICollection<RosterEntity> Rosters { get; set; }
     public virtual IEnumerable<PaymentEntity> Payments { get; set; }
+    public virtual ICollection<TriggerEntity> Triggers { get; set; }
 }
 
 public class LeagueEntityConfiguration : IEntityTypeConfiguration<LeagueEntity>

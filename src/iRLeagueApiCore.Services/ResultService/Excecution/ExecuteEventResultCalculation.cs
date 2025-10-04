@@ -1,6 +1,8 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Models;
+using iRLeagueApiCore.Services.TriggerService.Events;
+using MediatR;
 
 namespace iRLeagueApiCore.Services.ResultService.Excecution;
 
@@ -12,13 +14,15 @@ internal sealed class ExecuteEventResultCalculation
     private readonly IEventCalculationResultStore dataStore;
     private readonly ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider;
     private readonly IStandingCalculationQueue standingCalculationQueue;
+    private readonly IMediator mediator;
 
     public ExecuteEventResultCalculation(ILogger<ExecuteEventResultCalculation> logger,
         IEventCalculationDataProvider dataProvider,
         IEventCalculationConfigurationProvider configProvider,
         IEventCalculationResultStore dataStore,
         ICalculationServiceProvider<EventCalculationConfiguration, EventCalculationData, EventCalculationResult> calculationServiceProvider,
-        IStandingCalculationQueue standingCalculationQueue)
+        IStandingCalculationQueue standingCalculationQueue,
+        IMediator mediator)
     {
         this.logger = logger;
         this.dataProvider = dataProvider;
@@ -26,6 +30,7 @@ internal sealed class ExecuteEventResultCalculation
         this.dataStore = dataStore;
         this.calculationServiceProvider = calculationServiceProvider;
         this.standingCalculationQueue = standingCalculationQueue;
+        this.mediator = mediator;
     }
 
     public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
@@ -76,6 +81,8 @@ internal sealed class ExecuteEventResultCalculation
             var prunedResultIds = await dataStore.PruneResults(eventId, resultConfigIds, cancellationToken);
             logger.LogInformation("Pruned results for config ids: [{ResultConfigIds}]", prunedResultIds);
             logger.LogInformation("--- Result calculation finished successfully ---");
+
+            await mediator.Publish(new ResultCalculatedEventNotification(eventId), cancellationToken);
 
             logger.LogInformation("Queueing standing calculation for event {EventId}", eventId);
             await standingCalculationQueue.QueueStandingCalculationAsync(eventId);

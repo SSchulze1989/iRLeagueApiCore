@@ -1,9 +1,11 @@
 using AspNetCoreRateLimit;
 using Aydsko.iRacingData;
+using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
+using iRLeagueApiCore.Services.TriggerService.Actions;
 using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -37,6 +39,9 @@ public sealed class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+        var serverConfiguration = Configuration.GetSection("ServerConfiguration").Get<ServerConfiguration>() ?? new ServerConfiguration();
+        services.AddSingleton(serverConfiguration);
+
         services.Configure<IISServerOptions>(options =>
             options.AutomaticAuthentication = false);
 
@@ -185,6 +190,11 @@ public sealed class Startup
         services.AddEmailService();
         services.AddResultService();
         services.AddBackgroundQueue();
+        services.AddTriggerService(options => 
+        {
+            options.ScanTriggersInterval = TimeSpan.FromMilliseconds(serverConfiguration.TriggerCheckIntervalMs); 
+        });
+        services.AddTriggerAction<WebhookTriggerAction>(TriggerAction.Webhook);
 
         services.AddSingleton<ICredentials, CredentialList>(x => new(Configuration.GetSection("Credentials")));
 
@@ -199,9 +209,6 @@ public sealed class Startup
             options.UserAgentProductName = "iRLeagueApiCore";
             options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
         });
-
-        services.AddSingleton<ServerConfiguration>(x =>
-            Configuration.GetSection("ServerConfiguration").Get<ServerConfiguration>() ?? new ServerConfiguration());
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
