@@ -48,6 +48,7 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
     public virtual DbSet<SessionEntity> Sessions { get; set; }
     public virtual DbSet<StatisticSetEntity> StatisticSets { get; set; }
     public virtual DbSet<TeamEntity> Teams { get; set; }
+    public virtual DbSet<TriggerEntity> Triggers { get; set; }
     public virtual DbSet<VoteCategoryEntity> VoteCategories { get; set; }
     public virtual DbSet<TrackGroupEntity> TrackGroups { get; set; }
     public virtual DbSet<IRSimSessionDetailsEntity> IRSimSessionDetails { get; set; }
@@ -138,6 +139,8 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
         builder.Entity<StatisticSetEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<TeamEntity>()
+            .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
+        builder.Entity<TriggerEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<VoteCategoryEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);

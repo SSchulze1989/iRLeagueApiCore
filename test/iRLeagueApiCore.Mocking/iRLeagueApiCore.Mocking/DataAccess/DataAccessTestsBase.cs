@@ -30,6 +30,7 @@ public abstract class DataAccessTestsBase : IAsyncLifetime
     protected long TestMemberId2 => dbContext.Members.Skip(1).IgnoreQueryFilters().First().Id;
     protected long TestCommentId => dbContext.ReviewComments.IgnoreQueryFilters().First().CommentId;
     protected long TestReviewVoteId => dbContext.AcceptedReviewVotes.IgnoreQueryFilters().First().ReviewVoteId;
+    protected long TestTriggerId => dbContext.Triggers.IgnoreQueryFilters().First().TriggerId;
     protected long TestVoteCategory => dbContext.VoteCategories.IgnoreQueryFilters().First().CatId;
     protected const string testLeagueName = "TestLeague";
     protected const string testUserName = "TestUser";

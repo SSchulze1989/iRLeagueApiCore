@@ -88,6 +88,7 @@ public sealed class DataAccessMockHelper
             .Without(x => x.StandingConfigs)
             .Without(x => x.Rosters)
             .Without(x => x.Payments)
+            .Without(x => x.Triggers)
             .Create();
     }
 
