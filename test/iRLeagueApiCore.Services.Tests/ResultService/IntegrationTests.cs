@@ -6,6 +6,7 @@ using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace iRLeagueApiCore.Services.Tests.ResultService;
 public sealed class IntegrationTests : DataAccessTestsBase
@@ -19,6 +20,7 @@ public sealed class IntegrationTests : DataAccessTestsBase
         services.AddLogging();
         services.AddBackgroundQueue();
         services.AddResultService();
+        services.AddMediatR(o => o.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         this.services = services.BuildServiceProvider();
     }
 

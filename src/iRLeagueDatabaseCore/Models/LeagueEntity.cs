@@ -13,6 +13,7 @@ public class LeagueEntity : Revision, IVersionEntity
         Championships = new HashSet<ChampionshipEntity>();
         StandingConfigs = new HashSet<StandingConfigurationEntity>();
         Rosters = new HashSet<RosterEntity>();
+        Triggers = new HashSet<TriggerEntity>();
     }
     public long Id { get; set; }
     public string Name { get; set; }

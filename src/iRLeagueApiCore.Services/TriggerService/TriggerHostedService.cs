@@ -157,4 +157,30 @@ public sealed class TriggerHostedService : BackgroundService
             _logger.LogError(ex, "Error occurred during processing of event triggers of type {EventType} and parameters {Parameters}", eventType, parameters);
         }
     }
+
+    public async Task ProcessManualTrigger(LeagueDbContext dbContext, long triggerId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var trigger = await dbContext.Triggers
+                .Where(x => !x.IsArchived)
+                .Where(x => x.TriggerId == triggerId)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (trigger == null)
+            {
+                _logger.LogWarning("Manual trigger with id {TriggerId} not found or is archived.", triggerId);
+                return;
+            }
+            if (trigger.TriggerType != TriggerType.Manual)
+            {
+                _logger.LogWarning("Trigger with id {TriggerId} is not a manual trigger.", triggerId);
+                return;
+            }
+            await QueueTriggerFunc(trigger, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred during processing of manual trigger with id {TriggerId}", triggerId);
+        }
+    }
 }
