@@ -36,7 +36,7 @@ public class TriggersController : LeagueApiController<TriggersController>
     }
 
     [HttpPut("{triggerId:long}")]
-    public async Task<ActionResult<TriggerModel>> PutTrigger([FromRoute] string leagueName, [FromRoute] long triggerId, [FromBody] PutTriggerModel model, 
+    public async Task<ActionResult<TriggerModel>> PutTrigger([FromRoute] string leagueName, [FromRoute] long triggerId, [FromBody] PutTriggerModel model,
         CancellationToken cancellationToken = default)
     {
         var leagueUser = new LeagueUser(leagueName, User);
@@ -51,6 +51,15 @@ public class TriggersController : LeagueApiController<TriggersController>
         var request = new GetTriggerRequest(triggerId);
         var result = await mediator.Send(request, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpPost("{triggerId:long}/run")]
+    public async Task<ActionResult> RunTrigger([FromRoute] string leagueName, [FromRoute] long triggerId, [FromBody] TriggerParameterModel triggerParameters,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new RunManualTriggerRequest(triggerId, triggerParameters);
+        await mediator.Send(request, cancellationToken);
+        return NoContent();
     }
 
     [HttpDelete("{triggerId:long}")]
