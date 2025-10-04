@@ -4,20 +4,20 @@ using iRLeagueDatabaseCore.Models;
 using MediatR;
 
 namespace iRLeagueApiCore.Services.TriggerService.Events;
-public record ResultCalculatedNotification(long EventId) : INotification;
+public record ResultCalculatedEventNotification(long EventId) : INotification;
 
-public sealed class ResultCalculatedHandler : INotificationHandler<ResultCalculatedNotification>
+public sealed class ResultCalculatedEventHandler : INotificationHandler<ResultCalculatedEventNotification>
 {
     private readonly TriggerHostedService triggerHostedService;
     private readonly LeagueDbContext dbContext;
 
-    public ResultCalculatedHandler(TriggerHostedService triggerHostedService, LeagueDbContext dbContext)
+    public ResultCalculatedEventHandler(TriggerHostedService triggerHostedService, LeagueDbContext dbContext)
     {
         this.triggerHostedService = triggerHostedService;
         this.dbContext = dbContext;
     }
 
-    public async Task Handle(ResultCalculatedNotification notification, CancellationToken cancellationToken)
+    public async Task Handle(ResultCalculatedEventNotification notification, CancellationToken cancellationToken)
     {
         var parameters = new TriggerParameterModel
         {

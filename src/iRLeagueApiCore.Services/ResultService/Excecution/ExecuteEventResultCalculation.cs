@@ -82,7 +82,7 @@ internal sealed class ExecuteEventResultCalculation
             logger.LogInformation("Pruned results for config ids: [{ResultConfigIds}]", prunedResultIds);
             logger.LogInformation("--- Result calculation finished successfully ---");
 
-            await mediator.Publish(new ResultCalculatedNotification(eventId), cancellationToken);
+            await mediator.Publish(new ResultCalculatedEventNotification(eventId), cancellationToken);
 
             logger.LogInformation("Queueing standing calculation for event {EventId}", eventId);
             await standingCalculationQueue.QueueStandingCalculationAsync(eventId);

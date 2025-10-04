@@ -24,7 +24,7 @@ public static class TriggerHostedServiceCollectionExtension
         services.AddHostedService(sp => sp.GetRequiredService<TriggerHostedService>());
 
         // Event notification handlers
-        services.TryAddScoped<INotificationHandler<ResultCalculatedNotification>, ResultCalculatedHandler>();
+        services.TryAddScoped<INotificationHandler<ResultCalculatedEventNotification>, ResultCalculatedEventHandler>();
 
         // Register trigger actions
         if (configuration.AddDefaultActions)
