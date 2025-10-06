@@ -1,9 +1,6 @@
-﻿
-using iRLeagueApiCore.Common.Models.Standings;
+﻿using iRLeagueApiCore.Common.Models.Standings;
 using iRLeagueApiCore.Server.Handlers.Seasons;
 using iRLeagueApiCore.Server.Handlers.Standings;
-using System.Text;
-using static System.Net.WebRequestMethods;
 
 namespace iRLeagueApiCore.Server.Webhooks.Discord;
 

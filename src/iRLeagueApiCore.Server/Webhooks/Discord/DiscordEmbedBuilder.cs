@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using System.Text;
+﻿using System.Text;
 
 namespace iRLeagueApiCore.Server.Webhooks.Discord;
 

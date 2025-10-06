@@ -1,6 +1,4 @@
 ﻿using iRLeagueApiCore.Common.Models;
-using System.Security.Policy;
-using System.Threading;
 
 namespace iRLeagueApiCore.Server.Webhooks.Discord;
 
@@ -25,7 +23,10 @@ public abstract class DiscordWebhook : ILeagueWebhook
     {
         if (interval.Laps == 0)
         {
-            return $"{DateTime.Today.Add(interval.Time):mm:ss.fff}";
+            return interval.Time.TotalMinutes switch {
+                < 1 => $"{DateTime.Today.Add(interval.Time):ss.fff}",
+                _ => $"{DateTime.Today.Add(interval.Time):m:ss.fff}",
+            };
         }
         return $"{interval.Laps}L";
     }
@@ -34,9 +35,9 @@ public abstract class DiscordWebhook : ILeagueWebhook
     {
         if (lapTime > TimeSpan.Zero)
         {
-            return $"{DateTime.Today.Add(lapTime):mm:ss.fff}";
+            return $"{DateTime.Today.Add(lapTime):m:ss.fff}";
         }
-        return $"--:--.---";
+        return $"-:--.---";
     }
 
     protected async Task SendMessageWithEmbeds(string url, List<object> embeds, CancellationToken cancellationToken)

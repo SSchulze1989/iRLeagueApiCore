@@ -1,5 +1,4 @@
 ﻿using iRLeagueApiCore.Common.Models;
-using iRLeagueApiCore.Common.Models.Standings;
 using iRLeagueApiCore.Server.Handlers.Results;
 using System.Text;
 
@@ -112,10 +111,10 @@ public class DiscordEventResultWebhook : DiscordWebhook, IEventResultWebhook
     {
         var table = new DiscordEmbedTable();
         table.AddColumn(3, "Pos", result.ResultRows, r => r.FinalPosition.ToString());
-        table.AddColumn(20, "Driver", result.ResultRows, r => $"{r.Firstname} {r.Lastname}");
-        table.AddColumn(9, "Interval", result.ResultRows, r => IntervalToString(r.Interval));
-        table.AddColumn(9, "Fast Lap", result.ResultRows, r => LapTimeToString(r.FastestLapTime));
-        table.AddColumn(3, "Pts", result.ResultRows, r => r.TotalPoints.ToString());
+        table.AddColumn(20, "Driver", result.ResultRows, r => $"{r.Firstname} {r.Lastname}", expand: true);
+        table.AddColumn(-1, "Interval", result.ResultRows, r => IntervalToString(r.Interval), abbreviation: "Intvl", alignRight: true);
+        table.AddColumn(-1, "Fast Lap", result.ResultRows, r => LapTimeToString(r.FastestLapTime), alignRight: true);
+        table.AddColumn(3, "Pts", result.ResultRows, r => r.TotalPoints.ToString(), alignRight: true);
         return table;
     }
 

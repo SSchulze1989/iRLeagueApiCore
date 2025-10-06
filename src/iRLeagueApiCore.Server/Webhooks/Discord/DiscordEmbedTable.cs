@@ -18,7 +18,7 @@ internal sealed class DiscordEmbedTable
         this.delimiter = delimiter;
     }
 
-    public DiscordEmbedTable AddColumn(int width, string header, List<string> values)
+    public DiscordEmbedTable AddColumn(int width, string header, List<string> values, bool alignRight = false, bool expand = false, string? abbreviation = null)
     {
         if (values.Count == 0)
         {
@@ -37,18 +37,40 @@ internal sealed class DiscordEmbedTable
         {
             throw new InvalidOperationException("Cannot add more columns, maximum table width reached");
         }
-        Columns.Add(new DiscordEmbedTableColumn(width, header, values));
+        Columns.Add(new DiscordEmbedTableColumn(width, header, values, alignRight, expand, abbreviation));
         return this;
     }
 
-    public DiscordEmbedTable AddColumn<T>(int width, string header, IEnumerable<T> values, Func<T, string> func)
+    public DiscordEmbedTable AddColumn<T>(int width, string header, IEnumerable<T> values, Func<T, string> func, bool alignRight = false, bool expand = false, string? abbreviation = null)
     {
         var stringValues = values.Select(func).ToList();
-        return AddColumn(width, header, stringValues);
+        return AddColumn(width, header, stringValues, alignRight: alignRight, expand: expand, abbreviation: abbreviation);
+    }
+
+    private void ExpandColumns()
+    {
+        var expandableColumns = Columns.Where(c => c.Expand).ToList();
+        if (expandableColumns.Count == 0)
+        {
+            return;
+        }
+        int totalExpandableWidth = RemainingWidth;
+        int extraWidthPerColumn = totalExpandableWidth / expandableColumns.Count;
+        foreach (var column in expandableColumns)
+        {
+            column.Width += extraWidthPerColumn;
+        }
+        // If there's any remaining width due to integer division, add it to the first expandable column
+        int remainingWidth = RemainingWidth;
+        if (remainingWidth > 0)
+        {
+            expandableColumns[0].Width += remainingWidth;
+        }
     }
 
     public StringBuilder AppendHeader(StringBuilder sb)
     {
+        ExpandColumns();
         for (int i = 0; i < Columns.Count; i++)
         {
             var column = Columns[i];
@@ -56,7 +78,8 @@ internal sealed class DiscordEmbedTable
             {
                 sb.Append(delimiter);
             }
-            sb.Append(column.Header.PadRight(column.Width).AsSpan(0, column.Width));
+            var cellValue = (column.Header.Length > column.Width ? column.Abbreviation : column.Header) ?? column.Header;
+            sb.Append(cellValue.PadRight(column.Width).AsSpan(0, column.Width));
         }
         sb.AppendLine();
         for (int i = 0; i < Columns.Count; i++)
@@ -74,6 +97,7 @@ internal sealed class DiscordEmbedTable
 
     public StringBuilder AppendRow(StringBuilder sb, int rowIndex)
     {
+        ExpandColumns();
         for (int i = 0; i < Columns.Count; i++)
         {
             var column = Columns[i];
@@ -81,8 +105,9 @@ internal sealed class DiscordEmbedTable
             {
                 sb.Append(delimiter);
             }
-            string cellValue = rowIndex < column.Values.Count ? column.Values[rowIndex] : "";
-            sb.Append(cellValue.PadRight(column.Width).AsSpan(0, column.Width));
+            var cellValue = rowIndex < column.Values.Count ? column.Values[rowIndex] : "";
+            var alignedValue = column.AlignRight ? cellValue.PadLeft(column.Width) : cellValue.PadRight(column.Width);
+            sb.Append(alignedValue.AsSpan(0, column.Width));
         }
         sb.AppendLine();
         return sb;
