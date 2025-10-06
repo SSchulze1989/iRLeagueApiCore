@@ -11,6 +11,7 @@ public static class WebhookServiceCollectionExtenstion
     {
         // Register webhook clients
         services.TryAddKeyedTransient<IEventResultWebhook, DiscordEventResultWebhook>(WebhookClientType.Discord);
+        services.TryAddKeyedTransient<IStandingsWebhook, DiscordStandingsWebhook>(WebhookClientType.Discord);
 
         // Register webhook trigger action
         services.TryAddKeyedTransient<ITriggerAction, WebhookTriggerAction>(TriggerAction.Webhook);

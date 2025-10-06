@@ -27,6 +27,7 @@ public sealed class WebhookTriggerAction : ITriggerAction
         Type webhookType = webhookTypeEnum switch
         {
             WebhookType.EventResult => typeof(IEventResultWebhook),
+            WebhookType.Standings => typeof(IStandingsWebhook),
             _ => throw new NotSupportedException($"Webhook type {webhookTypeEnum} is not supported"),
         };
 
@@ -50,10 +51,10 @@ public sealed class WebhookTriggerAction : ITriggerAction
         object? data = webhookTypeEnum switch
         {
             WebhookType.EventResult => triggerParameter.RefId1.GetValueOrDefault(),
-            _ => throw new NotSupportedException($"Webhook type {webhookTypeEnum} is not supported"),
+            _ => null,
         };
 
-        logger.LogInformation("Executing WebhookTriggerAction with parameters: {Parameters}", actionParameters);
+        logger.LogInformation("Executing WebhookTriggerAction with parameters: {Data}, {Parameters}", data, actionParameters);
         
         // send webhook
         var webhook = (ILeagueWebhook)serviceProvider.GetRequiredKeyedService(webhookType, clientType);

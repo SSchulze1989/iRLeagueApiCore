@@ -1,29 +1,21 @@
-﻿using Aydsko.iRacingData.Leagues;
-using iRLeagueApiCore.Common.Models;
+﻿using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Common.Models.Standings;
 using iRLeagueApiCore.Server.Handlers.Results;
 using System.Text;
 
 namespace iRLeagueApiCore.Server.Webhooks.Discord;
-public class DiscordEventResultWebhook : IEventResultWebhook
+public class DiscordEventResultWebhook : DiscordWebhook, IEventResultWebhook
 {
-    private readonly ILogger<DiscordEventResultWebhook> logger;
-    private readonly LeagueDbContext dbContext;
-    private readonly IMediator mediator;
-
-    public DiscordEventResultWebhook(ILogger<DiscordEventResultWebhook> logger, LeagueDbContext dbContext, IMediator mediator)
+    public DiscordEventResultWebhook(ILogger<DiscordWebhook> logger, LeagueDbContext dbContext, IMediator mediator, HttpClient httpClient) : 
+        base(logger, dbContext, mediator, httpClient)
     {
-        this.logger = logger;
-        this.dbContext = dbContext;
-        this.mediator = mediator;
     }
 
-    public async Task SendAsync(object? data, string url, CancellationToken cancellationToken = default)
+    public override async Task SendAsync(object? data, string url, CancellationToken cancellationToken = default)
     {
-        if (data is not long resultEventId)
-        {
-            logger.LogError("Invalid data for EventResultWebhook: {Data}", data);
-            return;
+        long resultEventId = -1;
+        if (data is long) { 
+            resultEventId = (long)data;
         }
 
         if (dbContext.LeagueProvider.LeagueId <= 0)
@@ -33,7 +25,16 @@ public class DiscordEventResultWebhook : IEventResultWebhook
         }
 
         // get event result data -> use handlers to get easy data access
-        var results = await mediator.Send(new GetResultsFromEventRequest(resultEventId), cancellationToken);
+        var results = resultEventId switch
+        {
+            > 0 => await mediator.Send(new GetResultsFromEventRequest(resultEventId), cancellationToken),
+            _ => await mediator.Send(new GetLatestResultRequest(), cancellationToken)
+        };
+        if (results is null || !results.Any())
+        {
+            logger.LogError("No results found for event {EventId}", resultEventId);
+            return;
+        }
 
         // Create discord embeds
         var embeds = new List<object>();
@@ -59,13 +60,7 @@ public class DiscordEventResultWebhook : IEventResultWebhook
             .SetTitle(driverChampionship.EventName)
             .SetDescription($"**{driverChampionship.TrackName}{(driverChampionship.ConfigName != "" ? " (" + driverChampionship.ConfigName + ")" : "")}**")
             .SetColor(3066993)
-            .SetTimestamp(DateTimeOffset.UtcNow)
-            .SetFooter("Data provided by irleaguemanager.net");
-
-        embed.AddField("Information", $"""
-            📊 **Strength of Field**: {driverChampionship.StrengthOfField}
-            📅 **Datum**: {DateTimeStamp(driverChampionship.Date)}
-        """);
+            .SetTimestamp(DateTimeOffset.UtcNow);
 
         if (raceResult is not null)
         {
@@ -73,65 +68,43 @@ public class DiscordEventResultWebhook : IEventResultWebhook
             embed.AddTableFieldsWithSplitting("Race Results", CreateRaceResultsTable(raceResult));
         }
 
+        embed.AddField("Information", $"""
+        📊 **Strength of Field**: {driverChampionship.StrengthOfField}
+        📅 **Datum**: {DateTimeStamp(driverChampionship.Date)}
+        Full results at: https://irleaguemanager.net/{leagueName}/Results/Events/{driverChampionship.EventId}
+        """);
+
+        embed.SetFooter("Data provided by irleaguemanager.net");
+
         embeds.Add(embed.Build());
 
-        // Create Discord message
-        var message = new Dictionary<string, object>()
-        {
-            ["embeds"] = embeds,
-        };
-
-        // Send Message to Discord webhook
-        var httpClient = new HttpClient();
-        var content = JsonContent.Create(message);
-
-        logger.LogDebug("Sending Discord webhook to {Url} with content: {Content}", url, await content.ReadAsStringAsync(cancellationToken));
-        var response = await httpClient.PostAsync(url, content, cancellationToken);
-        logger.LogDebug("Discord webhook response: {StatusCode} - {Response}", response.StatusCode, await response.Content.ReadAsStringAsync(cancellationToken));
+        await SendMessageWithEmbeds(url, embeds, cancellationToken);
     }
 
-    static void AppendColumnValue(StringBuilder sb, string value, int columnWidth)
-    {
-        var paddedValue = value.PadRight(columnWidth).Substring(0, columnWidth);
-        sb.Append(paddedValue);
-        sb.Append(" | ");
-    }
+    //static void AppendColumnValue(StringBuilder sb, string value, int columnWidth)
+    //{
+    //    var paddedValue = value.PadRight(columnWidth).Substring(0, columnWidth);
+    //    sb.Append(paddedValue);
+    //    sb.Append(" | ");
+    //}
 
-    static string CreateQualyResultsTable(ResultModel result)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("```");
-        sb.AppendLine("#  | Fahrer                 | Zeit       ");
-        sb.AppendLine("---|------------------------|------------");
-        foreach (var row in result.ResultRows.Take(15))
-        {
-            AppendColumnValue(sb, row.FinalPosition.ToString(), 2);
-            AppendColumnValue(sb, $"{row.Firstname} {row.Lastname}", 22);
-            AppendColumnValue(sb, $"{DateTime.Today.Add(row.QualifyingTime):mm:ss.fff}", 10);
-            sb.Length -= 3;
-            sb.Append('\n');
-        }
-        sb.AppendLine("```");
-        return sb.ToString();
-    }
-
-    static string IntervalToString(Interval interval)
-    {
-        if (interval.Laps == 0)
-        {
-            return $"{DateTime.Today.Add(interval.Time):mm:ss.fff}";
-        }
-        return $"{interval.Laps}L";
-    }
-
-    static string LapTimeToString(TimeSpan lapTime)
-    {
-        if (lapTime > TimeSpan.Zero)
-        {
-            return $"{DateTime.Today.Add(lapTime):mm:ss.fff}";
-        }
-        return $"--:--.---";
-    }
+    //static string CreateQualyResultsTable(ResultModel result)
+    //{
+    //    var sb = new StringBuilder();
+    //    sb.AppendLine("```");
+    //    sb.AppendLine("#  | Fahrer                 | Zeit       ");
+    //    sb.AppendLine("---|------------------------|------------");
+    //    foreach (var row in result.ResultRows.Take(15))
+    //    {
+    //        AppendColumnValue(sb, row.FinalPosition.ToString(), 2);
+    //        AppendColumnValue(sb, $"{row.Firstname} {row.Lastname}", 22);
+    //        AppendColumnValue(sb, $"{DateTime.Today.Add(row.QualifyingTime):mm:ss.fff}", 10);
+    //        sb.Length -= 3;
+    //        sb.Append('\n');
+    //    }
+    //    sb.AppendLine("```");
+    //    return sb.ToString();
+    //}
 
     static string DateTimeStamp(DateTime dateTime) => $"<t:{((DateTimeOffset)dateTime).ToUnixTimeSeconds()}:D>";
 
@@ -146,45 +119,7 @@ public class DiscordEventResultWebhook : IEventResultWebhook
         return table;
     }
 
-    static string CreateStandingsTable(StandingsModel standings, string leagueName, bool includeFooter = false)
-    {
-        var sb = new StringBuilder();
-        var isTeamStanding = standings.IsTeamStanding;
-        sb.AppendLine("```");
-        AppendColumnValue(sb, "Pos", 3);
-        if (isTeamStanding)
-        {
-            AppendColumnValue(sb, "Team", 24);
-        }
-        else
-        {
-            AppendColumnValue(sb, "Driver", 24);
-        }
-        AppendColumnValue(sb, "Points", 6);
-        sb.Append('\n');
-        sb.AppendLine("----|--------------------------|-------");
-        foreach (var row in standings.StandingRows.Take(20))
-        {
-            AppendColumnValue(sb, $"{row.Position}", 3);
-            if (isTeamStanding)
-            {
-                AppendColumnValue(sb, $"{row.TeamName}", 24);
-            }
-            else
-            {
-                AppendColumnValue(sb, $"{row.Firstname} {row.Lastname}", 24);
-            }
-            AppendColumnValue(sb, $"{row.TotalPoints}", 6);
-            sb.Length -= 3;
-            sb.Append('\n');
-        }
-        sb.AppendLine("```");
-        if (includeFooter)
-        {
-            sb.AppendLine($"Full standings at: https://irleaguemanager.net/{leagueName}/Standings");
-        }
-        return sb.ToString();
-    }
+    
 
     static string CreateaPodiumSummary(ResultModel result)
     {
