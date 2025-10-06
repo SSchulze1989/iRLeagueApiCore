@@ -25,12 +25,6 @@ public static class TriggerHostedServiceCollectionExtension
 
         // Event notification handlers
         services.TryAddScoped<INotificationHandler<ResultCalculatedEventNotification>, ResultCalculatedEventHandler>();
-
-        // Register trigger actions
-        if (configuration.AddDefaultActions)
-        {
-            services.AddTriggerAction<WebhookTriggerAction>(TriggerAction.Webhook);
-        }
         return services;
     }
 
