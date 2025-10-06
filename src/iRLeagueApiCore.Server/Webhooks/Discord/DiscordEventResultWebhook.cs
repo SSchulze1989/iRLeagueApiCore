@@ -54,49 +54,26 @@ public class DiscordEventResultWebhook : IEventResultWebhook
             logger.LogError("No driver championship result found for event {EventId}", resultEventId);
             return;
         }
-        var fields = new List<Dictionary<string, object>>();
+
+        var embed = new DiscordEmbedBuilder()
+            .SetTitle(driverChampionship.EventName)
+            .SetDescription($"**{driverChampionship.TrackName}{(driverChampionship.ConfigName != "" ? " (" + driverChampionship.ConfigName + ")" : "")}**")
+            .SetColor(3066993)
+            .SetTimestamp(DateTimeOffset.UtcNow)
+            .SetFooter("Data provided by irleaguemanager.net");
+
+        embed.AddField("Information", $"""
+            📊 **Strength of Field**: {driverChampionship.StrengthOfField}
+            📅 **Datum**: {DateTimeStamp(driverChampionship.Date)}
+        """);
+
         if (raceResult is not null)
         {
-            fields.Add(new()
-            {
-                ["name"] = "Podium",
-                ["value"] = CreateaPodiumSummary(raceResult),
-            });
-            fields.Add(new()
-            {
-                ["name"] = "Race Results",
-                ["value"] = CreateRaceResultsTable(raceResult),
-            });
-            fields.Add(new()
-            {
-                ["name"] = "",
-                ["value"] = CreateRaceResultsTable2(raceResult, leagueName, resultEventId),
-            });
+            embed.AddField("Podium", CreateaPodiumSummary(raceResult));
+            embed.AddTableFieldsWithSplitting("Race Results", CreateRaceResultsTable(raceResult));
         }
 
-        fields.Add(new()
-        {
-            ["name"] = "Information",
-            ["value"] = $"""
-        📊 **Strength of Field**: {driverChampionship.StrengthOfField}
-        📅 **Datum**: {DateTimeStamp(driverChampionship.Date)}
-        """
-        });
-
-
-        var embed = new Dictionary<string, object>
-        {
-            ["title"] = driverChampionship.EventName,
-            ["description"] = $"**{driverChampionship.TrackName}{(driverChampionship.ConfigName != "" ? " (" + driverChampionship.ConfigName + ")" : "")}**",
-            ["color"] = 3066993,
-            ["timestamp"] = DateTime.UtcNow,
-            ["fields"] = fields,
-            ["footer"] = new Dictionary<string, object>()
-            {
-                ["text"] = "Data provided by irleaguemanager.net",
-            },
-        };
-        embeds.Add(embed);
+        embeds.Add(embed.Build());
 
         // Create Discord message
         var message = new Dictionary<string, object>()
@@ -158,43 +135,15 @@ public class DiscordEventResultWebhook : IEventResultWebhook
 
     static string DateTimeStamp(DateTime dateTime) => $"<t:{((DateTimeOffset)dateTime).ToUnixTimeSeconds()}:D>";
 
-    static string CreateRaceResultsTable(ResultModel result)
+    static DiscordEmbedTable CreateRaceResultsTable(ResultModel result)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("```");
-        sb.AppendLine("Pos | Driver               | Interval  | Fast Lap  | Pts");
-        sb.AppendLine("----|----------------------|-----------|-----------|----");
-        foreach (var row in result.ResultRows.Take(14))
-        {
-            AppendColumnValue(sb, $"{row.FinalPosition}", 3);
-            AppendColumnValue(sb, $"{row.Firstname} {row.Lastname}", 20);
-            AppendColumnValue(sb, IntervalToString(row.Interval), 9);
-            AppendColumnValue(sb, LapTimeToString(row.FastestLapTime), 9);
-            AppendColumnValue(sb, $"{row.TotalPoints}", 3);
-            sb.Length -= 3;
-            sb.Append('\n');
-        }
-        sb.AppendLine("```");
-        return sb.ToString();
-    }
-
-    static string CreateRaceResultsTable2(ResultModel result, string leagueName, long eventId)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("```");
-        foreach (var row in result.ResultRows.Skip(14).Take(14))
-        {
-            AppendColumnValue(sb, $"{row.FinalPosition}", 3);
-            AppendColumnValue(sb, $"{row.Firstname} {row.Lastname}", 20);
-            AppendColumnValue(sb, IntervalToString(row.Interval), 9);
-            AppendColumnValue(sb, LapTimeToString(row.FastestLapTime), 9);
-            AppendColumnValue(sb, $"{row.TotalPoints}", 3);
-            sb.Length -= 3;
-            sb.Append('\n');
-        }
-        sb.AppendLine("```");
-        sb.AppendLine($"Full results at: https://irleaguemanager.net/{leagueName}/Results/Events/{eventId}");
-        return sb.ToString();
+        var table = new DiscordEmbedTable();
+        table.AddColumn(3, "Pos", result.ResultRows, r => r.FinalPosition.ToString());
+        table.AddColumn(20, "Driver", result.ResultRows, r => $"{r.Firstname} {r.Lastname}");
+        table.AddColumn(9, "Interval", result.ResultRows, r => IntervalToString(r.Interval));
+        table.AddColumn(9, "Fast Lap", result.ResultRows, r => LapTimeToString(r.FastestLapTime));
+        table.AddColumn(3, "Pts", result.ResultRows, r => r.TotalPoints.ToString());
+        return table;
     }
 
     static string CreateStandingsTable(StandingsModel standings, string leagueName, bool includeFooter = false)
