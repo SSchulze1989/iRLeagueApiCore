@@ -194,7 +194,7 @@ public sealed class Startup
         {
             options.ScanTriggersInterval = TimeSpan.FromMilliseconds(serverConfiguration.TriggerCheckIntervalMs); 
         });
-        services.AddTriggerAction<WebhookTriggerAction>(TriggerAction.Webhook);
+        services.AddWebhooks();
 
         services.AddSingleton<ICredentials, CredentialList>(x => new(Configuration.GetSection("Credentials")));
 

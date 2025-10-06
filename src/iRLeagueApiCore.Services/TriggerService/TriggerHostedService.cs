@@ -71,7 +71,7 @@ public sealed class TriggerHostedService : BackgroundService
     /// <param name="trigger"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task QueueTriggerFunc(TriggerEntity trigger, CancellationToken cancellationToken)
+    private async Task QueueTriggerFunc(TriggerEntity trigger, TriggerParameterModel triggerParameters, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Executing trigger {triggerId}: {triggerName}", trigger.TriggerId, trigger.Name);
         await _taskQueue.QueueBackgroundWorkItemAsync(async token =>
@@ -84,7 +84,7 @@ public sealed class TriggerHostedService : BackgroundService
                 leagueProvider.SetLeague(leagueId);
                 var actionProvider = scope.ServiceProvider.GetRequiredService<TriggerActionProvider>();
                 var triggerAction = actionProvider.GetTriggerAction(trigger.Action);
-                await triggerAction.ExecuteAsync(trigger.ActionParameters, token);
+                await triggerAction.ExecuteAsync(triggerParameters, trigger.ActionParameters, token);
             }
             catch (Exception ex)
             {
@@ -115,7 +115,14 @@ public sealed class TriggerHostedService : BackgroundService
 
         foreach (var trigger in timeTriggers)
         {
-            await QueueTriggerFunc(trigger, cancellationToken);
+            var parameters = new TriggerParameterModel
+            {
+                Interval = trigger.Interval,
+                Time = trigger.TimeElapses,
+                RefId1 = trigger.RefId1,
+                RefId2 = trigger.RefId2,
+            };
+            await QueueTriggerFunc(trigger, parameters, cancellationToken);
 
             if (trigger.TriggerType == TriggerType.Interval)
             {
@@ -141,7 +148,7 @@ public sealed class TriggerHostedService : BackgroundService
                 TriggerEventType.ResultUploaded or
                 TriggerEventType.ResultCalculated or
                 TriggerEventType.ResultUpdated or 
-                TriggerEventType.ResultDeleted => eventTriggersQuery.Where(x => x.RefId1 == null || x.RefId1 == parameters.EventId),
+                TriggerEventType.ResultDeleted => eventTriggersQuery.Where(x => x.RefId1 == null || x.RefId1 == parameters.RefId1),
                 _ => ((List<TriggerEntity>)[]).AsQueryable(),
             };
 
@@ -149,7 +156,7 @@ public sealed class TriggerHostedService : BackgroundService
 
             foreach (var trigger in eventTriggers)
             {
-                await QueueTriggerFunc(trigger, cancellationToken);
+                await QueueTriggerFunc(trigger, parameters, cancellationToken);
             }
         }
         catch (Exception ex)
@@ -158,7 +165,7 @@ public sealed class TriggerHostedService : BackgroundService
         }
     }
 
-    public async Task ProcessManualTrigger(LeagueDbContext dbContext, long triggerId, CancellationToken cancellationToken)
+    public async Task ProcessManualTrigger(LeagueDbContext dbContext, long triggerId, TriggerParameterModel parameters, CancellationToken cancellationToken)
     {
         try
         {
@@ -176,7 +183,7 @@ public sealed class TriggerHostedService : BackgroundService
                 _logger.LogWarning("Trigger with id {TriggerId} is not a manual trigger.", triggerId);
                 return;
             }
-            await QueueTriggerFunc(trigger, cancellationToken);
+            await QueueTriggerFunc(trigger, parameters, cancellationToken);
         }
         catch (Exception ex)
         {

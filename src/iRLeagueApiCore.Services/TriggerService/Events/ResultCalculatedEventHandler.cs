@@ -22,7 +22,7 @@ public sealed class ResultCalculatedEventHandler : INotificationHandler<ResultCa
         var parameters = new TriggerParameterModel
         {
             EventType = TriggerEventType.ResultCalculated,
-            EventId = notification.EventId,
+            RefId1 = notification.EventId,
         };
         await triggerHostedService.ProcessEventTriggers(dbContext, TriggerEventType.ResultCalculated, parameters, cancellationToken);
     }

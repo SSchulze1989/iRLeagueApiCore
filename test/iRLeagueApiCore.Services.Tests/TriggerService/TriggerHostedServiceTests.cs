@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Mocking.DataAccess;
 using iRLeagueApiCore.Services.TriggerService;
 using iRLeagueApiCore.Services.TriggerService.Actions;
@@ -245,7 +246,7 @@ public sealed class TriggerHostedServiceTests : DataAccessTestsBase
         var sut = CreateSut();
 
         // act
-        await sut.ProcessEventTriggers(dbContext, TriggerEventType.ResultUploaded, new() { EventId = resultRefId }, CancellationToken.None);
+        await sut.ProcessEventTriggers(dbContext, TriggerEventType.ResultUploaded, new() { RefId1 = resultRefId }, CancellationToken.None);
         executeCount.Should().Be(2);
     }
 
@@ -268,7 +269,7 @@ public sealed class TriggerHostedServiceTests : DataAccessTestsBase
         var sut = CreateSut();
 
         // act
-        await sut.ProcessManualTrigger(dbContext, trigger.TriggerId, CancellationToken.None);
+        await sut.ProcessManualTrigger(dbContext, trigger.TriggerId, new(), CancellationToken.None);
 
         // assert
         actionExecuted.Should().BeTrue();
@@ -283,7 +284,7 @@ public sealed class TriggerHostedServiceTests : DataAccessTestsBase
         // arrange
         bool actionExecuted = false;
         var actionMock = new Mock<ITriggerAction>();
-        actionMock.Setup(a => a.ExecuteAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+        actionMock.Setup(a => a.ExecuteAsync(It.IsAny<TriggerParameterModel>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
             .Callback(() => actionExecuted = true)
             .Returns(Task.CompletedTask);
         services.AddKeyedSingleton(action, actionMock.Object);
@@ -299,7 +300,7 @@ public sealed class TriggerHostedServiceTests : DataAccessTestsBase
         var sut = CreateSut();
 
         // act
-        await sut.ProcessManualTrigger(dbContext, trigger.TriggerId, CancellationToken.None);
+        await sut.ProcessManualTrigger(dbContext, trigger.TriggerId, new(), CancellationToken.None);
         await Task.Delay(100); // wait a bit for the action to be executed
 
         // assert
