@@ -149,7 +149,8 @@ public sealed class TriggerHostedService : BackgroundService
                 TriggerEventType.ResultCalculated or
                 TriggerEventType.ResultUpdated or 
                 TriggerEventType.ResultDeleted => eventTriggersQuery.Where(x => x.RefId1 == null || x.RefId1 == parameters.RefId1),
-                _ => ((List<TriggerEntity>)[]).AsQueryable(),
+                TriggerEventType.StandingsUpdated => eventTriggersQuery.Where(x => x.RefId1 == null || x.RefId2 == parameters.RefId1),
+                _ => eventTriggersQuery,
             };
 
             var eventTriggers = await eventTriggersQuery.ToListAsync(cancellationToken);

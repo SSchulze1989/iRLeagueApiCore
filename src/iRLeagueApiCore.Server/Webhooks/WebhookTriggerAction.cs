@@ -51,6 +51,7 @@ public sealed class WebhookTriggerAction : ITriggerAction
         object? data = webhookTypeEnum switch
         {
             WebhookType.EventResult => triggerParameter.RefId1.GetValueOrDefault(),
+            WebhookType.Standings => triggerParameter.RefId1.GetValueOrDefault(),
             _ => null,
         };
 

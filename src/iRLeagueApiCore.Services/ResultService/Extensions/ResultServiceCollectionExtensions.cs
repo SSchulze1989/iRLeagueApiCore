@@ -52,7 +52,8 @@ public static class ResultServiceCollectionExtensions
             configProvider: x.GetRequiredService<IStandingCalculationConfigurationProvider>(),
             dataStore: x.GetRequiredService<IStandingCalculationResultStore>(),
             calculationServiceProvider: x.GetRequiredService<ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult>>(),
-            standingCalculationQueue: x.GetRequiredService<IStandingCalculationQueue>()));
+            standingCalculationQueue: x.GetRequiredService<IStandingCalculationQueue>(),
+            mediator: x.GetRequiredService<IMediator>()));
         services.TryAddScoped<IStandingCalculationQueue>(x => new StandingCalculationQueue(x, x.GetRequiredService<IBackgroundTaskQueue>()));
 
         return services;
