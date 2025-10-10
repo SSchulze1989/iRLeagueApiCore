@@ -25,6 +25,7 @@ public static class TriggerHostedServiceCollectionExtension
 
         // Event notification handlers
         services.TryAddScoped<INotificationHandler<ResultCalculatedEventNotification>, ResultCalculatedEventHandler>();
+        services.TryAddScoped<INotificationHandler<StandingsUpdatedEventNotification>, StandingsUpdatedEventHandler>();
         return services;
     }
 

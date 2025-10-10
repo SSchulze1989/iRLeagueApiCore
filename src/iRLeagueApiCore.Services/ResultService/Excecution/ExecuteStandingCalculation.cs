@@ -1,6 +1,8 @@
 ﻿using iRLeagueApiCore.Services.ResultService.Calculation;
 using iRLeagueApiCore.Services.ResultService.DataAccess;
 using iRLeagueApiCore.Services.ResultService.Models;
+using iRLeagueApiCore.Services.TriggerService.Events;
+using MediatR;
 
 namespace iRLeagueApiCore.Services.ResultService.Excecution;
 
@@ -12,11 +14,12 @@ internal sealed class ExecuteStandingCalculation
     private readonly IStandingCalculationResultStore dataStore;
     private readonly ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult> calculationServiceProvider;
     private readonly IStandingCalculationQueue standingCalculationQueue;
+    private readonly IMediator mediator;
 
     public ExecuteStandingCalculation(ILogger<ExecuteStandingCalculation> logger, IStandingCalculationDataProvider dataProvider,
         IStandingCalculationConfigurationProvider configProvider, IStandingCalculationResultStore dataStore,
         ICalculationServiceProvider<StandingCalculationConfiguration, StandingCalculationData, StandingCalculationResult> calculationServiceProvider,
-        IStandingCalculationQueue standingCalculationQueue)
+        IStandingCalculationQueue standingCalculationQueue, IMediator mediator)
     {
         this.logger = logger;
         this.dataProvider = dataProvider;
@@ -24,6 +27,7 @@ internal sealed class ExecuteStandingCalculation
         this.dataStore = dataStore;
         this.calculationServiceProvider = calculationServiceProvider;
         this.standingCalculationQueue = standingCalculationQueue;
+        this.mediator = mediator;
     }
 
     public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
@@ -84,6 +88,11 @@ internal sealed class ExecuteStandingCalculation
             {
                 logger.LogInformation("Queueing standing calculation for next event {EventId}", nextEventId);
                 standingCalculationQueue.QueueStandingCalculationDebounced(nextEventId.Value, 100);
+            }
+
+            if (nextEventId is null)
+            {
+                await mediator.Publish(new StandingsUpdatedEventNotification(seasonId), cancellationToken);
             }
         }
         catch (Exception ex) when (ex is AggregateException || ex is InvalidOperationException || ex is NotImplementedException)
