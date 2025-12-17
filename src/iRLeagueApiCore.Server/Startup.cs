@@ -1,11 +1,9 @@
 using AspNetCoreRateLimit;
 using Aydsko.iRacingData;
-using iRLeagueApiCore.Common.Enums;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
 using iRLeagueApiCore.Server.Models;
-using iRLeagueApiCore.Services.TriggerService.Actions;
 using iRLeagueDatabaseCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -203,11 +201,10 @@ public sealed class Startup
             var credential = new CredentialList(Configuration.GetSection("Credentials"))
                 .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
                 ?? new();
-            options.Username = credential.UserName;
-            options.Password = credential.Password;
-            options.PasswordIsEncoded = true;
-            options.UserAgentProductName = "iRLeagueApiCore";
-            options.UserAgentProductVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
+            var clientId = Configuration["IracingClientId"] ?? string.Empty;
+            var clientSecret = Configuration["IracingClientSecret"] ?? string.Empty;
+            options.UseProductUserAgent("iRLeagueApiCore", Assembly.GetEntryAssembly()!.GetName().Version!);
+            options.UsePasswordLimitedOAuth(credential.UserName, credential.Password, clientId, clientSecret);
         });
     }
 
@@ -269,12 +266,6 @@ public sealed class Startup
         {
             endpoints.MapControllers();
         });
-
-        var iRDataClient = app.ApplicationServices.GetRequiredService<IDataClient>();
-        var credential = new CredentialList(Configuration.GetSection("Credentials"))
-                .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
-                ?? new();
-        iRDataClient.UseUsernameAndPassword(credential.UserName, credential.Password);
 
         // Random change to invalidate docker cache??
     }

@@ -33,9 +33,6 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         var @event = await GetResultEventEntityAsync(request.EventId, cancellationToken)
             ?? throw new ResourceNotFoundException();
         SeasonStartIratings = await GetMemberSeasonStartIratingAsync(@event.Schedule.SeasonId, cancellationToken);
-        var credential = credentials.GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
-            ?? throw new InvalidOperationException("Could not find credentials for iracing service - check configuration");
-        iRDataClient.UseUsernameAndPassword(credential.UserName, credential.Password);
 
         SubSessionResult resultData;
         try
@@ -258,8 +255,6 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         row.CarId = data.CarId;
         row.CarNumber = data.Livery.CarNumber ?? string.Empty;
         row.ClassId = data.CarClassId;
-        row.ClubId = data.ClubId;
-        row.ClubName = data.ClubName;
         row.CompletedLaps = data.LapsComplete;
         row.CompletedPct = laps != 0 ? data.LapsComplete / (double)laps : 0;
         row.ContactLaps = "";
@@ -312,8 +307,6 @@ public class FetchResultsFromIRacingAPIHandler : HandlerBase<FetchResultsFromIRa
         row.CarId = data.CarId;
         row.CarNumber = data.Livery.CarNumber ?? string.Empty;
         row.ClassId = data.CarClassId;
-        row.ClubId = data.ClubId;
-        row.ClubName = data.ClubName;
         row.CompletedLaps = data.LapsComplete;
         row.CompletedPct = laps != 0 ? data.LapsComplete / (double)laps : 0;
         row.ContactLaps = "";
