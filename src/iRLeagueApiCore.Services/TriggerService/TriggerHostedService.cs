@@ -126,7 +126,7 @@ public sealed class TriggerHostedService : BackgroundService
 
             if (trigger.TriggerType == TriggerType.Interval)
             {
-                trigger.TimeElapses += trigger.Interval.GetValueOrDefault();
+                trigger.TimeElapses = trigger.TimeElapses! + trigger.Interval.GetValueOrDefault();
             }
         }
 
