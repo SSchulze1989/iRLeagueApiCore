@@ -450,7 +450,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     {
         foreach (var row in rows)
         {
-            if (row.FinalPosition == position)
+            if (row.FinishPosition == position)
             {
                 row.BonusPoints += points;
             }
