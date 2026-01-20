@@ -196,7 +196,7 @@ public sealed class Startup
 
         services.AddSingleton<ICredentials, CredentialList>(x => new(Configuration.GetSection("Credentials")));
 
-        services.AddIRacingDataApi(options =>
+        var httpClientBuilder = services.AddIRacingDataApi(options =>
         {
             var credential = new CredentialList(Configuration.GetSection("Credentials"))
                 .GetCredential(new Uri("https://members-ng.iracing.com/auth"), "Token")
@@ -206,6 +206,7 @@ public sealed class Startup
             options.UseProductUserAgent("iRLeagueApiCore", Assembly.GetEntryAssembly()!.GetName().Version!);
             options.UsePasswordLimitedOAuth(credential.UserName, credential.Password, clientId, clientSecret);
         });
+        httpClientBuilder.Services.AddHttpClient<IAuthenticatingHttpClient, CachedPasswordLimitedOAuthAuthenticatingHttpClient>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
