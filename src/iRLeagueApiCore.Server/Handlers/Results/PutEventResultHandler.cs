@@ -70,7 +70,6 @@ public class PutEventResultHandler : ResultHandlerBase<PutEventResultHandler, Pu
     private async Task<SessionResultEntity> MapToSessionResultEntity(SessionResultEntity entity, RawSessionResultModel model, LeagueUser user, CancellationToken cancellationToken)
     {
         UpdateVersionEntity(user, entity);
-        var resultRows = new List<ResultRowEntity>();
         foreach (var resultRowModel in model.ResultRows)
         {
             var resultRow = entity.ResultRows.FirstOrDefault(x => x.ResultRowId == resultRowModel.ResultRowId && resultRowModel.ResultRowId > 0);
@@ -80,10 +79,9 @@ public class PutEventResultHandler : ResultHandlerBase<PutEventResultHandler, Pu
                 {
                     LeagueId = dbContext.LeagueProvider.LeagueId
                 };
-                resultRows.Add(resultRow);
+                entity.ResultRows.Add(resultRow);
             }
             resultRow = await MapToResultRowEntity(resultRow, resultRowModel, cancellationToken);
-            resultRows.Add(resultRow);
         }
         return entity;
     }
