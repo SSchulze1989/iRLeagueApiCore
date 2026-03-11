@@ -271,50 +271,131 @@ public sealed class MemberStandingCalculationServiceTests
         testRow.RacePointsChange.Should().Be(1);
     }
 
-    //[Fact]
-    //public async Task Calculate_ShouldConsiderDropweekOverrides()
-    //{
-    //    const int nEvents = 5;
-    //    const int nRaces = 1;
-    //    var points = ((double[])[8, 1, 4, 0, 2])
-    //        .CreateSequence();
-    //    var memberId = fixture.Create<long>();
-    //    var testRowData = TestRowBuilder()
-    //        .With(x => x.MemberId, memberId)
-    //        .With(x => x.PointsEligible, true)
-    //        .With(x => x.RacePoints, points)
-    //        .With(x => x.BonusPoints, 0)
-    //        .CreateMany(nEvents * nRaces);
-    //    var keepRace = testRowData.ElementAt(1);
-    //    var dropRace = testRowData.ElementAt(2);
-    //    dropRace.DropweekOverride = new()
-    //    {
-    //        ScoredResultRowId = dropRace.ScoredResultRowId!.Value,
-    //        ShouldDrop = true,
-    //    };
-    //    keepRace.DropweekOverride = new()
-    //    {
-    //        ScoredResultRowId = keepRace.ScoredResultRowId!.Value,
-    //        ShouldDrop = false,
-    //    };
-    //    var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
-    //    var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
-    //        .Zip(testRowData);
-    //    foreach (var (result, rowData) in tmp)
-    //    {
-    //        result.ResultRows = [.. result.ResultRows, rowData];
-    //    }
-    //    var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
-    //        .With(x => x.WeeksCounted, 3)
-    //        .Create();
-    //    var sut = CreateSut(config);
+    [Fact]
+    public async Task Calculate_ShouldConsiderDropweekOverrides()
+    {
+        const int nEvents = 5;
+        const int nRaces = 1;
+        var points = ((double[])[8, 1, 4, 0, 2])
+            .CreateSequence();
+        var memberId = fixture.Create<long>();
+        var testRowData = TestRowBuilder()
+            .With(x => x.MemberId, memberId)
+            .With(x => x.PointsEligible, true)
+            .With(x => x.RacePoints, points)
+            .With(x => x.BonusPoints, 0)
+            .Without(x => x.DropweekOverride)
+            .CreateMany(nEvents * nRaces);
+        var keepRace = testRowData.ElementAt(1);
+        var dropRace = testRowData.ElementAt(2);
+        dropRace.DropweekOverride = new()
+        {
+            ScoredResultRowId = dropRace.ScoredResultRowId!.Value,
+            ShouldDrop = true,
+        };
+        keepRace.DropweekOverride = new()
+        {
+            ScoredResultRowId = keepRace.ScoredResultRowId!.Value,
+            ShouldDrop = false,
+        };
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
+            .Zip(testRowData);
+        foreach (var (result, rowData) in tmp)
+        {
+            result.ResultRows = [.. result.ResultRows, rowData];
+        }
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
+            .With(x => x.WeeksCounted, 3)
+            .Create();
+        var sut = CreateSut(config);
 
-    //    var test = await sut.Calculate(data);
+        var test = await sut.Calculate(data);
 
-    //    var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
-    //    testRow.RacePoints.Should().Be(11);
-    //    testRow.RacePointsChange.Should().Be(2);
-    //}
+        var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
+        testRow.RacePoints.Should().Be(11);
+        testRow.RacePointsChange.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Calculate_Should_KeepExtraWeeks_WithDropweekOverrides()
+    {
+        const int nEvents = 5;
+        const int nRaces = 1;
+        var points = ((double[])[8, 1, 4, 0, 2])
+            .CreateSequence();
+        var memberId = fixture.Create<long>();
+        var testRowData = TestRowBuilder()
+            .With(x => x.MemberId, memberId)
+            .With(x => x.PointsEligible, true)
+            .With(x => x.RacePoints, points)
+            .With(x => x.BonusPoints, 0)
+            .Without(x => x.DropweekOverride)
+            .CreateMany(nEvents * nRaces);
+        var keepRaces = testRowData.Take(3);
+        keepRaces.ForEach(x => x.DropweekOverride = new()
+        {
+            ScoredResultRowId = x.ScoredResultRowId!.Value,
+            ShouldDrop = false,
+        });
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
+            .Zip(testRowData);
+        foreach (var (result, rowData) in tmp)
+        {
+            result.ResultRows = [.. result.ResultRows, rowData];
+        }
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
+            .With(x => x.WeeksCounted, 2)
+            .Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
+        testRow.RacePoints.Should().Be(13);
+        testRow.RacePointsChange.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Calculate_Should_DropExtraWeeks_WithDropweekOverrides()
+    {
+        const int nEvents = 5;
+        const int nRaces = 1;
+        var points = ((double[])[8, 1, 4, 0, 2])
+            .CreateSequence();
+        var memberId = fixture.Create<long>();
+        var testRowData = TestRowBuilder()
+            .With(x => x.MemberId, memberId)
+            .With(x => x.PointsEligible, true)
+            .With(x => x.RacePoints, points)
+            .With(x => x.BonusPoints, 0)
+            .Without(x => x.DropweekOverride)
+            .CreateMany(nEvents * nRaces);
+        var dropRaces = testRowData.Take(3);
+        dropRaces.ForEach(x => x.DropweekOverride = new()
+        {
+            ScoredResultRowId = x.ScoredResultRowId!.Value,
+            ShouldDrop = true,
+        });
+        var data = CalculationDataBuilder(nEvents, nRaces, false).Create();
+        var tmp = data.PreviousEventResults.SelectMany(x => x.SessionResults).Concat(data.CurrentEventResult.SessionResults)
+            .Zip(testRowData);
+        foreach (var (result, rowData) in tmp)
+        {
+            result.ResultRows = [.. result.ResultRows, rowData];
+        }
+        var config = CalculationConfigurationBuilder(data.LeagueId, data.EventId)
+            .With(x => x.WeeksCounted, 3)
+            .Create();
+        var sut = CreateSut(config);
+
+        var test = await sut.Calculate(data);
+
+        var testRow = test.StandingRows.Single(x => x.MemberId == memberId);
+        testRow.RacePoints.Should().Be(2);
+        testRow.RacePointsChange.Should().Be(2);
+    }
 
     [Fact]
     public async Task Calculate_ShouldCombinePracticeAndQualyPoints_ForSingleHeader()
