@@ -60,6 +60,17 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         return Task.FromResult(standingResult);
     }
 
+    private bool IsWeekDropped(GroupedEventResult<long> eventResult, int index, int weeksCounted)
+    {
+        var shouldDrop = GetDropweekOverrideOrderValue(eventResult);
+        if (shouldDrop != 0)
+        {
+            return shouldDrop == 1 ? true : false;
+        }
+
+        return index >= weeksCounted;
+    }
+
     private List<(long memberId, StandingRowCalculationResult previous, StandingRowCalculationResult current)> CalculateMemberStandingRows(
         Dictionary<long, IEnumerable<GroupedEventResult<long>>> previousMemberResults,
         Dictionary<long, GroupedEventResult<long>> currentMemberResult)
@@ -95,7 +106,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
             var previousStandingRow = new StandingRowCalculationResult(standingRow);
 
             var previousSessionResults = previousEventResults.SelectMany(x => x.SessionResults);
-            var countedEventResults = previousEventResults.Take(config.WeeksCounted);
+            var countedEventResults = previousEventResults.Where((x, i) => !IsWeekDropped(x, i, config.WeeksCounted));
             var countedSessionResults = countedEventResults.SelectMany(x => x.SessionResults);
             previousStandingRow = AccumulateOverallSessionResults(previousStandingRow, previousSessionResults);
             previousStandingRow = AccumulateCountedSessionResults(previousStandingRow, countedSessionResults);
@@ -104,12 +115,12 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
 
             if (currentResult is not null)
             {
-                var currentSessionResults = previousEventResults.Concat([currentResult])
+                var currentEventResults = previousEventResults.Concat([currentResult])
                     .OrderByDescending(GetEventOrderValue)
                     .OrderBy(GetDropweekOverrideOrderValue);
-                var currentMemberSessionResults = currentSessionResults.SelectMany(x => x.SessionResults);
-                var currentCountedResults = currentSessionResults.Take(config.WeeksCounted);
-                var currentCountedSessionResults = currentCountedResults.SelectMany(x => x.SessionResults);
+                var currentMemberSessionResults = currentEventResults.SelectMany(x => x.SessionResults);
+                var currentCountedEventResults = currentEventResults.Where((x, i) => !IsWeekDropped(x, i, config.WeeksCounted));
+                var currentCountedSessionResults = currentCountedEventResults.SelectMany(x => x.SessionResults);
                 standingRow = AccumulateOverallSessionResults(standingRow, currentMemberSessionResults);
                 standingRow = AccumulateCountedSessionResults(standingRow, currentCountedSessionResults);
                 standingRow = AccumulateTotalPoints(standingRow);

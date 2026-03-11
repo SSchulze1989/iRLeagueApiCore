@@ -151,10 +151,10 @@ public sealed class ResultsController : LeagueApiController<ResultsController>
     [HttpPost]
     [RequireLeagueRole(LeagueRoles.Admin, LeagueRoles.Organizer)]
     [Route("/{leagueName}/Events/{eventId:long}/[controller]/Calculate")]
-    public async Task<ActionResult<bool>> TriggerResultCalculation([FromRoute] string leagueName, [FromRoute] long eventId,
+    public async Task<ActionResult<bool>> TriggerResultCalculation([FromRoute] string leagueName, [FromRoute] long eventId, [FromQuery] bool skipNotifications = false,
         CancellationToken cancellationToken = default)
     {
-        var request = new TriggerResultCalculationCommand(eventId);
+        var request = new TriggerResultCalculationCommand(eventId, skipNotifications);
         await mediator.Send(request, cancellationToken);
         return Ok(true);
     }

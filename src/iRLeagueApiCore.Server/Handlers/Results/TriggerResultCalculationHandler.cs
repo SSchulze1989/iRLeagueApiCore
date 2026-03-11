@@ -2,7 +2,7 @@
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public record TriggerResultCalculationCommand(long EventId) : IRequest<Unit>;
+public record TriggerResultCalculationCommand(long EventId, bool SkipNotifications = false) : IRequest<Unit>;
 
 public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerResultCalculationHandler, TriggerResultCalculationCommand, Unit>
 {
@@ -25,7 +25,7 @@ public sealed class TriggerResultCalculationHandler : ResultHandlerBase<TriggerR
             return Unit.Value;
         }
 
-        calculationQueue.QueueEventResultDebounced(@event.EventId, 0);
+        calculationQueue.QueueEventResultDebounced(@event.EventId, 0, skipNotifications: request.SkipNotifications);
         return Unit.Value;
     }
 }
