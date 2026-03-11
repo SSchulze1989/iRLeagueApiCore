@@ -12,11 +12,15 @@ public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler,
     public override async Task<Unit> Handle(DeleteResultRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var deleteEventResults = await GetScoredEventResults(request.EventId, cancellationToken);
-        var deleteStandings = await GetEventStandings(request.EventId, cancellationToken);
+        var @event = await dbContext.Events
+            .Where(x => x.EventId == request.EventId)
+            .FirstOrDefaultAsync(cancellationToken)
+            ?? throw new ResourceNotFoundException();
+        var deleteEventResults = await GetScoredEventResults(@event.EventId, cancellationToken);
+        var deleteStandings = await GetEventStandings(@event.EventId, cancellationToken);
         foreach (var result in deleteEventResults)
         {
-            dbContext.ScoredEventResults.Remove(result);
+            await SafeDeleteScoredEventResult(result);
         }
         foreach (var standing in deleteStandings)
         {
@@ -38,5 +42,24 @@ public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler,
         return await dbContext.Standings
             .Where(x => x.EventId == eventId)
             .ToListAsync(cancellationToken);
+    }
+
+    private async Task SafeDeleteScoredEventResult(ScoredEventResultEntity eventResult)
+    {
+        foreach (var sessionResult in eventResult.ScoredSessionResults)
+        {
+            await SafeDeleteScoredSessionResult(sessionResult);
+        }
+        dbContext.Remove(eventResult);
+    }
+
+    private async Task SafeDeleteScoredSessionResult(ScoredSessionResultEntity sessionResult)
+    {
+        // Delete penalties
+        var penalties = sessionResult.ScoredResultRows
+            .SelectMany(x => x.AddPenalties)
+            .ToList();
+        dbContext.RemoveRange(penalties);
+        dbContext.Remove(sessionResult);
     }
 }

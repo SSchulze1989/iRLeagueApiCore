@@ -1,5 +1,6 @@
 using FluentAssertions;
 using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueDatabaseCore.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -197,32 +198,6 @@ public class DbIntegrationTests : DatabaseTestBase
         }
     }
 
-    //[Fact]
-    //public async Task ShouldCascadeDeleteFilter()
-    //{
-    //    using var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-    //    long filterOptionId;
-    //    using (var context = GetTestDatabaseContext())
-    //    {
-    //        SetCurrentLeague(await context.Leagues.FirstAsync());
-    //        var filterOption = new FilterOptionEntity();
-    //        var config = await context.ResultConfigurations.FirstAsync();
-    //        config.PointFilters.Add(filterOption);
-    //        await context.SaveChangesAsync();
-    //        filterOptionId = filterOption.FilterOptionId;
-
-    //        config.PointFilters.Remove(filterOption);
-    //        var filterOptionEntry = context.Entry(filterOption);
-    //        await context.SaveChangesAsync();
-    //    }
-
-    //    using (var context = GetTestDatabaseContext())
-    //    {
-    //        var filterOption = context.FilterOptions.FirstOrDefault(x => x.FilterOptionId == filterOptionId);
-    //        Assert.Null(filterOption);
-    //    }
-    //}
-
     [Fact]
     public async Task ShouldSetFilterValues()
     {
@@ -318,6 +293,31 @@ public class DbIntegrationTests : DatabaseTestBase
             autoPenalty.Conditions.First().ColumnPropertyName.Should().Be("Incidents");
             autoPenalty.Conditions.First().FilterValues.Should().BeEquivalentTo(new[] { "4" });
             autoPenalty.Conditions.First().Action.Should().Be(iRLeagueApiCore.Common.Enums.MatchedValueAction.Remove);
+        }
+    }
+
+    [Fact]
+    public async Task ShouldDeleteResults_WithPenalties()
+    {
+        using (var context = GetTestDatabaseContext())
+        {
+            var result = await context.ScoredEventResults
+                .Include(x => x.ScoredSessionResults)
+                    .ThenInclude(x => x.ScoredResultRows)
+                        .ThenInclude(x => x.AddPenalties)
+                .FirstAsync();
+            foreach (var row in result.ScoredSessionResults.Last().ScoredResultRows.Take(2))
+            {
+                var penalty = new AddPenaltyEntity()
+                {
+                    Lap = "1",
+                    Corner = "1",
+                    Reason = "Test Penalty",
+                    Value = new() { Points = 5 },
+                };
+                row.AddPenalties.Add(penalty);
+            }
+            await context.SaveChangesAsync();
         }
     }
 
