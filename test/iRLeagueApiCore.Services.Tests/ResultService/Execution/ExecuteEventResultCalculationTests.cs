@@ -191,7 +191,7 @@ public sealed class ExecuteEventResultCalculationTests
     private static Mock<IResultCalculationQueue> MockResultQueue(Fixture fixture)
     {
         var mockQueue = new Mock<IResultCalculationQueue>();
-        mockQueue.Setup(x => x.QueueEventResultAsync(It.IsAny<long>()))
+        mockQueue.Setup(x => x.QueueEventResultAsync(It.IsAny<long>(), It.IsAny<bool>()))
             .Returns(Task.FromResult(0));
         return mockQueue;
     }
@@ -199,7 +199,7 @@ public sealed class ExecuteEventResultCalculationTests
     private static Mock<IStandingCalculationQueue> MockStandingQueue(Fixture fixture)
     {
         var mockQueue = new Mock<IStandingCalculationQueue>();
-        mockQueue.Setup(x => x.QueueStandingCalculationAsync(It.IsAny<long>()))
+        mockQueue.Setup(x => x.QueueStandingCalculationAsync(It.IsAny<long>(), It.IsAny<bool>()))
             .Returns(Task.FromResult(0));
         return mockQueue;
     }

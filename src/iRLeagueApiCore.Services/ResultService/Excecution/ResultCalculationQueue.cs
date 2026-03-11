@@ -13,25 +13,25 @@ internal sealed class ResultCalculationQueue : IResultCalculationQueue
         this.taskQueue = taskQueue;
     }
 
-    public async Task QueueEventResultAsync(long eventId)
+    public async Task QueueEventResultAsync(long eventId, bool skipNotifications = false)
     {
         var scope = serviceProvider.CreateScope();
         await taskQueue.QueueBackgroundWorkItemAsync(async cancellationToken =>
         {
             var resultCalculation = scope.ServiceProvider.GetRequiredService<ExecuteEventResultCalculation>();
-            await resultCalculation.Execute(eventId, cancellationToken);
+            await resultCalculation.Execute(eventId, skipNotifications: skipNotifications, cancellationToken: cancellationToken);
             scope.Dispose();
         });
     }
 
-    public void QueueEventResultDebounced(long eventId, int debounceMs)
+    public void QueueEventResultDebounced(long eventId, int debounceMs, bool skipNotifications = false)
     {
         var scope = serviceProvider.CreateScope();
         var key = $"{nameof(ExecuteEventResultCalculation)}_{eventId}";
         taskQueue.QueueBackgroundWorkItemDebounced(async cancellationToken =>
         {
             var resultCalculation = scope.ServiceProvider.GetRequiredService<ExecuteEventResultCalculation>();
-            await resultCalculation.Execute(eventId, cancellationToken);
+            await resultCalculation.Execute(eventId, skipNotifications: skipNotifications, cancellationToken: cancellationToken);
             scope.Dispose();
         }, key, debounceMs);
     }

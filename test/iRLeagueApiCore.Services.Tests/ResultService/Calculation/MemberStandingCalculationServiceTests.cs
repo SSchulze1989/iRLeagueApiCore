@@ -552,6 +552,7 @@ public sealed class MemberStandingCalculationServiceTests
                     return fixture.Build<ResultRowCalculationResult>()
                         .With(x => x.MemberId, () => randomMemberOrder ? getMemberIds.PopRandom() : getMemberIds.PopFirst())
                         .With(x => x.SessionType, sessionType)
+                        .Without(x => x.DropweekOverride)
                         .CreateMany(memberIds.Count());
                 }
             );
@@ -571,6 +572,7 @@ public sealed class MemberStandingCalculationServiceTests
         return fixture.Build<ResultRowCalculationResult>()
             .Without(x => x.AddPenalties)
             .With(x => x.SessionType, SessionType.Race)
+            .Without(x => x.DropweekOverride)
             .Do(x => { x.TotalPoints = x.RacePoints + x.BonusPoints - x.PenaltyPoints; });
     }
 

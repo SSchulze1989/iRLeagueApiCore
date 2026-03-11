@@ -60,7 +60,7 @@ internal sealed class MemberStandingCalculationService : StandingCalculationServ
         return Task.FromResult(standingResult);
     }
 
-    protected bool IsWeekDropped(GroupedEventResult<long> eventResult, int index, int weeksCounted)
+    private bool IsWeekDropped(GroupedEventResult<long> eventResult, int index, int weeksCounted)
     {
         var shouldDrop = GetDropweekOverrideOrderValue(eventResult);
         if (shouldDrop != 0)
