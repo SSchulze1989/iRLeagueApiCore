@@ -2,6 +2,6 @@
 
 public interface IStandingCalculationQueue
 {
-    public Task QueueStandingCalculationAsync(long eventId);
-    public void QueueStandingCalculationDebounced(long eventId, int debounceMs);
+    public Task QueueStandingCalculationAsync(long eventId, bool skipNotifications = false);
+    public void QueueStandingCalculationDebounced(long eventId, int debounceMs, bool skipNotifications = false);
 }

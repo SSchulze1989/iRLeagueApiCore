@@ -33,7 +33,7 @@ internal sealed class ExecuteEventResultCalculation
         this.mediator = mediator;
     }
 
-    public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
+    public async ValueTask Execute(long eventId, bool skipNotifications = false, CancellationToken cancellationToken = default)
     {
         using var loggerScoppe = logger.BeginScope(new Dictionary<string, object> { ["ExecutionId"] = new Guid() });
 
@@ -82,10 +82,13 @@ internal sealed class ExecuteEventResultCalculation
             logger.LogInformation("Pruned results for config ids: [{ResultConfigIds}]", prunedResultIds);
             logger.LogInformation("--- Result calculation finished successfully ---");
 
-            await mediator.Publish(new ResultCalculatedEventNotification(eventId), cancellationToken);
+            if (!skipNotifications)
+            {
+                await mediator.Publish(new ResultCalculatedEventNotification(eventId), cancellationToken);
+            }
 
             logger.LogInformation("Queueing standing calculation for event {EventId}", eventId);
-            await standingCalculationQueue.QueueStandingCalculationAsync(eventId);
+            await standingCalculationQueue.QueueStandingCalculationAsync(eventId, skipNotifications: skipNotifications);
         }
         catch (Exception ex) when (ex is AggregateException || ex is InvalidOperationException || ex is NotImplementedException)
         {

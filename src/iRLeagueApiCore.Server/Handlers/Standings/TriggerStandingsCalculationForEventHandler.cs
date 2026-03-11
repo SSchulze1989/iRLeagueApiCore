@@ -4,7 +4,7 @@ using iRLeagueApiCore.Services.ResultService.Excecution;
 
 namespace iRLeagueApiCore.Server.Handlers.Standings;
 
-public record TriggerStandingsCalculationForEventRequest(long EventId) : IRequest<Unit>;
+public record TriggerStandingsCalculationForEventRequest(long EventId, bool SkipNotifications = false) : IRequest<Unit>;
 
 public class TriggerStandingsCalculationForEventHandler : StandingsHandlerBase<TriggerStandingsCalculationForEventHandler, TriggerStandingsCalculationForEventRequest, Unit>
 {
@@ -23,7 +23,7 @@ public class TriggerStandingsCalculationForEventHandler : StandingsHandlerBase<T
             .Where(x => x.EventId == request.EventId)
             .FirstOrDefaultAsync(cancellationToken) ??
             throw new ResourceNotFoundException();
-        calculationQueue.QueueStandingCalculationDebounced(@event.EventId, 0);
+        calculationQueue.QueueStandingCalculationDebounced(@event.EventId, 0, skipNotifications: request.SkipNotifications);
         return Unit.Value;
     }
 }

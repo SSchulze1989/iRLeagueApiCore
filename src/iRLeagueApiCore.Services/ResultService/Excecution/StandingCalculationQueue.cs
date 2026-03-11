@@ -13,25 +13,25 @@ internal sealed class StandingCalculationQueue : IStandingCalculationQueue
         this.taskQueue = taskQueue;
     }
 
-    public async Task QueueStandingCalculationAsync(long eventId)
+    public async Task QueueStandingCalculationAsync(long eventId, bool skipNotifications = false)
     {
         var scope = serviceProvider.CreateScope();
         await taskQueue.QueueBackgroundWorkItemAsync(async cancellationToken =>
         {
             var standingCalculation = scope.ServiceProvider.GetRequiredService<ExecuteStandingCalculation>();
-            await standingCalculation.Execute(eventId, cancellationToken);
+            await standingCalculation.Execute(eventId, skipNotifications: skipNotifications, cancellationToken: cancellationToken);
             scope.Dispose();
         });
     }
 
-    public void QueueStandingCalculationDebounced(long eventId, int debounceMs)
+    public void QueueStandingCalculationDebounced(long eventId, int debounceMs, bool skipNotifications = false)
     {
         var scope = serviceProvider.CreateScope();
         var key = $"{nameof(ExecuteStandingCalculation)}_{eventId}";
         taskQueue.QueueBackgroundWorkItemDebounced(async cancellationToken =>
         {
             var standingCalculation = scope.ServiceProvider.GetRequiredService<ExecuteStandingCalculation>();
-            await standingCalculation.Execute(eventId, cancellationToken);
+            await standingCalculation.Execute(eventId, skipNotifications: skipNotifications, cancellationToken: cancellationToken);
             scope.Dispose();
         }, key, debounceMs);
     }

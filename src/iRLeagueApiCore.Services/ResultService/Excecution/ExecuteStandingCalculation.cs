@@ -30,7 +30,7 @@ internal sealed class ExecuteStandingCalculation
         this.mediator = mediator;
     }
 
-    public async ValueTask Execute(long eventId, CancellationToken cancellationToken = default)
+    public async ValueTask Execute(long eventId, bool skipNotifications = false, CancellationToken cancellationToken = default)
     {
         using var loggerScoppe = logger.BeginScope(new Dictionary<string, object> { ["ExecutionId"] = new Guid() });
         await dataProvider.SetLeague(eventId, cancellationToken);
@@ -90,7 +90,7 @@ internal sealed class ExecuteStandingCalculation
                 standingCalculationQueue.QueueStandingCalculationDebounced(nextEventId.Value, 100);
             }
 
-            if (nextEventId is null)
+            if (nextEventId is null && !skipNotifications)
             {
                 await mediator.Publish(new StandingsUpdatedEventNotification(seasonId), cancellationToken);
             }

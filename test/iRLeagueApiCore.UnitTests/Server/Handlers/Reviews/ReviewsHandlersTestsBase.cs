@@ -30,8 +30,8 @@ public abstract class ReviewsHandlersTestsBase<THandler, TRequest, TResult> :
         }
         await dbContext.SaveChangesAsync();
         var resultCalculationQueueMock = new Mock<IResultCalculationQueue>();
-        resultCalculationQueueMock.Setup(x => x.QueueEventResultAsync(It.IsAny<long>()));
-        resultCalculationQueueMock.Setup(x => x.QueueEventResultDebounced(It.IsAny<long>(), It.IsAny<int>()));
+        resultCalculationQueueMock.Setup(x => x.QueueEventResultAsync(It.IsAny<long>(), It.IsAny<bool>()));
+        resultCalculationQueueMock.Setup(x => x.QueueEventResultDebounced(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<bool>()));
         mockResultCalculationQueue = resultCalculationQueueMock.Object;
     }
 
