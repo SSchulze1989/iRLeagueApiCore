@@ -87,7 +87,7 @@ internal sealed class ExecuteStandingCalculation
             if (nextEventId != null)
             {
                 logger.LogInformation("Queueing standing calculation for next event {EventId}", nextEventId);
-                standingCalculationQueue.QueueStandingCalculationDebounced(nextEventId.Value, 100);
+                standingCalculationQueue.QueueStandingCalculationDebounced(nextEventId.Value, 100, skipNotifications);
             }
 
             if (nextEventId is null && !skipNotifications)

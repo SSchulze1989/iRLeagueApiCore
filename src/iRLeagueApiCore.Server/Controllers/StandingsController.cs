@@ -45,7 +45,7 @@ public sealed class StandingsController : LeagueApiController<StandingsControlle
     [Route("/{leagueName}/Events/{eventId:long}/[controller]/Calculate")]
     public async Task<ActionResult> CalculateStandings([FromRoute] string leagueName, [FromRoute] long eventId, [FromQuery] bool skipNotifications = false, CancellationToken cancellationToken = default)
     {
-        var request = new TriggerStandingsCalculationForEventRequest(eventId);
+        var request = new TriggerStandingsCalculationForEventRequest(eventId, skipNotifications);
         await mediator.Send(request, cancellationToken);
         return Ok();
     }
