@@ -219,6 +219,8 @@ public sealed class PostChampSeasonHandler : ChampSeasonHandlerBase<PostChampSea
             .Include(x => x.League)
             .Include(x => x.ChampSeason)
                 .ThenInclude(x => x.Season)
+                    .ThenInclude(x => x.ChampSeasons)
+                        .ThenInclude(x => x.Championship)
             .Include(x => x.ChampSeason)
                 .ThenInclude(x => x.Championship)
             .Include(x => x.SourceResultConfig)
