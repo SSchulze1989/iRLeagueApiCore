@@ -34,6 +34,9 @@ public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler,
     {
         return await dbContext.ScoredEventResults
             .Where(x => x.EventId == eventId)
+            .Include(x => x.ScoredSessionResults)
+                .ThenInclude(x => x.ScoredResultRows)
+                    .ThenInclude(x => x.AddPenalties)
             .ToListAsync(cancellationToken);
     }
 
