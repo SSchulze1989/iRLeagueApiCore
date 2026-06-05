@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\iRLeagueApiCore.Server\iRLeagueApiCore.Server.csproj" />
     <ProjectReference Include="..\..\src\iRLeagueDatabaseCore\iRLeagueDatabaseCore.csproj" />
   </ItemGroup>
 
