@@ -179,7 +179,7 @@ public sealed class AuthenticateController : Controller
         }
         var request = new RegisterUserRequest(model, linkTemplate);
         var (user, result) = await mediator.Send(request);
-        if (result.Succeeded)
+        if (result.Succeeded && user is not null)
         {
             return CreatedAtAction(nameof(UsersController.GetUser), "Users", new { id = user.UserId }, user);
         }
