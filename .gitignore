@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Ef corfe migration bundle
 /efbundle.exe
+/.github/copilot-instructions.md

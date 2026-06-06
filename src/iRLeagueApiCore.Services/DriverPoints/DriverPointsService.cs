@@ -36,14 +36,6 @@ public class DriverPointsService : IDriverPointsService
             Description = e.Description,
             Value = e.Value,
             EntryKindId = e.EntryKindId,
-            EntryKind = e.EntryKind == null ? null : new DriverPointsEntryKindModel
-            {
-                EntryKindId = e.EntryKind.EntryKindId,
-                LeagueId = e.EntryKind.LeagueId == 0 ? null : e.EntryKind.LeagueId,
-                Name = e.EntryKind.Name,
-                Description = e.EntryKind.Description,
-                EntryType = e.EntryKind.EntryType
-            },
             ArchivedOn = e.ArchivedOn,
             SourceRef = e.SourceRef
         }).ToList();

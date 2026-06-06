@@ -43,4 +43,7 @@ public interface ILeagueDbContext
     public DbSet<IRSimSessionDetailsEntity> IRSimSessionDetails { get; set; }
     public DbSet<TrackConfigEntity> TrackConfigs { get; set; }
     public DbSet<SessionResultEntity> SessionResults { get; set; }
+    public DbSet<DriverPointsAccountEntity> DriverPointsAccounts { get; set; }
+    public DbSet<DriverPointsEntryEntity> DriverPointsEntries { get; set; }
+    public DbSet<DriverPointsEntryKindEntity> DriverPointsEntryKinds { get; set; }
 }

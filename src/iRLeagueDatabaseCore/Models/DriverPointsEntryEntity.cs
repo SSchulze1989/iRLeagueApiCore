@@ -51,7 +51,7 @@ public class DriverPointsEntryEntityConfiguration : IEntityTypeConfiguration<Dri
 
         entity.HasOne(d => d.EntryKind)
             .WithMany()
-            .HasForeignKey(d => new { d.LeagueId, d.EntryKindId })
+            .HasForeignKey(d => new { d.EntryKindId })
             .IsRequired(false)
             .OnDelete(DeleteBehavior.ClientSetNull);
     }

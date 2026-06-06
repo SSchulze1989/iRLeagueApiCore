@@ -54,6 +54,9 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
     public virtual DbSet<IRSimSessionDetailsEntity> IRSimSessionDetails { get; set; }
     public virtual DbSet<TrackConfigEntity> TrackConfigs { get; set; }
     public virtual DbSet<SessionResultEntity> SessionResults { get; set; }
+    public virtual DbSet<DriverPointsAccountEntity> DriverPointsAccounts { get; set; }
+    public virtual DbSet<DriverPointsEntryEntity> DriverPointsEntries { get; set; }
+    public virtual DbSet<DriverPointsEntryKindEntity> DriverPointsEntryKinds { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -162,5 +165,11 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<DropweekOverrideEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
+        builder.Entity<DriverPointsAccountEntity>()
+            .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
+        builder.Entity<DriverPointsEntryEntity>()
+            .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
+        builder.Entity<DriverPointsEntryKindEntity>()
+            .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId || mt.LeagueId == 0);
     }
 }
