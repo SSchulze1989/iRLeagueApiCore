@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace iRLeagueDatabaseCore.Models;
 
 public partial class DriverPointsAccountEntity

@@ -187,6 +187,8 @@ public sealed class Startup
 
         services.AddEmailService();
         services.AddResultService();
+        // driver points services
+        services.AddDriverPoints();
         services.AddBackgroundQueue();
         services.AddTriggerService(options => 
         {

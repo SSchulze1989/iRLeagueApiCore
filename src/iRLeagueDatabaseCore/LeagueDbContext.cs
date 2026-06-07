@@ -171,5 +171,9 @@ public partial class LeagueDbContext : DbContext, ILeagueDbContext
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
         builder.Entity<DriverPointsEntryKindEntity>()
             .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId || mt.LeagueId == 0);
+        builder.Entity<DriverPointsAccountSeason>()
+            .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
+        builder.Entity<DriverPointsBalanceEntity>()
+            .HasQueryFilter(mt => mt.LeagueId == LeagueProvider.LeagueId);
     }
 }
