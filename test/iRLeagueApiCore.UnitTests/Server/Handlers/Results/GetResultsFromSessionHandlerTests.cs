@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Exceptions;
 using iRLeagueApiCore.Server.Handlers.Results;
@@ -8,35 +8,25 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
-public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
+public sealed class GetResultsFromSessionHandlerTests : ResultHandlersTestsBase<GetResultsFromSessionHandler, GetResultsFromEventRequest, IEnumerable<EventResultModel>>
 {
-    public GetResultsFromSeasonHandlerTests() : base()
+    protected override GetResultsFromSessionHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultsFromEventRequest> validator)
     {
-    }
-
-    protected override GetResultsFromSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultsFromSeasonRequest> validator)
-    {
-        return new GetResultsFromSeasonHandler(logger, dbContext, new IValidator<GetResultsFromSeasonRequest>[] { validator },
+        return new GetResultsFromSessionHandler(logger, dbContext, new[] { validator },
             new MemoryCache(new MemoryCacheOptions()));
     }
 
-    protected override GetResultsFromSeasonRequest DefaultRequest()
+    protected override GetResultsFromEventRequest DefaultRequest()
     {
-        return DefaultRequest(TestSeasonId);
+        return new GetResultsFromEventRequest(TestEventId);
     }
 
-    private GetResultsFromSeasonRequest DefaultRequest(long seasonId)
-    {
-        return new GetResultsFromSeasonRequest(seasonId);
-    }
-
-    protected override void DefaultAssertions(GetResultsFromSeasonRequest request, IEnumerable<SeasonEventResultModel> result, LeagueDbContext dbContext)
+    protected override void DefaultAssertions(GetResultsFromEventRequest request, IEnumerable<EventResultModel> result, LeagueDbContext dbContext)
     {
         base.DefaultAssertions(request, result, dbContext);
-        var seasonResults = dbContext.ScoredEventResults
-            .Where(x => x.Event.Schedule.SeasonId == request.SeasonId)
-            .GroupBy(x => x.EventId);
-        Assert.Equal(seasonResults.Count(), result.Count());
+        var eventResults = dbContext.ScoredEventResults
+            .Where(x => x.EventId == request.EventId);
+        result.Should().HaveSameCount(eventResults);
     }
 
     [Fact]
@@ -56,12 +46,12 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
     [InlineData(defaultId, 0L)]
     [InlineData(-42L, defaultId)]
     [InlineData(defaultId, -42L)]
-    public async Task HandleNotFoundAsync(long? leagueId, long? seasonId)
+    public async Task HandleNotFoundAsync(long? leagueId, long? eventId)
     {
         leagueId ??= TestLeagueId;
-        seasonId ??= TestSeasonId;
+        eventId ??= TestEventId;
         accessMockHelper.SetCurrentLeague(leagueId.Value);
-        var request = DefaultRequest(seasonId.Value);
+        var request = new GetResultsFromEventRequest(eventId.Value);
         await HandleNotFoundRequestAsync(request);
     }
 
@@ -70,8 +60,8 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
     {
         var sharedCache = new MemoryCache(new MemoryCacheOptions());
         using var db = accessMockHelper.CreateMockDbContext(databaseName);
-        var handler = new GetResultsFromSeasonHandler(logger, db,
-            Array.Empty<IValidator<GetResultsFromSeasonRequest>>(), sharedCache);
+        var handler = new GetResultsFromSessionHandler(logger, db,
+            Array.Empty<IValidator<GetResultsFromEventRequest>>(), sharedCache);
         var request = DefaultRequest();
 
         var firstResult = await handler.Handle(request, default);
@@ -90,8 +80,8 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
     {
         var sharedCache = new MemoryCache(new MemoryCacheOptions());
         using var db = accessMockHelper.CreateMockDbContext(databaseName);
-        var handler = new GetResultsFromSeasonHandler(logger, db,
-            Array.Empty<IValidator<GetResultsFromSeasonRequest>>(), sharedCache);
+        var handler = new GetResultsFromSessionHandler(logger, db,
+            Array.Empty<IValidator<GetResultsFromEventRequest>>(), sharedCache);
         var request = DefaultRequest();
 
         // Populate the cache
