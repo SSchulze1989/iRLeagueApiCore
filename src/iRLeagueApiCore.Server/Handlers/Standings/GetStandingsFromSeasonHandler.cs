@@ -1,4 +1,6 @@
 ﻿using iRLeagueApiCore.Common.Models.Standings;
+using iRLeagueApiCore.Server.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace iRLeagueApiCore.Server.Handlers.Standings;
 
@@ -6,16 +8,24 @@ public record GetStandingsFromSeasonRequest(long SeasonId) : IRequest<IEnumerabl
 
 public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStandingsFromSeasonHandler, GetStandingsFromSeasonRequest, IEnumerable<StandingsModel>>
 {
+    private readonly IMemoryCache memoryCache;
+
     public GetStandingsFromSeasonHandler(ILogger<GetStandingsFromSeasonHandler> logger, LeagueDbContext dbContext,
-        IEnumerable<IValidator<GetStandingsFromSeasonRequest>> validators) : base(logger, dbContext, validators)
+        IEnumerable<IValidator<GetStandingsFromSeasonRequest>> validators, IMemoryCache memoryCache) : base(logger, dbContext, validators)
     {
+        this.memoryCache = memoryCache;
     }
 
     public override async Task<IEnumerable<StandingsModel>> Handle(GetStandingsFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
-        var getStandings = await MapToStandingModelFromSeasonAsync(request.SeasonId, cancellationToken);
-        return getStandings;
+        var cacheKey = CacheKeys.GetStandingsBySeasonKey(request.SeasonId);
+        var standingsTask = memoryCache.GetOrCreate(cacheKey, entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = CacheKeys.StandingsCacheDuration;
+            return MapToStandingModelFromSeasonAsync(request.SeasonId, CancellationToken.None);
+        })!;
+        return await standingsTask;
     }
 
     private async Task<IEnumerable<StandingsModel>> MapToStandingModelFromSeasonAsync(long seasonId, CancellationToken cancellationToken)

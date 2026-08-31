@@ -85,23 +85,27 @@ public sealed class UploadResultHandlerTests : DataAccessTestsBase
             .Where(x => x.Team == null)
             .Take(rowCount)
             .ToListAsync();
-        var newTeam = fixture.Build<TeamEntity>()
-            .With(x => x.Members, members)
-            .Without(x => x.League)
-            .Without(x => x.InvolvedReviews)
-            .Create();
-        var newTeamRow = CreateTeamResultRow(1, (newTeam.IRacingTeamId!.Value, newTeam.Name, members));
-        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: true, raceCount: 1);
-        result.session_results.First().results = result.session_results.First().results.Concat(new[] { newTeamRow }).ToArray();
+        var existingTeamIds = await dbContext.Teams
+            .Select(x => x.IRacingTeamId)
+            .ToListAsync();
+        var newTeamId = fixture.Create<long>();
+        while (existingTeamIds.Contains(newTeamId))
+        {
+            newTeamId = fixture.Create<long>();
+        }
+        var newTeamName = fixture.Create<string>();
+        var newTeamRow = CreateTeamResultRow(1, (newTeamId, newTeamName, members));
+        var result = await CreateFakeResult(practice: false, qualy: false, teamResult: false, raceCount: 1);
+        result.session_results.First().results = new[] { newTeamRow };
         var sut = CreateSut();
         var request = CreateRequest(TestEventId, result);
 
         await sut.Handle(request, default);
 
         var testNewTeam = await dbContext.Teams
-            .FirstOrDefaultAsync(x => x.IRacingTeamId == newTeam.IRacingTeamId);
+            .FirstOrDefaultAsync(x => x.IRacingTeamId == newTeamId);
         testNewTeam.Should().NotBeNull();
-        testNewTeam!.Name.Should().Be(newTeam.Name);
+        testNewTeam!.Name.Should().Be(newTeamName);
         testNewTeam.Members.Should().Contain(members);
     }
 
