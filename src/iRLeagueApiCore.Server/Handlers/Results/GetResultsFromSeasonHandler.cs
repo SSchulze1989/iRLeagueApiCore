@@ -1,23 +1,36 @@
 ﻿using iRLeagueApiCore.Common.Models;
+using iRLeagueApiCore.Server.Models;
+using Microsoft.Extensions.Caching.Memory;
+
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
 public record GetResultsFromSeasonRequest(long SeasonId) : IRequest<IEnumerable<SeasonEventResultModel>>;
 
 public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFromSeasonHandler, GetResultsFromSeasonRequest, IEnumerable<SeasonEventResultModel>>
 {
-    public GetResultsFromSeasonHandler(ILogger<GetResultsFromSeasonHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<GetResultsFromSeasonRequest>> validators) :
+    private readonly IMemoryCache memoryCache;
+
+    public GetResultsFromSeasonHandler(ILogger<GetResultsFromSeasonHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<GetResultsFromSeasonRequest>> validators, IMemoryCache memoryCache) :
         base(logger, dbContext, validators)
     {
+        this.memoryCache = memoryCache;
     }
 
     public override async Task<IEnumerable<SeasonEventResultModel>> Handle(GetResultsFromSeasonRequest request, CancellationToken cancellationToken)
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
+        var cacheKey = CacheKeys.GetResultsBySeasonKey(request.SeasonId);
+        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<SeasonEventResultModel>? cached) && cached is not null)
+        {
+            return cached;
+        }
         var getResults = await MapToGetResultModelsFromSeasonAsync(request.SeasonId, cancellationToken);
         if (getResults.Count() == 0)
         {
             throw new ResourceNotFoundException();
         }
+        memoryCache.Set(cacheKey, getResults, CacheKeys.ResultsCacheDuration);
         return getResults;
     }
 

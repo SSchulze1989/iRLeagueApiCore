@@ -2,6 +2,7 @@
 using iRLeagueApiCore.Common.Models;
 using iRLeagueApiCore.Server.Handlers.Results;
 using iRLeagueDatabaseCore.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
 
@@ -13,7 +14,8 @@ public sealed class GetResultsFromSeasonHandlerTests : ResultHandlersTestsBase<G
 
     protected override GetResultsFromSeasonHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<GetResultsFromSeasonRequest> validator)
     {
-        return new GetResultsFromSeasonHandler(logger, dbContext, new IValidator<GetResultsFromSeasonRequest>[] { validator });
+        return new GetResultsFromSeasonHandler(logger, dbContext, new IValidator<GetResultsFromSeasonRequest>[] { validator },
+            new MemoryCache(new MemoryCacheOptions()));
     }
 
     protected override GetResultsFromSeasonRequest DefaultRequest()
