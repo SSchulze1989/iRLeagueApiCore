@@ -20,13 +20,12 @@ public sealed class GetStandingsFromSeasonHandler : StandingsHandlerBase<GetStan
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var cacheKey = CacheKeys.GetStandingsBySeasonKey(request.SeasonId);
-        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<StandingsModel>? cached) && cached is not null)
+        var standingsTask = memoryCache.GetOrCreate(cacheKey, entry =>
         {
-            return cached;
-        }
-        var getStandings = await MapToStandingModelFromSeasonAsync(request.SeasonId, cancellationToken);
-        memoryCache.Set(cacheKey, getStandings, CacheKeys.StandingsCacheDuration);
-        return getStandings;
+            entry.AbsoluteExpirationRelativeToNow = CacheKeys.StandingsCacheDuration;
+            return MapToStandingModelFromSeasonAsync(request.SeasonId, CancellationToken.None);
+        })!;
+        return await standingsTask;
     }
 
     private async Task<IEnumerable<StandingsModel>> MapToStandingModelFromSeasonAsync(long seasonId, CancellationToken cancellationToken)

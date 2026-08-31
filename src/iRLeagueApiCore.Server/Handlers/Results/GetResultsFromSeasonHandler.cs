@@ -21,16 +21,17 @@ public sealed class GetResultsFromSeasonHandler : ResultHandlerBase<GetResultsFr
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var cacheKey = CacheKeys.GetResultsBySeasonKey(request.SeasonId);
-        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<SeasonEventResultModel>? cached) && cached is not null)
+        var resultTask = memoryCache.GetOrCreate(cacheKey, entry =>
         {
-            return cached;
-        }
-        var getResults = await MapToGetResultModelsFromSeasonAsync(request.SeasonId, cancellationToken);
-        if (getResults.Count() == 0)
+            entry.AbsoluteExpirationRelativeToNow = CacheKeys.ResultsCacheDuration;
+            return MapToGetResultModelsFromSeasonAsync(request.SeasonId, CancellationToken.None);
+        })!;
+        var getResults = await resultTask;
+        if (!getResults.Any())
         {
+            memoryCache.Remove(cacheKey);
             throw new ResourceNotFoundException();
         }
-        memoryCache.Set(cacheKey, getResults, CacheKeys.ResultsCacheDuration);
         return getResults;
     }
 

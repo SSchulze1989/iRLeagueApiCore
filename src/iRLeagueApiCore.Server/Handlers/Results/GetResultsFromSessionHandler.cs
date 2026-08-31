@@ -21,16 +21,17 @@ public sealed class GetResultsFromSessionHandler : ResultHandlerBase<GetResultsF
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var cacheKey = CacheKeys.GetResultsByEventKey(request.EventId);
-        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<EventResultModel>? cached) && cached is not null)
+        var resultTask = memoryCache.GetOrCreate(cacheKey, entry =>
         {
-            return cached;
-        }
-        var getResults = await MapToGetResultModelsFromEventAsync(request.EventId, cancellationToken);
-        if (getResults.Count() == 0)
+            entry.AbsoluteExpirationRelativeToNow = CacheKeys.ResultsCacheDuration;
+            return MapToGetResultModelsFromEventAsync(request.EventId, CancellationToken.None);
+        })!;
+        var getResults = await resultTask;
+        if (!getResults.Any())
         {
+            memoryCache.Remove(cacheKey);
             throw new ResourceNotFoundException();
         }
-        memoryCache.Set(cacheKey, getResults, CacheKeys.ResultsCacheDuration);
         return getResults;
     }
 }

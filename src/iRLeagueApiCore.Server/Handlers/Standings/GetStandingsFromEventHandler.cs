@@ -20,13 +20,12 @@ public sealed class GetStandingsFromEventHandler : StandingsHandlerBase<GetStand
     {
         await validators.ValidateAllAndThrowAsync(request, cancellationToken);
         var cacheKey = CacheKeys.GetStandingsByEventKey(request.EventId);
-        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<StandingsModel>? cached) && cached is not null)
+        var standingsTask = memoryCache.GetOrCreate(cacheKey, entry =>
         {
-            return cached;
-        }
-        var getStandings = await MapToStandingModelFromEventAsync(request.EventId, cancellationToken);
-        memoryCache.Set(cacheKey, getStandings, CacheKeys.StandingsCacheDuration);
-        return getStandings;
+            entry.AbsoluteExpirationRelativeToNow = CacheKeys.StandingsCacheDuration;
+            return MapToStandingModelFromEventAsync(request.EventId, CancellationToken.None);
+        })!;
+        return await standingsTask;
     }
 
     private async Task<IEnumerable<StandingsModel>> MapToStandingModelFromEventAsync(long eventId, CancellationToken cancellationToken)
