@@ -3,8 +3,11 @@ using Aydsko.iRacingData;
 using iRLeagueApiCore.Server.Authentication;
 using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Server.Filters;
+using iRLeagueApiCore.Server.Handlers.Results;
+using iRLeagueApiCore.Server.Handlers.Standings;
 using iRLeagueApiCore.Server.Models;
 using iRLeagueDatabaseCore;
+using iRLeagueApiCore.Services.TriggerService.Events;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +15,7 @@ using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using MediatR;
 using Serilog;
 using Serilog.Events;
 using System.Net;
@@ -185,6 +189,13 @@ public sealed class Startup
         services.AddMediatR(o => o.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+        // Register cache invalidation notification handlers explicitly.
+        // MediatR's auto-registration (RegisterServicesFromAssembly) uses TryAddScoped,
+        // which only registers the first handler per notification type. We need to register
+        // the cache invalidation handlers explicitly as secondary handlers.
+        services.AddScoped<INotificationHandler<ResultCalculatedEventNotification>, ResultCacheInvalidationHandler>();
+        services.AddScoped<INotificationHandler<StandingsUpdatedEventNotification>, StandingsCacheInvalidationHandler>();
+
         services.AddEmailService();
         services.AddResultService();
         services.AddBackgroundQueue();
@@ -243,7 +254,7 @@ public sealed class Startup
         app.UseSerilogRequestLogging(options =>
         {
             // Customize the message template
-            options.MessageTemplate = "{RemoteIpAddress:l} {RequestScheme:l} {RequestMethod:l} {RequestPath:l} responded {StatusCode} in {Elapsed:0.0000} ms {RequestReferer} {RequestAgent} {UserName}";
+            options.MessageTemplate = "{RemoteIpAddress:l} {RequestScheme:l} {RequestMethod:l} {RequestPath:l} responded {StatusCode} in {Elapsed:0.0000} ms {RequestReferer} {RequestAgent} {UserN[...]
 
             // Emit debug-level events instead of the defaults
             options.GetLevel = (httpContext, elapsed, ex) => LogEventLevel.Information;
