@@ -25,8 +25,8 @@ public static class TriggerHostedServiceCollectionExtension
         services.AddHostedService(sp => sp.GetRequiredService<TriggerHostedService>());
 
         // Event notification handlers
-        services.TryAddEnumerable<INotificationHandler<ResultCalculatedEventNotification>, ResultCalculatedEventHandler>();
-        services.TryAddEnumerable<INotificationHandler<StandingsUpdatedEventNotification>, StandingsUpdatedEventHandler>();
+        services.TryAddScopedExact<INotificationHandler<ResultCalculatedEventNotification>, ResultCalculatedEventHandler>();
+        services.TryAddScopedExact<INotificationHandler<StandingsUpdatedEventNotification>, StandingsUpdatedEventHandler>();
         return services;
     }
 
