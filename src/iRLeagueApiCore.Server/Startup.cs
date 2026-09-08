@@ -254,7 +254,7 @@ public sealed class Startup
         app.UseSerilogRequestLogging(options =>
         {
             // Customize the message template
-            options.MessageTemplate = "{RemoteIpAddress:l} {RequestScheme:l} {RequestMethod:l} {RequestPath:l} responded {StatusCode} in {Elapsed:0.0000} ms {RequestReferer} {RequestAgent} {UserN[...]
+            options.MessageTemplate = "{RemoteIpAddress:l} {RequestScheme:l} {RequestMethod:l} {RequestPath:l} responded {StatusCode} in {Elapsed:0.0000} ms {RequestReferer} {RequestAgent} {UserName}";
 
             // Emit debug-level events instead of the defaults
             options.GetLevel = (httpContext, elapsed, ex) => LogEventLevel.Information;
