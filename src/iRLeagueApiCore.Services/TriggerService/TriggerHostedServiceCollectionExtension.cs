@@ -1,4 +1,5 @@
 ﻿using iRLeagueApiCore.Common.Enums;
+using iRLeagueApiCore.Server.Extensions;
 using iRLeagueApiCore.Services.TriggerService;
 using iRLeagueApiCore.Services.TriggerService.Actions;
 using iRLeagueApiCore.Services.TriggerService.Events;
@@ -24,8 +25,8 @@ public static class TriggerHostedServiceCollectionExtension
         services.AddHostedService(sp => sp.GetRequiredService<TriggerHostedService>());
 
         // Event notification handlers
-        services.TryAddScoped<INotificationHandler<ResultCalculatedEventNotification>, ResultCalculatedEventHandler>();
-        services.TryAddScoped<INotificationHandler<StandingsUpdatedEventNotification>, StandingsUpdatedEventHandler>();
+        services.TryAddEnumerable<INotificationHandler<ResultCalculatedEventNotification>, ResultCalculatedEventHandler>();
+        services.TryAddEnumerable<INotificationHandler<StandingsUpdatedEventNotification>, StandingsUpdatedEventHandler>();
         return services;
     }
 
