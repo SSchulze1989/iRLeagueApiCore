@@ -13,6 +13,7 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
     {
         rows = pointRule.GetChampSeasonFilters().FilterRows(rows);
         rows = pointRule.GetResultFilters().FilterRows(rows);
+        rows = CalculateStartPositionInGroup(rows);
         CalculateCompletedPct(rows);
         CalculateIntervals(rows);
         CalculateAutoPenalties(rows, pointRule.GetAutoPenalties());
@@ -60,6 +61,16 @@ abstract internal class CalculationServiceBase : ICalculationService<SessionCalc
             row.FinishPosition = index + 1;
         }
         return rows;
+    }
+
+    private static IEnumerable<ResultRowCalculationResult> CalculateStartPositionInGroup(IEnumerable<ResultRowCalculationResult> rows)
+    {
+        var resultRows = rows.ToList();
+        foreach (var (row, index) in resultRows.OrderBy(x => x.StartPosition).Select((row, index) => (row, index)))
+        {
+            row.StartPositionInGroup = index + 1;
+        }
+        return resultRows;
     }
 
     protected static (TId? id, TimeSpan lap) GetBestLapValue<T, TId>(IEnumerable<T> rows, Func<T, TId?> idSelector, Func<T, TimeSpan> valueSelector)

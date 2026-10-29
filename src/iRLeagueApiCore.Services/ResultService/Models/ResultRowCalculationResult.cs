@@ -62,5 +62,6 @@ internal sealed class ResultRowCalculationResult : ResultRowCalculationData
 
     public bool IsScored { get; set; }
     public ICollection<long> ScoredMemberResultRowIds { get; set; } = Array.Empty<long>();
+    public double StartPositionInGroup { get; set; }
     public DropweekOverrideData? DropweekOverride { get; set; }
 }

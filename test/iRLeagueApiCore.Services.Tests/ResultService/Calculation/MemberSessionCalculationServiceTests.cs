@@ -487,6 +487,32 @@ public sealed class MemberSessionCalculationServiceTests
     }
 
     [Fact]
+    public async Task Calculate_ShouldApplyCustomBonusPointsUsingStartPositionInGroup()
+    {
+        var data = GetCalculationData();
+        data.ResultRows = TestRowBuilder()
+            .With(x => x.StartPosition, new double[] { 4, 7, 10 }.CreateSequence())
+            .CreateMany(3);
+        var condition = new ColumnValueRowFilter(
+            nameof(ResultRowCalculationResult.StartPositionInGroup), ComparatorType.IsEqual, ["1"],
+            MatchedValueAction.Keep, allowForEach: true);
+        var config = GetCalculationConfiguration(data.LeagueId, data.SessionId);
+        config.PointRule = CalculationMockHelper.MockPointRule(
+            bonusPoints:
+            [
+                new() { Type = BonusPointType.Custom, Points = 2, Conditions = new([(FilterCombination.And, condition)]) },
+            ]);
+        fixture.Register(() => config);
+        var sut = CreateSut();
+
+        var test = await sut.Calculate(data);
+
+        test.ResultRows.Should().HaveCount(3);
+        test.ResultRows.Single(x => x.StartPosition == 4).BonusPoints.Should().Be(2);
+        test.ResultRows.Where(x => x.StartPosition != 4).Should().OnlyContain(x => x.BonusPoints == 0);
+    }
+
+    [Fact]
     public async Task Calculate_ShouldAddAutoPenalties()
     {
         var incidents = new[] { 2.0, 4.0, 8.0 };
