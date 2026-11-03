@@ -4,9 +4,13 @@ public record DeleteResultRequest(long EventId) : IRequest<Unit>;
 
 public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler, DeleteResultRequest, Unit>
 {
-    public DeleteResultHandler(ILogger<DeleteResultHandler> logger, LeagueDbContext dbContext, IEnumerable<IValidator<DeleteResultRequest>> validators) :
+    private readonly IPublisher publisher;
+
+    public DeleteResultHandler(ILogger<DeleteResultHandler> logger, LeagueDbContext dbContext,
+        IEnumerable<IValidator<DeleteResultRequest>> validators, IPublisher publisher) :
         base(logger, dbContext, validators)
     {
+        this.publisher = publisher;
     }
 
     public override async Task<Unit> Handle(DeleteResultRequest request, CancellationToken cancellationToken)
@@ -27,6 +31,7 @@ public sealed class DeleteResultHandler : ResultHandlerBase<DeleteResultHandler,
             dbContext.Standings.Remove(standing);
         }
         await dbContext.SaveChangesAsync(cancellationToken);
+        await publisher.Publish(new ResultDeletedEventNotification(@event.EventId), cancellationToken);
         return Unit.Value;
     }
 

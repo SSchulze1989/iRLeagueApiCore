@@ -53,6 +53,26 @@ public sealed class ResultCacheInvalidationHandlerTests : ResultHandlersTestsBas
         await act.Should().ThrowAsync<ResourceNotFoundException>();
     }
 
+    [Fact]
+    public async Task ShouldInvalidateResultByEventCache_AfterResultDeleted()
+    {
+        var sharedCache = new MemoryCache(new MemoryCacheOptions());
+        using var db = accessMockHelper.CreateMockDbContext(databaseName);
+        var getHandler = new GetResultsFromSessionHandler(logger, db,
+            Array.Empty<IValidator<GetResultsFromEventRequest>>(), sharedCache);
+
+        await getHandler.Handle(new GetResultsFromEventRequest(TestEventId), default);
+
+        var sut = new ResultCacheInvalidationHandler(sharedCache, db);
+        await sut.Handle(new ResultDeletedEventNotification(TestEventId), default);
+
+        db.ScoredEventResults.RemoveRange(db.ScoredEventResults);
+        await db.SaveChangesAsync();
+
+        var act = async () => await getHandler.Handle(new GetResultsFromEventRequest(TestEventId), default);
+        await act.Should().ThrowAsync<ResourceNotFoundException>();
+    }
+
     // ── result-by-season cache ───────────────────────────────────────────────
 
     [Fact]

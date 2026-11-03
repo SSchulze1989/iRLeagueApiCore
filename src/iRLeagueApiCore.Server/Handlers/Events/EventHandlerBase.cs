@@ -104,7 +104,7 @@ public abstract class EventHandlerBase<THandler, TRequest, TResponse> : HandlerB
         Name = @event.Name,
         ScheduleId = @event.ScheduleId,
         SeasonId = @event.Schedule.SeasonId,
-        HasResult = @event.ScoredEventResults.Any(),
+        HasResult = @event.EventResult != null || @event.ScoredEventResults.Any(),
         TrackName = @event.Track.TrackGroup.TrackName,
         ConfigName = @event.Track.ConfigName,
         Sessions = @event.Sessions.Select(session => new SessionModel()

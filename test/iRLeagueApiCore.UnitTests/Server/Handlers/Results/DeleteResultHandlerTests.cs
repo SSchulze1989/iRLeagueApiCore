@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using iRLeagueApiCore.Server.Handlers.Results;
+using iRLeagueApiCore.Services.TriggerService.Events;
 using iRLeagueDatabaseCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Test;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System;
 
 namespace iRLeagueApiCore.UnitTests.Server.Handlers.Results;
@@ -12,7 +14,15 @@ public sealed class DeleteResultHandlerTests : ResultHandlersTestsBase<DeleteRes
 {
     protected override DeleteResultHandler CreateTestHandler(LeagueDbContext dbContext, IValidator<DeleteResultRequest> validator)
     {
-        return new(logger, dbContext, [validator]);
+        return new(logger, dbContext, [validator], CreatePublisher().Object);
+    }
+
+    private static Mock<IPublisher> CreatePublisher()
+    {
+        var publisher = new Mock<IPublisher>();
+        publisher.Setup(x => x.Publish(It.IsAny<ResultDeletedEventNotification>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        return publisher;
     }
 
     protected override DeleteResultRequest DefaultRequest()
@@ -103,5 +113,20 @@ public sealed class DeleteResultHandlerTests : ResultHandlersTestsBase<DeleteRes
                 .FirstOrDefaultAsync();
             deletedResult.Should().BeNull();            
         }
+    }
+
+    [Fact]
+    public async Task ShouldPublishResultDeletedNotification_AfterDelete()
+    {
+        using var dbContext = accessMockHelper.CreateMockDbContext(databaseName);
+        var publisher = CreatePublisher();
+        var handler = new DeleteResultHandler(logger, dbContext,
+            [MockHelpers.TestValidator<DeleteResultRequest>()], publisher.Object);
+
+        await handler.Handle(DefaultRequest(), default);
+
+        publisher.Verify(x => x.Publish(
+            It.Is<ResultDeletedEventNotification>(notification => notification.EventId == TestEventId),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }

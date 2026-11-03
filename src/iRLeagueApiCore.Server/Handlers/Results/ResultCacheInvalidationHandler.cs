@@ -4,7 +4,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace iRLeagueApiCore.Server.Handlers.Results;
 
-public sealed class ResultCacheInvalidationHandler : INotificationHandler<ResultCalculatedEventNotification>
+public sealed class ResultCacheInvalidationHandler : INotificationHandler<ResultCalculatedEventNotification>,
+    INotificationHandler<ResultDeletedEventNotification>
 {
     private readonly IMemoryCache memoryCache;
     private readonly LeagueDbContext dbContext;
@@ -17,8 +18,16 @@ public sealed class ResultCacheInvalidationHandler : INotificationHandler<Result
 
     public async Task Handle(ResultCalculatedEventNotification notification, CancellationToken cancellationToken)
     {
-        var eventId = notification.EventId;
+        await InvalidateCache(notification.EventId, cancellationToken);
+    }
 
+    public async Task Handle(ResultDeletedEventNotification notification, CancellationToken cancellationToken)
+    {
+        await InvalidateCache(notification.EventId, cancellationToken);
+    }
+
+    private async Task InvalidateCache(long eventId, CancellationToken cancellationToken)
+    {
         // Invalidate result cache for this event
         memoryCache.Remove(CacheKeys.GetResultsByEventKey(eventId));
 

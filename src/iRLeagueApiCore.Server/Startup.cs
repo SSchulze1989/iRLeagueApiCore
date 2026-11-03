@@ -193,6 +193,7 @@ public sealed class Startup
         // which only registers the first handler per notification type. We need to register
         // the cache invalidation handlers explicitly as secondary handlers.
         services.TryAddScopedExact<INotificationHandler<ResultCalculatedEventNotification>, ResultCacheInvalidationHandler>();
+        services.TryAddScopedExact<INotificationHandler<ResultDeletedEventNotification>, ResultCacheInvalidationHandler>();
         services.TryAddScopedExact<INotificationHandler<StandingsUpdatedEventNotification>, StandingsCacheInvalidationHandler>();
 
         services.AddEmailService();
